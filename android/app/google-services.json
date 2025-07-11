@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "504252717389",
+    "project_id": "admin-elith",
+    "storage_bucket": "admin-elith.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:504252717389:android:8befb8646cb238b9467f04",
+        "android_client_info": {
+          "package_name": "com.elith.admin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDA5ovRLJ0buXegStzU64nIXVroAfd_MGw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
