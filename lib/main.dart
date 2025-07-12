@@ -3,6 +3,7 @@ import 'package:admin/config/app_translations.dart';
 import 'package:admin/language/language_controller.dart';
 import 'package:admin/routes/app_page.dart';
 import 'package:admin/widgets/loading_widgets.dart';
+import 'package:admin/network_service/dio_network_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 import 'firebase_options.dart';
@@ -15,6 +16,10 @@ Future<void> main() async {
   );
   await AppTranslations.load();
   Get.put(LanguageController());
+  
+  // Initialize the network service
+  NetworkService.initialize();
+  
   runApp(const MyApp());
   configLoading();
 }
