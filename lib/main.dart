@@ -24,6 +24,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       locale: Get.find<LanguageController>().locale.value,
       fallbackLocale: const Locale('en', 'US'),
       title: 'Flutter Demo',

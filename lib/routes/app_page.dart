@@ -1,8 +1,10 @@
+import 'package:admin/modules/login/login_binding.dart';
+import 'package:admin/modules/login/login_view.dart';
 import 'package:get/get.dart';
 import '../language/language.dart';
 import '../language/language_binding.dart';
-import '../modules/splash_screen/splash_binding.dart';
-import '../modules/splash_screen/splash_view.dart';
+import '../modules/splash/splash_binding.dart';
+import '../modules/splash/splash_view.dart';
 import 'app_routes.dart';
 
 class AppPages {
@@ -19,5 +21,9 @@ class AppPages {
         name: AppRoutes.language,
         page: () => Language(),
         binding: LanguageBinding()),
+    GetPage(
+        name: AppRoutes.login,
+        page: () => const LoginView(),
+        binding: LoginBinding()),
   ];
 }

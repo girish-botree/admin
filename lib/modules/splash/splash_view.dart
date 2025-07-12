@@ -23,7 +23,7 @@ class Splash extends GetView<SplashController> {
             ),
             InkWell(
                 onTap: () {
-                  Get.toNamed(AppRoutes.language);
+                  Get.toNamed(AppRoutes.login);
                 },
                 child: Text('Change language'.tr)),
           ],
