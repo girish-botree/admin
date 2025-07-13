@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'login_controller.dart';
-import '../../utils/resposive.dart';
+import '../../utils/responsive.dart';
 import 'components/mobile_login.dart';
 import 'components/tab_login.dart';
 import 'components/web_login.dart';

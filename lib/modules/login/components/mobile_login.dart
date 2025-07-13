@@ -1,7 +1,7 @@
 import 'package:admin/modules/login/components/common_login_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../utils/resposive.dart';
+import '../../../utils/responsive.dart';
 import '../login_controller.dart';
 
 class MobileLogin extends GetView<LoginController> {
