@@ -24,62 +24,62 @@ abstract class ApiClient {
   @Extra(extraNoNeedAuthToken)
   Future<HttpResponse<dynamic>> login(@Body() Map<String, dynamic> body);
 
-  @POST(AppUrl.logout)
-  Future<HttpResponse<dynamic>> logout(@Body() Map<String, dynamic> body);
+  // @POST(AppUrl.logout)
+  // Future<HttpResponse<dynamic>> logout(@Body() Map<String, dynamic> body);
 
-  @POST(AppUrl.refreshToken)
-  Future<HttpResponse<dynamic>> refreshToken(@Body() Map<String, dynamic> body);
+  // @POST(AppUrl.refreshToken)
+  // Future<HttpResponse<dynamic>> refreshToken(@Body() Map<String, dynamic> body);
 
-  @GET(AppUrl.profile)
-  Future<HttpResponse<dynamic>> getProfile();
+  // @GET(AppUrl.profile)
+  // Future<HttpResponse<dynamic>> getProfile();
 
-  @POST(AppUrl.authenticate)
-  @Extra(extraNoNeedAuthToken)
-  Future<HttpResponse<dynamic>> authenticate(@Body() Map<String, dynamic> body);
+  // @POST(AppUrl.authenticate)
+  // @Extra(extraNoNeedAuthToken)
+  // Future<HttpResponse<dynamic>> authenticate(@Body() Map<String, dynamic> body);
 
-  /// User management endpoints
-  @GET(AppUrl.users)
-  Future<HttpResponse<dynamic>> getUsers();
+  // /// User management endpoints
+  // @GET(AppUrl.users)
+  // Future<HttpResponse<dynamic>> getUsers();
 
-  @GET('${AppUrl.users}/{id}')
-  Future<HttpResponse<dynamic>> getUserById(@Path('id') String userId);
+  // @GET('${AppUrl.users}/{id}')
+  // Future<HttpResponse<dynamic>> getUserById(@Path('id') String userId);
 
-  @POST(AppUrl.users)
-  Future<HttpResponse<dynamic>> createUser(@Body() Map<String, dynamic> body);
+  // @POST(AppUrl.users)
+  // Future<HttpResponse<dynamic>> createUser(@Body() Map<String, dynamic> body);
 
-  @PUT('${AppUrl.users}/{id}')
-  Future<HttpResponse<dynamic>> updateUser(
-    @Path('id') String userId,
-    @Body() Map<String, dynamic> body,
-  );
+  // @PUT('${AppUrl.users}/{id}')
+  // Future<HttpResponse<dynamic>> updateUser(
+  //   @Path('id') String userId,
+  //   @Body() Map<String, dynamic> body,
+  // );
 
-  @DELETE('${AppUrl.users}/{id}')
-  Future<HttpResponse<dynamic>> deleteUser(@Path('id') String userId);
+  // @DELETE('${AppUrl.users}/{id}')
+  // Future<HttpResponse<dynamic>> deleteUser(@Path('id') String userId);
 
-  /// File upload endpoints
-  @POST(AppUrl.uploadImage)
-  @MultiPart()
-  Future<HttpResponse<dynamic>> uploadImage(
-    @Part() File file,
-    @Part() String? description,
-  );
+  // /// File upload endpoints
+  // @POST(AppUrl.uploadImage)
+  // @MultiPart()
+  // Future<HttpResponse<dynamic>> uploadImage(
+  //   @Part() File file,
+  //   @Part() String? description,
+  // );
 
-  @POST(AppUrl.uploadFile)
-  @MultiPart()
-  Future<HttpResponse<dynamic>> uploadFile(
-    @Part() File file,
-    @Part() String? fileName,
-    @Part() String? fileType,
-  );
+  // @POST(AppUrl.uploadFile)
+  // @MultiPart()
+  // Future<HttpResponse<dynamic>> uploadFile(
+  //   @Part() File file,
+  //   @Part() String? fileName,
+  //   @Part() String? fileType,
+  // );
 
-  /// Configuration endpoints
-  @GET(AppUrl.appConfig)
-  @Extra(extraNoNeedAuthToken)
-  Future<HttpResponse<dynamic>> getAppConfiguration();
+  // /// Configuration endpoints
+  // @GET(AppUrl.appConfig)
+  // @Extra(extraNoNeedAuthToken)
+  // Future<HttpResponse<dynamic>> getAppConfiguration();
 
-  @GET(AppUrl.appVersion)
-  @Extra(extraNoNeedAuthToken)
-  Future<HttpResponse<dynamic>> checkAppVersion();
+  // @GET(AppUrl.appVersion)
+  // @Extra(extraNoNeedAuthToken)
+  // Future<HttpResponse<dynamic>> checkAppVersion();
 
   /// Generic GET request
   @GET('{path}')

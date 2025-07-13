@@ -1,9 +1,11 @@
+import 'package:admin/themes/yellow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../themes/blue_theme.dart';
 
 enum ThemeConfig {
-  themeBlue
+  themeBlue,
+  themeYellow,
 }
 
 class ThemeUtil {
@@ -12,6 +14,8 @@ class ThemeUtil {
     switch (appTheme) {
       case ThemeConfig.themeBlue:
         return BlueTheme().light();
+      case ThemeConfig.themeYellow:
+        return YellowTheme().light();
       default:
         return BlueTheme().light();
     }
@@ -21,6 +25,8 @@ class ThemeUtil {
     switch (appTheme) {
       case ThemeConfig.themeBlue:
         return BlueTheme().dark();
+      case ThemeConfig.themeYellow:
+        return YellowTheme().dark();
       default:
         return BlueTheme().dark();
     }

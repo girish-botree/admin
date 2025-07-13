@@ -5,13 +5,13 @@ class AppUrl {
   // You can set this via environment variables or build configurations
   static const String baseUrl = String.fromEnvironment(
     'BASE_URL', 
-    defaultValue: 'https://your-api-domain.com/api/'
+    defaultValue: 'https://elithapi-606254752351.asia-south1.run.app/'
   );
 
   // Alternative URLs for different environments
-  static const String devBaseUrl = 'https://dev-api.your-domain.com/api/';
-  static const String stagingBaseUrl = 'https://staging-api.your-domain.com/api/';
-  static const String prodBaseUrl = 'https://api.your-domain.com/api/';
+  static const String devBaseUrl = 'https://elithapi-606254752351.asia-south1.run.app/';
+  static const String stagingBaseUrl = 'https://elithapi-606254752351.asia-south1.run.app/';
+  static const String prodBaseUrl = 'https://elithapi-606254752351.asia-south1.run.app/';
 
   // Get base URL based on environment
   static String getBaseUrl() {
@@ -31,24 +31,24 @@ class AppUrl {
   }
 
   // API endpoints
-  static const String login = 'auth/login';
-  static const String logout = 'auth/logout';
-  static const String refreshToken = 'auth/refresh';
-  static const String profile = 'user/profile';
-  static const String authenticate = 'auth/authenticate';
+  static const String login = 'api/Auth/login';
+  static const String logout = 'api/Auth/logout';
+  static const String refreshToken = 'api/Auth/refresh';
+  static const String profile = 'api/Auth/profile';
+  static const String authenticate = 'api/Auth/authenticate';
   
   // Add more endpoints as needed
-  static const String users = 'users';
-  static const String uploads = 'uploads';
-  static const String downloads = 'downloads';
+  static const String users = 'api/users';
+  static const String uploads = 'api/uploads';
+  static const String downloads = 'api/downloads';
   
   // File upload endpoints
-  static const String uploadImage = 'upload/image';
-  static const String uploadFile = 'upload/file';
+  static const String uploadImage = 'api/upload/image';
+  static const String uploadFile = 'api/upload/file';
   
   // Configuration endpoints
-  static const String appConfig = 'config/app';
-  static const String appVersion = 'config/version';
+  static const String appConfig = 'api/config/app';
+  static const String appVersion = 'api/config/version';
 }
 
 /// Network Configuration

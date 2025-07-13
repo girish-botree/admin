@@ -311,7 +311,7 @@ class DioNetworkService {
   
   /// Login
   static Future<dynamic> login(
-    String username,
+    String email,
     String password, {
     bool showLoader = true,
   }) async {
@@ -321,7 +321,7 @@ class DioNetworkService {
       }
 
       final data = {
-        'username': username,
+        'email': email,
         'password': password,
       };
 
@@ -343,41 +343,41 @@ class DioNetworkService {
   }
 
   /// Logout
-  static Future<dynamic> logout() async {
-    try {
-      ApiHelper.showLoader();
+  // static Future<dynamic> logout() async {
+  //   try {
+  //     ApiHelper.showLoader();
 
-      final response = await _apiClient.logout({});
+  //     final response = await _apiClient.logout({});
 
-      // Clear local storage
-      await _sharedPreference.remove(AppConstants.bearerToken);
+  //     // Clear local storage
+  //     await _sharedPreference.remove(AppConstants.bearerToken);
 
-      ApiHelper.dismissLoader();
+  //     ApiHelper.dismissLoader();
 
-      return response.data;
-    } catch (error) {
-      ApiHelper.dismissLoader();
-      CommonUtils.debugLog(error.toString());
-      rethrow;
-    }
-  }
+  //     return response.data;
+  //   } catch (error) {
+  //     ApiHelper.dismissLoader();
+  //     CommonUtils.debugLog(error.toString());
+  //     rethrow;
+  //   }
+  // }
 
-  /// Get User Profile
-  static Future<dynamic> getProfile() async {
-    try {
-      ApiHelper.showLoader();
+  // /// Get User Profile
+  // static Future<dynamic> getProfile() async {
+  //   try {
+  //     ApiHelper.showLoader();
 
-      final response = await _apiClient.getProfile();
+  //     final response = await _apiClient.getProfile();
 
-      ApiHelper.dismissLoader();
+  //     ApiHelper.dismissLoader();
 
-      return response.data;
-    } catch (error) {
-      ApiHelper.dismissLoader();
-      CommonUtils.debugLog(error.toString());
-      rethrow;
-    }
-  }
+  //     return response.data;
+  //   } catch (error) {
+  //     ApiHelper.dismissLoader();
+  //     CommonUtils.debugLog(error.toString());
+  //     rethrow;
+  //   }
+  // }
 
   /// Utility Methods
 

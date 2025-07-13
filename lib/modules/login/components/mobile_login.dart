@@ -1,8 +1,10 @@
+import 'package:admin/modules/login/components/common_login_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_utils/get_utils.dart';
+import 'package:get/get.dart';
 import '../../../utils/resposive.dart';
+import '../login_controller.dart';
 
-class MobileLogin extends StatelessWidget {
+class MobileLogin extends GetView<LoginController> {
   const MobileLogin({super.key});
 
   @override
@@ -256,22 +258,37 @@ class MobileLogin extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildMobileSocialButton(
+            buildSocialButton(
               icon: Icons.facebook,
               color: const Color(0xFF1877F2),
               onTap: () => print('Facebook login tapped'),
+              containerWidth: 56,
+              containerHeight: 56,
+              borderRadius: 16,
+              blurRadius: 8,
+              iconSize: 26,
             ),
             const SizedBox(width: 16),
-            _buildMobileSocialButton(
+            buildSocialButton(
               icon: Icons.g_mobiledata_outlined,
               color: const Color(0xFF4285F4),
               onTap: () => print('Google login tapped'),
+              containerWidth: 56,
+              containerHeight: 56,
+              borderRadius: 16,
+              blurRadius: 8,
+              iconSize: 26,
             ),
             const SizedBox(width: 16),
-            _buildMobileSocialButton(
+            buildSocialButton(
               icon: Icons.apple,
               color: Colors.black,
               onTap: () => print('Apple login tapped'),
+              containerWidth: 56,
+              containerHeight: 56,
+              borderRadius: 16,
+              blurRadius: 8,
+              iconSize: 26,
             ),
           ],
         ),
@@ -279,73 +296,83 @@ class MobileLogin extends StatelessWidget {
     );
   }
 
-  Widget _buildMobileSocialButton({
-    required IconData icon,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 56,
-        height: 56,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Icon(icon, size: 26, color: color),
-      ),
-    );
-  }
 
   Widget _buildMobileLoginForm(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Text(
-          'Welcome Back',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF2D3748),
+    return Form(
+      key: controller.formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            'Welcome Back',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF2D3748),
+            ),
           ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          'Sign in to continue to your dashboard',
-          style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-        ),
-        const SizedBox(height: 20),
+          const SizedBox(height: 6),
+          Text(
+            'Sign in to continue to your dashboard',
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+          ),
+          const SizedBox(height: 20),
 
-        _buildMobileEmailField(),
-        const SizedBox(height: 16),
+          _buildMobileEmailField(),
+          const SizedBox(height: 16),
 
-        _buildMobilePasswordField(),
-        const SizedBox(height: 18),
+          _buildMobilePasswordField(),
+          const SizedBox(height: 18),
 
-        _buildMobileLoginButton(),
-        const SizedBox(height: 14),
+          // Error message
+          Obx(() => controller.errorMessage.value.isNotEmpty
+              ? Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.red.shade200),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.error_outline, color: Colors.red.shade600, size: 20),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          controller.errorMessage.value,
+                          style: TextStyle(
+                            color: Colors.red.shade700,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : const SizedBox()),
 
-        _buildMobileForgotPasswordButton(),
-        const SizedBox(height: 18),
+          _buildMobileLoginButton(),
+          const SizedBox(height: 14),
 
-        _buildMobileDemoCredentials(),
-      ],
+          _buildMobileForgotPasswordButton(),
+          const SizedBox(height: 18),
+
+          _buildMobileDemoCredentials(),
+        ],
+      ),
     );
   }
 
   Widget _buildMobileEmailField() {
     return TextFormField(
+      controller: controller.emailController,
       keyboardType: TextInputType.emailAddress,
       style: const TextStyle(fontSize: 14),
+      validator: controller.validateEmail,
+      onChanged: (value) => controller.clearError(),
       decoration: InputDecoration(
         labelText: 'Email',
         hintText: 'Enter your email',
@@ -377,9 +404,12 @@ class MobileLogin extends StatelessWidget {
   }
 
   Widget _buildMobilePasswordField() {
-    return TextFormField(
-      obscureText: true,
+    return Obx(() => TextFormField(
+      controller: controller.passwordController,
+      obscureText: !controller.isPasswordVisible.value,
       style: const TextStyle(fontSize: 14),
+      validator: controller.validatePassword,
+      onChanged: (value) => controller.clearError(),
       decoration: InputDecoration(
         labelText: 'Password',
         hintText: 'Enter your password',
@@ -390,11 +420,13 @@ class MobileLogin extends StatelessWidget {
         ),
         suffixIcon: IconButton(
           icon: Icon(
-            Icons.visibility_off_outlined,
+            controller.isPasswordVisible.value
+                ? Icons.visibility_outlined
+                : Icons.visibility_off_outlined,
             color: Colors.grey.shade600,
             size: 20,
           ),
-          onPressed: () {},
+          onPressed: controller.togglePasswordVisibility,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
@@ -415,15 +447,15 @@ class MobileLogin extends StatelessWidget {
           horizontal: 16,
         ),
       ),
-    );
+    ));
   }
 
   Widget _buildMobileLoginButton() {
-    return SizedBox(
+    return Obx(() => SizedBox(
       width: double.infinity,
       height: 46,
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: controller.isLoading.value ? null : controller.login,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.red.shade600,
           foregroundColor: Colors.white,
@@ -431,19 +463,29 @@ class MobileLogin extends StatelessWidget {
             borderRadius: BorderRadius.circular(14),
           ),
           elevation: 4,
+          disabledBackgroundColor: Colors.grey.shade300,
         ),
-        child: const Text(
-          'Login',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-        ),
+        child: controller.isLoading.value
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : const Text(
+                'Login',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
       ),
-    );
+    ));
   }
 
   Widget _buildMobileForgotPasswordButton() {
     return Center(
       child: TextButton(
-        onPressed: () {},
+        onPressed: controller.navigateToForgotPassword,
         child: Text(
           'Forgot Password?',
           style: TextStyle(
@@ -484,12 +526,12 @@ class MobileLogin extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            'Email: superadmin@elith.com',
+            'Email: jagadeeshgiribabu@gmail.com',
             style: TextStyle(fontSize: 12, color: Colors.red.shade700),
           ),
           const SizedBox(height: 3),
           Text(
-            'Password: Elith_1@7',
+            'Password: Test@123',
             style: TextStyle(fontSize: 12, color: Colors.red.shade700),
           ),
         ],

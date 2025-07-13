@@ -6,6 +6,7 @@ import 'package:admin/widgets/loading_widgets.dart';
 import 'package:admin/network_service/dio_network_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 
@@ -32,12 +33,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       locale: Get.find<LanguageController>().locale.value,
       fallbackLocale: const Locale('en', 'US'),
-      title: 'Flutter Demo',
+      title: 'Admin App',
       initialRoute: AppPages.initial,
       getPages: AppPages.routes,
-      theme: ThemeUtil.getAppLightTheme(ThemeConfig.themeBlue),
-      darkTheme: ThemeUtil.getAppDarkTheme(ThemeConfig.themeBlue),
+      theme: ThemeUtil.getAppLightTheme(ThemeConfig.themeYellow),
+      darkTheme: ThemeUtil.getAppDarkTheme(ThemeConfig.themeYellow),
       translations: AppTranslations(),
+      builder: EasyLoading.init(),
     );
   }
 }

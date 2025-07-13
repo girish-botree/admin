@@ -1,5 +1,7 @@
 import 'package:admin/modules/login/login_binding.dart';
 import 'package:admin/modules/login/login_view.dart';
+import 'package:admin/modules/home/home_binding.dart';
+import 'package:admin/modules/home/home_view.dart';
 import 'package:get/get.dart';
 import '../language/language.dart';
 import '../language/language_binding.dart';
@@ -25,5 +27,9 @@ class AppPages {
         name: AppRoutes.login,
         page: () => const LoginView(),
         binding: LoginBinding()),
+    GetPage(
+        name: AppRoutes.home,
+        page: () => const HomeView(),
+        binding: HomeBinding()),
   ];
 }

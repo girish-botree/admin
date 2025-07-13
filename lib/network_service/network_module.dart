@@ -37,7 +37,7 @@ class NetworkModule {
       responseType: ResponseType.json,
       followRedirects: false,
       validateStatus: (status) {
-        return status! < 500; // Accept all status codes less than 500
+        return status! >= 200 && status < 300; // Only 2xx status codes are successful
       },
     );
 
@@ -82,7 +82,7 @@ class NetworkModule {
         // Add additional headers
         options.headers.addAll({
           'User-Agent': 'Admin-Flutter-App',
-          'X-Platform': Platform.isAndroid ? 'android' : 'ios',
+          'X-Platform': _getPlatformName(),
           'X-App-Version': '1.0.0', // You can get this from package_info
         });
 
@@ -250,6 +250,32 @@ class NetworkModule {
   static void clearDio() {
     _dio?.close();
     _dio = null;
+  }
+
+  /// Get platform name for cross-platform compatibility
+  static String _getPlatformName() {
+    if (kIsWeb) {
+      return 'web';
+    }
+    
+    try {
+      if (Platform.isAndroid) {
+        return 'android';
+      } else if (Platform.isIOS) {
+        return 'ios';
+      } else if (Platform.isWindows) {
+        return 'windows';
+      } else if (Platform.isMacOS) {
+        return 'macos';
+      } else if (Platform.isLinux) {
+        return 'linux';
+      } else {
+        return 'unknown';
+      }
+    } catch (e) {
+      // Fallback for platforms where Platform class is not available
+      return 'unknown';
+    }
   }
 }
 
