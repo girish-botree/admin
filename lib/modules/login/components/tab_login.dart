@@ -125,29 +125,11 @@ class TabLogin extends GetView<LoginController> {
   Widget _buildTabletLogoSection(BuildContext context) {
     return Column(
       children: [
-        Container(
+        buildLogoContainer(
           height: 140,
           width: 140,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Colors.white, Color(0xFFF5F5F5)],
-            ),
-            borderRadius: BorderRadius.circular(32),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Icon(
-            Icons.admin_panel_settings_rounded,
-            size: 70,
-            color: Colors.red.shade700,
-          ),
+          borderRadius: 32,
+          iconSize: 70,
         ),
         const SizedBox(height: 32),
         const Text(
@@ -178,29 +160,11 @@ class TabLogin extends GetView<LoginController> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
+        buildLogoContainer(
           height: 100,
           width: 100,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Colors.white, Color(0xFFF5F5F5)],
-            ),
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 16,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Icon(
-            Icons.admin_panel_settings_rounded,
-            size: 50,
-            color: Colors.red.shade700,
-          ),
+          borderRadius: 24,
+          iconSize: 50,
         ),
         const SizedBox(height: 20),
         const Text(
@@ -313,229 +277,65 @@ class TabLogin extends GetView<LoginController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
-            'Welcome Back',
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF2D3748),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Sign in to continue to your dashboard',
-            style: TextStyle(fontSize: 18, color: Colors.grey.shade600),
+          buildWelcomeText(
+            fontSize: 32,
+            subtitleFontSize: 18,
           ),
           const SizedBox(height: 32),
 
-          _buildTabletEmailField(),
+          buildEmailField(
+            controller: controller.emailController,
+            validator: controller.validateEmail,
+            onChanged: controller.clearError,
+            fontSize: 18,
+            borderRadius: 16,
+            iconSize: 24,
+          ),
           const SizedBox(height: 20),
 
-          _buildTabletPasswordField(),
+          buildPasswordField(
+            controller: controller.passwordController,
+            isPasswordVisible: controller.isPasswordVisible,
+            validator: controller.validatePassword,
+            onChanged: controller.clearError,
+            toggleVisibility: controller.togglePasswordVisibility,
+            fontSize: 18,
+            borderRadius: 16,
+            iconSize: 24,
+          ),
           const SizedBox(height: 24),
 
-          // Error message
-          Obx(() => controller.errorMessage.value.isNotEmpty
-              ? Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  margin: const EdgeInsets.only(bottom: 20),
-                  decoration: BoxDecoration(
-                    color: Colors.red.shade50,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.red.shade200),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.error_outline, color: Colors.red.shade600, size: 24),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          controller.errorMessage.value,
-                          style: TextStyle(
-                            color: Colors.red.shade700,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : const SizedBox()),
+          buildErrorMessage(
+            errorMessage: controller.errorMessage,
+            fontSize: 16,
+            borderRadius: 12,
+            iconSize: 24,
+          ),
 
-          _buildTabletLoginButton(),
+          buildLoginButton(
+            isLoading: controller.isLoading,
+            onPressed: controller.login,
+            height: 56,
+            fontSize: 20,
+            borderRadius: 16,
+          ),
           const SizedBox(height: 20),
 
-          _buildTabletForgotPasswordButton(),
-          const SizedBox(height: 24),
-
-          _buildTabletDemoCredentials(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTabletEmailField() {
-    return TextFormField(
-      controller: controller.emailController,
-      keyboardType: TextInputType.emailAddress,
-      style: const TextStyle(fontSize: 18),
-      validator: controller.validateEmail,
-      onChanged: (value) => controller.clearError(),
-      decoration: InputDecoration(
-        labelText: 'Email',
-        hintText: 'Enter your email',
-        prefixIcon: Icon(Icons.email_outlined, color: Colors.red.shade400),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.red.shade400, width: 2),
-        ),
-        filled: true,
-        fillColor: Colors.grey.shade50,
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 16,
-          horizontal: 20,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTabletPasswordField() {
-    return Obx(() => TextFormField(
-      controller: controller.passwordController,
-      obscureText: !controller.isPasswordVisible.value,
-      style: const TextStyle(fontSize: 18),
-      validator: controller.validatePassword,
-      onChanged: (value) => controller.clearError(),
-      decoration: InputDecoration(
-        labelText: 'Password',
-        hintText: 'Enter your password',
-        prefixIcon: Icon(Icons.lock_outline, color: Colors.red.shade400),
-        suffixIcon: IconButton(
-          icon: Icon(
-            controller.isPasswordVisible.value
-                ? Icons.visibility_outlined
-                : Icons.visibility_off_outlined,
-            color: Colors.grey.shade600,
-          ),
-          onPressed: controller.togglePasswordVisibility,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.red.shade400, width: 2),
-        ),
-        filled: true,
-        fillColor: Colors.grey.shade50,
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 16,
-          horizontal: 20,
-        ),
-      ),
-    ));
-  }
-
-  Widget _buildTabletLoginButton() {
-    return Obx(() => SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        onPressed: controller.isLoading.value ? null : controller.login,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.red.shade600,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          elevation: 4,
-          disabledBackgroundColor: Colors.grey.shade300,
-        ),
-        child: controller.isLoading.value
-            ? const SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2,
-                ),
-              )
-            : const Text(
-                'Login',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-              ),
-      ),
-    ));
-  }
-
-  Widget _buildTabletForgotPasswordButton() {
-    return Center(
-      child: TextButton(
-        onPressed: controller.navigateToForgotPassword,
-        child: Text(
-          'Forgot Password?',
-          style: TextStyle(
-            color: Colors.red.shade400,
-            fontWeight: FontWeight.w500,
+          buildForgotPasswordButton(
+            onPressed: controller.navigateToForgotPassword,
             fontSize: 18,
           ),
-        ),
-      ),
-    );
-  }
+          const SizedBox(height: 24),
 
-  Widget _buildTabletDemoCredentials() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.red.shade50,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.red.shade200),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.info_outline, color: Colors.red.shade600, size: 18),
-              const SizedBox(width: 8),
-              Text(
-                'Demo Credentials',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.red.shade800,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Email: jagadeeshgiribabu@gmail.com',
-            style: TextStyle(fontSize: 15, color: Colors.red.shade700),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Password: Test@123',
-            style: TextStyle(fontSize: 15, color: Colors.red.shade700),
+          buildDemoCredentials(
+            fontSize: 16,
+            borderRadius: 12,
+            iconSize: 18,
           ),
         ],
       ),
     );
   }
+
+
 }

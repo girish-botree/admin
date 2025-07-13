@@ -111,29 +111,11 @@ class MobileLogin extends GetView<LoginController> {
   Widget _buildMobileLogoSection(BuildContext context) {
     return Column(
       children: [
-        Container(
+        buildLogoContainer(
           height: 100,
           width: 100,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Colors.white, Color(0xFFF5F5F5)],
-            ),
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 16,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Icon(
-            Icons.admin_panel_settings_rounded,
-            size: 50,
-            color: Colors.red.shade700,
-          ),
+          borderRadius: 24,
+          iconSize: 50,
         ),
         const SizedBox(height: 24),
         const Text(
@@ -164,29 +146,11 @@ class MobileLogin extends GetView<LoginController> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
+        buildLogoContainer(
           height: 70,
           width: 70,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Colors.white, Color(0xFFF5F5F5)],
-            ),
-            borderRadius: BorderRadius.circular(18),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 12,
-                offset: const Offset(0, 6),
-              ),
-            ],
-          ),
-          child: Icon(
-            Icons.admin_panel_settings_rounded,
-            size: 35,
-            color: Colors.red.shade700,
-          ),
+          borderRadius: 18,
+          iconSize: 35,
         ),
         const SizedBox(height: 12),
         const Text(
@@ -304,240 +268,67 @@ class MobileLogin extends GetView<LoginController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
-            'Welcome Back',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF2D3748),
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'Sign in to continue to your dashboard',
-            style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+          buildWelcomeText(
+            fontSize: 22,
+            subtitleFontSize: 14,
           ),
           const SizedBox(height: 20),
 
-          _buildMobileEmailField(),
+          buildEmailField(
+            controller: controller.emailController,
+            validator: controller.validateEmail,
+            onChanged: controller.clearError,
+            fontSize: 14,
+            borderRadius: 14,
+            iconSize: 20,
+          ),
           const SizedBox(height: 16),
 
-          _buildMobilePasswordField(),
+          buildPasswordField(
+            controller: controller.passwordController,
+            isPasswordVisible: controller.isPasswordVisible,
+            validator: controller.validatePassword,
+            onChanged: controller.clearError,
+            toggleVisibility: controller.togglePasswordVisibility,
+            fontSize: 14,
+            borderRadius: 14,
+            iconSize: 20,
+          ),
           const SizedBox(height: 18),
 
-          // Error message
-          Obx(() => controller.errorMessage.value.isNotEmpty
-              ? Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(12),
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.red.shade50,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.red.shade200),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.error_outline, color: Colors.red.shade600, size: 20),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          controller.errorMessage.value,
-                          style: TextStyle(
-                            color: Colors.red.shade700,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : const SizedBox()),
+          buildErrorMessage(
+            errorMessage: controller.errorMessage,
+            fontSize: 14,
+            borderRadius: 8,
+            iconSize: 20,
+          ),
 
-          _buildMobileLoginButton(),
+          buildLoginButton(
+            isLoading: controller.isLoading,
+            onPressed: controller.login,
+            height: 46,
+            fontSize: 16,
+            borderRadius: 14,
+          ),
           const SizedBox(height: 14),
 
-          _buildMobileForgotPasswordButton(),
-          const SizedBox(height: 18),
-
-          _buildMobileDemoCredentials(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMobileEmailField() {
-    return TextFormField(
-      controller: controller.emailController,
-      keyboardType: TextInputType.emailAddress,
-      style: const TextStyle(fontSize: 14),
-      validator: controller.validateEmail,
-      onChanged: (value) => controller.clearError(),
-      decoration: InputDecoration(
-        labelText: 'Email',
-        hintText: 'Enter your email',
-        prefixIcon: Icon(
-          Icons.email_outlined,
-          color: Colors.red.shade400,
-          size: 20,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.red.shade400, width: 2),
-        ),
-        filled: true,
-        fillColor: Colors.grey.shade50,
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 14,
-          horizontal: 16,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMobilePasswordField() {
-    return Obx(() => TextFormField(
-      controller: controller.passwordController,
-      obscureText: !controller.isPasswordVisible.value,
-      style: const TextStyle(fontSize: 14),
-      validator: controller.validatePassword,
-      onChanged: (value) => controller.clearError(),
-      decoration: InputDecoration(
-        labelText: 'Password',
-        hintText: 'Enter your password',
-        prefixIcon: Icon(
-          Icons.lock_outline,
-          color: Colors.red.shade400,
-          size: 20,
-        ),
-        suffixIcon: IconButton(
-          icon: Icon(
-            controller.isPasswordVisible.value
-                ? Icons.visibility_outlined
-                : Icons.visibility_off_outlined,
-            color: Colors.grey.shade600,
-            size: 20,
-          ),
-          onPressed: controller.togglePasswordVisibility,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.red.shade400, width: 2),
-        ),
-        filled: true,
-        fillColor: Colors.grey.shade50,
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 14,
-          horizontal: 16,
-        ),
-      ),
-    ));
-  }
-
-  Widget _buildMobileLoginButton() {
-    return Obx(() => SizedBox(
-      width: double.infinity,
-      height: 46,
-      child: ElevatedButton(
-        onPressed: controller.isLoading.value ? null : controller.login,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.red.shade600,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-          elevation: 4,
-          disabledBackgroundColor: Colors.grey.shade300,
-        ),
-        child: controller.isLoading.value
-            ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2,
-                ),
-              )
-            : const Text(
-                'Login',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-      ),
-    ));
-  }
-
-  Widget _buildMobileForgotPasswordButton() {
-    return Center(
-      child: TextButton(
-        onPressed: controller.navigateToForgotPassword,
-        child: Text(
-          'Forgot Password?',
-          style: TextStyle(
-            color: Colors.red.shade400,
-            fontWeight: FontWeight.w500,
+          buildForgotPasswordButton(
+            onPressed: controller.navigateToForgotPassword,
             fontSize: 14,
           ),
-        ),
-      ),
-    );
-  }
+          const SizedBox(height: 18),
 
-  Widget _buildMobileDemoCredentials() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.red.shade50,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.red.shade200),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.info_outline, color: Colors.red.shade600, size: 16),
-              const SizedBox(width: 6),
-              Text(
-                'Demo Credentials',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.red.shade800,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'Email: jagadeeshgiribabu@gmail.com',
-            style: TextStyle(fontSize: 12, color: Colors.red.shade700),
-          ),
-          const SizedBox(height: 3),
-          Text(
-            'Password: Test@123',
-            style: TextStyle(fontSize: 12, color: Colors.red.shade700),
+          buildDemoCredentials(
+            fontSize: 13,
+            borderRadius: 10,
+            iconSize: 16,
           ),
         ],
       ),
     );
   }
+
+
 
   void _showMobileLoginBottomSheet(BuildContext context) {
     showModalBottomSheet(
