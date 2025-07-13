@@ -2,8 +2,7 @@
 
 import 'dart:ui';
 
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:admin/config/app_config.dart';
 
 Widget buildSocialButton({
     required IconData icon,
@@ -21,11 +20,11 @@ Widget buildSocialButton({
         width: containerWidth,
         height: containerHeight,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColor.white,
           borderRadius: BorderRadius.circular(borderRadius),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
+              color: AppColor.black.withValues(alpha: 0.1),
               blurRadius: blurRadius,
               offset: const Offset(0, 4),
             ),
@@ -75,21 +74,16 @@ Widget buildWelcomeText({
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(
+      AppText.bold(
         'Welcome Back',
-        style: TextStyle(
-          fontSize: fontSize,
-          fontWeight: FontWeight.bold,
-          color: const Color(0xFF2D3748),
-        ),
+        size: fontSize,
+        color: AppColor.black,
       ),
       SizedBox(height: fontSize * 0.25),
-      Text(
+      AppText.regular(
         'Sign in to continue to your dashboard',
-        style: TextStyle(
-          fontSize: subtitleFontSize,
-          color: Colors.grey.shade600,
-        ),
+        size: subtitleFontSize,
+        color: Colors.grey.shade600,
       ),
     ],
   );
@@ -225,12 +219,10 @@ Widget buildLoginButton({
                 strokeWidth: 2,
               ),
             )
-          : Text(
+          : AppText.semiBold(
               'Login',
-              style: TextStyle(
-                fontSize: fontSize,
-                fontWeight: FontWeight.w600,
-              ),
+              size: fontSize,
+              color: AppColor.white,
             ),
     ),
   ));
@@ -261,12 +253,10 @@ Widget buildErrorMessage({
               ),
               SizedBox(width: fontSize * 0.5),
               Expanded(
-                child: Text(
+                child: AppText.regular(
                   errorMessage.value,
-                  style: TextStyle(
-                    color: Colors.red.shade700,
-                    fontSize: fontSize,
-                  ),
+                  size: fontSize,
+                  color: Colors.red.shade700,
                 ),
               ),
             ],
@@ -282,13 +272,10 @@ Widget buildForgotPasswordButton({
   return Center(
     child: TextButton(
       onPressed: onPressed,
-      child: Text(
+      child: AppText.medium(
         'Forgot Password?',
-        style: TextStyle(
-          color: Colors.red.shade400,
-          fontWeight: FontWeight.w500,
-          fontSize: fontSize,
-        ),
+        size: fontSize,
+        color: Colors.red.shade700,
       ),
     ),
   );
@@ -303,9 +290,9 @@ Widget buildDemoCredentials({
     width: double.infinity,
     padding: EdgeInsets.all(fontSize * 1.2),
     decoration: BoxDecoration(
-      color: Colors.red.shade50,
+      color: AppColor.infoContainer,
       borderRadius: BorderRadius.circular(borderRadius),
-      border: Border.all(color: Colors.red.shade200),
+      border: Border.all(color: AppColor.info),
     ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -314,35 +301,28 @@ Widget buildDemoCredentials({
           children: [
             Icon(
               Icons.info_outline,
-              color: Colors.red.shade600,
+              color: AppColor.info,
               size: iconSize,
             ),
             SizedBox(width: fontSize * 0.5),
-            Text(
+            AppText.semiBold(
               'Demo Credentials',
-              style: TextStyle(
-                fontSize: fontSize,
-                fontWeight: FontWeight.w600,
-                color: Colors.red.shade800,
-              ),
+              size: fontSize,
+              color: AppColor.info,
             ),
           ],
         ),
         SizedBox(height: fontSize * 0.5),
-        Text(
+        AppText.regular(
           'Email: jagadeeshgiribabu@gmail.com',
-          style: TextStyle(
-            fontSize: fontSize * 0.9,
-            color: Colors.red.shade700,
-          ),
+          size: fontSize * 0.9,
+          color: Colors.red.shade700,
         ),
         SizedBox(height: fontSize * 0.3),
-        Text(
+        AppText.regular(
           'Password: Test@123',
-          style: TextStyle(
-            fontSize: fontSize * 0.9,
-            color: Colors.red.shade700,
-          ),
+          size: fontSize * 0.9,
+          color: Colors.red.shade700,
         ),
       ],
     ),
