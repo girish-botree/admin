@@ -31,24 +31,9 @@ class AppUrl {
   }
 
   // API endpoints
-  static const String login = 'api/Auth/login';
+  static const String login = 'api/Auth/login'; //live
   static const String logout = 'api/Auth/logout';
-  static const String refreshToken = 'api/Auth/refresh';
-  static const String profile = 'api/Auth/profile';
-  static const String authenticate = 'api/Auth/authenticate';
-  
-  // Add more endpoints as needed
-  static const String users = 'api/users';
-  static const String uploads = 'api/uploads';
-  static const String downloads = 'api/downloads';
-  
-  // File upload endpoints
-  static const String uploadImage = 'api/upload/image';
-  static const String uploadFile = 'api/upload/file';
-  
-  // Configuration endpoints
-  static const String appConfig = 'api/config/app';
-  static const String appVersion = 'api/config/version';
+  static const String refreshToken = 'api/Auth/refresh-token';
 }
 
 /// Network Configuration

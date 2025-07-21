@@ -13,6 +13,32 @@ import 'api_client.dart';
 /// Dio Network Service
 /// This class provides a modern, robust network service using Dio
 /// with comprehensive error handling, logging, and authentication management
+/// 
+/// REFRESH TOKEN SYSTEM:
+/// - Access tokens expire in 15 minutes (configurable on backend)
+/// - Refresh tokens expire in 7 days (configurable on backend)  
+/// - When a 401 error occurs, the system automatically tries to refresh the access token
+/// - If refresh succeeds, the original request is retried with the new access token
+/// - If refresh fails, the user is logged out and redirected to login
+/// - The refresh token itself is also rotated on each refresh for security
+/// 
+/// USAGE EXAMPLES:
+/// ```dart
+/// // Login and store both tokens
+/// final response = await DioNetworkService.login(email, password);
+/// if (response != null && response['token'] != null) {
+///   await DioNetworkService.storeAuthTokens(response);
+/// }
+/// 
+/// // Make authenticated requests (tokens handled automatically)
+/// final adminData = await DioNetworkService.getData('api/admin/dashboard');
+/// 
+/// // Manual token refresh (usually not needed)
+/// final newTokens = await DioNetworkService.refreshAccessToken();
+/// 
+/// // Logout (clears all tokens)
+/// await DioNetworkService.clearToken();
+/// ```
 class DioNetworkService {
   static final SharedPreference _sharedPreference = SharedPreference();
   static late ApiClient _apiClient;
@@ -422,12 +448,82 @@ class DioNetworkService {
 
   /// Store token
   static Future<void> storeToken(String token) async {
-    _sharedPreference.save(AppConstants.bearerToken, token);
+    await _sharedPreference.save(AppConstants.bearerToken, token);
   }
 
-  /// Clear token
+  /// Clear token (also clears refresh token for complete logout)
   static Future<void> clearToken() async {
+    await clearAllTokens();
+  }
+
+  /// Store authentication tokens from login/register response
+  static Future<void> storeAuthTokens(Map<String, dynamic> response) async {
+    if (response['token'] != null) {
+      await storeToken(response['token']);
+    }
+    
+    if (response['refreshToken'] != null) {
+      await storeRefreshToken(response['refreshToken']);
+    }
+  }
+
+  /// Get stored refresh token
+  static Future<String?> getRefreshToken() async {
+    return await _sharedPreference.get(AppConstants.refreshToken);
+  }
+
+  /// Store refresh token
+  static Future<void> storeRefreshToken(String refreshToken) async {
+    await _sharedPreference.save(AppConstants.refreshToken, refreshToken);
+  }
+
+  /// Store both access and refresh tokens
+  static Future<void> storeTokens(String accessToken, String refreshToken) async {
+    await storeToken(accessToken);
+    await storeRefreshToken(refreshToken);
+  }
+
+  /// Clear refresh token
+  static Future<void> clearRefreshToken() async {
+    await _sharedPreference.remove(AppConstants.refreshToken);
+  }
+
+  /// Clear both access and refresh tokens
+  static Future<void> clearAllTokens() async {
     await _sharedPreference.remove(AppConstants.bearerToken);
+    await clearRefreshToken();
+  }
+
+  /// Refresh access token using refresh token
+  static Future<Map<String, dynamic>?> refreshAccessToken() async {
+    try {
+      final refreshToken = await getRefreshToken();
+      if (refreshToken == null || refreshToken.isEmpty) {
+        return null;
+      }
+
+      final response = await _apiClient.refreshToken({'refreshToken': refreshToken});
+      
+      if (response.response.statusCode == 200) {
+        final data = response.data;
+        
+        if (data != null && data['token'] != null) {
+          // Store new tokens
+          await storeToken(data['token']);
+          
+          if (data['refreshToken'] != null) {
+            await storeRefreshToken(data['refreshToken']);
+          }
+          
+          return data;
+        }
+      }
+      
+      return null;
+    } catch (error) {
+      CommonUtils.debugLog('Token refresh failed: $error');
+      return null;
+    }
   }
 }
 

@@ -92,11 +92,34 @@ class NetworkModule {
         // Handle successful response
         handler.next(response);
       },
-      onError: (error, handler) {
+      onError: (error, handler) async {
         // Handle authentication errors
         if (error.response?.statusCode == statusCodeUnauthorized) {
-          // Token expired or invalid, logout user
-          _handleUnauthorizedError();
+          // Check if this is already a refresh token request to avoid infinite loop
+          final isRefreshTokenRequest = error.requestOptions.path.contains('refresh-token');
+          
+          if (!isRefreshTokenRequest) {
+            // Try to refresh token
+            final refreshResult = await _tryRefreshToken();
+            
+            if (refreshResult != null) {
+              // Token refreshed successfully, retry original request
+              final retryOptions = error.requestOptions;
+              retryOptions.headers['Authorization'] = 'Bearer ${refreshResult['token']}';
+              
+              try {
+                final retryResponse = await _dio!.fetch(retryOptions);
+                handler.resolve(retryResponse);
+                return;
+              } catch (retryError) {
+                // Retry failed, proceed with logout
+                debugPrint('Retry after token refresh failed: $retryError');
+              }
+            }
+          }
+          
+          // Token refresh failed or this was already a refresh request, logout user
+          await _handleUnauthorizedError();
         }
         handler.next(error);
       },
@@ -233,17 +256,68 @@ class NetworkModule {
             error.response!.statusCode! >= 500);
   }
 
-  /// Handle unauthorized error
-  static void _handleUnauthorizedError() {
-    // Clear stored token
-    _sharedPreference.remove(AppConstants.bearerToken);
+  /// Handle unauthorized error (logout user)
+  static Future<void> _handleUnauthorizedError() async {
+    // Clear stored tokens
+    await _sharedPreference.remove(AppConstants.bearerToken);
+    await _sharedPreference.remove(AppConstants.refreshToken);
     
     // Navigate to login screen
     // You can customize this based on your app's navigation structure
-    debugPrint('User session expired. Please login again.');
+    debugPrint('Admin session expired. Please login again.');
     
     // If using GetX for navigation:
     // Get.offAllNamed('/login');
+  }
+
+  /// Try to refresh access token using refresh token
+  static Future<Map<String, dynamic>?> _tryRefreshToken() async {
+    try {
+      final refreshToken = await _sharedPreference.get(AppConstants.refreshToken);
+      if (refreshToken == null || refreshToken.isEmpty) {
+        debugPrint('No refresh token available');
+        return null;
+      }
+
+      // Create a separate Dio instance to avoid interceptor loops
+      final tempDio = Dio();
+      tempDio.options = BaseOptions(
+        baseUrl: AppUrl.getBaseUrl(),
+        connectTimeout: Duration(milliseconds: connectTimeout),
+        receiveTimeout: Duration(milliseconds: receiveTimeout),
+        headers: {
+          'Content-Type': contentTypeJson,
+          'Accept': contentTypeJson,
+        },
+      );
+
+      final response = await tempDio.post(
+        AppUrl.refreshToken,
+        data: {'refreshToken': refreshToken},
+      );
+
+      if (response.statusCode == 200 && response.data != null) {
+        final data = response.data as Map<String, dynamic>;
+        
+        if (data['token'] != null) {
+          // Store new tokens
+          await _sharedPreference.save(AppConstants.bearerToken, data['token']);
+          
+          if (data['refreshToken'] != null) {
+            await _sharedPreference.save(AppConstants.refreshToken, data['refreshToken']);
+          }
+          
+          debugPrint('Admin token refreshed successfully');
+          return data;
+        }
+      }
+      
+      debugPrint('Admin token refresh failed: Invalid response');
+      return null;
+    } catch (error) {
+      debugPrint('Admin token refresh error: $error');
+      return null;
+    }
   }
 
   /// Clear Dio instance (useful for testing or resetting configuration)

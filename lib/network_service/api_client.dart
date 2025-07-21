@@ -24,11 +24,12 @@ abstract class ApiClient {
   @Extra(extraNoNeedAuthToken)
   Future<HttpResponse<dynamic>> login(@Body() Map<String, dynamic> body);
 
-  // @POST(AppUrl.logout)
-  // Future<HttpResponse<dynamic>> logout(@Body() Map<String, dynamic> body);
+  @POST(AppUrl.logout)
+  Future<HttpResponse<dynamic>> logout();
 
-  // @POST(AppUrl.refreshToken)
-  // Future<HttpResponse<dynamic>> refreshToken(@Body() Map<String, dynamic> body);
+  @POST(AppUrl.refreshToken)
+  @Extra(extraNoNeedAuthToken)
+  Future<HttpResponse<dynamic>> refreshToken(@Body() Map<String, dynamic> body);
 
   // @GET(AppUrl.profile)
   // Future<HttpResponse<dynamic>> getProfile();

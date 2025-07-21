@@ -1,18 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../routes/app_routes.dart';
-import '../../config/shared_preference.dart';
-import '../../config/appconstants.dart';
+import '../../network_service/dio_network_service.dart';
 
 class HomeController extends GetxController {
-  final SharedPreference _sharedPreference = SharedPreference();
-
-  @override
-  void onInit() {
-    super.onInit();
-    // Initialize any required data
-  }
-
   /// Logout functionality
   Future<void> logout() async {
     try {
@@ -35,8 +26,8 @@ class HomeController extends GetxController {
       ) ?? false;
 
       if (shouldLogout) {
-        // Clear user session data
-        await _sharedPreference.remove(AppConstants.bearerToken);
+        // Clear both access and refresh tokens
+        await DioNetworkService.clearToken();
         
         // Navigate to login screen
         Get.offAllNamed(AppRoutes.login);

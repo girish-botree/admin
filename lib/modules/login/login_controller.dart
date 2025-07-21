@@ -3,12 +3,8 @@ import 'package:get/get.dart';
 import 'package:dio/dio.dart';
 import '../../routes/app_routes.dart';
 import '../../network_service/dio_network_service.dart';
-import '../../config/shared_preference.dart';
-import '../../config/appconstants.dart';
 
 class LoginController extends GetxController {
-  final SharedPreference _sharedPreference = SharedPreference();
-
   // Form key and controllers
   final formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
@@ -78,8 +74,8 @@ class LoginController extends GetxController {
 
       // Check if response contains token (successful login)
       if (response != null && response['token'] != null) {
-        // Store the token
-        _sharedPreference.save(AppConstants.bearerToken, response['token']);
+        // Store both access and refresh tokens
+        await DioNetworkService.storeAuthTokens(response);
 
         // Navigate to home page
         Get.offAllNamed(AppRoutes.home);

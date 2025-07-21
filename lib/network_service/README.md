@@ -476,90 +476,197 @@ class ProductService {
 
 ## 🔐 Authentication & Security
 
-### Token Management
+### Refresh Token Implementation
 
-```dart
-// Store authentication token
-await DioNetworkService.storeToken('your-jwt-token');
+The admin app now implements a robust refresh token system that automatically handles token expiration:
 
-// Check if user is authenticated
-final isAuthenticated = await DioNetworkService.isAuthenticated();
+#### How It Works
 
-// Get current token
-final token = await DioNetworkService.getToken();
+1. **Token Types**:
+   - **Access Token**: Short-lived (15 minutes), used for API requests
+   - **Refresh Token**: Long-lived (7 days), used to get new access tokens
 
-// Clear token (logout)
-await DioNetworkService.clearToken();
+2. **Automatic Token Refresh**:
+   - When an API request receives a 401 (Unauthorized) response
+   - The system automatically attempts to refresh the access token
+   - If successful, the original request is retried with the new token
+   - If refresh fails, the admin is logged out
+
+3. **Token Storage**:
+   - Both tokens are securely stored using SharedPreferences
+   - Access token stored in `AppConstants.bearerToken`
+   - Refresh token stored in `AppConstants.refreshToken`
+
+#### Backend API Compatibility
+
+The implementation is compatible with your backend API:
+
+```json
+// Admin Login Response
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refreshToken": "refresh_token_here",
+  "expires": "2025-01-01T10:15:00Z",
+  "refreshExpires": "2025-01-08T10:00:00Z"
+}
+
+// Refresh Token Request
+POST /api/auth/refresh-token
+{
+  "refreshToken": "your-refresh-token-here"
+}
+
+// Refresh Token Response
+{
+  "token": "new-jwt-token",
+  "refreshToken": "new-refresh-token",
+  "expires": "2025-01-01T10:15:00Z",
+  "refreshExpires": "2025-01-08T10:00:00Z"
+}
 ```
 
-### Login/Logout Flow
+### Token Management
+
+#### Storing Tokens (Admin Login)
 
 ```dart
-class AuthService {
+class AdminAuthService {
   static Future<bool> login(String email, String password) async {
     try {
       final response = await DioNetworkService.login(email, password);
       
-      if (response['success'] == true) {
-        final token = response['data']['token'];
-        await DioNetworkService.storeToken(token);
+      if (response != null && response['token'] != null) {
+        // Store both access and refresh tokens automatically
+        await DioNetworkService.storeAuthTokens(response);
         return true;
       }
       return false;
     } catch (e) {
-      print('Login failed: $e');
+      print('Admin login failed: $e');
       return false;
-    }
-  }
-
-  static Future<void> logout() async {
-    try {
-      await DioNetworkService.logout();
-    } catch (e) {
-      print('Logout error: $e');
-    } finally {
-      await DioNetworkService.clearToken();
-      // Navigate to login screen
     }
   }
 }
 ```
 
-### Automatic Token Refresh
-
-Add to `network_module.dart`:
+#### Manual Token Operations
 
 ```dart
-// Add token refresh interceptor
-dio.interceptors.add(InterceptorsWrapper(
-  onError: (error, handler) async {
-    if (error.response?.statusCode == 401) {
-      try {
-        // Attempt to refresh token
-        final refreshToken = await _getRefreshToken();
-        final newToken = await _refreshAuthToken(refreshToken);
+// Get current tokens
+final accessToken = await DioNetworkService.getToken();
+final refreshToken = await DioNetworkService.getRefreshToken();
+
+// Check authentication status
+final isAuthenticated = await DioNetworkService.isAuthenticated();
+
+// Manual token refresh (usually not needed - handled automatically)
+final newTokens = await DioNetworkService.refreshAccessToken();
+if (newTokens != null) {
+  print('Admin tokens refreshed successfully');
+}
+
+// Logout (clears all tokens)
+await DioNetworkService.clearToken();
+```
+
+#### Network Interceptor
+
+The refresh token logic is implemented in the network interceptor:
+
+```dart
+// NetworkModule handles this automatically for admin app
+onError: (error, handler) async {
+  if (error.response?.statusCode == 401) {
+    final isRefreshRequest = error.requestOptions.path.contains('refresh-token');
+    
+    if (!isRefreshRequest) {
+      final refreshResult = await _tryRefreshToken();
+      
+      if (refreshResult != null) {
+        // Retry original request with new token
+        final retryOptions = error.requestOptions;
+        retryOptions.headers['Authorization'] = 'Bearer ${refreshResult['token']}';
         
-        if (newToken != null) {
-          // Store new token
-          await DioNetworkService.storeToken(newToken);
-          
-          // Retry original request
-          final retryRequest = error.requestOptions;
-          retryRequest.headers['Authorization'] = 'Bearer $newToken';
-          
-          final response = await dio.fetch(retryRequest);
-          handler.resolve(response);
-          return;
-        }
-      } catch (e) {
-        // Refresh failed, logout user
-        await DioNetworkService.clearToken();
-        // Navigate to login
+        final retryResponse = await _dio!.fetch(retryOptions);
+        handler.resolve(retryResponse);
+        return;
       }
     }
-    handler.next(error);
-  },
-));
+    
+    // Refresh failed - logout admin
+    await _handleUnauthorizedError();
+  }
+  handler.next(error);
+}
+```
+
+### Security Features
+
+1. **Token Rotation**: Both access and refresh tokens are rotated on each refresh
+2. **Automatic Cleanup**: Failed refresh attempts clear all tokens
+3. **Loop Prevention**: Refresh requests don't trigger additional refresh attempts
+4. **Secure Storage**: Tokens stored in platform-specific secure storage
+5. **Admin-specific Logging**: Enhanced logging for administrative operations
+
+### Admin-Specific Error Handling
+
+The system handles admin scenarios gracefully:
+
+- **Network Errors**: Admin tokens preserved until successful refresh or explicit logout
+- **Invalid Refresh Token**: Automatic admin logout and redirect to login
+- **Backend Errors**: Fallback to manual admin login if refresh consistently fails
+- **Permission Errors**: Clear admin session if elevated permissions are revoked
+
+### Usage Examples for Admin Operations
+
+```dart
+// Admin dashboard data fetch (automatic token handling)
+final dashboardData = await DioNetworkService.getData('api/admin/dashboard');
+
+// Admin user management (automatic token handling)  
+final users = await DioNetworkService.getData('api/admin/users');
+
+// Admin ingredient management (automatic token handling)
+final ingredients = await DioNetworkService.getData('api/admin/ingredients');
+
+// Admin meal plan management (automatic token handling)
+final mealPlans = await DioNetworkService.getData('api/admin/mealplan');
+```
+
+### Testing Admin Token Refresh
+
+```dart
+// Test admin token refresh functionality
+class AdminTokenTest {
+  static Future<void> testTokenRefresh() async {
+    // Admin login first
+    final loginSuccess = await AdminAuthService.login('admin@example.com', 'AdminPass@123');
+    assert(loginSuccess);
+    
+    // Verify admin tokens are stored
+    final accessToken = await DioNetworkService.getToken();
+    final refreshToken = await DioNetworkService.getRefreshToken();
+    assert(accessToken != null);
+    assert(refreshToken != null);
+    
+    // Make admin API calls (will automatically refresh if needed)
+    try {
+      final adminData = await DioNetworkService.getData('api/admin/dashboard');
+      print('Admin API call successful: $adminData');
+    } catch (e) {
+      print('Admin API call failed: $e');
+    }
+    
+    // Admin logout
+    await DioNetworkService.clearToken();
+    
+    // Verify admin tokens are cleared
+    final clearedAccess = await DioNetworkService.getToken();
+    final clearedRefresh = await DioNetworkService.getRefreshToken();
+    assert(clearedAccess == null);
+    assert(clearedRefresh == null);
+  }
+}
 ```
 
 ## ⚠️ Error Handling
