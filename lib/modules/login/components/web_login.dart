@@ -10,12 +10,8 @@ class WebLogin extends GetView<LoginController> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF8B0000), Color(0xFF660000), Color(0xFF330000)],
-          ),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.onSurface,
         ),
         child: Center(
           child: SingleChildScrollView(
@@ -30,7 +26,7 @@ class WebLogin extends GetView<LoginController> {
                 width: 1000,
                 height: 650,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surfaceContainerLowest,
                   borderRadius: BorderRadius.circular(32),
                 ),
                 child: Row(
@@ -38,16 +34,8 @@ class WebLogin extends GetView<LoginController> {
                     Expanded(
                       flex: 1,
                       child: Container(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              Color(0xFF8B0000),
-                              Color(0xFF660000),
-                              Color(0xFF440000),
-                            ],
-                          ),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.onSurface,
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(32),
                             bottomLeft: Radius.circular(32),
@@ -103,12 +91,12 @@ class WebLogin extends GetView<LoginController> {
           iconSize: 80,
         ),
         const SizedBox(height: 40),
-        const Text(
+        Text(
           'Elith Admin',
           style: TextStyle(
             fontSize: 52,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: Get.context!.theme.colorScheme.surfaceContainerLowest,
             letterSpacing: 1.0,
           ),
         ),
@@ -118,7 +106,7 @@ class WebLogin extends GetView<LoginController> {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w500,
-            color: Colors.white.withOpacity(0.9),
+            color: Get.context!.theme.colorScheme.surfaceContainerLowest,
             letterSpacing: 2.0,
           ),
           textAlign: TextAlign.center,
@@ -134,7 +122,7 @@ class WebLogin extends GetView<LoginController> {
           'Or continue with',
           style: TextStyle(
             fontSize: 20,
-            color: Colors.white.withOpacity(0.8),
+            color: Get.context!.theme.colorScheme.surfaceContainerLowest,
             fontWeight: FontWeight.w500,
           ),
         ),

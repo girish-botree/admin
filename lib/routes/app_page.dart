@@ -2,6 +2,10 @@ import 'package:admin/modules/login/login_binding.dart';
 import 'package:admin/modules/login/login_view.dart';
 import 'package:admin/modules/home/home_binding.dart';
 import 'package:admin/modules/home/home_view.dart';
+import 'package:admin/modules/meal/meal_binding.dart';
+import 'package:admin/modules/meal/meal_view.dart';
+import 'package:admin/modules/main_layout/main_layout_binding.dart';
+import 'package:admin/modules/main_layout/main_layout_view.dart';
 import 'package:get/get.dart';
 import '../language/language.dart';
 import '../language/language_binding.dart';
@@ -29,7 +33,15 @@ class AppPages {
         binding: LoginBinding()),
     GetPage(
         name: AppRoutes.home,
-        page: () => const HomeView(),
+        page: () =>  HomeView(),
         binding: HomeBinding()),
+    GetPage(
+        name: AppRoutes.meal, 
+        page: () => const MealView(),
+        binding: MealBinding()),
+    GetPage(
+        name: AppRoutes.mainLayout,
+        page: () => const MainLayoutView(),
+        binding: MainLayoutBinding()),
   ];
 }

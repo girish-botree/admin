@@ -1,38 +1,19 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../routes/app_routes.dart';
-import '../../network_service/dio_network_service.dart';
+import '../../config/shared_preference.dart';
+import '../../config/appconstants.dart';
+import 'package:flutter/material.dart';
 
-class HomeController extends GetxController {
+class MainLayoutController extends GetxController {
+  final SharedPreference _sharedPreference = SharedPreference();
   final RxInt _currentIndex = 0.obs;
 
   int get currentIndex => _currentIndex.value;
 
-  @override
-  void onInit() {
-    super.onInit();
-    // Initialize any required data
-  }
-
-  void onItemTapped(int index) {
+  void changePage(int index) {
     _currentIndex.value = index;
-    switch(index) {
-      case 0:
-        // Home tab - stay on current page
-        break;
-      case 1:
-        // Handle second tab navigation if needed
-        break;
-      case 2:
-        // Navigate to meal page
-        Get.toNamed(AppRoutes.meal);
-        break;
-      default:
-        // Handle other tabs if needed
-        break;
-    }
   }
-
+  
   /// Logout functionality
   Future<void> logout() async {
     try {
@@ -55,8 +36,8 @@ class HomeController extends GetxController {
       ) ?? false;
 
       if (shouldLogout) {
-        // Clear both access and refresh tokens
-        await DioNetworkService.clearToken();
+        // Clear user session data
+        await _sharedPreference.remove(AppConstants.bearerToken);
         
         // Navigate to login screen
         Get.offAllNamed(AppRoutes.login);
@@ -79,4 +60,4 @@ class HomeController extends GetxController {
       );
     }
   }
-} 
+}

@@ -45,15 +45,15 @@ Widget buildLogoContainer({
     height: height,
     width: width,
     decoration: BoxDecoration(
-      gradient: const LinearGradient(
+      gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [Colors.white, Color(0xFFF5F5F5)],
+        colors: [Get.context!.theme.colorScheme.surfaceContainerLowest, Get.context!.theme.colorScheme.surfaceContainerLow],
       ),
       borderRadius: BorderRadius.circular(borderRadius),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.1),
+          color: Colors.black.withValues(alpha: (0.1)),
           blurRadius: borderRadius * 0.8,
           offset: Offset(0, borderRadius * 0.3),
         ),
@@ -62,7 +62,7 @@ Widget buildLogoContainer({
     child: Icon(
       Icons.admin_panel_settings_rounded,
       size: iconSize,
-      color: Colors.red.shade700,
+      color: Get.context!.theme.colorScheme.onSurface,
     ),
   );
 }
@@ -77,13 +77,13 @@ Widget buildWelcomeText({
       AppText.bold(
         'Welcome Back',
         size: fontSize,
-        color: AppColor.black,
+        color: Get.context!.theme.colorScheme.onSurface,
       ),
       SizedBox(height: fontSize * 0.25),
       AppText.regular(
         'Sign in to continue to your dashboard',
         size: subtitleFontSize,
-        color: Colors.grey.shade600,
+        color: Get.context!.theme.colorScheme.outline,
       ),
     ],
   );
@@ -108,7 +108,7 @@ Widget buildEmailField({
       hintText: 'Enter your email',
       prefixIcon: Icon(
         Icons.email_outlined,
-        color: Colors.red.shade400,
+        color: Get.context!.theme.colorScheme.onSurface,
         size: iconSize,
       ),
       border: OutlineInputBorder(
@@ -154,7 +154,7 @@ Widget buildPasswordField({
       hintText: 'Enter your password',
       prefixIcon: Icon(
         Icons.lock_outline,
-        color: Colors.red.shade400,
+        color: Get.context!.theme.colorScheme.onSurface,
         size: iconSize,
       ),
       suffixIcon: IconButton(
@@ -202,7 +202,7 @@ Widget buildLoginButton({
     child: ElevatedButton(
       onPressed: isLoading.value ? null : onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.red.shade600,
+        backgroundColor: Get.context!.theme.colorScheme.onSurface,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadius),
@@ -275,7 +275,7 @@ Widget buildForgotPasswordButton({
       child: AppText.medium(
         'Forgot Password?',
         size: fontSize,
-        color: Colors.red.shade700,
+        color:Get.context!.theme.colorScheme.onSurface,
       ),
     ),
   );

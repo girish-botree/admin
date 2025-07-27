@@ -11,12 +11,8 @@ class TabLogin extends GetView<LoginController> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF8B0000), Color(0xFF660000), Color(0xFF330000)],
-          ),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.onSurface,
         ),
         child: SafeArea(
           child: Responsive.isLandscape(context)
@@ -60,7 +56,7 @@ class TabLogin extends GetView<LoginController> {
           child: Container(
             margin: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surfaceContainerLowest,
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
@@ -104,9 +100,9 @@ class TabLogin extends GetView<LoginController> {
           Container(
             margin: const EdgeInsets.all(20),
             padding: const EdgeInsets.all(40),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainerLowest,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black12,
@@ -132,12 +128,12 @@ class TabLogin extends GetView<LoginController> {
           iconSize: 70,
         ),
         const SizedBox(height: 32),
-        const Text(
+        Text(
           'Elith Admin',
           style: TextStyle(
             fontSize: 48,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: context.theme.colorScheme.surfaceContainerLowest,
             letterSpacing: 1.0,
           ),
         ),
@@ -147,7 +143,7 @@ class TabLogin extends GetView<LoginController> {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: Colors.white.withOpacity(0.9),
+            color: Theme.of(context).colorScheme.surfaceContainerLowest,
             letterSpacing: 2.0,
           ),
           textAlign: TextAlign.center,
@@ -167,12 +163,12 @@ class TabLogin extends GetView<LoginController> {
           iconSize: 50,
         ),
         const SizedBox(height: 20),
-        const Text(
+        Text(
           'Elith Admin',
           style: TextStyle(
             fontSize: 32,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: context.theme.colorScheme.surfaceContainerLowest,
             letterSpacing: 1.0,
           ),
         ),
@@ -182,7 +178,7 @@ class TabLogin extends GetView<LoginController> {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w500,
-            color: Colors.white.withOpacity(0.9),
+            color: Theme.of(context).colorScheme.surfaceContainerLowest,
             letterSpacing: 2.0,
           ),
           textAlign: TextAlign.center,
@@ -198,7 +194,7 @@ class TabLogin extends GetView<LoginController> {
           'Or continue with',
           style: TextStyle(
             fontSize: 18,
-            color: Colors.white.withOpacity(0.8),
+            color: Theme.of(context).colorScheme.surfaceContainerLowest,
             fontWeight: FontWeight.w500,
           ),
         ),

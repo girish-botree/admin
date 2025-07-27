@@ -36,8 +36,8 @@ class MyApp extends StatelessWidget {
       title: 'Admin App',
       initialRoute: AppPages.initial,
       getPages: AppPages.routes,
-      theme: ThemeUtil.getAppLightTheme(ThemeConfig.themeYellow),
-      darkTheme: ThemeUtil.getAppDarkTheme(ThemeConfig.themeYellow),
+      theme: ThemeUtil.getAppLightTheme(ThemeConfig.themeBlue),
+      darkTheme: ThemeUtil.getAppDarkTheme(ThemeConfig.themeBlue),
       translations: AppTranslations(),
       builder: EasyLoading.init(),
     );

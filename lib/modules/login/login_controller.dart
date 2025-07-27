@@ -77,8 +77,8 @@ class LoginController extends GetxController {
         // Store both access and refresh tokens
         await DioNetworkService.storeAuthTokens(response);
 
-        // Navigate to home page
-        Get.offAllNamed(AppRoutes.home);
+        // Navigate to main layout
+        Get.offAllNamed(AppRoutes.mainLayout);
         
         // Show success message
         Get.snackbar(

@@ -12,11 +12,7 @@ class MobileLogin extends GetView<LoginController> {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [context.theme.colorScheme.surfaceContainerHighest, context.theme.colorScheme.surfaceContainerHigh, context.theme.colorScheme.surfaceContainer],
-          ),
+          color: context.theme.colorScheme.surfaceContainerLowest
         ),
         child: SafeArea(
           child: Responsive.isLandscape(context)
@@ -118,12 +114,12 @@ class MobileLogin extends GetView<LoginController> {
           iconSize: 50,
         ),
         const SizedBox(height: 24),
-        const Text(
+        Text(
           'Elith Admin',
           style: TextStyle(
             fontSize: 32,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: context.theme.colorScheme.onSurface,
             letterSpacing: 1.0,
           ),
         ),
@@ -168,7 +164,7 @@ class MobileLogin extends GetView<LoginController> {
           style: TextStyle(
             fontSize: 9,
             fontWeight: FontWeight.w500,
-            color: Colors.white.withOpacity(0.9),
+            color: Colors.white.withValues(alpha: 0.9),
             letterSpacing: 1.5,
           ),
           textAlign: TextAlign.center,
@@ -183,8 +179,8 @@ class MobileLogin extends GetView<LoginController> {
       child: ElevatedButton(
         onPressed: () => _showMobileLoginBottomSheet(context),
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.red.shade600,
+          backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
+          foregroundColor: context.theme.colorScheme.onSurface,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(25),
@@ -195,7 +191,7 @@ class MobileLogin extends GetView<LoginController> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.login_rounded, size: 22, color: Colors.red.shade600),
+            Icon(Icons.login_rounded, size: 22, color: context.theme.colorScheme.onSurface),
             const SizedBox(width: 10),
             const Text(
               'Get Started',

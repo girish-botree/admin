@@ -26,6 +26,48 @@ abstract class ApiClient {
 
   @POST(AppUrl.logout)
   Future<HttpResponse<dynamic>> logout();
+  @POST(AppUrl.sendOtp)
+  @Extra(extraNoNeedAuthToken)
+  Future<HttpResponse<dynamic>> sendOtp(@Body() Map<String, dynamic> body);
+
+  @POST(AppUrl.registerAdmin)
+  Future<HttpResponse<dynamic>> registerAdmin(@Body() Map<String, dynamic> body);
+
+  @POST(AppUrl.registerDeliveryPerson)
+  Future<HttpResponse<dynamic>> registerDeliveryPerson(@Body() Map<String, dynamic> body);
+
+  // Recipe endpoints
+  @GET(AppUrl.recipes)
+  Future<HttpResponse<dynamic>> getRecipes();
+
+  @POST(AppUrl.recipes)
+  Future<HttpResponse<dynamic>> createRecipe(@Body() Map<String, dynamic> body);
+
+  @PUT('${AppUrl.recipes}/{id}')
+  Future<HttpResponse<dynamic>> updateRecipe(@Path('id') String id, @Body() Map<String, dynamic> body);
+
+  @DELETE('${AppUrl.recipes}/{id}')
+  Future<HttpResponse<dynamic>> deleteRecipe(@Path('id') String id);
+
+  // Ingredient endpoints
+  @GET(AppUrl.ingredients)
+  Future<HttpResponse<dynamic>> getIngredients();
+
+  @POST(AppUrl.ingredients)
+  Future<HttpResponse<dynamic>> createIngredient(@Body() Map<String, dynamic> body);
+
+  @PUT('${AppUrl.ingredients}/{id}')
+  Future<HttpResponse<dynamic>> updateIngredient(@Path('id') String id, @Body() Map<String, dynamic> body);
+
+  @DELETE('${AppUrl.ingredients}/{id}')
+  Future<HttpResponse<dynamic>> deleteIngredient(@Path('id') String id);
+
+
+
+
+
+  // @POST(AppUrl.logout)
+  // Future<HttpResponse<dynamic>> logout(@Body() Map<String, dynamic> body);
 
   @POST(AppUrl.refreshToken)
   @Extra(extraNoNeedAuthToken)

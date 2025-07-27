@@ -1,3 +1,4 @@
+import 'package:admin/config/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -15,9 +16,9 @@ class CustomDisplays {
           child: Wrap(
             children: [
               Center(
-                child: Text(
+                child: AppText(
                   message.tr,
-                  style: Get.context!.theme.textTheme.titleSmall,
+                  color: Get.context!.theme.colorScheme.surfaceContainerLowest,
                 ),
               ),
             ],

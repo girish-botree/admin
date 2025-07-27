@@ -368,6 +368,234 @@ class DioNetworkService {
     }
   }
 
+  static Future<dynamic> sendOtp(
+    String email, {
+    bool showLoader = true,
+  }) async {
+    try {
+      if (showLoader) {
+        ApiHelper.showLoader();
+      }
+
+      final data = {
+        'email': email,
+      };
+
+      final response = await _apiClient.sendOtp(data);
+
+      if (showLoader) {
+        ApiHelper.dismissLoader();
+      }
+
+      return response.data;
+    } catch (error) {
+      if (showLoader) {
+        ApiHelper.dismissLoader();
+      }
+      
+      CommonUtils.debugLog(error.toString());
+      rethrow;
+    }
+  }
+
+  static Future<dynamic> registerAdmin(
+    String firstName,
+    String lastName,
+    String email,
+    String otp,
+    String password, {
+    bool showLoader = true,
+  }) async {
+    try {
+      if (showLoader) {
+        ApiHelper.showLoader();
+      }
+
+      final data = {
+        'firstName': firstName,
+        'lastName': lastName,
+        'email': email,
+        'otp': otp,
+        'password': password,
+      };
+
+      final response = await _apiClient.registerAdmin(data);
+
+      if (showLoader) {
+        ApiHelper.dismissLoader();
+      }
+
+      return response.data;
+    } catch (error) {
+      if (showLoader) {
+        ApiHelper.dismissLoader();
+      }
+      
+      CommonUtils.debugLog(error.toString());
+      rethrow;
+    }
+  }
+
+   static Future<dynamic> registerDeliveryPerson(
+    String firstName,
+    String lastName,
+    String email,
+    String otp,
+    String password, {
+    bool showLoader = true,
+  }) async {
+    try {
+      if (showLoader) {
+        ApiHelper.showLoader();
+      }
+
+      final data = {
+        'firstName': firstName,
+        'lastName': lastName,
+        'email': email,
+        'otp': otp,
+        'password': password,
+      };
+
+      final response = await _apiClient.registerDeliveryPerson(data);
+
+      if (showLoader) {
+        ApiHelper.dismissLoader();
+      }
+
+      return response.data;
+    } catch (error) {
+      if (showLoader) {
+        ApiHelper.dismissLoader();
+      }
+      
+      CommonUtils.debugLog(error.toString());
+      rethrow;
+    }
+  }
+
+  // Recipe methods
+  static Future<dynamic> getRecipes({
+    bool showLoader = true,
+  }) async {
+    try {
+      if (showLoader) {
+        ApiHelper.showLoader();
+      }
+
+      final response = await _apiClient.getRecipes();
+
+      if (showLoader) {
+        ApiHelper.dismissLoader();
+      }
+
+      return response.data;
+    } catch (error) {
+      if (showLoader) {
+        ApiHelper.dismissLoader();
+      }
+      
+      CommonUtils.debugLog(error.toString());
+      rethrow;
+    }
+  }
+  
+  static Future<dynamic> createRecipe(Map<String, dynamic> data, {bool showLoader = true}) async {
+    try {
+      if (showLoader) ApiHelper.showLoader();
+      final response = await _apiClient.createRecipe(data);
+      if (showLoader) ApiHelper.dismissLoader();
+      return response.data;
+    } catch (error) {
+      if (showLoader) ApiHelper.dismissLoader();
+      CommonUtils.debugLog(error.toString());
+      rethrow;
+    }
+  }
+  
+  static Future<dynamic> updateRecipe(String id, Map<String, dynamic> data, {bool showLoader = true}) async {
+    try {
+      if (showLoader) ApiHelper.showLoader();
+      final response = await _apiClient.updateRecipe(id, data);
+      if (showLoader) ApiHelper.dismissLoader();
+      return response.data;
+    } catch (error) {
+      if (showLoader) ApiHelper.dismissLoader();
+      CommonUtils.debugLog(error.toString());
+      rethrow;
+    }
+  }
+  
+  static Future<dynamic> deleteRecipe(String id, {bool showLoader = true}) async {
+    try {
+      if (showLoader) ApiHelper.showLoader();
+      final response = await _apiClient.deleteRecipe(id);
+      if (showLoader) ApiHelper.dismissLoader();
+      return response.data;
+    } catch (error) {
+      if (showLoader) ApiHelper.dismissLoader();
+      CommonUtils.debugLog(error.toString());
+      rethrow;
+    }
+  }
+  
+  // Ingredient methods
+  static Future<dynamic> getIngredients({bool showLoader = true}) async {
+    try {
+      if (showLoader) ApiHelper.showLoader();
+      final response = await _apiClient.getIngredients();
+      if (showLoader) ApiHelper.dismissLoader();
+      return response.data;
+    } catch (error) {
+      if (showLoader) ApiHelper.dismissLoader();
+      CommonUtils.debugLog(error.toString());
+      rethrow;
+    }
+  }
+  
+  
+  static Future<dynamic> createIngredient(Map<String, dynamic> data, {bool showLoader = true}) async {
+    try {
+      if (showLoader) ApiHelper.showLoader();
+      final response = await _apiClient.createIngredient(data);
+      if (showLoader) ApiHelper.dismissLoader();
+      return response.data;
+    } catch (error) {
+      if (showLoader) ApiHelper.dismissLoader();
+      CommonUtils.debugLog(error.toString());
+      rethrow;
+    }
+  }
+  
+  static Future<dynamic> updateIngredient(String id, Map<String, dynamic> data, {bool showLoader = true}) async {
+    try {
+      if (showLoader) ApiHelper.showLoader();
+      final response = await _apiClient.updateIngredient(id, data);
+      if (showLoader) ApiHelper.dismissLoader();
+      return response.data;
+    } catch (error) {
+      if (showLoader) ApiHelper.dismissLoader();
+      CommonUtils.debugLog(error.toString());
+      rethrow;
+    }
+  }
+  
+  static Future<dynamic> deleteIngredient(String id, {bool showLoader = true}) async {
+    try {
+      if (showLoader) ApiHelper.showLoader();
+      final response = await _apiClient.deleteIngredient(id);
+      if (showLoader) ApiHelper.dismissLoader();
+      return response.data;
+    } catch (error) {
+      if (showLoader) ApiHelper.dismissLoader();
+      CommonUtils.debugLog(error.toString());
+      rethrow;
+    }
+  }
+
+
+  
+
   /// Logout
   // static Future<dynamic> logout() async {
   //   try {
