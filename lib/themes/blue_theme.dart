@@ -122,7 +122,7 @@ class BlueTheme {
     elevatedButtonTheme: ThemeDataExtension.elevatedButtonTheme(colorScheme),
     disabledColor: colorScheme.outline,
     hintColor: colorScheme.outline,
-    shadowColor: colorScheme.outline.withOpacity(0.5),
+    shadowColor: colorScheme.outline.withValues(alpha: 0.5),
     dialogTheme: ThemeDataExtension.dialogTheme(colorScheme),
     bottomSheetTheme: ThemeDataExtension.bottomsheetTheme(colorScheme),
     inputDecorationTheme: ThemeDataExtension.inputDecorationTheme(colorScheme),
@@ -130,7 +130,6 @@ class BlueTheme {
     checkboxTheme: ThemeDataExtension.checkboxTheme(colorScheme),
     floatingActionButtonTheme: ThemeDataExtension.floatingActionButtonTheme(colorScheme),
     snackBarTheme: ThemeDataExtension.snackBarTheme(colorScheme),
-    appBarTheme: ThemeDataExtension.appBarTheme(colorScheme),
   );
 }
 

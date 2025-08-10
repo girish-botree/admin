@@ -36,14 +36,22 @@ dependencies:
   cupertino_icons: ^1.0.8
   firebase_core: ^3.15.1
   get: ^4.7.2
+  get_storage: ^2.1.1
   dio: ^5.8.0+1
   retrofit: ^4.2.0
   talker_dio_logger: ^4.4.1
   flutter_easyloading: ^3.0.5
   shared_preferences: ^2.1.0
+  flutter_secure_storage: ^9.2.2
   http: ^1.4.0
   internet_connection_checker: ^3.0.1
   pretty_dio_logger: ^1.4.0
+  table_calendar: ^3.1.2
+  fl_chart: ^0.69.0
+  syncfusion_flutter_charts: ^27.1.58
+  flutter_svg: ^2.0.10+1
+  image_picker: ^1.0.4
+  local_auth: ^2.3.0
 
 dev_dependencies:
   flutter_test:
@@ -57,6 +65,7 @@ dev_dependencies:
   flutter_lints: ^5.0.0
   build_runner: ^2.4.13
   retrofit_generator: ^8.2.0
+  flutter_gen_runner: ^5.7.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -100,3 +109,9 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_gen:
+  output: lib/gen/
+  line_length: 80
+  integrations:
+    flutter_svg: true

@@ -4,9 +4,9 @@ import 'package:get/get.dart';
 
 
 class CustomDisplays {
-  static showSnackBar(
+  static void showSnackBar(
       {required String message, double fontSize = 16.0, int duration = 3000}) {
-    return Get.showSnackbar(
+    Get.showSnackbar(
       GetSnackBar(
         borderRadius: 6,
         snackPosition: SnackPosition.BOTTOM,

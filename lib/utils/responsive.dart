@@ -28,6 +28,9 @@ class Responsive extends StatelessWidget {
   static bool isWeb(BuildContext context) =>
       MediaQuery.sizeOf(context).width >= tabletBreakpoint;
 
+  static bool isDesktop(BuildContext context) =>
+      MediaQuery.sizeOf(context).width >= tabletBreakpoint;
+
   // Additional utility methods
   static bool isPortrait(BuildContext context) =>
       MediaQuery.of(context).orientation == Orientation.portrait;
@@ -57,28 +60,50 @@ class Responsive extends StatelessWidget {
     }
   }
 
-  // Get padding based on screen size
-  // static EdgeInsets responsivePadding(BuildContext context) {
-  //   if (isMobile(context)) {
-  //     return const EdgeInsets.symmetric(horizontal: 16, vertical: 20);
-  //   } else if (isTablet(context)) {
-  //     return const EdgeInsets.symmetric(horizontal: 32, vertical: 40);
-  //   } else {
-  //     return const EdgeInsets.symmetric(horizontal: 60, vertical: 60);
-  //   }
-  // }
+  // Get responsive text size based on screen size
+  static double responsiveTextSize(
+    BuildContext context, {
+    required double mobile,
+    required double tablet,
+    required double web,
+  }) {
+    if (isMobile(context)) {
+      return mobile;
+    } else if (isTablet(context)) {
+      return tablet;
+    } else {
+      return web;
+    }
+  }
 
-  // Get form width based on screen size
-  // static double getFormWidth(BuildContext context) {
-  //   final screenWidth = MediaQuery.sizeOf(context).width;
-  //   if (isMobile(context)) {
-  //     return screenWidth * 0.9;
-  //   } else if (isTablet(context)) {
-  //     return screenWidth * 0.7;
-  //   } else {
-  //     return 500; // Fixed width for web
-  //   }
-  // }
+  // Pre-defined responsive text sizes for common use cases
+  static double getBodyTextSize(BuildContext context) {
+    return responsiveTextSize(context, mobile: 14, tablet: 16, web: 18);
+  }
+
+  static double getSubtitleTextSize(BuildContext context) {
+    return responsiveTextSize(context, mobile: 16, tablet: 18, web: 20);
+  }
+
+  static double getTitleTextSize(BuildContext context) {
+    return responsiveTextSize(context, mobile: 18, tablet: 20, web: 24);
+  }
+
+  static double getHeadingTextSize(BuildContext context) {
+    return responsiveTextSize(context, mobile: 20, tablet: 24, web: 28);
+  }
+
+  static double getLargeHeadingTextSize(BuildContext context) {
+    return responsiveTextSize(context, mobile: 24, tablet: 28, web: 36);
+  }
+
+  static double getCaptionTextSize(BuildContext context) {
+    return responsiveTextSize(context, mobile: 12, tablet: 13, web: 14);
+  }
+
+  static double getButtonTextSize(BuildContext context) {
+    return responsiveTextSize(context, mobile: 14, tablet: 15, web: 16);
+  }
 
   @override
   Widget build(BuildContext context) {

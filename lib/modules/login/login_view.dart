@@ -11,10 +11,10 @@ class LoginView extends GetView<LoginController> {
 
   @override
   Widget build(BuildContext context) {
-    return Responsive(
-      mobile: const MobileLogin(),
-      tablet: const TabLogin(),
-      web: const WebLogin(),
+    return const Responsive(
+      mobile: MobileLogin(),
+      tablet: TabLogin(),
+      web: WebLogin(),
     );
   }
 }

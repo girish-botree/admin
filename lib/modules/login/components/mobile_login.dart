@@ -91,7 +91,7 @@ class MobileLogin extends GetView<LoginController> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 16,
                   offset: const Offset(0, 8),
                 ),
@@ -129,7 +129,7 @@ class MobileLogin extends GetView<LoginController> {
           style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w500,
-            color: Colors.white.withOpacity(0.9),
+            color: Colors.white.withValues(alpha: 0.9),
             letterSpacing: 2.0,
           ),
           textAlign: TextAlign.center,
@@ -186,7 +186,7 @@ class MobileLogin extends GetView<LoginController> {
             borderRadius: BorderRadius.circular(25),
           ),
           elevation: 8,
-          shadowColor: Colors.black.withOpacity(0.3),
+          shadowColor: Colors.black.withValues(alpha: 0.3),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -210,7 +210,7 @@ class MobileLogin extends GetView<LoginController> {
           'Or continue with',
           style: TextStyle(
             fontSize: 14,
-            color: Colors.white.withOpacity(0.8),
+            color: Colors.white.withValues(alpha: 0.8),
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -312,13 +312,6 @@ class MobileLogin extends GetView<LoginController> {
             onPressed: controller.navigateToForgotPassword,
             fontSize: 14,
           ),
-          const SizedBox(height: 18),
-
-          buildDemoCredentials(
-            fontSize: 13,
-            borderRadius: 10,
-            iconSize: 16,
-          ),
         ],
       ),
     );
@@ -327,7 +320,7 @@ class MobileLogin extends GetView<LoginController> {
 
 
   void _showMobileLoginBottomSheet(BuildContext context) {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -343,8 +336,8 @@ class MobileLogin extends GetView<LoginController> {
           expand: false,
           builder: (context, scrollController) {
             return Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
+              decoration:  BoxDecoration(
+                color: Get.context!.theme.colorScheme.surfaceContainerLowest,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
               ),
               child: Column(

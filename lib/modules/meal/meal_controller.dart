@@ -1,6 +1,8 @@
 import 'package:admin/config/app_config.dart';
 import 'package:admin/network_service/dio_network_service.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'dart:convert';
 
 class MealController extends GetxController {
@@ -59,7 +61,11 @@ class MealController extends GetxController {
     
     try {
       final response = await DioNetworkService.getRecipes();
-      recipes.value = response;
+      if (response is Map<String, dynamic> && response['data'] != null) {
+        recipes.value = (response['data'] as List<dynamic>? ?? []).cast<dynamic>();
+      } else {
+        recipes.value = [];
+      }
     } catch (e) {
       error.value = e.toString();
       debugPrint('Error fetching recipes: $e');
@@ -67,7 +73,36 @@ class MealController extends GetxController {
       isLoading.value = false;
     }
   }
-  
+
+  Future<List<dynamic>> fetchRecipeIngredients(String recipeId) async {
+    try {
+      // Find the recipe by ID
+      final recipe = recipes.firstWhere(
+            (recipe) => recipe['recipeId']?.toString() == recipeId,
+        orElse: () => null,
+      );
+
+      if (recipe != null && recipe['ingredients'] != null) {
+        return List<dynamic>.from(recipe['ingredients'] as List);
+      }
+
+      return [];
+    } catch (e) {
+      debugPrint('Error fetching recipe ingredients: $e');
+      throw Exception('Failed to fetch recipe ingredients: $e');
+    }
+  }
+
+  Future<dynamic> getRecipeById(String recipeId) async {
+    try {
+      final response = await DioNetworkService.getRecipeById(recipeId);
+      return response;
+    } catch (e) {
+      debugPrint('Error fetching recipe by ID: $e');
+      throw Exception('Failed to fetch recipe: $e');
+    }
+  }
+
   Future<bool> createRecipe(Map<String, dynamic> data) async {
     isLoading.value = true;
     error.value = '';
@@ -126,7 +161,11 @@ class MealController extends GetxController {
     
     try {
       final response = await DioNetworkService.getIngredients();
-      ingredients.value = response;
+      if (response is Map<String, dynamic> && response['data'] != null) {
+        ingredients.value = (response['data'] as List<dynamic>? ?? []).cast<dynamic>();
+      } else {
+        ingredients.value = [];
+      }
     } catch (e) {
       error.value = e.toString();
       debugPrint('Error fetching ingredients: $e');
@@ -340,11 +379,11 @@ class MealController extends GetxController {
       clearRecipeForm();
       return;
     }
-    
-    nameController.text = recipe['name'] ?? '';
-    descriptionController.text = recipe['description'] ?? '';
-    servingsController.text = recipe['servings']?.toString() ?? '1';
-    cuisineController.text = recipe['cuisine'] ?? '';
+
+    nameController.text = (recipe['name'] as String?) ?? '';
+    descriptionController.text = (recipe['description'] as String?) ?? '';
+    servingsController.text = (recipe['servings']?.toString()) ?? '1';
+    cuisineController.text = (recipe['cuisine'] as String?) ?? '';
   }
   
   void setupIngredientForm(dynamic ingredient) {
@@ -352,10 +391,11 @@ class MealController extends GetxController {
       clearIngredientForm();
       return;
     }
-    
-    nameController.text = ingredient['name'] ?? ingredient['ingredientName'] ?? '';
-    descriptionController.text = ingredient['description'] ?? '';
-    categoryController.text = ingredient['category'] ?? '';
+
+    nameController.text = (ingredient['name'] as String?) ??
+        (ingredient['ingredientName'] as String?) ?? '';
+    descriptionController.text = (ingredient['description'] as String?) ?? '';
+    categoryController.text = (ingredient['category'] as String?) ?? '';
     caloriesController.text = '${ingredient['calories'] ?? 0}';
     proteinController.text = '${ingredient['protein'] ?? 0}';
     carbsController.text = '${ingredient['carbohydrates'] ?? 0}';
@@ -363,14 +403,18 @@ class MealController extends GetxController {
     fiberController.text = '${ingredient['fiber'] ?? 0}';
     sugarController.text = '${ingredient['sugar'] ?? 0}';
     quantityController.text = '${ingredient['quantity'] ?? 0}';
-    vitaminsController.text = ingredient['vitamins'] ?? '';
-    mineralsController.text = ingredient['minerals'] ?? '';
+    vitaminsController.text = (ingredient['vitamins'] as String?) ?? '';
+    mineralsController.text = (ingredient['minerals'] as String?) ?? '';
     
     // Parse JSON fields if they exist
     Map<String, dynamic> fatBreakdown = {};
     try {
-      if (ingredient['fatBreakdown'] != null && ingredient['fatBreakdown'].toString().isNotEmpty) {
-        fatBreakdown = jsonDecode(ingredient['fatBreakdown']);
+      final fatBreakdownStr = ingredient['fatBreakdown'] as String?;
+      if (fatBreakdownStr != null && fatBreakdownStr.isNotEmpty) {
+        final decoded = jsonDecode(fatBreakdownStr);
+        if (decoded is Map<String, dynamic>) {
+          fatBreakdown = decoded;
+        }
       }
     } catch (e) {
       debugPrint('Error parsing JSON: $e');

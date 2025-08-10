@@ -1,5 +1,7 @@
 import 'package:admin/config/app_config.dart';
 import 'package:admin/network_service/dio_network_service.dart';
+import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
 
 class IngredientsController extends GetxController {
   final ingredients = <dynamic>[].obs;
@@ -20,13 +22,21 @@ class IngredientsController extends GetxController {
       // Extract unique ingredients from recipes
       final recipes = await DioNetworkService.getRecipes();
       final uniqueIngredients = <String, dynamic>{};
-      
-      for (final recipe in recipes) {
-        final recipeIngredients = recipe['ingredients'] ?? [];
-        for (final ingredient in recipeIngredients) {
-          final id = ingredient['ingredientId'];
-          if (id != null && !uniqueIngredients.containsKey(id)) {
-            uniqueIngredients[id] = ingredient;
+
+      if (recipes is List) {
+        for (final recipe in recipes) {
+          if (recipe is Map<String, dynamic>) {
+            final recipeIngredients = recipe['ingredients'];
+            if (recipeIngredients is List) {
+              for (final ingredient in recipeIngredients) {
+                if (ingredient is Map<String, dynamic>) {
+                  final id = ingredient['ingredientId'] as String?;
+                  if (id != null && !uniqueIngredients.containsKey(id)) {
+                    uniqueIngredients[id] = ingredient;
+                  }
+                }
+              }
+            }
           }
         }
       }

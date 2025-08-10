@@ -9,25 +9,94 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/modules/admins/create_admins/components" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/modules/admins/create_admins/create_admin_binding.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/modules/admins/create_admins/create_admin_controller.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/modules/admins/create_admins/create_admin_view.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_binding.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_controller.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_view.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/modules/meal/ingredients/ingredients_controller.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/modules/meal/ingredients/ingredients_view.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/modules/meal/meal_binding.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/modules/meal/meal_controller.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/modules/meal/meal_view.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/receipes_view.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/network_service/api_helper.dart" afterDir="false" />
+    <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="update theme colors for login and dashboard components; add new admin creation pages; extend network service with additional API methods; integrate new meal module; improve splash navigation logic; enhance UI consistency across platforms.">
+      <change afterPath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/deviceManager.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/ic_dashboard.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/ic_home.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/ic_login.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/ic_logout.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/ic_meal.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/ic_plan.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/ic_settings.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/config/app_lock_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/config/auth_middleware.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/config/auth_service.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/config/theme_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/design_system/app_spacing.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/gen/assets.gen.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/gen/fonts.gen.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/dashboard/components/mobile_dashboard.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/dashboard/components/tablet_dashboard.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/dashboard/components/web_dashboard.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/dashboard/components/web_dashboard.dart.backup" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/dashboard/dashboard_binding.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/dashboard/dashboard_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/dashboard/dashboard_view.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/dashboard/models/dashboard_stats.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/dashboard/widgets/dashboard_bar_chart.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/dashboard/widgets/dashboard_pie_chart.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/dashboard/widgets/dashboard_stat_card.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/dashboard/widgets/ingredient_usage_radar.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/dashboard/widgets/recipe_trend_chart.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/delivery_persons/manage_delivery_persons/delivery_person_binding.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/delivery_persons/manage_delivery_persons/delivery_person_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/delivery_persons/manage_delivery_persons/delivery_person_model.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/delivery_persons/manage_delivery_persons/delivery_person_view.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/home/components/mobile_home.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/home/components/tablet_home.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/home/components/web_home.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/home/components/web_home.dart.backup" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/login/admin.code-workspace" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/meal/components/comprehensive_meal_statistics.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/meal/components/meal_statistics_widget.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/meal/components/mobile_meal.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/meal/components/tablet_meal.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/meal/components/web_meal.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/plan/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/plan/meal_plan_assignment_model.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/plan/meal_plan_model.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/plan/plan_binding.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/plan/plan_constants.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/plan/plan_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/plan/plan_view.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/plan/widgets/meal_plan_card.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/plan/widgets/meal_plan_form_dialog.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/plan/widgets/meal_plan_loading.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/plan/widgets/meal_section.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/plan/widgets/plan_statistics_widget.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/plan/widgets/responsive_meal_plan_grid.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/screens/app_lock_binding.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/screens/app_lock_screen.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/screens/app_lock_settings_screen.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/screens/settings_screen.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/utils/page_transitions.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/widgets/app_lock_wrapper.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/widgets/profile_widget.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/widgets/settings_widget.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/widgets/shimmer_animation.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/admin.iml" beforeDir="false" afterPath="$PROJECT_DIR$/admin.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis_options.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/analysis_options.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/language/english.json" beforeDir="false" afterPath="$PROJECT_DIR$/assets/language/english.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/language/tamil.json" beforeDir="false" afterPath="$PROJECT_DIR$/assets/language/tamil.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/Runner/Info.plist" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Runner/Info.plist" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/config/app_colors.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config/app_colors.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/config/app_network_connection.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config/app_network_connection.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/config/app_string_config.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config/app_string_config.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/config/app_text.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config/app_text.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/config/app_theme_config.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config/app_theme_config.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/config/app_translations.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config/app_translations.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/config/common_utils.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config/common_utils.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/config/shared_preference.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config/shared_preference.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/language/language_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/language/language_controller.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/admins/create_admins/create_admin_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/admins/create_admins/create_admin_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/admins/create_admins/create_admin_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/admins/create_admins/create_admin_view.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/home/home_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/home/home_controller.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/home/home_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/home/home_view.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/login/components/common_login_widgets.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/login/components/common_login_widgets.dart" afterDir="false" />
@@ -35,14 +104,31 @@
       <change beforePath="$PROJECT_DIR$/lib/modules/login/components/tab_login.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/login/components/tab_login.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/login/components/web_login.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/login/components/web_login.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/login/login_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/login/login_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/login/login_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/login/login_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_binding.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_binding.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/ingredients/ingredients_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/ingredients/ingredients_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/ingredients/ingredients_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/ingredients/ingredients_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/meal_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/meal_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/meal_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/meal_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/receipe/receipes_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/receipes_view.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/splash/splash_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/splash/splash_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/splash/splash_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/splash/splash_view.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/network_service/api_client.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/api_client.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/network_service/api_client.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/api_client.g.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/network_service/app_url_config.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/app_url_config.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/network_service/dio_network_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/dio_network_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/network_service/network_module.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/network_module.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/routes/app_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/routes/app_page.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/routes/app_routes.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/routes/app_routes.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/themes/blue_theme.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/themes/blue_theme.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/themes/theme_data_extention.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/themes/theme_data_extention.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/themes/yellow_theme.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/themes/yellow_theme.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/utils/responsive.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/utils/responsive.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/widgets/custom_displays.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/custom_displays.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/widgets/loading_widgets.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/loading_widgets.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,18 +154,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "kabilana2002"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;kabilana2002&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/girish-botree/admin.git",
-    "accountId": "82eb4597-57a7-45ce-aa93-5fa58745533e"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/girish-botree/admin.git&quot;,
+    &quot;accountId&quot;: &quot;82eb4597-57a7-45ce-aa93-5fa58745533e&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 1
@@ -97,22 +183,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "settings.editor.selected.configurable": "AndroidSdkUpdater",
-    "show.migrate.to.gradle.popup": "false"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Flutter.main.dart.executor&quot;: &quot;Debug&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/kabilan/Documents/GitHub/admin&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;,
+    &quot;vcs.patch.path&quot;: &quot;/Users/kabilan/Desktop&quot;
   }
-}]]></component>
+}</component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="" />
@@ -121,6 +212,15 @@
       <option name="presentableId" value="Default" />
       <updated>1752329574354</updated>
     </task>
+    <task id="LOCAL-00001" summary="update theme colors for login and dashboard components; add new admin creation pages; extend network service with additional API methods; integrate new meal module; improve splash navigation logic; enhance UI consistency across platforms.">
+      <option name="closed" value="true" />
+      <created>1753608956609</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1753608956609</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -129,8 +229,22 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
     </layout>
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="july_22" />
-    <option name="LAST_COMMIT_MESSAGE" value="july_22" />
+    <MESSAGE value="b4_commit" />
+    <MESSAGE value="update theme colors for login and dashboard components; add new admin creation pages; extend network service with additional API methods; integrate new meal module; improve splash navigation logic; enhance UI consistency across platforms." />
+    <MESSAGE value="aug_4" />
+    <option name="LAST_COMMIT_MESSAGE" value="aug_4" />
   </component>
 </project>

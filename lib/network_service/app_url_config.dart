@@ -38,14 +38,21 @@ class AppUrl {
   static const String authenticate = 'api/Auth/authenticate';
   static const String sendOtp = 'api/Auth/send-otp';
   static const String registerAdmin = 'api/Auth/register-admin';
-  static const String registerDeliveryPerson = 'api/Auth/register-delivery-agent';
+  static const String registerDeliveryPerson = '/api/Admin/delivery-agents';
 
   // Recipe endpoints
+  static const String getRecipes = 'api/Recipe';
   static const String recipes = 'api/Admin/recipes';
 
   // Ingredient endpoints
   static const String ingredients = 'api/Admin/ingredients';
   static const String ingredient = 'api/Admin/ingredient';
+
+  // Admin meal plan
+  static const String getAdminMealPlan = '/api/MealPlan';
+  static const String adminMealPlan = '/api/admin/AdminMealPlan';
+  static const String adminMealPlanByDate = '/api/MealPlan/date';
+
 
   // Add more endpoints as needed
   static const String users = 'api/users';

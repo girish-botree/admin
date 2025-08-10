@@ -18,7 +18,11 @@ class WebLogin extends GetView<LoginController> {
             padding: const EdgeInsets.all(60),
             child: Card(
               elevation: 20,
-              shadowColor: Colors.black.withOpacity(0.2),
+              shadowColor: Theme
+                  .of(context)
+                  .colorScheme
+                  .onSurface
+                  .withValues(alpha: 0.2),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(32),
               ),
@@ -36,7 +40,7 @@ class WebLogin extends GetView<LoginController> {
                       child: Container(
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.onSurface,
-                          borderRadius: BorderRadius.only(
+                          borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(32),
                             bottomLeft: Radius.circular(32),
                           ),
@@ -183,7 +187,7 @@ class WebLogin extends GetView<LoginController> {
   //         borderRadius: BorderRadius.circular(28),
   //         boxShadow: [
   //           BoxShadow(
-  //             color: Colors.black.withOpacity(0.1),
+  //             color: Colors.black.withValues(alpha: 0.1),
   //             blurRadius: 12,
   //             offset: const Offset(0, 6),
   //           ),
@@ -248,13 +252,6 @@ class WebLogin extends GetView<LoginController> {
           buildForgotPasswordButton(
             onPressed: controller.navigateToForgotPassword,
             fontSize: 20,
-          ),
-          const SizedBox(height: 28),
-
-          buildDemoCredentials(
-            fontSize: 18,
-            borderRadius: 14,
-            iconSize: 20,
           ),
         ],
       ),

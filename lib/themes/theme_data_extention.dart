@@ -31,7 +31,7 @@ class ThemeDataExtension {
 
   static CardThemeData cardTheme(ColorScheme colorScheme) => CardThemeData(
     elevation: 16,
-    shadowColor: colorScheme.primary.withOpacity(0.5),
+    shadowColor: colorScheme.primary.withValues(alpha: 0.5),
     clipBehavior: Clip.hardEdge,
     color: colorScheme.primary,
     shape:
@@ -126,7 +126,7 @@ class ThemeDataExtension {
     ),
   );
 
-  static appBarTheme(ColorScheme colorScheme) => AppBarTheme(
+  static AppBarTheme appBarTheme(ColorScheme colorScheme) => AppBarTheme(
     systemOverlayStyle: SystemUiOverlayStyle(
       statusBarColor: colorScheme.surfaceContainerLowest,
       statusBarIconBrightness: Brightness.light,
@@ -175,12 +175,12 @@ class ThemeDataExtension {
       }),
       overlayColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.pressed)) {
-          return colorScheme.surfaceContainerLowest.withOpacity(0.2);
+          return colorScheme.surfaceContainerLowest.withValues(alpha: 0.2);
         } else if (states.contains(WidgetState.hovered) ||
             states.contains(WidgetState.focused)) {
-          return colorScheme.surfaceContainerLowest.withOpacity(0.1);
+          return colorScheme.surfaceContainerLowest.withValues(alpha: 0.1);
         } else {
-          return colorScheme.surfaceContainerLowest.withOpacity(0);
+          return colorScheme.surfaceContainerLowest.withValues(alpha: 0);
         }
       }),
       shape: WidgetStateProperty.all(RoundedRectangleBorder(

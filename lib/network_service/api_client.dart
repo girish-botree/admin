@@ -36,9 +36,20 @@ abstract class ApiClient {
   @POST(AppUrl.registerDeliveryPerson)
   Future<HttpResponse<dynamic>> registerDeliveryPerson(@Body() Map<String, dynamic> body);
 
+  @GET(AppUrl.registerDeliveryPerson)
+  Future<HttpResponse<dynamic>> getDeliveryPersons();
+
+  @PUT('${AppUrl.registerDeliveryPerson}/{id}')
+  Future<HttpResponse<dynamic>> updateDeliveryPerson(@Path('id')String id, @Body() Map<String,dynamic> body);
+
+  @DELETE('${AppUrl.registerDeliveryPerson}/{id}')
+  Future<HttpResponse<dynamic>> deleteDeliveryPerson(@Path('id') String id);
   // Recipe endpoints
-  @GET(AppUrl.recipes)
+  @GET(AppUrl.getRecipes)
   Future<HttpResponse<dynamic>> getRecipes();
+
+  @GET('${AppUrl.getRecipes}/{id}')
+  Future<HttpResponse<dynamic>> getRecipeById(@Path('id') String id);
 
   @POST(AppUrl.recipes)
   Future<HttpResponse<dynamic>> createRecipe(@Body() Map<String, dynamic> body);
@@ -62,7 +73,25 @@ abstract class ApiClient {
   @DELETE('${AppUrl.ingredients}/{id}')
   Future<HttpResponse<dynamic>> deleteIngredient(@Path('id') String id);
 
+  // Admin meal plan endpoints
 
+  @GET(AppUrl.getAdminMealPlan)
+  Future<HttpResponse<dynamic>> getMealPlan();
+
+  @GET('${AppUrl.adminMealPlanByDate}/{date}')
+  Future<HttpResponse<dynamic>> getMealPlanByDate(@Path('date') String date);
+
+  @GET('${AppUrl.getAdminMealPlan}/{id}')
+  Future<HttpResponse<dynamic>> getMealPlanById(@Path('id') String id);
+
+  @POST(AppUrl.adminMealPlan)
+  Future<HttpResponse<dynamic>> createMealPlan(@Body() Map<String, dynamic> body);
+
+  @PUT('${AppUrl.adminMealPlan}/{id}')
+  Future<HttpResponse<dynamic>> updateMealPlan(@Path('id') String id, @Body() Map<String, dynamic> body);
+
+  @DELETE('${AppUrl.adminMealPlan}/{id}')
+  Future<HttpResponse<dynamic>> deleteMealPlan(@Path('id') String id);
 
 
 
@@ -206,7 +235,7 @@ class ApiErrorHandler {
 
     switch (statusCode) {
       case statusCodeBadRequest:
-        return responseData?['message'] ?? errorBadRequest;
+        return (responseData?['message'] as String?) ?? errorBadRequest;
       case statusCodeUnauthorized:
         return errorUnauthorized;
       case statusCodeForbidden:
@@ -220,7 +249,7 @@ class ApiErrorHandler {
       case statusCodeConflict:
         return 'Conflict occurred';
       case statusCodeUnprocessableEntity:
-        return responseData?['message'] ?? 'Validation failed';
+        return (responseData?['message'] as String?) ?? 'Validation failed';
       case statusCodeTooManyRequests:
         return errorTooManyRequests;
       case statusCodeInternalServerError:
@@ -232,7 +261,7 @@ class ApiErrorHandler {
       case statusCodeGatewayTimeout:
         return 'Gateway timeout';
       default:
-        return responseData?['message'] ?? errorUnknown;
+        return (responseData?['message'] as String?) ?? errorUnknown;
     }
   }
 

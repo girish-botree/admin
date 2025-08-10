@@ -23,7 +23,7 @@ class LanguageController extends GetxController {
     try {
       final SharedPreference sharedPreference = SharedPreference();
       var data = await rootBundle.loadString("assets/language/$lang.json");
-      dynamic value = json.decode(data);
+      json.decode(data);
       sharedPreference.save('lang', lang);
       if (lang == 'tamil') {
         locale.value = const Locale('ta', 'IN');
@@ -33,6 +33,22 @@ class LanguageController extends GetxController {
       Get.updateLocale(locale.value);
     } catch (e) {
       return debugPrint(e.toString());
+    }
+  }
+
+  void changeLanguage(Locale newLocale) async {
+    try {
+      locale.value = newLocale;
+      Get.updateLocale(newLocale);
+
+      final SharedPreference sharedPreference = SharedPreference();
+      if (newLocale.languageCode == 'ta') {
+        sharedPreference.save('lang', 'tamil');
+      } else {
+        sharedPreference.save('lang', 'english');
+      }
+    } catch (e) {
+      debugPrint(e.toString());
     }
   }
 

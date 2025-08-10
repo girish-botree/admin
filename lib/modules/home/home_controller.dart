@@ -4,16 +4,92 @@ import '../../routes/app_routes.dart';
 import '../../network_service/dio_network_service.dart';
 
 class HomeController extends GetxController {
+  // Navigation state
   final RxInt _currentIndex = 0.obs;
+  
+  // Loading and error states
+  final RxBool _isLoading = false.obs;
+  final RxString _error = ''.obs;
+  
+  // Dashboard data
+  final RxMap<String, dynamic> _dashboardData = <String, dynamic>{}.obs;
+  
+  // Services
+  // final AuthService _authService = AuthService.to;
 
+  // Getters
   int get currentIndex => _currentIndex.value;
+  bool get isLoading => _isLoading.value;
+  String get error => _error.value;
+  Map<String, dynamic> get dashboardData => _dashboardData;
 
   @override
   void onInit() {
     super.onInit();
-    // Initialize any required data
+    _loadInitialData();
   }
 
+  @override
+  void onReady() {
+    super.onReady();
+    // Additional initialization after controller is ready
+  }
+
+  /// Load initial dashboard data
+  Future<void> _loadInitialData() async {
+    try {
+      _isLoading.value = true;
+      _error.value = '';
+      
+      // Load any initial data needed for the home screen
+      await _loadDashboardStats();
+    } catch (e) {
+      _error.value = e.toString();
+      debugPrint('Error loading initial data: $e');
+    } finally {
+      _isLoading.value = false;
+    }
+  }
+
+  /// Load dashboard statistics
+  Future<void> _loadDashboardStats() async {
+    try {
+      // You can add API calls here to fetch dashboard statistics
+      // For now, we'll set some default values
+      _dashboardData.value = {
+        'totalMeals': 0,
+        'totalPlans': 0,
+        'totalAdmins': 0,
+        'lastActivity': DateTime.now().toIso8601String(),
+      };
+    } catch (e) {
+      debugPrint('Error loading dashboard stats: $e');
+    }
+  }
+
+  /// Refresh dashboard data
+  Future<void> refreshDashboard() async {
+    await _loadInitialData();
+    
+    // Show success message
+    Get.snackbar(
+      'Success',
+      'Dashboard data refreshed',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Get.theme.colorScheme.primaryContainer,
+      colorText: Get.theme.colorScheme.onPrimaryContainer,
+      margin: const EdgeInsets.all(16),
+      borderRadius: 8,
+      duration: const Duration(seconds: 2),
+    );
+  }
+
+  /// Navigate to specific section
+  void navigateToSection(String route) {
+    Get.toNamed<void>(route);
+  }
+
+  /// Handle bottom navigation tap
   void onItemTapped(int index) {
     _currentIndex.value = index;
     switch(index) {
@@ -21,15 +97,45 @@ class HomeController extends GetxController {
         // Home tab - stay on current page
         break;
       case 1:
-        // Handle second tab navigation if needed
+        Get.toNamed<void>(AppRoutes.plan);
         break;
       case 2:
         // Navigate to meal page
-        Get.toNamed(AppRoutes.meal);
+        Get.toNamed<void>(AppRoutes.meal);
+        break;
+      case 3:
+        Get.toNamed<void>(AppRoutes.dashboard);
         break;
       default:
         // Handle other tabs if needed
         break;
+    }
+  }
+
+  /// Quick actions
+  Future<void> createNewMealPlan() async {
+    try {
+      Get.toNamed<void>(AppRoutes.plan);
+      // Additional logic for creating meal plan can be added here
+    } catch (e) {
+      debugPrint('Error navigating to meal plan: $e');
+    }
+  }
+
+  Future<void> createNewRecipe() async {
+    try {
+      Get.toNamed<void>(AppRoutes.meal);
+      // Additional logic for creating recipe can be added here
+    } catch (e) {
+      debugPrint('Error navigating to meals: $e');
+    }
+  }
+
+  Future<void> addNewAdmin() async {
+    try {
+      Get.toNamed<void>(AppRoutes.createAdmin);
+    } catch (e) {
+      debugPrint('Error navigating to create admin: $e');
     }
   }
 
@@ -55,22 +161,40 @@ class HomeController extends GetxController {
       ) ?? false;
 
       if (shouldLogout) {
-        // Clear both access and refresh tokens
-        await DioNetworkService.clearToken();
-        
-        // Navigate to login screen
-        Get.offAllNamed(AppRoutes.login);
-        
-        // Show success message
-        Get.snackbar(
-          'Success',
-          'Logged out successfully',
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
+        try {
+          // Optional: Call logout API endpoint if available
+          // await DioNetworkService.postData({}, 'api/auth/logout');
+          
+          // Clear both access and refresh tokens
+          await DioNetworkService.clearAllTokens();
+          
+          // Navigate to login screen
+          Get.offAllNamed<void>(AppRoutes.login);
+          
+          // Show success message
+          Get.snackbar(
+            'Success',
+            'Logged out successfully',
+            backgroundColor: Colors.green,
+            colorText: Colors.white,
+          );
+        } catch (logoutError) {
+          // Even if API logout fails, clear local tokens and proceed
+          debugPrint('Logout API error: $logoutError');
+          await DioNetworkService.clearAllTokens();
+          Get.offAllNamed<void>(AppRoutes.login);
+          
+          Get.snackbar(
+            'Success',
+            'Logged out successfully',
+            backgroundColor: Colors.green,
+            colorText: Colors.white,
+          );
+        }
       }
     } catch (e) {
       // Handle logout error
+      debugPrint('Logout error: $e');
       Get.snackbar(
         'Error',
         'Failed to logout. Please try again.',

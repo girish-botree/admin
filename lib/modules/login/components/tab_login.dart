@@ -60,7 +60,7 @@ class TabLogin extends GetView<LoginController> {
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 24,
                   offset: const Offset(0, 12),
                 ),
@@ -255,7 +255,7 @@ class TabLogin extends GetView<LoginController> {
   //         borderRadius: BorderRadius.circular(24),
   //         boxShadow: [
   //           BoxShadow(
-  //             color: Colors.black.withOpacity(0.1),
+  //             color: Colors.black.withValues(alpha: 0.1),
   //             blurRadius: 10,
   //             offset: const Offset(0, 4),
   //           ),
@@ -320,13 +320,6 @@ class TabLogin extends GetView<LoginController> {
           buildForgotPasswordButton(
             onPressed: controller.navigateToForgotPassword,
             fontSize: 18,
-          ),
-          const SizedBox(height: 24),
-
-          buildDemoCredentials(
-            fontSize: 16,
-            borderRadius: 12,
-            iconSize: 18,
           ),
         ],
       ),

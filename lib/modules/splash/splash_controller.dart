@@ -1,34 +1,38 @@
 import 'package:get/get.dart';
-import 'package:http/http.dart' as _sharedPreference;
 import '../../config/app_network_connection.dart';
 import '../../routes/app_routes.dart';
-import '../../config/shared_preference.dart';
-import '../../config/appconstants.dart';
-
+import '../../config/auth_service.dart';
 
 class SplashController extends GetxController {
+  final AuthService _authService = AuthService.to;
+
   @override
   void onInit() {
-    Future.delayed(const Duration(seconds: 2), () {
-      AppNetworkConnection.checkInternetConnection();
-    });
     super.onInit();
-
+    _initializeApp();
   }
 
-  @override
-  void onReady() async {
-  super.onReady();
-  await Future.delayed(const Duration(milliseconds: 3000));
-  SharedPreference _sharedPreference = SharedPreference();
-  final String? token = await _sharedPreference.get(AppConstants.bearerToken);
-  if (token != null && token.isNotEmpty) {
-    // User is logged in, navigate to main layout
-    Get.offAllNamed(AppRoutes.mainLayout);
-  } else {
-    // User is not logged in, navigate to login
-    Get.offAllNamed(AppRoutes.login);
-  }
-}
+  Future<void> _initializeApp() async {
+    // Check internet connection
+    AppNetworkConnection.checkInternetConnection();
 
+    // Wait for minimum splash duration for better UX
+    await Future<void>.delayed(const Duration(seconds: 2));
+
+    // Wait for auth service to initialize
+    while (!_authService.isInitialized) {
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+    }
+
+    // Navigate based on authentication status
+    _navigateToNextScreen();
+  }
+
+  void _navigateToNextScreen() {
+    if (_authService.isLoggedIn) {
+      Get.offAllNamed<void>(AppRoutes.mainLayout);
+    } else {
+      Get.offAllNamed<void>(AppRoutes.login);
+    }
+  }
 }

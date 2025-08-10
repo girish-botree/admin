@@ -20,11 +20,12 @@ Widget buildSocialButton({
         width: containerWidth,
         height: containerHeight,
         decoration: BoxDecoration(
-          color: AppColor.white,
+          color: Get.context!.theme.colorScheme.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(borderRadius),
           boxShadow: [
             BoxShadow(
-              color: AppColor.black.withValues(alpha: 0.1),
+              color: Get.context!.theme.colorScheme.shadow.withValues(
+                  alpha: 0.1),
               blurRadius: blurRadius,
               offset: const Offset(0, 4),
             ),
@@ -100,31 +101,37 @@ Widget buildEmailField({
   return TextFormField(
     controller: controller,
     keyboardType: TextInputType.emailAddress,
-    style: TextStyle(fontSize: fontSize),
+    style: TextStyle(
+      fontSize: fontSize,
+      color: Get.context!.theme.colorScheme.onSurface,
+    ),
     validator: validator,
     onChanged: (_) => onChanged(),
     decoration: InputDecoration(
       labelText: 'Email',
       hintText: 'Enter your email',
+      labelStyle: TextStyle(color: Get.context!.theme.colorScheme.outline),
+      hintStyle: TextStyle(color: Get.context!.theme.colorScheme.outline),
       prefixIcon: Icon(
         Icons.email_outlined,
-        color: Get.context!.theme.colorScheme.onSurface,
+        color: Get.context!.theme.colorScheme.outline,
         size: iconSize,
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(borderRadius),
-        borderSide: BorderSide(color: Colors.grey.shade300),
+        borderSide: BorderSide(color: Get.context!.theme.colorScheme.outline),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(borderRadius),
-        borderSide: BorderSide(color: Colors.grey.shade300),
+        borderSide: BorderSide(color: Get.context!.theme.colorScheme.outline),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(borderRadius),
-        borderSide: BorderSide(color: Colors.red.shade400, width: 2),
+        borderSide: BorderSide(
+            color: Get.context!.theme.colorScheme.primary, width: 2),
       ),
       filled: true,
-      fillColor: Colors.grey.shade50,
+      fillColor: Get.context!.theme.colorScheme.surfaceContainerHigh,
       contentPadding: EdgeInsets.symmetric(
         vertical: fontSize * 0.8,
         horizontal: fontSize * 1.2,
@@ -146,15 +153,20 @@ Widget buildPasswordField({
   return Obx(() => TextFormField(
     controller: controller,
     obscureText: !isPasswordVisible.value,
-    style: TextStyle(fontSize: fontSize),
+    style: TextStyle(
+      fontSize: fontSize,
+      color: Get.context!.theme.colorScheme.onSurface,
+    ),
     validator: validator,
     onChanged: (_) => onChanged(),
     decoration: InputDecoration(
       labelText: 'Password',
       hintText: 'Enter your password',
+      labelStyle: TextStyle(color: Get.context!.theme.colorScheme.outline),
+      hintStyle: TextStyle(color: Get.context!.theme.colorScheme.outline),
       prefixIcon: Icon(
         Icons.lock_outline,
-        color: Get.context!.theme.colorScheme.onSurface,
+        color: Get.context!.theme.colorScheme.outline,
         size: iconSize,
       ),
       suffixIcon: IconButton(
@@ -162,25 +174,26 @@ Widget buildPasswordField({
           isPasswordVisible.value
               ? Icons.visibility_outlined
               : Icons.visibility_off_outlined,
-          color: Colors.grey.shade600,
+          color: Get.context!.theme.colorScheme.outline,
           size: iconSize,
         ),
         onPressed: toggleVisibility,
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(borderRadius),
-        borderSide: BorderSide(color: Colors.grey.shade300),
+        borderSide: BorderSide(color: Get.context!.theme.colorScheme.outline),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(borderRadius),
-        borderSide: BorderSide(color: Colors.grey.shade300),
+        borderSide: BorderSide(color: Get.context!.theme.colorScheme.outline),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(borderRadius),
-        borderSide: BorderSide(color: Colors.red.shade400, width: 2),
+        borderSide: BorderSide(
+            color: Get.context!.theme.colorScheme.primary, width: 2),
       ),
       filled: true,
-      fillColor: Colors.grey.shade50,
+      fillColor: Get.context!.theme.colorScheme.surfaceContainerHigh,
       contentPadding: EdgeInsets.symmetric(
         vertical: fontSize * 0.8,
         horizontal: fontSize * 1.2,
@@ -203,12 +216,13 @@ Widget buildLoginButton({
       onPressed: isLoading.value ? null : onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: Get.context!.theme.colorScheme.onSurface,
-        foregroundColor: Colors.white,
+        foregroundColor: Get.context!.theme.colorScheme.surfaceContainerLowest,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadius),
         ),
         elevation: 4,
-        disabledBackgroundColor: Colors.grey.shade300,
+        disabledBackgroundColor: Get.context!.theme.colorScheme
+            .surfaceContainerLow,
       ),
       child: isLoading.value
           ? SizedBox(
@@ -240,15 +254,15 @@ Widget buildErrorMessage({
           padding: EdgeInsets.all(fontSize * 0.8),
           margin: EdgeInsets.only(bottom: fontSize),
           decoration: BoxDecoration(
-            color: Colors.red.shade50,
+            color: Get.context!.theme.colorScheme.errorContainer,
             borderRadius: BorderRadius.circular(borderRadius),
-            border: Border.all(color: Colors.red.shade200),
+            border: Border.all(color: Get.context!.theme.colorScheme.error),
           ),
           child: Row(
             children: [
               Icon(
                 Icons.error_outline,
-                color: Colors.red.shade600,
+                color: Get.context!.theme.colorScheme.onError,
                 size: iconSize,
               ),
               SizedBox(width: fontSize * 0.5),
@@ -256,7 +270,7 @@ Widget buildErrorMessage({
                 child: AppText.regular(
                   errorMessage.value,
                   size: fontSize,
-                  color: Colors.red.shade700,
+                  color: Get.context!.theme.colorScheme.onError,
                 ),
               ),
             ],
@@ -277,54 +291,6 @@ Widget buildForgotPasswordButton({
         size: fontSize,
         color:Get.context!.theme.colorScheme.onSurface,
       ),
-    ),
-  );
-}
-
-Widget buildDemoCredentials({
-  required double fontSize,
-  required double borderRadius,
-  required double iconSize,
-}) {
-  return Container(
-    width: double.infinity,
-    padding: EdgeInsets.all(fontSize * 1.2),
-    decoration: BoxDecoration(
-      color: AppColor.infoContainer,
-      borderRadius: BorderRadius.circular(borderRadius),
-      border: Border.all(color: AppColor.info),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(
-              Icons.info_outline,
-              color: AppColor.info,
-              size: iconSize,
-            ),
-            SizedBox(width: fontSize * 0.5),
-            AppText.semiBold(
-              'Demo Credentials',
-              size: fontSize,
-              color: AppColor.info,
-            ),
-          ],
-        ),
-        SizedBox(height: fontSize * 0.5),
-        AppText.regular(
-          'Email: jagadeeshgiribabu@gmail.com',
-          size: fontSize * 0.9,
-          color: Colors.red.shade700,
-        ),
-        SizedBox(height: fontSize * 0.3),
-        AppText.regular(
-          'Password: Test@123',
-          size: fontSize * 0.9,
-          color: Colors.red.shade700,
-        ),
-      ],
     ),
   );
 }

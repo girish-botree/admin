@@ -8,10 +8,12 @@ class AppTranslations extends Translations {
   static Future<void> load() async {
     // Load English
     final enData = await rootBundle.loadString('assets/language/english.json');
-    translations['en_US'] = Map<String, String>.from(json.decode(enData));
+    translations['en_US'] =
+    Map<String, String>.from(json.decode(enData) as Map<String, dynamic>);
     // Load Tamil
     final taData = await rootBundle.loadString('assets/language/tamil.json');
-    translations['ta_IN'] = Map<String, String>.from(json.decode(taData));
+    translations['ta_IN'] =
+    Map<String, String>.from(json.decode(taData) as Map<String, dynamic>);
   }
 
   @override

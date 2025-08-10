@@ -16,8 +16,6 @@ class ThemeUtil {
         return BlueTheme().light();
       case ThemeConfig.themeYellow:
         return YellowTheme().light();
-      default:
-        return BlueTheme().light();
     }
   }
 
@@ -27,8 +25,6 @@ class ThemeUtil {
         return BlueTheme().dark();
       case ThemeConfig.themeYellow:
         return YellowTheme().dark();
-      default:
-        return BlueTheme().dark();
     }
   }
 }

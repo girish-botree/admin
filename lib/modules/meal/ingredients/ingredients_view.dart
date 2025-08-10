@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:admin/config/app_config.dart';
+import 'package:admin/utils/responsive.dart';
 import '../meal_controller.dart';
 import 'package:flutter/services.dart';
 
@@ -14,15 +15,17 @@ class IngredientsView extends GetView<MealController> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: AppText.bold('Ingredients', color: context.theme.colorScheme.onSurface, size: 20),
+          title: AppText.bold(
+              'Ingredients', color: context.theme.colorScheme.onSurface,
+              size: Responsive.getTitleTextSize(context)),
           leading: IconButton(
-            onPressed: () => Get.back(), 
+            onPressed: () => Get.back<void>(), 
             icon: Icon(Icons.arrow_back_ios, color: context.theme.colorScheme.onSurface)
           ),
         ),
         body: Obx(() {
           if (controller.isLoading.value) {
-            return const Center(child: CircularProgressIndicator());
+            return _buildShimmerLoading(context);
           }
           
           if (controller.error.value.isNotEmpty) {
@@ -138,7 +141,7 @@ class IngredientsView extends GetView<MealController> {
                 children: [
                   Expanded(
                     child: Text(
-                      ingredient['name'] ?? 'Unknown',
+                      (ingredient['name'] as String?) ?? 'Unknown',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -153,7 +156,7 @@ class IngredientsView extends GetView<MealController> {
               ),
               const SizedBox(height: 8),
               Text(
-                ingredient['description'] ?? 'No description',
+                (ingredient['description'] as String?) ?? 'No description',
                 style: TextStyle(
                   fontSize: 14,
                   color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
@@ -215,15 +218,26 @@ class IngredientsView extends GetView<MealController> {
       children: [
         Row(
           children: [
-            _buildNutrientChip(context, 'Cal', '${ingredient['calories'] ?? 0}', Icons.local_fire_department),
-            _buildNutrientChip(context, 'Prot', '${ingredient['protein'] ?? 0}g', Icons.fitness_center),
+            _buildNutrientChip(
+                context, 'Cal',
+                '${((ingredient['calories'] as num?) ?? 0).toInt()}',
+                Icons.local_fire_department),
+            _buildNutrientChip(
+                context, 'Prot',
+                '${((ingredient['protein'] as num?) ?? 0).toInt()}g',
+                Icons.fitness_center),
           ],
         ),
         const SizedBox(height: 2),
         Row(
           children: [
-            _buildNutrientChip(context, 'Carbs', '${ingredient['carbohydrates'] ?? 0}g', Icons.grain),
-            _buildNutrientChip(context, 'Fat', '${ingredient['fat'] ?? 0}g', Icons.opacity),
+            _buildNutrientChip(context, 'Carbs',
+                '${((ingredient['carbohydrates'] as num?) ?? 0).toInt()}g',
+                Icons.grain),
+            _buildNutrientChip(
+                context, 'Fat',
+                '${((ingredient['fat'] as num?) ?? 0).toInt()}g',
+                Icons.opacity),
           ],
         ),
       ],
@@ -236,7 +250,7 @@ class IngredientsView extends GetView<MealController> {
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
         margin: const EdgeInsets.symmetric(horizontal: 2),
         decoration: BoxDecoration(
-          color: context.theme.colorScheme.primaryContainer.withOpacity(0.7),
+          color: context.theme.colorScheme.primaryContainer.withValues(alpha: 0.7),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
@@ -253,7 +267,7 @@ class IngredientsView extends GetView<MealController> {
                     label,
                     style: TextStyle(
                       fontSize: 8,
-                      color: context.theme.colorScheme.onPrimaryContainer.withOpacity(0.8),
+                      color: context.theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -281,7 +295,7 @@ class IngredientsView extends GetView<MealController> {
     controller.clearIngredientForm();
     int dietaryCategory = 0;
     
-    Get.dialog(
+    Get.dialog<void>(
       Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
@@ -473,7 +487,7 @@ class IngredientsView extends GetView<MealController> {
                     final data = controller.createIngredientData(dietaryCategory);
                     controller.createIngredient(data).then((success) {
                       if (success) {
-                        Get.back();
+                        Get.back<void>();
                         Get.snackbar('Success', 'Ingredient created successfully');
                       }
                     });
@@ -489,10 +503,10 @@ class IngredientsView extends GetView<MealController> {
   
   void _showEditIngredientDialog(BuildContext context, dynamic ingredient) {
     controller.setupIngredientForm(ingredient);
-    int dietaryCategory = ingredient['dietaryCategory'] ?? 0;
-    bool isActive = ingredient['isActive'] ?? true;
+    int dietaryCategory = (ingredient['dietaryCategory'] as int?) ?? 0;
+    bool isActive = (ingredient['isActive'] as bool?) ?? true;
     
-    Get.dialog(
+    Get.dialog<void>(
       Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
@@ -594,10 +608,13 @@ class IngredientsView extends GetView<MealController> {
                     
                     final data = controller.createIngredientData(dietaryCategory);
                     data['isActive'] = isActive;
-                    
-                    controller.updateIngredient(ingredient['ingredientId'], data).then((success) {
+
+                    final ingredientId = (ingredient['ingredientId'] as String?) ??
+                        '';
+                    controller.updateIngredient(ingredientId, data).then((
+                        success) {
                       if (success) {
-                        Get.back();
+                        Get.back<void>();
                         Get.snackbar('Success', 'Ingredient updated successfully');
                       }
                     });
@@ -619,7 +636,7 @@ class IngredientsView extends GetView<MealController> {
     TextInputType? keyboardType,
     List<TextInputFormatter>? inputFormatters,
     String? errorText,
-    Function(String)? onChanged,
+    void Function(String)? onChanged,
     bool isRequired = false,
   }) {
     return TextField(
@@ -631,9 +648,9 @@ class IngredientsView extends GetView<MealController> {
       onChanged: onChanged,
       decoration: InputDecoration(
         labelText: isRequired ? '$label *' : label,
-        labelStyle: TextStyle(color: context.theme.colorScheme.onSurface.withOpacity(0.7)),
+        labelStyle: TextStyle(color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7)),
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: context.theme.colorScheme.outline.withOpacity(0.5)),
+          borderSide: BorderSide(color: context.theme.colorScheme.outline.withValues(alpha: 0.5)),
           borderRadius: BorderRadius.circular(8),
         ),
         focusedBorder: OutlineInputBorder(
@@ -670,9 +687,9 @@ class IngredientsView extends GetView<MealController> {
       style: TextStyle(color: context.theme.colorScheme.onSurface),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: context.theme.colorScheme.onSurface.withOpacity(0.7)),
+        labelStyle: TextStyle(color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7)),
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: context.theme.colorScheme.outline.withOpacity(0.5)),
+          borderSide: BorderSide(color: context.theme.colorScheme.outline.withValues(alpha: 0.5)),
           borderRadius: BorderRadius.circular(8),
         ),
         focusedBorder: OutlineInputBorder(
@@ -696,15 +713,16 @@ class IngredientsView extends GetView<MealController> {
       ),
     );
   }
-  
-  Widget _buildDietaryDropdown(BuildContext context, int value, Function(int?) onChanged) {
+
+  Widget _buildDietaryDropdown(BuildContext context, int value,
+      void Function(int?) onChanged) {
     return DropdownButtonFormField<int>(
       value: value,
       decoration: InputDecoration(
         labelText: 'Dietary Category',
-        labelStyle: TextStyle(color: context.theme.colorScheme.onSurface.withOpacity(0.7)),
+        labelStyle: TextStyle(color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7)),
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: context.theme.colorScheme.outline.withOpacity(0.5)),
+          borderSide: BorderSide(color: context.theme.colorScheme.outline.withValues(alpha: 0.5)),
           borderRadius: BorderRadius.circular(8),
         ),
         focusedBorder: OutlineInputBorder(
@@ -735,9 +753,9 @@ class IngredientsView extends GetView<MealController> {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         TextButton(
-          onPressed: () => Get.back(),
+          onPressed: () => Get.back<void>(),
           style: TextButton.styleFrom(
-            foregroundColor: context.theme.colorScheme.onSurface.withOpacity(0.8),
+            foregroundColor: context.theme.colorScheme.onSurface.withValues(alpha: 0.8),
           ),
           child: const Text('Cancel'),
         ),
@@ -757,26 +775,29 @@ class IngredientsView extends GetView<MealController> {
   }
   
   void _showDeleteConfirmation(BuildContext context, dynamic ingredient) {
-    Get.dialog(
+    Get.dialog<void>(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
         title: Text('Delete Ingredient', style: TextStyle(color: context.theme.colorScheme.onSurface)),
         content: Text(
-          'Are you sure you want to delete "${ingredient['name'] ?? ingredient['ingredientName']}"?',
-          style: TextStyle(color: context.theme.colorScheme.onSurface.withOpacity(0.8)),
+          'Are you sure you want to delete "${(ingredient['name'] as String?) ??
+              (ingredient['ingredientName'] as String?) ?? 'Unknown'}"?',
+          style: TextStyle(color: context.theme.colorScheme.onSurface.withValues(alpha: 0.8)),
         ),
         actions: [
           TextButton(
-            onPressed: () => Get.back(),
-            style: TextButton.styleFrom(foregroundColor: context.theme.colorScheme.onSurface.withOpacity(0.8)),
+            onPressed: () => Get.back<void>(),
+            style: TextButton.styleFrom(foregroundColor: context.theme.colorScheme.onSurface.withValues(alpha: 0.8)),
             child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
-              controller.deleteIngredient(ingredient['ingredientId']).then((success) {
+              final ingredientId = (ingredient['ingredientId'] as String?) ??
+                  '';
+              controller.deleteIngredient(ingredientId).then((success) {
                 if (success) {
-                  Get.back();
+                  Get.back<void>();
                   Get.snackbar('Success', 'Ingredient deleted successfully');
                 }
               });
@@ -791,7 +812,7 @@ class IngredientsView extends GetView<MealController> {
   
   void _showIngredientDetails(BuildContext context, dynamic ingredient) {
     // Implementation for ingredient details dialog
-    Get.dialog(
+    Get.dialog<void>(
       Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         backgroundColor: context.theme.colorScheme.surface,
@@ -805,7 +826,7 @@ class IngredientsView extends GetView<MealController> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  ingredient['name'] ?? 'Unknown Ingredient',
+                  (ingredient['name'] as String?) ?? 'Unknown Ingredient',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -814,10 +835,11 @@ class IngredientsView extends GetView<MealController> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  ingredient['description'] ?? 'No description available',
+                  (ingredient['description'] as String?) ??
+                      'No description available',
                   style: TextStyle(
                     fontSize: 16,
-                    color: context.theme.colorScheme.onSurface.withOpacity(0.8),
+                    color: context.theme.colorScheme.onSurface.withValues(alpha: 0.8),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -830,21 +852,45 @@ class IngredientsView extends GetView<MealController> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                _buildNutrientInfo(context, 'Calories', '${ingredient['calories'] ?? 0}'),
-                _buildNutrientInfo(context, 'Protein', '${ingredient['protein'] ?? 0}g'),
-                _buildNutrientInfo(context, 'Carbohydrates', '${ingredient['carbohydrates'] ?? 0}g'),
-                _buildNutrientInfo(context, 'Fat', '${ingredient['fat'] ?? 0}g'),
-                _buildNutrientInfo(context, 'Fiber', '${ingredient['fiber'] ?? 0}g'),
-                _buildNutrientInfo(context, 'Sugar', '${ingredient['sugar'] ?? 0}g'),
+                _buildNutrientInfo(context, 'Calories',
+                    '${((ingredient['calories'] as num?) ?? 0).toInt()}'),
+                _buildNutrientInfo(context, 'Protein',
+                    '${((ingredient['protein'] as num?) ?? 0).toInt()}g'),
+                _buildNutrientInfo(context, 'Carbohydrates',
+                    '${((ingredient['carbohydrates'] as num?) ?? 0).toInt()}g'),
+                _buildNutrientInfo(
+                    context, 'Fat',
+                    '${((ingredient['fat'] as num?) ?? 0).toInt()}g'),
+                _buildNutrientInfo(
+                    context, 'Fiber',
+                    '${((ingredient['fiber'] as num?) ?? 0).toInt()}g'),
+                _buildNutrientInfo(
+                    context, 'Sugar',
+                    '${((ingredient['sugar'] as num?) ?? 0).toInt()}g'),
                 const SizedBox(height: 24),
                 ...(() {
-                  final fatBreakdown = ingredient['fatBreakdown'] != null 
-                    ? jsonDecode(ingredient['fatBreakdown']) as Map<String, dynamic>
-                    : <String, dynamic>{};
+                  Map<String, dynamic> fatBreakdown = {};
+                  try {
+                    final fatBreakdownStr = ingredient['fatBreakdown'] as String?;
+                    if (fatBreakdownStr != null && fatBreakdownStr.isNotEmpty) {
+                      final decoded = jsonDecode(fatBreakdownStr);
+                      if (decoded is Map<String, dynamic>) {
+                        fatBreakdown = decoded;
+                      }
+                    }
+                  } catch (e) {
+                    // Ignore JSON parsing errors
+                  }
                   return [
-                    _buildNutrientInfo(context, 'Saturated Fat', '${fatBreakdown['Saturated'] ?? 0}g'),
-                    _buildNutrientInfo(context, 'Monounsaturated Fat', '${fatBreakdown['Monounsaturated'] ?? 0}g'),
-                    _buildNutrientInfo(context, 'Polyunsaturated Fat', '${fatBreakdown['Polyunsaturated'] ?? 0}g'),
+                    _buildNutrientInfo(context, 'Saturated Fat',
+                        '${(fatBreakdown['Saturated'] as num?)?.toInt() ??
+                            0}g'),
+                    _buildNutrientInfo(context, 'Monounsaturated Fat',
+                        '${(fatBreakdown['Monounsaturated'] as num?)?.toInt() ??
+                            0}g'),
+                    _buildNutrientInfo(context, 'Polyunsaturated Fat',
+                        '${(fatBreakdown['Polyunsaturated'] as num?)?.toInt() ??
+                            0}g'),
                   ];
                 })(),
               ],
@@ -878,6 +924,169 @@ class IngredientsView extends GetView<MealController> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildShimmerLoading(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          int crossAxisCount = constraints.maxWidth > 1200 ? 5 :
+          constraints.maxWidth > 900 ? 4 :
+          constraints.maxWidth > 600 ? 3 : 2;
+
+          return GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: crossAxisCount,
+              childAspectRatio: 1.0,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+            ),
+            itemCount: 12,
+            itemBuilder: (context, index) {
+              return _ShimmerIngredientCard();
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _ShimmerIngredientCard extends StatefulWidget {
+  @override
+  _ShimmerIngredientCardState createState() => _ShimmerIngredientCardState();
+}
+
+class _ShimmerIngredientCardState extends State<_ShimmerIngredientCard>
+    with TickerProviderStateMixin {
+  late AnimationController _shimmerController;
+  late Animation<double> _shimmerAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _shimmerController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+    _shimmerAnimation = Tween<double>(
+      begin: -2.0,
+      end: 2.0,
+    ).animate(CurvedAnimation(
+      parent: _shimmerController,
+      curve: Curves.easeInOutSine,
+    ));
+    _shimmerController.repeat();
+  }
+
+  @override
+  void dispose() {
+    _shimmerController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _shimmerAnimation,
+      builder: (context, child) {
+        return Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16)),
+          color: context.theme.colorScheme.surfaceContainerLowest,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: _buildShimmerContainer(100, 16, borderRadius: 8),
+                    ),
+                    const SizedBox(width: 8),
+                    _buildShimmerContainer(24, 24, borderRadius: 12),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                _buildShimmerContainer(120, 14, borderRadius: 6),
+                const SizedBox(height: 6),
+                Divider(height: 10,
+                    color: context.theme.colorScheme.outline.withValues(alpha: 0.3)),
+                const SizedBox(height: 4),
+                _buildShimmerNutrientChips(),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildShimmerNutrientChips() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(child: _buildShimmerChip()),
+            const SizedBox(width: 4),
+            Expanded(child: _buildShimmerChip()),
+          ],
+        ),
+        const SizedBox(height: 2),
+        Row(
+          children: [
+            Expanded(child: _buildShimmerChip()),
+            const SizedBox(width: 4),
+            Expanded(child: _buildShimmerChip()),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildShimmerChip() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+      margin: const EdgeInsets.symmetric(horizontal: 2),
+      decoration: BoxDecoration(
+        color: context.theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildShimmerContainer(20, 8, borderRadius: 4),
+          const SizedBox(height: 2),
+          _buildShimmerContainer(30, 10, borderRadius: 4),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShimmerContainer(double width, double height,
+      {double borderRadius = 4}) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(borderRadius),
+        gradient: LinearGradient(
+          begin: Alignment(_shimmerAnimation.value - 1, 0),
+          end: Alignment(_shimmerAnimation.value, 0),
+          colors: const [
+            Color(0xFFEBEBF4),
+            Color(0xFFF4F4F4),
+            Color(0xFFEBEBF4),
+          ],
+          stops: const [0.1, 0.3, 0.4],
+        ),
       ),
     );
   }

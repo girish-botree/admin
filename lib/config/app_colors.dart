@@ -89,12 +89,22 @@ abstract class AppColor {
   ];
 
   // Helper methods
-  static Color withOpacity(Color color, double opacity) {
-    return color.withOpacity(opacity);
+  static Color withValues(Color color,
+      {double? alpha, int? red, int? green, int? blue}) {
+    return color.withValues(
+      alpha: alpha ?? color.a,
+      red: red?.toDouble() ?? color.r,
+      green: green?.toDouble() ?? color.g,
+      blue: blue?.toDouble() ?? color.b,
+    );
   }
 
   static Color withAlpha(Color color, int alpha) {
     return color.withAlpha(alpha);
+  }
+
+  static Color withOpacity(Color color, double opacity) {
+    return color.withValues(alpha: opacity);
   }
 
   static Color blend(Color color1, Color color2, double t) {

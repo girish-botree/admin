@@ -1,0 +1,290 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../../config/app_config.dart' show AppText;
+import '../../../routes/app_routes.dart';
+import '../../../widgets/settings_widget.dart';
+import '../../admins/create_admins/create_admin_view.dart';
+import '../home_controller.dart';
+
+class WebHome extends GetView<HomeController> {
+  const WebHome({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: context.theme.colorScheme.surface,
+      appBar: _buildWebAppBar(context),
+      body: _buildWebBody(context),
+    );
+  }
+
+  PreferredSizeWidget _buildWebAppBar(BuildContext context) {
+    return AppBar(
+      title: AppText.semiBold(
+        'Admin Dashboard',
+        color: context.theme.colorScheme.onSurface,
+        size: 28,
+      ),
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      foregroundColor: context.theme.colorScheme.onSurface,
+      actions: [
+        TextButton.icon(
+          onPressed: () => controller.refreshDashboard(),
+          icon: Icon(
+            Icons.refresh,
+            color: context.theme.colorScheme.primary,
+          ),
+          label: AppText(
+            'Refresh',
+            color: context.theme.colorScheme.primary,
+            size: 14,
+          ),
+        ),
+        const SizedBox(width: 16),
+        Padding(
+          padding: const EdgeInsets.only(right: 32.0),
+          child: SettingsWidget(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWebBody(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 64.0, vertical: 32.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Welcome section
+          _buildWelcomeSection(context),
+          
+          const SizedBox(height: 32),
+          
+          // Main dashboard content
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Left panel - Main features
+              Expanded(
+                flex: 2,
+                child: _buildMainFeaturesPanel(context),
+              ),
+              
+              const SizedBox(width: 32),
+              
+              // Right panel - Quick actions & stats
+              Expanded(
+                flex: 1,
+                child: _buildSidePanel(context),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWelcomeSection(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(32.0),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            context.theme.colorScheme.primaryContainer,
+            context.theme.colorScheme.primaryContainer.withValues(alpha: 0.7),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AppText.semiBold(
+            'Welcome to Admin Dashboard',
+            color: context.theme.colorScheme.onPrimaryContainer,
+            size: 24,
+          ),
+          const SizedBox(height: 8),
+          AppText(
+            'Manage your meal planning system efficiently',
+            color: context.theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
+            size: 16,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMainFeaturesPanel(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AppText.semiBold(
+          'Main Features',
+          color: context.theme.colorScheme.onSurface,
+          size: 20,
+        ),
+        const SizedBox(height: 16),
+        
+        // Primary feature cards
+        _buildWebCard(
+          context: context,
+          onTap: () => Get.toNamed<void>(AppRoutes.dashboard),
+          icon: Icons.analytics_outlined,
+          title: 'Analytics Dashboard',
+          subtitle: 'Comprehensive insights, metrics, and data visualization for informed decision making',
+          isPrimary: true,
+        ),
+        
+        const SizedBox(height: 16),
+
+        _buildAdminManagementCard(context),
+      ],
+    );
+  }
+
+  Widget _buildSidePanel(BuildContext context) {
+    return Container();
+  }
+
+  Widget _buildWebCard({
+    required BuildContext context,
+    required VoidCallback onTap,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    bool isPrimary = false,
+  }) {
+    return Container(width: double.infinity,
+      child: Material(
+        color: isPrimary
+            ? context.theme.colorScheme.primaryContainer
+            : context.theme.colorScheme.surfaceContainerLowest,borderRadius: BorderRadius.circular(16),
+        elevation: isPrimary ? 4 : 2,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Row(
+              children: [
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    color: context.theme.colorScheme.surfaceContainerLowest,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: context.theme.colorScheme.onSurface,
+                    size: 36,
+                  ),
+                ),
+                const SizedBox(width: 24),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppText.semiBold(
+                        title,
+                        color: context.theme.colorScheme.onSurface,
+                        size: 18,
+                      ),
+                      const SizedBox(height: 8),
+                      AppText(
+                        subtitle,
+                        color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                        size: 14,
+                        maxLines: 2,
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  color: context.theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                  size: 20,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAdminManagementCard(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      child: Material(
+        color: context.theme.colorScheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(16),
+        elevation: 2,
+        child: InkWell(
+          onTap: () =>
+              AdminBottomSheets.showRegistrationBottomSheet(context, "admin"),
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Row(
+              children: [
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    color: context.theme.colorScheme.surfaceContainerLowest,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Icon(
+                    Icons.admin_panel_settings_outlined,
+                    color: context.theme.colorScheme.onSurface,
+                    size: 36,
+                  ),
+                ),
+                const SizedBox(width: 24),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppText.semiBold(
+                        'Admin Management',
+                        color: context.theme.colorScheme.onSurface,
+                        size: 18,
+                      ),
+                      const SizedBox(height: 8),
+                      AppText(
+                        'Add new admin account',
+                        color: context.theme.colorScheme.onSurface.withValues(alpha: 
+                            0.7),
+                        size: 14,
+                        maxLines: 2,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: context.theme.colorScheme.onSurface,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.add,
+                    color: context.theme.colorScheme.surfaceContainerLowest,
+                    size: 28,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

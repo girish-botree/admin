@@ -1,17 +1,32 @@
 import 'package:get/get.dart';
 import '../../routes/app_routes.dart';
 import '../../config/shared_preference.dart';
-import '../../config/appconstants.dart';
+import '../../config/auth_service.dart';
 import 'package:flutter/material.dart';
 
 class MainLayoutController extends GetxController {
   final SharedPreference _sharedPreference = SharedPreference();
+  final AuthService _authService = AuthService.to;
   final RxInt _currentIndex = 0.obs;
+  final RxString userEmail = ''.obs;
 
   int get currentIndex => _currentIndex.value;
 
+  @override
+  void onInit() {
+    super.onInit();
+    _loadUserData();
+  }
+
   void changePage(int index) {
     _currentIndex.value = index;
+  }
+
+  Future<void> _loadUserData() async {
+    final email = await _sharedPreference.get('userEmail');
+    if (email != null) {
+      userEmail.value = email;
+    }
   }
   
   /// Logout functionality
@@ -36,11 +51,12 @@ class MainLayoutController extends GetxController {
       ) ?? false;
 
       if (shouldLogout) {
-        // Clear user session data
-        await _sharedPreference.remove(AppConstants.bearerToken);
+        // Clear user session data using AuthService
+        await _authService.logout();
+        await _sharedPreference.remove('userEmail');
         
         // Navigate to login screen
-        Get.offAllNamed(AppRoutes.login);
+        Get.offAllNamed<void>(AppRoutes.login);
         
         // Show success message
         Get.snackbar(

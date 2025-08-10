@@ -4,11 +4,11 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
-import '../config/appconstants.dart';
 import '../config/common_utils.dart';
-import '../config/shared_preference.dart';
+import '../config/auth_service.dart';
 import '../widgets/custom_displays.dart';
 import 'api_client.dart';
+import 'app_url_config.dart';
 
 /// Dio Network Service
 /// This class provides a modern, robust network service using Dio
@@ -40,16 +40,17 @@ import 'api_client.dart';
 /// await DioNetworkService.clearToken();
 /// ```
 class DioNetworkService {
-  static final SharedPreference _sharedPreference = SharedPreference();
   static late ApiClient _apiClient;
+
+  static AuthService get _authService => AuthService.to;
   
   /// Initialize the network service
   static void initialize() {
     _apiClient = ApiHelper.getApiClient();
   }
 
-  /// GET Request
-  static Future<dynamic> getData(
+  /// GET Request with Enhanced Response Handling
+  static Future<Map<String, dynamic>> getData(
     String apiUrl, {
     bool bearerToken = false,
     Map<String, dynamic>? queryParameters,
@@ -70,7 +71,28 @@ class DioNetworkService {
         ApiHelper.dismissLoader();
       }
 
-      return response.data;
+      // Create comprehensive response structure
+      final Map<String, dynamic> enhancedResponse = <String, dynamic>{
+        'httpResponse': <String, dynamic>{
+          'method': 'GET',
+          'url': '${AppUrl.getBaseUrl()}$apiUrl',
+          'status': response.response.statusCode ?? 200,
+          'statusMessage': response.response.statusMessage ?? 'OK',
+          'data': response.data,
+          'headers': response.response.headers.map,
+          'responseTime': DateTime.now().toIso8601String(),
+        },
+      };
+      
+      // Add response data to the enhanced response if it exists
+      if (response.data != null && response.data is Map<String, dynamic>) {
+        enhancedResponse.addAll(response.data as Map<String, dynamic>);
+      }
+
+      // Log the detailed response in the desired format
+      _logDetailedResponse(enhancedResponse);
+
+      return enhancedResponse;
     } on DioException catch (dioError) {
       if (showLoader) {
         ApiHelper.dismissLoader();
@@ -95,8 +117,8 @@ class DioNetworkService {
     }
   }
 
-  /// POST Request
-  static Future<dynamic> postData(
+  /// POST Request with Enhanced Response Handling
+  static Future<Map<String, dynamic>> postData(
     dynamic data,
     String apiUrl, {
     bool bearerToken = false,
@@ -117,7 +139,28 @@ class DioNetworkService {
         ApiHelper.dismissLoader();
       }
 
-      return response.data;
+      // Create comprehensive response structure
+      final Map<String, dynamic> enhancedResponse = <String, dynamic>{
+        'httpResponse': <String, dynamic>{
+          'method': 'POST',
+          'url': '${AppUrl.getBaseUrl()}$apiUrl',
+          'status': response.response.statusCode ?? 200,
+          'statusMessage': response.response.statusMessage ?? 'OK',
+          'data': response.data,
+          'headers': response.response.headers.map,
+          'responseTime': DateTime.now().toIso8601String(),
+        },
+      };
+      
+      // Add response data to the enhanced response if it exists
+      if (response.data != null && response.data is Map<String, dynamic>) {
+        enhancedResponse.addAll(response.data as Map<String, dynamic>);
+      }
+
+      // Log the detailed response in the desired format
+      _logDetailedResponse(enhancedResponse);
+
+      return enhancedResponse;
     } on DioException catch (dioError) {
       if (showLoader) {
         ApiHelper.dismissLoader();
@@ -142,8 +185,8 @@ class DioNetworkService {
     }
   }
 
-  /// PUT Request with Body
-  static Future<dynamic> putDataWithBody(
+  /// PUT Request with Body and Enhanced Response Handling
+  static Future<Map<String, dynamic>> putDataWithBody(
     dynamic data,
     String apiUrl, {
     bool bearerToken = false,
@@ -164,7 +207,28 @@ class DioNetworkService {
         ApiHelper.dismissLoader();
       }
 
-      return response.data;
+      // Create comprehensive response structure
+      final Map<String, dynamic> enhancedResponse = <String, dynamic>{
+        'httpResponse': <String, dynamic>{
+          'method': 'PUT',
+          'url': '${AppUrl.getBaseUrl()}$apiUrl',
+          'status': response.response.statusCode ?? 200,
+          'statusMessage': response.response.statusMessage ?? 'OK',
+          'data': response.data,
+          'headers': response.response.headers.map,
+          'responseTime': DateTime.now().toIso8601String(),
+        },
+      };
+      
+      // Add response data to the enhanced response if it exists
+      if (response.data != null && response.data is Map<String, dynamic>) {
+        enhancedResponse.addAll(response.data as Map<String, dynamic>);
+      }
+
+      // Log the detailed response in the desired format
+      _logDetailedResponse(enhancedResponse);
+
+      return enhancedResponse;
     } on DioException catch (dioError) {
       if (showLoader) {
         ApiHelper.dismissLoader();
@@ -189,8 +253,8 @@ class DioNetworkService {
     }
   }
 
-  /// PUT Request without Body
-  static Future<dynamic> putDataWithoutBody(
+  /// PUT Request without Body and Enhanced Response Handling
+  static Future<Map<String, dynamic>> putDataWithoutBody(
     String apiUrl, {
     bool bearerToken = false,
     bool showLoader = true,
@@ -201,13 +265,34 @@ class DioNetworkService {
         ApiHelper.showLoader();
       }
 
-      final response = await _apiClient.put(apiUrl, {});
+      final response = await _apiClient.put(apiUrl, <String, dynamic>{});
 
       if (showLoader) {
         ApiHelper.dismissLoader();
       }
 
-      return response.data;
+      // Create comprehensive response structure
+      final Map<String, dynamic> enhancedResponse = <String, dynamic>{
+        'httpResponse': <String, dynamic>{
+          'method': 'PUT',
+          'url': '${AppUrl.getBaseUrl()}$apiUrl',
+          'status': response.response.statusCode ?? 200,
+          'statusMessage': response.response.statusMessage ?? 'OK',
+          'data': response.data,
+          'headers': response.response.headers.map,
+          'responseTime': DateTime.now().toIso8601String(),
+        },
+      };
+      
+      // Add response data to the enhanced response if it exists
+      if (response.data != null && response.data is Map<String, dynamic>) {
+        enhancedResponse.addAll(response.data as Map<String, dynamic>);
+      }
+
+      // Log the detailed response in the desired format
+      _logDetailedResponse(enhancedResponse);
+
+      return enhancedResponse;
     } on DioException catch (dioError) {
       if (showLoader) {
         ApiHelper.dismissLoader();
@@ -232,8 +317,8 @@ class DioNetworkService {
     }
   }
 
-  /// DELETE Request
-  static Future<dynamic> deleteData(
+  /// DELETE Request with Enhanced Response Handling
+  static Future<Map<String, dynamic>> deleteData(
     String apiUrl, {
     Map<String, dynamic>? queryParameters,
     bool bearerToken = false,
@@ -254,7 +339,28 @@ class DioNetworkService {
         ApiHelper.dismissLoader();
       }
 
-      return response.data;
+      // Create comprehensive response structure
+      final Map<String, dynamic> enhancedResponse = <String, dynamic>{
+        'httpResponse': <String, dynamic>{
+          'method': 'DELETE',
+          'url': '${AppUrl.getBaseUrl()}$apiUrl',
+          'status': response.response.statusCode ?? 200,
+          'statusMessage': response.response.statusMessage ?? 'OK',
+          'data': response.data,
+          'headers': response.response.headers.map,
+          'responseTime': DateTime.now().toIso8601String(),
+        },
+      };
+      
+      // Add response data to the enhanced response if it exists
+      if (response.data != null && response.data is Map<String, dynamic>) {
+        enhancedResponse.addAll(response.data as Map<String, dynamic>);
+      }
+
+      // Log the detailed response in the desired format
+      _logDetailedResponse(enhancedResponse);
+
+      return enhancedResponse;
     } on DioException catch (dioError) {
       if (showLoader) {
         ApiHelper.dismissLoader();
@@ -279,8 +385,8 @@ class DioNetworkService {
     }
   }
 
-  /// Upload File
-  static Future<dynamic> uploadFile(
+  /// Upload File with Enhanced Response Handling
+  static Future<Map<String, dynamic>> uploadFile(
     File file,
     String apiUrl, {
     String? fileName,
@@ -308,7 +414,28 @@ class DioNetworkService {
         ApiHelper.dismissLoader();
       }
 
-      return response.data;
+      // Create comprehensive response structure
+      final Map<String, dynamic> enhancedResponse = <String, dynamic>{
+        'httpResponse': <String, dynamic>{
+          'method': 'POST',
+          'url': '${AppUrl.getBaseUrl()}$apiUrl',
+          'status': response.response.statusCode ?? 200,
+          'statusMessage': response.response.statusMessage ?? 'OK',
+          'data': response.data,
+          'headers': response.response.headers.map,
+          'responseTime': DateTime.now().toIso8601String(),
+        },
+      };
+      
+      // Add response data to the enhanced response if it exists
+      if (response.data != null && response.data is Map<String, dynamic>) {
+        enhancedResponse.addAll(response.data as Map<String, dynamic>);
+      }
+
+      // Log the detailed response in the desired format
+      _logDetailedResponse(enhancedResponse);
+
+      return enhancedResponse;
     } on DioException catch (dioError) {
       if (showLoader) {
         ApiHelper.dismissLoader();
@@ -335,8 +462,8 @@ class DioNetworkService {
 
   /// Authentication Methods
   
-  /// Login
-  static Future<dynamic> login(
+  /// Login with Enhanced Response Handling
+  static Future<Map<String, dynamic>> login(
     String email,
     String password, {
     bool showLoader = true,
@@ -357,7 +484,28 @@ class DioNetworkService {
         ApiHelper.dismissLoader();
       }
 
-      return response.data;
+      // Create comprehensive response structure similar to your desired format
+      final Map<String, dynamic> enhancedResponse = <String, dynamic>{
+        'httpResponse': <String, dynamic>{
+          'method': 'POST',
+          'url': '${AppUrl.getBaseUrl()}${AppUrl.login}',
+          'status': response.response.statusCode ?? 200,
+          'statusMessage': response.response.statusMessage ?? 'OK',
+          'data': response.data,
+          'headers': response.response.headers.map,
+          'responseTime': DateTime.now().toIso8601String(),
+        },
+      };
+      
+      // Add response data to the enhanced response if it exists
+      if (response.data != null && response.data is Map<String, dynamic>) {
+        enhancedResponse.addAll(response.data as Map<String, dynamic>);
+      }
+
+      // Log the detailed response in the desired format
+      _logDetailedResponse(enhancedResponse);
+
+      return enhancedResponse;
     } catch (error) {
       if (showLoader) {
         ApiHelper.dismissLoader();
@@ -368,7 +516,80 @@ class DioNetworkService {
     }
   }
 
-  static Future<dynamic> sendOtp(
+  /// Log detailed HTTP response in the desired format
+  static void _logDetailedResponse(Map<String, dynamic> enhancedResponse) {
+    final httpResponse = enhancedResponse['httpResponse'];
+    final method = httpResponse['method'];
+    final url = httpResponse['url'];
+    final status = httpResponse['status'];
+    final statusMessage = httpResponse['statusMessage'];
+    final data = httpResponse['data'];
+    final headers = httpResponse['headers'];
+
+    // Create the formatted log message with clean formatting
+    CommonUtils.debugLog('┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────');
+    CommonUtils.debugLog('│ [http-response] [$method] $url');
+    CommonUtils.debugLog('│ Status: $status');
+    CommonUtils.debugLog('│ Message: $statusMessage');
+    CommonUtils.debugLog('│ Data: ${_formatJsonForDisplay(data)}');
+    CommonUtils.debugLog('│ Headers: ${_formatJsonForDisplay(headers)}');
+    CommonUtils.debugLog('└──────────────────────────────────────────────────────────────────────────────────────────────────────────────');
+  }
+
+  /// Format JSON for display with proper indentation
+  static String _formatJsonForDisplay(dynamic jsonData, {int indent = 0}) {
+    if (jsonData == null) return 'null';
+    
+    const String tab = '  ';
+    final String currentIndent = tab * indent;
+    final String nextIndent = tab * (indent + 1);
+    
+    if (jsonData is Map) {
+      if (jsonData.isEmpty) return '{}';
+      
+      final buffer = StringBuffer('{\n');
+      final entries = jsonData.entries.toList();
+      
+      for (int i = 0; i < entries.length; i++) {
+        final entry = entries[i];
+        buffer.write('│ $nextIndent"${entry.key}": ');
+        buffer.write(_formatJsonForDisplay(entry.value, indent: indent + 1));
+        if (i < entries.length - 1) buffer.write(',');
+        buffer.write('\n');
+      }
+      
+      buffer.write('│ $currentIndent}');
+      return buffer.toString();
+    } else if (jsonData is List) {
+      if (jsonData.isEmpty) return '[]';
+      
+      final buffer = StringBuffer('[\n');
+      for (int i = 0; i < jsonData.length; i++) {
+        buffer.write('│ $nextIndent');
+        buffer.write(_formatJsonForDisplay(jsonData[i], indent: indent + 1));
+        if (i < jsonData.length - 1) buffer.write(',');
+        buffer.write('\n');
+      }
+      buffer.write('│ $currentIndent]');
+      return buffer.toString();
+    } else if (jsonData is String) {
+      // Try to parse JSON strings (like vitamins, minerals, fatBreakdown)
+      if (jsonData.startsWith('{') && jsonData.endsWith('}')) {
+        try {
+          final parsed = json.decode(jsonData);
+          return _formatJsonForDisplay(parsed, indent: indent);
+        } catch (e) {
+          // If parsing fails, treat as regular string
+        }
+      }
+      
+      return '"$jsonData"';
+    } else {
+      return jsonData.toString();
+    }
+  }
+
+  static Future<Map<String, dynamic>> sendOtp(
     String email, {
     bool showLoader = true,
   }) async {
@@ -387,7 +608,28 @@ class DioNetworkService {
         ApiHelper.dismissLoader();
       }
 
-      return response.data;
+      // Create comprehensive response structure
+      final Map<String, dynamic> enhancedResponse = <String, dynamic>{
+        'httpResponse': <String, dynamic>{
+          'method': 'POST',
+          'url': '${AppUrl.getBaseUrl()}${AppUrl.sendOtp}',
+          'status': response.response.statusCode ?? 200,
+          'statusMessage': response.response.statusMessage ?? 'OK',
+          'data': response.data,
+          'headers': response.response.headers.map,
+          'responseTime': DateTime.now().toIso8601String(),
+        },
+      };
+      
+      // Add response data to the enhanced response if it exists
+      if (response.data != null && response.data is Map<String, dynamic>) {
+        enhancedResponse.addAll(response.data as Map<String, dynamic>);
+      }
+
+      // Log the detailed response in the desired format
+      _logDetailedResponse(enhancedResponse);
+
+      return enhancedResponse;
     } catch (error) {
       if (showLoader) {
         ApiHelper.dismissLoader();
@@ -441,7 +683,16 @@ class DioNetworkService {
     String lastName,
     String email,
     String otp,
-    String password, {
+       String password,
+       String phoneNumber,
+       String address,
+       String identificationNumber,
+       String vehicleType,
+       String vehicleNumber,
+       DateTime dateOfBirth,
+       String emergencyContact, {
+         String? profilePictureUrl,
+         String? documentsUrl,
     bool showLoader = true,
   }) async {
     try {
@@ -455,6 +706,15 @@ class DioNetworkService {
         'email': email,
         'otp': otp,
         'password': password,
+        'phoneNumber': phoneNumber,
+        'address': address,
+        'identificationNumber': identificationNumber,
+        'vehicleType': vehicleType,
+        'vehicleNumber': vehicleNumber,
+        'dateOfBirth': dateOfBirth.toIso8601String(),
+        'emergencyContact': emergencyContact,
+        if (profilePictureUrl != null) 'profilePictureUrl': profilePictureUrl,
+        if (documentsUrl != null) 'documentsUrl': documentsUrl,
       };
 
       final response = await _apiClient.registerDeliveryPerson(data);
@@ -469,6 +729,47 @@ class DioNetworkService {
         ApiHelper.dismissLoader();
       }
       
+      CommonUtils.debugLog(error.toString());
+      rethrow;
+    }
+  }
+
+  static Future<dynamic> getDeliveryPersons({bool showLoader = true}) async {
+    try {
+      if (showLoader) ApiHelper.showLoader();
+      final response = await _apiClient.getDeliveryPersons();
+      if (showLoader) ApiHelper.dismissLoader();
+      return response.data;
+    } catch (error) {
+      if (showLoader) ApiHelper.dismissLoader();
+      CommonUtils.debugLog(error.toString());
+      rethrow;
+    }
+  }
+
+  static Future<dynamic> updateDeliveryPerson(String id,
+      Map<String, dynamic> data, {bool showLoader = true}) async {
+    try {
+      if (showLoader) ApiHelper.showLoader();
+      final response = await _apiClient.updateDeliveryPerson(id, data);
+      if (showLoader) ApiHelper.dismissLoader();
+      return response.data;
+    } catch (error) {
+      if (showLoader) ApiHelper.dismissLoader();
+      CommonUtils.debugLog(error.toString());
+      rethrow;
+    }
+  }
+
+  static Future<dynamic> deleteDeliveryPerson(String id,
+      {bool showLoader = true}) async {
+    try {
+      if (showLoader) ApiHelper.showLoader();
+      final response = await _apiClient.deleteDeliveryPerson(id);
+      if (showLoader) ApiHelper.dismissLoader();
+      return response.data;
+    } catch (error) {
+      if (showLoader) ApiHelper.dismissLoader();
       CommonUtils.debugLog(error.toString());
       rethrow;
     }
@@ -495,6 +796,31 @@ class DioNetworkService {
         ApiHelper.dismissLoader();
       }
       
+      CommonUtils.debugLog(error.toString());
+      rethrow;
+    }
+  }
+
+  static Future<dynamic> getRecipeById(String id, {
+    bool showLoader = true,
+  }) async {
+    try {
+      if (showLoader) {
+        ApiHelper.showLoader();
+      }
+
+      final response = await _apiClient.getRecipeById(id);
+
+      if (showLoader) {
+        ApiHelper.dismissLoader();
+      }
+
+      return response.data;
+    } catch (error) {
+      if (showLoader) {
+        ApiHelper.dismissLoader();
+      }
+
       CommonUtils.debugLog(error.toString());
       rethrow;
     }
@@ -665,67 +991,66 @@ class DioNetworkService {
 
   /// Check if user is authenticated
   static Future<bool> isAuthenticated() async {
-    final token = await _sharedPreference.get(AppConstants.bearerToken);
+    final token = await _authService.getToken();
     return token != null && token.isNotEmpty;
   }
 
   /// Get stored token
   static Future<String?> getToken() async {
-    return await _sharedPreference.get(AppConstants.bearerToken);
+    return await _authService.getToken();
   }
 
   /// Store token
   static Future<void> storeToken(String token) async {
-    await _sharedPreference.save(AppConstants.bearerToken, token);
+    await _authService.storeToken(token);
   }
 
   /// Clear token (also clears refresh token for complete logout)
   static Future<void> clearToken() async {
-    await clearAllTokens();
+    await _authService.clearToken();
   }
 
   /// Store authentication tokens from login/register response
   static Future<void> storeAuthTokens(Map<String, dynamic> response) async {
     if (response['token'] != null) {
-      await storeToken(response['token']);
+      await _authService.storeToken(response['token'] as String);
     }
     
     if (response['refreshToken'] != null) {
-      await storeRefreshToken(response['refreshToken']);
+      await _authService.storeRefreshToken(response['refreshToken'] as String);
     }
   }
 
   /// Get stored refresh token
   static Future<String?> getRefreshToken() async {
-    return await _sharedPreference.get(AppConstants.refreshToken);
+    return await _authService.getRefreshToken();
   }
 
   /// Store refresh token
   static Future<void> storeRefreshToken(String refreshToken) async {
-    await _sharedPreference.save(AppConstants.refreshToken, refreshToken);
+    await _authService.storeRefreshToken(refreshToken);
   }
 
   /// Store both access and refresh tokens
   static Future<void> storeTokens(String accessToken, String refreshToken) async {
-    await storeToken(accessToken);
-    await storeRefreshToken(refreshToken);
+    await _authService.storeToken(accessToken);
+    await _authService.storeRefreshToken(refreshToken);
   }
 
   /// Clear refresh token
   static Future<void> clearRefreshToken() async {
-    await _sharedPreference.remove(AppConstants.refreshToken);
+    await _authService.clearRefreshToken();
   }
 
   /// Clear both access and refresh tokens
   static Future<void> clearAllTokens() async {
-    await _sharedPreference.remove(AppConstants.bearerToken);
-    await clearRefreshToken();
+    await _authService.clearToken();
   }
 
   /// Refresh access token using refresh token
   static Future<Map<String, dynamic>?> refreshAccessToken() async {
     try {
-      final refreshToken = await getRefreshToken();
+      final refreshToken = await _authService.getRefreshToken();
       if (refreshToken == null || refreshToken.isEmpty) {
         return null;
       }
@@ -734,13 +1059,15 @@ class DioNetworkService {
       
       if (response.response.statusCode == 200) {
         final data = response.data;
-        
-        if (data != null && data['token'] != null) {
+
+        if (data != null && data is Map<String, dynamic> &&
+            data['token'] != null) {
           // Store new tokens
-          await storeToken(data['token']);
+          await _authService.storeToken(data['token'] as String);
           
           if (data['refreshToken'] != null) {
-            await storeRefreshToken(data['refreshToken']);
+            await _authService.storeRefreshToken(
+                data['refreshToken'] as String);
           }
           
           return data;
@@ -758,58 +1085,67 @@ class DioNetworkService {
 /// Backward Compatibility Layer
 /// This class provides the same interface as the old NetworkService
 /// but uses the new Dio-based implementation underneath
+/// Note: Returns only the data portion for backward compatibility
 class NetworkService {
   /// Initialize the service
   static void initialize() {
     DioNetworkService.initialize();
   }
 
-  /// POST Data - Backward compatibility
+  /// POST Data - Backward compatibility (returns only data)
   static Future<dynamic> postData(
     dynamic data,
     String apiUrl, {
     bool bearerToken = false,
   }) async {
-    return await DioNetworkService.postData(
+    final enhancedResponse = await DioNetworkService.postData(
       data,
       apiUrl,
       bearerToken: bearerToken,
     );
+    // Return only the actual response data for backward compatibility
+    return enhancedResponse['httpResponse']?['data'] ?? enhancedResponse['data'];
   }
 
-  /// GET Data - Backward compatibility
+  /// GET Data - Backward compatibility (returns only data)
   static Future<dynamic> getData(
     String apiUrl, {
     bool bearerToken = false,
   }) async {
-    return await DioNetworkService.getData(
+    final enhancedResponse = await DioNetworkService.getData(
       apiUrl,
       bearerToken: bearerToken,
     );
+    // Return only the actual response data for backward compatibility
+    return enhancedResponse['httpResponse']?['data'] ?? enhancedResponse['data'];
   }
 
-  /// PUT Data with Body - Backward compatibility
+  /// PUT Data with Body - Backward compatibility (returns only data)
   static Future<dynamic> putDataWithBody(
     dynamic data,
     String apiUrl, {
     bool bearerToken = false,
   }) async {
-    return await DioNetworkService.putDataWithBody(
+    final enhancedResponse = await DioNetworkService.putDataWithBody(
       data,
       apiUrl,
       bearerToken: bearerToken,
     );
+    // Return only the actual response data for backward compatibility
+    return enhancedResponse['httpResponse']?['data'] ?? enhancedResponse['data'];
   }
 
-  /// PUT Data without Body - Backward compatibility
+  /// PUT Data without Body - Backward compatibility (returns only data)
   static Future<dynamic> putDataWithOutBody(
     String apiUrl, {
     bool bearerToken = false,
   }) async {
-    return await DioNetworkService.putDataWithoutBody(
+    final enhancedResponse = await DioNetworkService.putDataWithoutBody(
       apiUrl,
       bearerToken: bearerToken,
     );
+    // Return only the actual response data for backward compatibility
+    return enhancedResponse['httpResponse']?['data'] ?? enhancedResponse['data'];
   }
 
   /// Headers with token - Backward compatibility

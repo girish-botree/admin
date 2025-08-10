@@ -13,7 +13,7 @@ class AppNetworkConnection {
         switch (status) {
           case InternetConnectionStatus.connected:
             debugPrint('Online');
-            Get.back();
+            Get.back<void>();
             break;
           case InternetConnectionStatus.disconnected:
             debugPrint('Offline');

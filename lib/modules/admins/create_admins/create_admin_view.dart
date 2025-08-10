@@ -3,17 +3,17 @@ import 'dart:ui';
 import 'package:admin/config/app_config.dart';
 import 'package:admin/modules/admins/create_admins/create_admin_controller.dart';
 import 'package:admin/utils/responsive.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
 class AdminBottomSheets {
-  static final CreateAdminController controller = Get.put(CreateAdminController());
-  
   /// Shows bottom sheet with admin registration options
   static void showAdminOptionsBottomSheet(BuildContext context) {
     Responsive.isPortrait(context);
     final screenWidth = Responsive.screenWidth(context);
     
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       constraints: BoxConstraints(
@@ -66,7 +66,7 @@ class AdminBottomSheets {
       web: 12.0,
     ));
     final onSurfaceColor = context.theme.colorScheme.onSurface;
-    final borderSide = BorderSide(color: onSurfaceColor.withOpacity(0.3));
+    final borderSide = BorderSide(color: onSurfaceColor.withValues(alpha: 0.3));
     
     return InputDecoration(
       labelText: labelText,
@@ -82,13 +82,16 @@ class AdminBottomSheets {
 
   /// Shows registration form in a bottom sheet
   static void showRegistrationBottomSheet(BuildContext context, String userType) {
+    // Get or create controller instance for this bottom sheet
+    final CreateAdminController controller = Get.put(
+        CreateAdminController(), tag: userType);
     controller.clearForm();
     
     final screenHeight = Responsive.screenHeight(context);
     final screenWidth = Responsive.screenWidth(context);
     final isPortrait = Responsive.isPortrait(context);
     
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
@@ -316,8 +319,15 @@ class AdminBottomSheets {
                         if (!RegExp(r'[A-Z]').hasMatch(value)) {
                           return 'Password must contain at least one uppercase letter';
                         }
+                        if (!RegExp(r'[a-z]').hasMatch(value)) {
+                          return 'Password must contain at least one lowercase letter';
+                        }
                         if (!RegExp(r'[0-9]').hasMatch(value)) {
                           return 'Password must contain at least one number';
+                        }
+                        if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(
+                            value)) {
+                          return 'Password must contain at least one special character';
                         }
                         return null;
                       },
@@ -328,53 +338,393 @@ class AdminBottomSheets {
                       tablet: 20.0, 
                       web: 24.0,
                     )),
-                    Obx(() => ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: context.theme.colorScheme.onSurface,
-                        backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
-                        minimumSize: Size(double.infinity, Responsive.responsiveValue(
-                          context, 
-                          mobile: 48.0, 
-                          tablet: 56.0, 
-                          web: 64.0,
-                        )),
-                        padding: EdgeInsets.symmetric(
-                          vertical: Responsive.responsiveValue(
-                            context, 
-                            mobile: 12.0, 
-                            tablet: 16.0, 
-                            web: 20.0,
+
+                    // Delivery person specific fields
+                    if (userType == "delivery persons") ...[
+                      TextFormField(
+                        controller: controller.phoneNumberController,
+                        decoration: _createInputDecoration(
+                            context, 'Phone Number'),
+                        style: TextStyle(color: context.theme.colorScheme
+                            .onSurface),
+                        keyboardType: TextInputType.phone,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter phone number';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: Responsive.responsiveValue(
+                        context,
+                        mobile: 16.0,
+                        tablet: 20.0,
+                        web: 24.0,
+                      )),
+
+                      TextFormField(
+                        controller: controller.addressController,
+                        decoration: _createInputDecoration(context, 'Address'),
+                        style: TextStyle(color: context.theme.colorScheme
+                            .onSurface),
+                        maxLines: 2,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter address';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: Responsive.responsiveValue(
+                        context,
+                        mobile: 16.0,
+                        tablet: 20.0,
+                        web: 24.0,
+                      )),
+
+                      TextFormField(
+                        controller: controller.identificationNumberController,
+                        decoration: _createInputDecoration(
+                            context, 'Identification Number'),
+                        style: TextStyle(color: context.theme.colorScheme
+                            .onSurface),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter identification number';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: Responsive.responsiveValue(
+                        context,
+                        mobile: 16.0,
+                        tablet: 20.0,
+                        web: 24.0,
+                      )),
+
+                      // Vehicle Type Dropdown
+                      Obx(() =>
+                          DropdownButtonFormField<String>(
+                            value: controller.selectedVehicleType.value,
+                            decoration: _createInputDecoration(
+                                context, 'Vehicle Type'),
+                            style: TextStyle(
+                                color: context.theme.colorScheme.onSurface),
+                            dropdownColor: context.theme.colorScheme
+                                .surfaceContainerLowest,
+                            items: controller.vehicleTypes.map((
+                                String vehicleType) {
+                              return DropdownMenuItem<String>(
+                                value: vehicleType,
+                                child: Text(vehicleType),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) {
+                              if (newValue != null) {
+                                controller.selectedVehicleType.value = newValue;
+                              }
+                            },
+                          )),
+                      SizedBox(height: Responsive.responsiveValue(
+                        context,
+                        mobile: 16.0,
+                        tablet: 20.0,
+                        web: 24.0,
+                      )),
+
+                      TextFormField(
+                        controller: controller.vehicleNumberController,
+                        decoration: _createInputDecoration(
+                            context, 'Vehicle Number'),
+                        style: TextStyle(color: context.theme.colorScheme
+                            .onSurface),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter vehicle number';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: Responsive.responsiveValue(
+                        context,
+                        mobile: 16.0,
+                        tablet: 20.0,
+                        web: 24.0,
+                      )),
+
+                      // Date of Birth Picker
+                      Obx(() =>
+                          InkWell(
+                            onTap: () async {
+                              final DateTime? picked = await showDatePicker(
+                                context: context,
+                                initialDate: controller.selectedDateOfBirth
+                                    .value,
+                                firstDate: DateTime(1950),
+                                lastDate: DateTime.now().subtract(
+                                    Duration(days: 18 * 365)),
+                              );
+                              if (picked != null) {
+                                controller.selectedDateOfBirth.value = picked;
+                              }
+                            },
+                            child: InputDecorator(
+                              decoration: _createInputDecoration(
+                                  context, 'Date of Birth'),
+                              child: Text(
+                                '${controller.selectedDateOfBirth.value
+                                    .day}/${controller.selectedDateOfBirth.value
+                                    .month}/${controller.selectedDateOfBirth
+                                    .value.year}',
+                                style: TextStyle(
+                                    color: context.theme.colorScheme.onSurface),
+                              ),
+                            ),
+                          )),
+                      SizedBox(height: Responsive.responsiveValue(
+                        context,
+                        mobile: 16.0,
+                        tablet: 20.0,
+                        web: 24.0,
+                      )),
+
+                      TextFormField(
+                        controller: controller.emergencyContactController,
+                        decoration: _createInputDecoration(
+                            context, 'Emergency Contact'),
+                        style: TextStyle(color: context.theme.colorScheme
+                            .onSurface),
+                        keyboardType: TextInputType.phone,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter emergency contact';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: Responsive.responsiveValue(
+                        context,
+                        mobile: 16.0,
+                        tablet: 20.0,
+                        web: 24.0,
+                      )),
+
+                      // Profile Picture and Documents Section
+                      Column(
+                        children: [
+                          // Profile Picture Section
+                          Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: context.theme.colorScheme.onSurface
+                                    .withValues(alpha: 0.3),
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Profile Picture (Optional)',
+                                  style: TextStyle(
+                                    color: context.theme.colorScheme.onSurface,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                SizedBox(height: 12),
+                                Row(
+                                  children: [
+                                    Obx(() =>
+                                    controller.selectedProfileImage.value !=
+                                        null
+                                        ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.file(
+                                        controller.selectedProfileImage.value!,
+                                        width: 60,
+                                        height: 60,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    )
+                                        : Container(
+                                      width: 60,
+                                      height: 60,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        color: context.theme.colorScheme
+                                            .surfaceContainerLow,
+                                      ),
+                                      child: Icon(
+                                        Icons.person,
+                                        color: context.theme.colorScheme
+                                            .onSurface.withValues(alpha: 0.5),
+                                      ),
+                                    ),
+                                    ),
+                                    SizedBox(width: 12),
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        foregroundColor: context.theme
+                                            .colorScheme.onSurface,
+                                        backgroundColor: context.theme
+                                            .colorScheme.surfaceContainerLowest,
+                                      ),
+                                      onPressed: () =>
+                                          controller.showImagePickerOptions(
+                                            context,
+                                            isProfilePicture: true,
+                                          ),
+                                      child: Text('Select Image'),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          SizedBox(height: Responsive.responsiveValue(
+                            context,
+                            mobile: 16.0,
+                            tablet: 20.0,
+                            web: 24.0,
+                          )),
+
+                          // Documents Section
+                          Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: context.theme.colorScheme.onSurface
+                                    .withValues(alpha: 0.3),
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Documents (Optional)',
+                                  style: TextStyle(
+                                    color: context.theme.colorScheme.onSurface,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                SizedBox(height: 12),
+                                Row(
+                                  children: [
+                                    Obx(() =>
+                                    controller.selectedDocumentImage.value !=
+                                        null
+                                        ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.file(
+                                        controller.selectedDocumentImage.value!,
+                                        width: 60,
+                                        height: 60,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    )
+                                        : Container(
+                                      width: 60,
+                                      height: 60,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        color: context.theme.colorScheme
+                                            .surfaceContainerLow,
+                                      ),
+                                      child: Icon(
+                                        Icons.description,
+                                        color: context.theme.colorScheme
+                                            .onSurface.withValues(alpha: 0.5),
+                                      ),
+                                    ),
+                                    ),
+                                    SizedBox(width: 12),
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        foregroundColor: context.theme
+                                            .colorScheme.onSurface,
+                                        backgroundColor: context.theme
+                                            .colorScheme.surfaceContainerLowest,
+                                      ),
+                                      onPressed: () =>
+                                          controller.showImagePickerOptions(
+                                            context,
+                                            isProfilePicture: false,
+                                          ),
+                                      child: Text('Select Document'),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: Responsive.responsiveValue(
+                        context,
+                        mobile: 16.0,
+                        tablet: 20.0,
+                        web: 24.0,
+                      )),
+                    ],
+
+                    Obx(() =>
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: context.theme.colorScheme
+                                .onSurface,
+                            backgroundColor: context.theme.colorScheme
+                                .surfaceContainerLowest,
+                            minimumSize: Size(
+                                double.infinity, Responsive.responsiveValue(
+                              context,
+                              mobile: 48.0,
+                              tablet: 56.0,
+                              web: 64.0,
+                            )),
+                            padding: EdgeInsets.symmetric(
+                              vertical: Responsive.responsiveValue(
+                                context,
+                                mobile: 12.0,
+                                tablet: 16.0,
+                                web: 20.0,
                           ),
                         ),
                       ),
-                      onPressed: controller.isLoading.value || !controller.isOtpSent.value
+                      onPressed: controller.isLoading.value || !controller
+                          .isOtpSent.value
                           ? null
                           : () => controller.verifyOtp(userType: userType),
                       child: controller.isLoading.value
                           ? SizedBox(
-                              height: Responsive.responsiveValue(
-                                context, 
-                                mobile: 24.0, 
-                                tablet: 28.0, 
-                                web: 32.0,
-                              ),
-                              width: Responsive.responsiveValue(
-                                context, 
-                                mobile: 24.0, 
-                                tablet: 28.0, 
-                                web: 32.0,
-                              ),
-                              child: CircularProgressIndicator(color: context.theme.colorScheme.onSurface)
-                            )
+                          height: Responsive.responsiveValue(
+                            context,
+                            mobile: 24.0,
+                            tablet: 28.0,
+                            web: 32.0,
+                          ),
+                          width: Responsive.responsiveValue(
+                            context,
+                            mobile: 24.0,
+                            tablet: 28.0,
+                            web: 32.0,
+                          ),
+                          child: CircularProgressIndicator(
+                              color: context.theme.colorScheme.onSurface)
+                      )
                           : Text(
-                              'Register',
-                              style: TextStyle(fontSize: Responsive.responsiveValue(
-                                context, 
-                                mobile: 16.0, 
-                                tablet: 18.0, 
-                                web: 20.0,
-                              )),
-                            ),
+                        'Register',
+                        style: TextStyle(fontSize: Responsive.responsiveValue(
+                          context,
+                          mobile: 16.0,
+                          tablet: 18.0,
+                          web: 20.0,
+                        )),
+                      ),
                     )),
                   ],
                 ),

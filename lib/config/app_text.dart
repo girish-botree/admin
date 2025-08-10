@@ -1,5 +1,8 @@
 import 'package:admin/config/app_colors.dart';
+import 'package:admin/config/theme_controller.dart';
+import 'package:admin/language/language_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 const kFontFamily = 'PoppinsRegular';
 
@@ -450,20 +453,31 @@ class AppText extends StatelessWidget {
     return padding != null ? Padding(padding: padding!, child: widget) : widget;
   }
 
-  TextStyle get style => TextStyle(
-    color: color ?? AppColor.black,
-    decorationColor: color ?? AppColor.black,
-    fontSize: size.toDouble(),
-    fontStyle: isItalic ? FontStyle.italic : null,
-    decoration: isUnderline 
-        ? TextDecoration.underline 
-        : (isLineThrough ? TextDecoration.lineThrough : TextDecoration.none),
-    fontWeight: fontWeight,
-    height: height,
-    letterSpacing: letterSpacing,
-    textBaseline: baseLine,
-    fontFamily: fontFamily ?? kFontFamily,
-  );
+  TextStyle get style {
+    // Get font size multiplier from theme controller if available
+    double fontSizeMultiplier = 1.0;
+    try {
+      final themeController = Get.find<ThemeController>();
+      fontSizeMultiplier = themeController.fontSizeMultiplier;
+    } catch (e) {
+      // If theme controller is not available, use default multiplier
+    }
+
+    return TextStyle(
+      color: color ?? AppColor.black,
+      decorationColor: color ?? AppColor.black,
+      fontSize: (size * fontSizeMultiplier).toDouble(),
+      fontStyle: isItalic ? FontStyle.italic : null,
+      decoration: isUnderline
+          ? TextDecoration.underline
+          : (isLineThrough ? TextDecoration.lineThrough : TextDecoration.none),
+      fontWeight: fontWeight,
+      height: height,
+      letterSpacing: letterSpacing,
+      textBaseline: baseLine,
+      fontFamily: fontFamily ?? kFontFamily,
+    );
+  }
 
   // Helper methods for common text styling
   AppText copyWith({
@@ -500,6 +514,42 @@ class AppText extends StatelessWidget {
       baseLine: baseLine ?? this.baseLine,
       fontFamily: fontFamily ?? this.fontFamily,
     );
+  }
+
+  static Widget tr(String key, {
+    num size = 14,
+    Color? color,
+    TextAlign? textAlign,
+    TextOverflow? overflow,
+    int? maxLines,
+    bool isItalic = false,
+    bool isUnderline = false,
+    bool isLineThrough = false,
+    double? height,
+    double letterSpacing = 0.5,
+    FontWeight fontWeight = FontWeight.normal,
+    EdgeInsetsGeometry? padding,
+    TextBaseline? baseLine,
+    String? fontFamily,
+  }) {
+    return Obx(() =>
+        AppText(
+          key.tr,
+          size: size,
+          color: color,
+          textAlign: textAlign,
+          overflow: overflow,
+          maxLines: maxLines,
+          isItalic: isItalic,
+          isUnderline: isUnderline,
+          isLineThrough: isLineThrough,
+          height: height,
+          letterSpacing: letterSpacing,
+          fontWeight: fontWeight,
+          padding: padding,
+          baseLine: baseLine,
+          fontFamily: fontFamily,
+        ));
   }
 }
 
@@ -564,4 +614,4 @@ class AppTextSpan {
       ),
     );
   }
-} 
+}

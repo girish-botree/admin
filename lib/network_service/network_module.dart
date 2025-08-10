@@ -1,7 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart' hide Response;
 import 'package:talker_dio_logger/talker_dio_logger.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../config/appconstants.dart';
 import '../config/shared_preference.dart';
@@ -33,6 +37,10 @@ class NetworkModule {
       headers: {
         'Content-Type': contentTypeJson,
         'Accept': contentTypeJson,
+        // Web-specific headers to help with CORS
+        if (kIsWeb) ...{
+          'X-Requested-With': 'XMLHttpRequest',
+        }
       },
       responseType: ResponseType.json,
       followRedirects: false,
@@ -40,6 +48,14 @@ class NetworkModule {
         return status! >= 200 && status < 300; // Only 2xx status codes are successful
       },
     );
+
+    // Web-specific configuration
+    if (kIsWeb) {
+      // For web builds, we need to rely on the browser's CORS handling
+      // The server must have proper CORS headers configured
+      debugPrint('Dio configured for web platform with base URL: ${AppUrl
+          .getBaseUrl()}');
+    }
 
     // Add interceptors
     _addInterceptors(dio);
@@ -49,6 +65,11 @@ class NetworkModule {
 
   /// Add all required interceptors
   static void _addInterceptors(Dio dio) {
+    // Add CORS interceptor for web builds
+    if (kIsWeb) {
+      dio.interceptors.add(_createCorsInterceptor());
+    }
+
     // Add authentication interceptor
     dio.interceptors.add(_createAuthInterceptor());
 
@@ -69,11 +90,12 @@ class NetworkModule {
     return InterceptorsWrapper(
       onRequest: (options, handler) async {
         // Check if this request needs authentication
-        final noNeedAuth = options.extra[keyNoNeedAuthToken] ?? false;
+        final noNeedAuth = options.extra[keyNoNeedAuthToken] as bool? ?? false;
         
         if (!noNeedAuth) {
-          // Add authentication token
-          final token = await _sharedPreference.get(AppConstants.bearerToken);
+          // Add authentication token - use getSecure to match how tokens are stored
+          final token = await _sharedPreference.getSecure(
+              AppConstants.bearerToken);
           if (token != null && token.isNotEmpty) {
             options.headers['Authorization'] = 'Bearer $token';
           }
@@ -95,30 +117,36 @@ class NetworkModule {
       onError: (error, handler) async {
         // Handle authentication errors
         if (error.response?.statusCode == statusCodeUnauthorized) {
-          // Check if this is already a refresh token request to avoid infinite loop
-          final isRefreshTokenRequest = error.requestOptions.path.contains('refresh-token');
-          
-          if (!isRefreshTokenRequest) {
-            // Try to refresh token
-            final refreshResult = await _tryRefreshToken();
-            
-            if (refreshResult != null) {
-              // Token refreshed successfully, retry original request
-              final retryOptions = error.requestOptions;
-              retryOptions.headers['Authorization'] = 'Bearer ${refreshResult['token']}';
-              
-              try {
-                final retryResponse = await _dio!.fetch(retryOptions);
-                handler.resolve(retryResponse);
-                return;
-              } catch (retryError) {
-                // Retry failed, proceed with logout
-                debugPrint('Retry after token refresh failed: $retryError');
-              }
+          final requestOptions = error.requestOptions;
+          // Do not refresh for public endpoints (login/register/otp/reset) or the refresh call itself
+          final isNoAuthRequest = requestOptions.extra[keyNoNeedAuthToken] == true;
+          final isRefreshTokenRequest = requestOptions.path.contains('refresh-token');
+
+          if (isNoAuthRequest || isRefreshTokenRequest) {
+            // Let the 401 propagate without attempting refresh or logging out
+            handler.next(error);
+            return;
+          }
+
+          // Try to refresh token for protected endpoints only
+          final refreshResult = await _tryRefreshToken();
+
+          if (refreshResult != null) {
+            // Token refreshed successfully, retry original request
+            final retryOptions = requestOptions;
+            retryOptions.headers['Authorization'] = 'Bearer ${refreshResult['token']}';
+
+            try {
+              final retryResponse = await _dio!.fetch<Map<String, dynamic>>(retryOptions);
+              handler.resolve(retryResponse);
+              return;
+            } catch (retryError) {
+              // Retry failed, proceed with logout
+              debugPrint('Retry after token refresh failed: $retryError');
             }
           }
           
-          // Token refresh failed or this was already a refresh request, logout user
+          // Token refresh failed, logout user for protected endpoints
           await _handleUnauthorizedError();
         }
         handler.next(error);
@@ -149,18 +177,19 @@ class NetworkModule {
         // Retry logic for specific errors
         if (_shouldRetry(error)) {
           final requestOptions = error.requestOptions;
-          final retryCount = requestOptions.extra['retry_count'] ?? 0;
+          final retryCountValue = requestOptions.extra['retry_count'];
+          final retryCount = (retryCountValue is int) ? retryCountValue : 0;
           
           if (retryCount < NetworkConfig.maxRetries) {
             requestOptions.extra['retry_count'] = retryCount + 1;
             
             // Wait before retry
-            await Future.delayed(
+            await Future<void>.delayed(
               Duration(seconds: NetworkConfig.retryDelaySeconds),
             );
             
             try {
-              final response = await _dio!.fetch(requestOptions);
+              final response = await _dio!.fetch<dynamic>(requestOptions);
               handler.resolve(response);
               return;
             } catch (e) {
@@ -174,9 +203,48 @@ class NetworkModule {
     );
   }
 
+  /// Create CORS interceptor for web builds
+  static InterceptorsWrapper _createCorsInterceptor() {
+    return InterceptorsWrapper(
+      onRequest: (options, handler) {
+        // Add CORS-friendly headers for web requests
+        options.headers.addAll({
+          'Accept': 'application/json, text/plain, */*',
+          'Content-Type': 'application/json',
+        });
+
+        // Remove any headers that might trigger CORS preflight
+        options.headers.remove('X-Requested-With');
+
+        debugPrint('Web CORS request: ${options.method} ${options.uri}');
+        handler.next(options);
+      },
+      onResponse: (response, handler) {
+        debugPrint('Web CORS response: ${response.statusCode}');
+        handler.next(response);
+      },
+      onError: (error, handler) {
+        // Handle CORS-related errors
+        if (error.message?.contains('XMLHttpRequest') == true) {
+          debugPrint('CORS Error detected: ${error.message}');
+          final corsError = DioException(
+            requestOptions: error.requestOptions,
+            response: error.response,
+            type: DioExceptionType.connectionError,
+            error: 'CORS Error: The server must allow cross-origin requests from your domain',
+            message: 'CORS Error: The server must allow cross-origin requests from your domain',
+          );
+          handler.next(corsError);
+          return;
+        }
+        handler.next(error);
+      },
+    );
+  }
+
   /// Add logging interceptor
   static void _addLoggingInterceptor(Dio dio) {
-    // Use TalkerDioLogger for comprehensive logging
+    // Use TalkerDioLogger for colored terminal output
     dio.interceptors.add(TalkerDioLogger(
       settings: TalkerDioLoggerSettings(
         printRequestHeaders: true,
@@ -189,15 +257,15 @@ class NetworkModule {
       ),
     ));
 
-    // Alternative: Use PrettyDioLogger for simpler logging
+    // Alternative: Use PrettyDioLogger for even better formatting
     // dio.interceptors.add(PrettyDioLogger(
     //   requestHeader: true,
     //   requestBody: true,
-    //   responseHeader: true,
     //   responseBody: true,
+    //   responseHeader: false,
     //   error: true,
-    //   compact: true,
-    //   maxWidth: 90,
+    //   compact: false,
+    //   maxWidth: 120,
     // ));
   }
 
@@ -214,7 +282,8 @@ class NetworkModule {
     } else if (error.response != null) {
       switch (error.response!.statusCode) {
         case statusCodeBadRequest:
-          message = error.response?.data?['message'] ?? errorBadRequest;
+          message =
+              (error.response?.data?['message'] as String?) ?? errorBadRequest;
           break;
         case statusCodeUnauthorized:
           message = errorUnauthorized;
@@ -232,7 +301,8 @@ class NetworkModule {
           message = errorServerError;
           break;
         default:
-          message = error.response?.data?['message'] ?? errorUnknown;
+          message =
+              (error.response?.data?['message'] as String?) ?? errorUnknown;
       }
     }
 
@@ -252,28 +322,30 @@ class NetworkModule {
            error.type == DioExceptionType.receiveTimeout ||
            error.type == DioExceptionType.sendTimeout ||
            error.error is SocketException ||
-           (error.response?.statusCode != null && 
-            error.response!.statusCode! >= 500);
+           (error.response?.statusCode != null &&
+               error.response!.statusCode! >= 500 &&
+               error.response!.statusCode! < 600);
   }
 
   /// Handle unauthorized error (logout user)
   static Future<void> _handleUnauthorizedError() async {
-    // Clear stored tokens
-    await _sharedPreference.remove(AppConstants.bearerToken);
-    await _sharedPreference.remove(AppConstants.refreshToken);
+    // Clear stored tokens - use removeSecure to match storage method
+    await _sharedPreference.removeSecure(AppConstants.bearerToken);
+    await _sharedPreference.removeSecure(AppConstants.refreshToken);
     
     // Navigate to login screen
     // You can customize this based on your app's navigation structure
     debugPrint('Admin session expired. Please login again.');
     
     // If using GetX for navigation:
-    // Get.offAllNamed('/login');
+    Get.offAllNamed<void>('/login');
   }
 
   /// Try to refresh access token using refresh token
   static Future<Map<String, dynamic>?> _tryRefreshToken() async {
     try {
-      final refreshToken = await _sharedPreference.get(AppConstants.refreshToken);
+      final refreshToken = await _sharedPreference.getSecure(
+          AppConstants.refreshToken);
       if (refreshToken == null || refreshToken.isEmpty) {
         debugPrint('No refresh token available');
         return null;
@@ -291,24 +363,33 @@ class NetworkModule {
         },
       );
 
-      final response = await tempDio.post(
+      final response = await tempDio.post<dynamic>(
         AppUrl.refreshToken,
         data: {'refreshToken': refreshToken},
       );
 
       if (response.statusCode == 200 && response.data != null) {
-        final data = response.data as Map<String, dynamic>;
-        
-        if (data['token'] != null) {
-          // Store new tokens
-          await _sharedPreference.save(AppConstants.bearerToken, data['token']);
-          
-          if (data['refreshToken'] != null) {
-            await _sharedPreference.save(AppConstants.refreshToken, data['refreshToken']);
+        final responseData = response.data;
+        if (responseData is Map<String, dynamic>) {
+          final data = responseData;
+
+          if (data['token'] != null) {
+            // Store new tokens using secure storage
+            final newToken = data['token'] as String?;
+            if (newToken != null) {
+              await _sharedPreference.saveSecure(
+                  AppConstants.bearerToken, newToken);
+            }
+
+            final refreshToken = data['refreshToken'] as String?;
+            if (refreshToken != null) {
+              await _sharedPreference.saveSecure(
+                  AppConstants.refreshToken, refreshToken);
+            }
+
+            debugPrint('Admin token refreshed successfully');
+            return data;
           }
-          
-          debugPrint('Admin token refreshed successfully');
-          return data;
         }
       }
       

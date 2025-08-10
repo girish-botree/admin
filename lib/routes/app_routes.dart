@@ -5,4 +5,10 @@ class AppRoutes {
   static const home = '/home';
   static const meal = '/meal';
   static const mainLayout = '/main-layout';
+  static const plan = '/plan';
+  static const dashboard = '/dashboard';
+  static const deliveryPersons = '/delivery-persons';
+  static const appLockSettings = '/app-lock-settings';
+  static const appLock = '/app-lock';
+  static const createAdmin = '/create-admin';
 }
