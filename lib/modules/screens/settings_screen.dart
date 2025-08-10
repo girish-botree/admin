@@ -102,12 +102,6 @@ class SettingsScreen extends StatelessWidget {
         subtitle: '${'light'.tr}',
         onTap: () => _showThemeDialog(Get.context!),
       ),
-      _buildSettingsTile(
-        icon: Icons.font_download,
-        title: 'font_size'.tr,
-        subtitle: '${'small'.tr}, ${'medium'.tr}, ${'large'.tr}',
-        onTap: () => _showFontSizeDialog(Get.context!),
-      ),
 
       const SizedBox(height: 16),
       _buildSectionHeader('localization'.tr),
@@ -116,15 +110,6 @@ class SettingsScreen extends StatelessWidget {
         title: 'language'.tr,
         subtitle: '${'english'.tr}, ${'tamil'.tr}',
         onTap: () => _showLanguageDialog(Get.context!),
-      ),
-
-      const SizedBox(height: 16),
-      _buildSectionHeader('security'.tr),
-      _buildSettingsTile(
-        icon: Icons.lock,
-        title: 'app_lock'.tr,
-        subtitle: 'biometric_security'.tr,
-        onTap: () => Get.toNamed<void>('/app-lock-settings'),
       ),
 
       const SizedBox(height: 16),
@@ -257,57 +242,6 @@ class SettingsScreen extends StatelessWidget {
                   : null,
               onTap: () {
                 languageController.changeLanguage(const Locale('ta', 'IN'));
-                Get.back<void>();
-              },
-            )),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showFontSizeDialog(BuildContext context) {
-    final themeController = Get.find<ThemeController>();
-
-    Get.dialog<void>(
-      AlertDialog(
-        title: Text('font_size_settings'.tr),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Obx(() =>
-                ListTile(
-                  title: Text('small'.tr),
-              leading: const Icon(Icons.text_fields),
-              trailing: themeController.fontSize.value == 'small'
-                  ? const Icon(Icons.check, color: Colors.green)
-                  : null,
-              onTap: () {
-                themeController.changeFontSize('small');
-                Get.back<void>();
-              },
-            )),
-            Obx(() =>
-                ListTile(
-                  title: Text('medium'.tr),
-              leading: const Icon(Icons.text_fields),
-              trailing: themeController.fontSize.value == 'medium'
-                  ? const Icon(Icons.check, color: Colors.green)
-                  : null,
-              onTap: () {
-                themeController.changeFontSize('medium');
-                Get.back<void>();
-              },
-            )),
-            Obx(() =>
-                ListTile(
-                  title: Text('large'.tr),
-              leading: const Icon(Icons.text_fields),
-              trailing: themeController.fontSize.value == 'large'
-                  ? const Icon(Icons.check, color: Colors.green)
-                  : null,
-              onTap: () {
-                themeController.changeFontSize('large');
                 Get.back<void>();
               },
             )),
