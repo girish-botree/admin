@@ -42,21 +42,28 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      locale: Get.find<LanguageController>().locale.value,
-      fallbackLocale: const Locale('en', 'US'),
-      title: 'Admin App',
-      initialRoute: AppPages.initial,
-      getPages: AppPages.routes,
-      theme: ThemeUtil.getAppLightTheme(ThemeConfig.themeBlue),
-      darkTheme: kIsWeb ? null : ThemeUtil.getAppDarkTheme(
-          ThemeConfig.themeBlue),
-      translations: AppTranslations(),
-      builder: (context, child) {
-        child = EasyLoading.init()(context, child);
-        return AppLockWrapper(child: child);
-      },
-    );
+    return Obx(() {
+      final themeController = Get.find<ThemeController>();
+      return GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        locale: Get
+            .find<LanguageController>()
+            .locale
+            .value,
+        fallbackLocale: const Locale('en', 'US'),
+        title: 'Admin App',
+        initialRoute: AppPages.initial,
+        getPages: AppPages.routes,
+        theme: ThemeUtil.getAppLightTheme(ThemeConfig.themeBlue),
+        darkTheme: kIsWeb ? null : ThemeUtil.getAppDarkTheme(
+            ThemeConfig.themeBlue),
+        themeMode: themeController.themeMode.value,
+        translations: AppTranslations(),
+        builder: (context, child) {
+          child = EasyLoading.init()(context, child);
+          return AppLockWrapper(child: child);
+        },
+      );
+    });
   }
 }

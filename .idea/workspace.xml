@@ -9,7 +9,14 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="add new dashboard widgets for ingredient usage radar and recipe trend chart" />
+    <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="fixes in settings">
+      <change beforePath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/login/login_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/login/login_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/receipe/receipes_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/receipes_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/screens/settings_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/screens/settings_screen.dart" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -116,7 +123,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754831591292</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="fixes in settings">
+      <option name="closed" value="true" />
+      <created>1754833125790</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1754833125790</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -144,6 +159,7 @@
     <MESSAGE value="patch_aug_10" />
     <MESSAGE value="fix: update theme color references, add secure token storage, enhance splash animations, improve responsive layout, and refine login and dashboard components for better UX and security." />
     <MESSAGE value="add new dashboard widgets for ingredient usage radar and recipe trend chart" />
-    <option name="LAST_COMMIT_MESSAGE" value="add new dashboard widgets for ingredient usage radar and recipe trend chart" />
+    <MESSAGE value="fixes in settings" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixes in settings" />
   </component>
 </project>

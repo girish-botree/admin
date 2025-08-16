@@ -57,9 +57,9 @@ class ReceipesView extends GetView<MealController> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error_outline, size: 48, color: Colors.red),
+          const Icon(Icons.error_outline, size: 48, color: Colors.red),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             'Error: Data not found, try restarting the app',
             style: TextStyle(color: Colors.red, fontSize: 16),
             textAlign: TextAlign.center,
@@ -79,14 +79,14 @@ class ReceipesView extends GetView<MealController> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.restaurant_menu, size: 64, color: Colors.grey),
+          const Icon(Icons.restaurant_menu, size: 64, color: Colors.grey),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             'No recipes found',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'Add recipes to get started',
             style: TextStyle(color: Colors.grey),
           ),
@@ -162,11 +162,54 @@ class ReceipesView extends GetView<MealController> {
     final imageUrl = recipe['imageUrl']?.toString();
 
     if (imageUrl != null && imageUrl.isNotEmpty) {
-      return Image.network(
-        imageUrl,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) => _buildFallbackImage(context, color),
-      );
+      // Check if it's base64 data
+      if (imageUrl.startsWith('data:image/') || _isBase64String(imageUrl)) {
+        try {
+          // Handle data URL format (data:image/jpeg;base64,...)
+          String base64String = imageUrl;
+          if (imageUrl.startsWith('data:image/')) {
+            base64String = imageUrl.split(',')[1];
+          }
+
+          final bytes = base64Decode(base64String);
+          return Image.memory(
+            bytes,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              debugPrint('Error loading base64 image: $error');
+              return _buildFallbackImage(context, color);
+            },
+          );
+        } catch (e) {
+          debugPrint('Error decoding base64 image: $e');
+          return _buildFallbackImage(context, color);
+        }
+      } else {
+        // Handle regular network URL
+        return Image.network(
+          imageUrl,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            debugPrint('Error loading network image: $error');
+            return _buildFallbackImage(context, color);
+          },
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Container(
+              color: color.withValues(alpha: 0.7),
+              child: Center(
+                child: CircularProgressIndicator(
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes!
+                      : null,
+                  color: Colors.white,
+                ),
+              ),
+            );
+          },
+        );
+      }
     } else {
       return _buildFallbackImage(context, color);
     }
@@ -183,6 +226,22 @@ class ReceipesView extends GetView<MealController> {
         ),
       ),
     );
+  }
+
+  // Helper method to check if a string is base64
+  bool _isBase64String(String str) {
+    try {
+      // Remove any whitespace and check if it's valid base64
+      final cleanStr = str.replaceAll(RegExp(r'\s+'), '');
+      // Base64 strings should be divisible by 4 in length (with padding)
+      if (cleanStr.length % 4 != 0) return false;
+
+      // Try to decode - if it fails, it's not valid base64
+      base64Decode(cleanStr);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
   
   Widget _buildRecipeInfo(BuildContext context, dynamic recipe) {
@@ -340,7 +399,7 @@ class ReceipesView extends GetView<MealController> {
         backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
         child: Container(
           width: MediaQuery.of(context).size.width * 0.8,
-          constraints: BoxConstraints(maxWidth: 800),
+          constraints: const BoxConstraints(maxWidth: 800),
           padding: const EdgeInsets.all(24),
           child: StatefulBuilder(
             builder: (dialogContext, setState) {
@@ -444,8 +503,8 @@ class ReceipesView extends GetView<MealController> {
                                     setState(() => image = File(photo.path));
                                   }
                                 },
-                                icon: Icon(Icons.photo_library),
-                                label: Text('Gallery'),
+                                icon: const Icon(Icons.photo_library),
+                                label: const Text('Gallery'),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: dialogContext.theme
                                       .colorScheme
@@ -467,8 +526,8 @@ class ReceipesView extends GetView<MealController> {
                                     setState(() => image = File(photo.path));
                                   }
                                 },
-                                icon: Icon(Icons.camera_alt),
-                                label: Text('Camera'),
+                                icon: const Icon(Icons.camera_alt),
+                                label: const Text('Camera'),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: dialogContext.theme
                                       .colorScheme
@@ -502,8 +561,8 @@ class ReceipesView extends GetView<MealController> {
                                   TextButton.icon(
                                     onPressed: () =>
                                         setState(() => image = null),
-                                    icon: Icon(Icons.clear, size: 16),
-                                    label: Text('Remove'),
+                                    icon: const Icon(Icons.clear, size: 16),
+                                    label: const Text('Remove'),
                                     style: TextButton.styleFrom(
                                       foregroundColor: Colors.red,
                                     ),
@@ -512,19 +571,34 @@ class ReceipesView extends GetView<MealController> {
                               ),
                               const SizedBox(height: 8),
                               Container(
-                                width: 120,
-                                height: 120,
+                                width: double.infinity,
+                                constraints: const BoxConstraints(
+                                    maxWidth: 320, maxHeight: 180),
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
-                                      color: Colors.grey.withValues(alpha: 0.2)),
+                                    color: dialogContext.theme.colorScheme
+                                        .primary.withOpacity(0.15),
+                                  ),
+                                  color: Colors.black12,
                                 ),
                                 child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: image != null ? Image.file(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: image != null
+                                      ? Image.file(
                                     image!,
                                     fit: BoxFit.cover,
-                                  ) : Container(),
+                                    width: double.infinity,
+                                    height: 180,
+                                  )
+                                      : Center(
+                                    child: Icon(
+                                      Icons.image,
+                                      size: 48,
+                                      color: dialogContext.theme.colorScheme
+                                          .onSurface.withOpacity(0.2),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ],
@@ -584,7 +658,7 @@ class ReceipesView extends GetView<MealController> {
               .of(context)
               .size
               .width * 0.8,
-          constraints: BoxConstraints(maxWidth: 800),
+          constraints: const BoxConstraints(maxWidth: 800),
           padding: const EdgeInsets.all(24),
           child: StatefulBuilder(
             builder: (dialogContext, setState) {
@@ -643,8 +717,52 @@ class ReceipesView extends GetView<MealController> {
                       ),
                     ),
                     const SizedBox(height: 8),
+
+                    // Show existing image if available
+                    if (recipe['imageUrl'] != null && recipe['imageUrl']
+                        .toString()
+                        .isNotEmpty)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Current Image:',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: dialogContext.theme.colorScheme.onSurface,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            width: double.infinity,
+                            constraints: const BoxConstraints(
+                                maxWidth: 320, maxHeight: 180),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: dialogContext.theme.colorScheme.primary
+                                    .withOpacity(0.15),
+                              ),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: _buildPlaceholderImage(
+                                  dialogContext, recipe),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                      ),
+
                     Text(
-                      'Select an image from your gallery or take a photo',
+                      image == null ? (recipe['imageUrl'] != null &&
+                          recipe['imageUrl']
+                              .toString()
+                              .isNotEmpty
+                          ? 'Replace Image:'
+                          : 'Select an image from your gallery or take a photo')
+                          : 'New Image Selected:',
                       style: TextStyle(
                         fontSize: 12,
                         color: dialogContext.theme.colorScheme.onSurface
@@ -664,8 +782,8 @@ class ReceipesView extends GetView<MealController> {
                                 setState(() => image = File(photo.path));
                               }
                             },
-                            icon: Icon(Icons.photo_library),
-                            label: Text('Gallery'),
+                            icon: const Icon(Icons.photo_library),
+                            label: const Text('Gallery'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: context.theme.colorScheme
                                   .primaryContainer,
@@ -685,8 +803,8 @@ class ReceipesView extends GetView<MealController> {
                                 setState(() => image = File(photo.path));
                               }
                             },
-                            icon: Icon(Icons.camera_alt),
-                            label: Text('Camera'),
+                            icon: const Icon(Icons.camera_alt),
+                            label: const Text('Camera'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: context.theme.colorScheme
                                   .secondaryContainer,
@@ -715,8 +833,8 @@ class ReceipesView extends GetView<MealController> {
                               ),
                               TextButton.icon(
                                 onPressed: () => setState(() => image = null),
-                                icon: Icon(Icons.clear, size: 16),
-                                label: Text('Remove'),
+                                icon: const Icon(Icons.clear, size: 16),
+                                label: const Text('Remove'),
                                 style: TextButton.styleFrom(
                                   foregroundColor: Colors.red,
                                 ),
@@ -725,19 +843,34 @@ class ReceipesView extends GetView<MealController> {
                           ),
                           const SizedBox(height: 8),
                           Container(
-                            width: 120,
-                            height: 120,
+                            width: double.infinity,
+                            constraints: const BoxConstraints(
+                                maxWidth: 320, maxHeight: 180),
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                  color: Colors.grey.withValues(alpha: 0.2)),
+                                color: context.theme.colorScheme.primary
+                                    .withOpacity(0.15),
+                              ),
+                              color: Colors.black12,
                             ),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: image != null ? Image.file(
+                              borderRadius: BorderRadius.circular(12),
+                              child: image != null
+                                  ? Image.file(
                                 image!,
                                 fit: BoxFit.cover,
-                              ) : Container(),
+                                width: double.infinity,
+                                height: 180,
+                              )
+                                  : Center(
+                                child: Icon(
+                                  Icons.image,
+                                  size: 48,
+                                  color: context.theme.colorScheme.onSurface
+                                      .withOpacity(0.2),
+                                ),
+                              ),
                             ),
                           ),
                         ],
@@ -829,11 +962,11 @@ class ReceipesView extends GetView<MealController> {
           borderRadius: BorderRadius.circular(8),
         ),
         errorBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.red, width: 1),
+          borderSide: const BorderSide(color: Colors.red, width: 1),
           borderRadius: BorderRadius.circular(8),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.red, width: 2),
+          borderSide: const BorderSide(color: Colors.red, width: 2),
           borderRadius: BorderRadius.circular(8),
         ),
         errorText: errorText != null && errorText.isNotEmpty ? errorText : null,
@@ -1018,7 +1151,7 @@ class ReceipesView extends GetView<MealController> {
               .of(context)
               .size
               .width * 0.6,
-          constraints: BoxConstraints(maxWidth: 500),
+          constraints: const BoxConstraints(maxWidth: 500),
           padding: const EdgeInsets.all(24),
           child: StatefulBuilder(
             builder: (dialogContext, setDialogState) {
@@ -1096,7 +1229,7 @@ class ReceipesView extends GetView<MealController> {
                                     debugPrint('Refreshing ingredients...');
                                     controller.fetchIngredients();
                                   },
-                                  child: Text('Refresh'),
+                                  child: const Text('Refresh'),
                                 ),
                               ],
                             ),
@@ -1600,18 +1733,18 @@ class ReceipesView extends GetView<MealController> {
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.error_outline, color: Colors.red,
+                                const Icon(Icons.error_outline, color: Colors.red,
                                     size: 20),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
                                     ingredientsError.value,
-                                    style: TextStyle(color: Colors.red),
+                                    style: const TextStyle(color: Colors.red),
                                   ),
                                 ),
                                 IconButton(
                                   onPressed: fetchRecipeIngredients,
-                                  icon: Icon(Icons.refresh, size: 20),
+                                  icon: const Icon(Icons.refresh, size: 20),
                                   tooltip: 'Retry',
                                 ),
                               ],
@@ -1938,7 +2071,7 @@ class ReceipesView extends GetView<MealController> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8)),
                     ),
-                    child: Text('Close'),
+                    child: const Text('Close'),
                   ),
                 ),
               ],
@@ -2152,15 +2285,15 @@ class ReceipesView extends GetView<MealController> {
           height: height,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(borderRadius),
-            gradient: LinearGradient(
-              begin: const Alignment(-1.0, -0.3),
-              end: const Alignment(1.0, 0.3),
+            gradient: const LinearGradient(
+              begin: Alignment(-1.0, -0.3),
+              end: Alignment(1.0, 0.3),
               colors: [
-                const Color(0xFFF0F0F0),
-                const Color(0xFFE0E0E0),
-                const Color(0xFFF0F0F0),
+                Color(0xFFF0F0F0),
+                Color(0xFFE0E0E0),
+                Color(0xFFF0F0F0),
               ],
-              stops: const [0.0, 0.5, 1.0],
+              stops: [0.0, 0.5, 1.0],
             ),
           ),
         );

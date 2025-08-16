@@ -96,12 +96,27 @@ class SettingsScreen extends StatelessWidget {
   List<Widget> _buildSettingsItems() {
     return [
       _buildSectionHeader('appearance'.tr),
-      _buildSettingsTile(
-        icon: Icons.palette,
-        title: 'theme'.tr,
-        subtitle: '${'light'.tr}',
-        onTap: () => _showThemeDialog(Get.context!),
-      ),
+      Obx(() {
+        final themeController = Get.find<ThemeController>();
+        String currentTheme;
+        switch (themeController.themeMode.value) {
+          case ThemeMode.light:
+            currentTheme = 'light_theme'.tr;
+            break;
+          case ThemeMode.dark:
+            currentTheme = 'dark_theme'.tr;
+            break;
+          case ThemeMode.system:
+            currentTheme = 'System Theme'.tr;
+            break;
+        }
+        return _buildSettingsTile(
+          icon: Icons.palette,
+          title: 'theme'.tr,
+          subtitle: currentTheme,
+          onTap: () => _showThemeDialog(Get.context!),
+        );
+      }),
 
       const SizedBox(height: 16),
       _buildSectionHeader('localization'.tr),
@@ -110,16 +125,6 @@ class SettingsScreen extends StatelessWidget {
         title: 'language'.tr,
         subtitle: '${'english'.tr}, ${'tamil'.tr}',
         onTap: () => _showLanguageDialog(Get.context!),
-      ),
-
-      const SizedBox(height: 16),
-      _buildSectionHeader('notifications'.tr),
-      _buildSettingsTile(
-        icon: Icons.notifications,
-        title: 'notifications'.tr,
-        subtitle: 'notification_settings'.tr,
-        onTap: () =>
-            Get.snackbar('settings'.tr, 'notification_settings'.tr),
       ),
 
       const SizedBox(height: 16),
@@ -202,12 +207,38 @@ class SettingsScreen extends StatelessWidget {
                 ListTile(
                   title: Text('light_theme'.tr),
               leading: const Icon(Icons.light_mode),
-                  trailing: const Icon(Icons.check, color: Colors.green),
+              trailing: themeController.themeMode.value == ThemeMode.light
+                  ? const Icon(Icons.check, color: Colors.green)
+                  : null,
               onTap: () {
                 themeController.changeThemeMode(ThemeMode.light);
                 Get.back<void>();
               },
             )),
+            Obx(() =>
+                ListTile(
+                  title: Text('dark_theme'.tr),
+                  leading: const Icon(Icons.dark_mode),
+                  trailing: themeController.themeMode.value == ThemeMode.dark
+                      ? const Icon(Icons.check, color: Colors.green)
+                      : null,
+                  onTap: () {
+                    themeController.changeThemeMode(ThemeMode.dark);
+                    Get.back<void>();
+                  },
+                )),
+            Obx(() =>
+                ListTile(
+                  title: Text('System Theme'.tr),
+                  leading: const Icon(Icons.settings_suggest),
+                  trailing: themeController.themeMode.value == ThemeMode.system
+                      ? const Icon(Icons.check, color: Colors.green)
+                      : null,
+                  onTap: () {
+                    themeController.changeThemeMode(ThemeMode.system);
+                    Get.back<void>();
+                  },
+                )),
           ],
         ),
       ),

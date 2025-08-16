@@ -1,20 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:dio/dio.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import '../../routes/app_routes.dart';
 import '../../network_service/dio_network_service.dart';
-import '../../config/shared_preference.dart';
-import '../../config/auth_service.dart';
 
 class LoginController extends GetxController {
   // Form key and controllers
   final formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-
-  // Services
-  final AuthService _authService = AuthService.to;
 
   // Reactive variables
   final isPasswordVisible = false.obs;
@@ -72,94 +67,55 @@ class LoginController extends GetxController {
     clearError();
     isLoading.value = true;
 
+    final hasConnection =
+        await InternetConnectionChecker.createInstance().hasConnection;
+    if (!hasConnection) {
+      errorMessage.value = 'No internet connection. Please check your network.';
+      isLoading.value = false;
+      return;
+    }
+
     try {
       final response = await DioNetworkService.login(
         emailController.text.trim(),
         passwordController.text,
       );
 
-      // Extract the actual data from the enhanced response structure
-      final responseData = response['data'] as Map<String, dynamic>?;
-      final httpResponse = response['httpResponse'] as Map<String, dynamic>?;
-      
-      // Log the detailed response information
-      if (httpResponse != null) {
-        debugPrint('HTTP Response Status: ${httpResponse['status']}');
-        debugPrint('HTTP Response Message: ${httpResponse['statusMessage']}');
-        debugPrint('HTTP Response URL: ${httpResponse['url']}');
-      }
-
       // Check if response contains token (successful login)
-      // Look for token in both the responseData and direct response for compatibility
-      final token = responseData?['data']?['token'] as String? ?? 
-                   responseData?['token'] as String? ??
-                   response['token'] as String?;
-      
-      final refreshToken = responseData?['data']?['refreshToken'] as String? ?? 
-                          responseData?['refreshToken'] as String? ??
-                          response['refreshToken'] as String?;
-
-      if (token != null && token.isNotEmpty) {
-        // Store tokens using AuthService
-        await _authService.login(
-          token,
-          refreshToken: refreshToken,
-        );
-
-        // Store user email for display in app bar
-        final sharedPref = SharedPreference();
-        await sharedPref.save('userEmail', emailController.text.trim());
-
-        // Wait a brief moment to ensure state is updated
-        await Future<void>.delayed(const Duration(milliseconds: 100));
+      if (response['data'] != null && response['data']['token'] != null) {
+        // Store both access and refresh tokens
+        final tokenData = response['data'] as Map<String, dynamic>;
+        await DioNetworkService.storeAuthTokens(tokenData);
 
         // Navigate to main layout
-        Get.offAllNamed<void>(AppRoutes.mainLayout);
-        
-        // Show success message with HTTP status info
-        final statusCode = httpResponse?['status'] ?? 200;
+        Get.offAllNamed(AppRoutes.mainLayout);
+
+        // Show success message
         Get.snackbar(
           'Success',
-          'Login successful! Welcome to Admin Dashboard. (HTTP $statusCode)',
+          'Login successful! Welcome to Admin Dashboard.',
           backgroundColor: Colors.green,
           colorText: Colors.white,
           duration: const Duration(seconds: 2),
         );
       } else {
         // Response received but no token - treat as error
-        final errorMsg = responseData?['message'] as String? ??
-                        response['message'] as String? ??
-                        'Login failed. Invalid response from server.';
-        errorMessage.value = errorMsg;
+        errorMessage.value =
+            (response?['message']?.toString()) ??
+            'Login failed. Invalid response from server.';
       }
     } on DioException catch (dioError) {
       // Handle specific HTTP errors
       String errorMsg = 'Login failed. Please try again.';
 
-      // Enhanced CORS error detection for web
-      if (kIsWeb && (
-          dioError.message?.contains('XMLHttpRequest') == true ||
-              dioError.message?.contains('CORS') == true ||
-              dioError.message?.contains('connection error') == true ||
-              dioError.type == DioExceptionType.connectionError ||
-              (dioError.response == null &&
-                  dioError.message?.contains('onError') == true)
-      )) {
-        errorMsg = '''CORS Error: The server must allow cross-origin requests from your domain.
-
-For development, you can:
-• Run Flutter web with --web-browser-flag "--disable-web-security"
-• Contact the API server administrator to add CORS headers
-• Use a proxy server for development
-
-Current API URL: ${dioError.requestOptions.uri}''';
-      } else if (dioError.response != null) {
+      if (dioError.response != null) {
         final statusCode = dioError.response!.statusCode;
-        final responseData = dioError.response!.data as Map<String, dynamic>?;
-        
+        final responseData = dioError.response!.data;
+
         switch (statusCode) {
           case 400:
-            errorMsg = responseData?['message'] as String? ??
+            errorMsg =
+                (responseData?['message'] as String?) ??
                 'Invalid email or password format.';
             break;
           case 401:
@@ -178,23 +134,18 @@ Current API URL: ${dioError.requestOptions.uri}''';
             errorMsg = 'Server error. Please try again later.';
             break;
           default:
-            errorMsg = responseData?['message'] as String? ??
+            errorMsg =
+                (responseData?['message'] as String?) ??
                 'Login failed. Please try again.';
         }
       } else {
-        // Network error - provide web-specific guidance
-        if (kIsWeb) {
-          errorMsg =
-          'Network error. Please check:\n• Your internet connection\n• If the server allows web requests (CORS)\n• If the API URL is correct';
-        } else {
-          errorMsg = 'Network error. Please check your internet connection.';
-        }
+        // Network error
+        errorMsg = 'Network error. Please check your internet connection.';
       }
-      
+
       errorMessage.value = errorMsg;
     } catch (e) {
       // Handle other errors
-      debugPrint('${e}');
       errorMessage.value = 'An unexpected error occurred. Please try again.';
     } finally {
       isLoading.value = false;
