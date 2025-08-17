@@ -7,9 +7,9 @@ import 'components/tablet_home.dart';
 import 'components/web_home.dart';
 
 class HomeView extends GetView<HomeController> {
-  final bool showBottomNav;
-  
+
   const HomeView({super.key, this.showBottomNav = true});
+  final bool showBottomNav;
 
   @override
   Widget build(BuildContext context) {

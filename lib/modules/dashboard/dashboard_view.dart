@@ -11,6 +11,7 @@ class DashboardView extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
+    Get.put(DashboardController(), permanent: false);
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(

@@ -15,9 +15,17 @@ import 'widgets/plan_statistics_widget.dart';
 class PlanView extends GetView<PlanController> {
   const PlanView({super.key});
 
+  // Constants for better maintainability
+  static const double _defaultPadding = 16.0;
+  static const double _cardBorderRadius = 12.0;
+  static const double _spacingMedium = 16.0;
+  static const double _spacingLarge = 24.0;
+  static const double _emptyStateIconSize = 48.0;
+
   @override
   Widget build(BuildContext context) {
-    Get.put(PlanController());
+    // Remove this line - controller should be initialized elsewhere
+    // Get.put(PlanController());
     return Scaffold(
       appBar: AppBar(
         title: AppText.semiBold(
@@ -43,55 +51,24 @@ class PlanView extends GetView<PlanController> {
         if (controller.isLoading.value) {
           return const MealPlanLoading();
         }
-        
+
+        // // Add error handling
+        // if (controller.hasError.value) {
+        //   return _buildErrorState(context);
+        // }
+
         return RefreshIndicator(
           onRefresh: () async {
             await controller.getMealPlans();
             await controller.getMealPlansByDate();
           },
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(_defaultPadding),
             child: Column(
               children: [
                 // Calendar Widget
-                Container(
-                  decoration: BoxDecoration(
-                    color: context.theme.colorScheme.surfaceContainerLowest,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: TableCalendar<DateTime>(
-                    firstDay: DateTime.utc(2020, 1, 1),
-                    lastDay: DateTime.utc(2030, 12, 31),
-                    focusedDay: controller.focusedDay.value,
-                    selectedDayPredicate: (day) {
-                      return isSameDay(controller.selectedCalendarDate.value, day);
-                    },
-                    onDaySelected: (selectedDay, focusedDay) {
-                      controller.updateSelectedDate(selectedDay);
-                    },
-                    calendarStyle: CalendarStyle(
-                      outsideDaysVisible: false,
-                      selectedDecoration: BoxDecoration(
-                        color: context.theme.colorScheme.primary,
-                        shape: BoxShape.circle,
-                      ),
-                      todayDecoration: BoxDecoration(
-                        color: context.theme.colorScheme.primary.withValues(alpha:0.5),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    headerStyle: HeaderStyle(
-                      formatButtonVisible: false,
-                      titleCentered: true,
-                      titleTextStyle: TextStyle(
-                        color: context.theme.colorScheme.onSurface,
-                        fontSize: Responsive.getSubtitleTextSize(context),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
+                _buildCalendarWidget(context),
+                const SizedBox(height: _spacingLarge),
                 
                 // Selected Date Display
                 AppText.semiBold(
@@ -99,38 +76,11 @@ class PlanView extends GetView<PlanController> {
                   color: context.theme.colorScheme.onSurface,
                   size: Responsive.getSubtitleTextSize(context),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: _spacingMedium),
                 
                 // Check if any meals exist for the day
                 if (_hasNoMealsForDay())
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    margin: const EdgeInsets.symmetric(vertical: 16),
-                    decoration: BoxDecoration(
-                      color: context.theme.colorScheme.surfaceContainerLowest,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: context.theme.colorScheme.onSurface.withValues(alpha: 0.1),
-                      ),
-                    ),
-                    child: Center(
-                      child: Column(
-                        children: [
-                          Icon(
-                            Icons.no_meals,
-                            size: 48,
-                            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                          ),
-                          const SizedBox(height: 12),
-                          AppText.semiBold(
-                            'Nothing planned for this date',
-                            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                            size: Responsive.getBodyTextSize(context),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
+                  _buildEmptyState(context)
                 else ...[
                   // Meal Sections
                   MealSection(
@@ -152,7 +102,7 @@ class PlanView extends GetView<PlanController> {
                     borderColor: Colors.blue,
                   ),
                 ],
-                const SizedBox(height: 24),
+                const SizedBox(height: _spacingLarge),
                 const PlanStatisticsWidget(),
               ],
             ),
@@ -166,7 +116,99 @@ class PlanView extends GetView<PlanController> {
       ),
     );
   }
-  
+
+  Widget _buildCalendarWidget(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: context.theme.colorScheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(_cardBorderRadius),
+      ),
+      child: TableCalendar<DateTime>(
+        firstDay: DateTime.utc(2020, 1, 1),
+        lastDay: DateTime.utc(2030, 12, 31),
+        focusedDay: controller.focusedDay.value,
+        selectedDayPredicate: (day) {
+          return isSameDay(controller.selectedCalendarDate.value, day);
+        },
+        onDaySelected: (selectedDay, focusedDay) {
+          controller.updateSelectedDate(selectedDay);
+        },
+        calendarStyle: CalendarStyle(
+          outsideDaysVisible: false,
+          selectedDecoration: BoxDecoration(
+            color: context.theme.colorScheme.primary,
+            shape: BoxShape.circle,
+          ),
+          todayDecoration: BoxDecoration(
+            color: context.theme.colorScheme.primary.withValues(alpha: 0.5),
+            shape: BoxShape.circle,
+          ),
+        ),
+        headerStyle: HeaderStyle(
+          formatButtonVisible: false,
+          titleCentered: true,
+          titleTextStyle: TextStyle(
+            color: context.theme.colorScheme.onSurface,
+            fontSize: Responsive.getSubtitleTextSize(context),
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(_defaultPadding),
+      margin: const EdgeInsets.symmetric(vertical: _spacingMedium),
+      decoration: BoxDecoration(
+        color: context.theme.colorScheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(_cardBorderRadius),
+        border: Border.all(
+          color: context.theme.colorScheme.onSurface.withValues(alpha: 0.1),
+        ),
+      ),
+      child: Center(
+        child: Column(
+          children: [
+            Icon(
+              Icons.no_meals,
+              size: _emptyStateIconSize,
+              color: context.theme.colorScheme.onSurface.withValues(alpha: 0.5),
+            ),
+            const SizedBox(height: _spacingMedium),
+            AppText.semiBold(
+              'Nothing planned for this date',
+              color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
+              size: Responsive.getBodyTextSize(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorState(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.error,
+            size: _emptyStateIconSize,
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.5),
+          ),
+          const SizedBox(height: _spacingMedium),
+          AppText.semiBold(
+            'An error occurred',
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
+            size: Responsive.getBodyTextSize(context),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showCreateDialog() {
     controller.clearForm();
     Get.dialog<void>(const MealPlanFormDialog());

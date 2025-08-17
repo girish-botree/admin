@@ -28,9 +28,9 @@ class MobileHome extends GetView<HomeController> {
       backgroundColor: Colors.transparent,
       elevation: 0,
       foregroundColor: context.theme.colorScheme.onSurface,
-      actions: [
+      actions: const [
         Padding(
-          padding: const EdgeInsets.only(right: 16.0),
+          padding: EdgeInsets.only(right: 16.0),
           child: SettingsWidget(),
         ),
       ],
@@ -51,7 +51,7 @@ class MobileHome extends GetView<HomeController> {
             subtitle: 'View insights and metrics',
             isPrimary: true,
           ),
-          
+
           const SizedBox(height: 12),
 
           // Admin Management Card with Add Button
