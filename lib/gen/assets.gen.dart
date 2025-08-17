@@ -42,6 +42,10 @@ class $AssetsIconsGen {
   /// File path: assets/icons/ic_home.svg
   SvgGenImage get icHome => const SvgGenImage('assets/icons/ic_home.svg');
 
+  /// File path: assets/icons/ic_ingredient.svg
+  SvgGenImage get icIngredient =>
+      const SvgGenImage('assets/icons/ic_ingredient.svg');
+
   /// File path: assets/icons/ic_login.svg
   SvgGenImage get icLogin => const SvgGenImage('assets/icons/ic_login.svg');
 
@@ -54,13 +58,25 @@ class $AssetsIconsGen {
   /// File path: assets/icons/ic_plan.svg
   SvgGenImage get icPlan => const SvgGenImage('assets/icons/ic_plan.svg');
 
+  /// File path: assets/icons/ic_recipe.svg
+  SvgGenImage get icRecipe => const SvgGenImage('assets/icons/ic_recipe.svg');
+
   /// File path: assets/icons/ic_settings.svg
   SvgGenImage get icSettings =>
       const SvgGenImage('assets/icons/ic_settings.svg');
 
   /// List of all assets
-  List<SvgGenImage> get values =>
-      [icDashboard, icHome, icLogin, icLogout, icMeal, icPlan, icSettings];
+  List<SvgGenImage> get values => [
+        icDashboard,
+        icHome,
+        icIngredient,
+        icLogin,
+        icLogout,
+        icMeal,
+        icPlan,
+        icRecipe,
+        icSettings
+      ];
 }
 
 class $AssetsLanguageGen {

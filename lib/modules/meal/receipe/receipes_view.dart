@@ -1471,15 +1471,16 @@ class ReceipesView extends GetView<MealController> {
   }
   
   void _showRecipeDetails(BuildContext context, dynamic recipe) {
-    // Observable for recipe ingredients
+    // Observables
     final RxList<dynamic> recipeIngredients = <dynamic>[].obs;
     final RxString ingredientsError = ''.obs;
     final RxBool isLoadingIngredients = true.obs;
     final Rx<Map<String, dynamic>?> nutritionData = Rx<Map<String, dynamic>?>(
         null);
     final RxBool isIngredientsExpanded = false.obs;
+    final RxBool isNutritionExpanded = false.obs;
 
-    // Fetch ingredients and nutrition when dialog opens
+    // Data fetch for recipe details
     void fetchRecipeIngredients() async {
       ingredientsError.value = '';
       isLoadingIngredients.value = true;
@@ -1487,23 +1488,15 @@ class ReceipesView extends GetView<MealController> {
 
       try {
         final recipeId = recipe['recipeId']?.toString();
-        debugPrint('Recipe object: $recipe');
-        debugPrint('Fetching recipe details for ID: $recipeId');
-
         if (recipeId == null || recipeId.isEmpty) {
           throw Exception('Recipe ID is null or empty');
         }
 
         final recipeResponse = await controller.getRecipeById(recipeId);
-
-        debugPrint('Raw recipe response: $recipeResponse');
-
-        // Handle the API response structure - the actual data is in the 'data' field
         dynamic recipeData;
         if (recipeResponse is Map<String, dynamic>) {
           if (recipeResponse.containsKey('data')) {
             recipeData = recipeResponse['data'];
-            debugPrint('Extracted recipe data: $recipeData');
           } else {
             recipeData = recipeResponse;
           }
@@ -1512,566 +1505,290 @@ class ReceipesView extends GetView<MealController> {
         }
 
         if (recipeData != null) {
-          debugPrint('Recipe data type: ${recipeData.runtimeType}');
-          debugPrint('Recipe data keys: ${recipeData is Map
-              ? recipeData.keys
-              : 'Not a Map'}');
-
           if (recipeData['ingredients'] != null) {
-            debugPrint('Raw ingredients data: ${recipeData['ingredients']}');
-            debugPrint(
-                'Ingredients type: ${recipeData['ingredients'].runtimeType}');
-
             final ingredientsList = recipeData['ingredients'];
             if (ingredientsList is List) {
               recipeIngredients.value = List<dynamic>.from(ingredientsList);
-              debugPrint('Successfully set ${recipeIngredients.value
-                  .length} ingredients');
-              for (int i = 0; i < recipeIngredients.value.length; i++) {
-                debugPrint('Ingredient $i: ${recipeIngredients.value[i]}');
-              }
             } else {
-              debugPrint(
-                  'Ingredients is not a List: ${ingredientsList.runtimeType}');
               recipeIngredients.value = [];
             }
           } else {
             recipeIngredients.value = [];
-            debugPrint('No ingredients field found in recipe data');
           }
 
-          // Store nutrition data if available
+          // Nutrition per serving
           if (recipeData['nutritionPerServing'] != null) {
             nutritionData.value =
             Map<String, dynamic>.from(recipeData['nutritionPerServing'] as Map);
-            debugPrint('Found nutrition data: ${nutritionData.value}');
-          } else {
-            debugPrint('No nutrition data found');
           }
         } else {
           recipeIngredients.value = [];
-          debugPrint('Recipe data is null');
         }
-      } catch (e, stackTrace) {
+      } catch (e) {
         ingredientsError.value = 'Failed to load recipe details: $e';
-        debugPrint('Error fetching recipe ingredients: $e');
-        debugPrint('Stack trace: $stackTrace');
       } finally {
         isLoadingIngredients.value = false;
       }
     }
 
-    // Fetch ingredients and nutrition immediately
     fetchRecipeIngredients();
 
     Get.dialog<void>(
       Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        backgroundColor: context.theme.colorScheme.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        backgroundColor: Colors.transparent,
         child: Container(
           width: MediaQuery
               .of(context)
               .size
-              .width * 0.9,
-          padding: const EdgeInsets.all(24),
-          constraints: BoxConstraints(maxWidth: 800, maxHeight: MediaQuery
-              .of(context)
-              .size
-              .height * 0.8),
-          child: SingleChildScrollView(
+              .width * 0.95,
+          constraints: BoxConstraints(
+            maxWidth: 900,
+            maxHeight: MediaQuery
+                .of(context)
+                .size
+                .height * 0.9,
+          ),
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.3),
+                blurRadius: 20,
+                spreadRadius: 2,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  recipe['name']?.toString() ?? 'Unnamed Recipe',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: context.theme.colorScheme.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  recipe['description']?.toString() ?? 'No description',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: context.theme.colorScheme.onSurface.withValues(alpha: 0.8),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Flexible(
-                  child: Wrap(
-                    spacing: 12,
-                    runSpacing: 8,
+                // Hero image section + overlays
+                Container(
+                  height: 250,
+                  width: double.infinity,
+                  child: Stack(
+                    fit: StackFit.expand,
                     children: [
-                      _buildInfoChip(
-                          context, 'Servings', '${recipe['servings'] ?? 1}',
-                          Icons.people),
-                      _buildInfoChip(context, 'Cuisine',
-                          recipe['cuisine']?.toString() ?? 'Unknown',
-                          Icons.public),
-                      if (recipe['dietaryCategory'] != null &&
-                          recipe['dietaryCategory'] != 0)
-                        _buildInfoChip(context, 'Diet',
-                            _getDietaryLabel(recipe['dietaryCategory'] as int),
-                            Icons.eco),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-            // Collapsible Ingredients Section
-                Obx(() =>
-                    GestureDetector(
-                      onTap: () => isIngredientsExpanded.toggle(),
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
+                      _buildPlaceholderImage(context, recipe),
+                      Container(
                         decoration: BoxDecoration(
-                          color: context.theme.colorScheme.primaryContainer
-                              .withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: context.theme.colorScheme
-                              .primary.withValues(alpha: 0.3)),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.restaurant_menu,
-                                  color: context.theme.colorScheme.primary,
-                                  size: 24,
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  'Ingredients${recipeIngredients.isNotEmpty
-                                      ? ' (${recipeIngredients.length})'
-                                      : ''}',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: context.theme.colorScheme.onSurface,
-                                  ),
-                                ),
-                              ],
-                    ),
-                    Row(
-                      children: [
-                        if (!isIngredientsExpanded.value)
-                          Text(
-                            'Tap to view',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: context.theme.colorScheme.onSurface
-                                  .withValues(alpha: 0.6),
-                            ),
-                          ),
-                        const SizedBox(width: 8),
-                        AnimatedRotation(
-                          turns: isIngredientsExpanded.value ? 0.5 : 0.0,
-                          duration: const Duration(milliseconds: 200),
-                          child: Icon(
-                            Icons.keyboard_arrow_down,
-                            color: context.theme.colorScheme.primary,
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withValues(alpha: 0.8),
+                            ],
+                            stops: const [0.3, 1.0],
                           ),
                         ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            )),
-
-                // Expanded Ingredients Content
-                Obx(() =>
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      height: isIngredientsExpanded.value ? null : 0,
-                      child: isIngredientsExpanded.value
-                          ? Column(
-                        children: [
-                          const SizedBox(height: 16),
-                          Obx(() {
-                            if (isLoadingIngredients.value) {
-                              return Container(
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.withValues(alpha: 0.08),
-                                  borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              children: [
-                                SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                        context.theme.colorScheme.primary),
-                                  ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                recipe['name']?.toString() ?? 'Unnamed Recipe',
+                                style: const TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  shadows: [
+                                    Shadow(
+                                      offset: Offset(0, 2),
+                                      blurRadius: 4,
+                                      color: Colors.black54,
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  'Loading ingredients...',
-                                  style: TextStyle(
-                                    color: context.theme.colorScheme.onSurface
-                                        .withValues(alpha: 0.8),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-
-                        if (ingredientsError.value.isNotEmpty) {
-                          return Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Colors.red.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(Icons.error_outline, color: Colors.red,
-                                    size: 20),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    ingredientsError.value,
-                                    style: const TextStyle(color: Colors.red),
-                                  ),
-                                ),
-                                IconButton(
-                                  onPressed: fetchRecipeIngredients,
-                                  icon: const Icon(Icons.refresh, size: 20),
-                                  tooltip: 'Retry',
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-
-                        if (recipeIngredients.isEmpty) {
-                          return Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Colors.amber.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                  color: Colors.amber.withValues(alpha: 0.3)),
-                            ),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.restaurant_menu_outlined,
-                                  size: 32,
-                                  color: Colors.amber[700],
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'No ingredients added yet',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: context.theme.colorScheme.onSurface,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'Edit this recipe to add ingredients and get nutrition data',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: context.theme.colorScheme.onSurface
-                                        .withValues(alpha: 0.7),
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-
-                        return Column(
-                          children: recipeIngredients.map((ingredient) =>
-                              Container(
-                                margin: const EdgeInsets.only(bottom: 8),
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 12, horizontal: 16),
-                                decoration: BoxDecoration(
-                                  color: context.theme.colorScheme
-                                      .surfaceContainerLowest,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                      color: context.theme.colorScheme.outline
-                                          .withValues(alpha: 0.2)),
-                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 8),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
                                 child: Row(
                                   children: [
-                                    Container(
-                                      padding: const EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                        color: context.theme.colorScheme
-                                            .primary,
-                                        shape: BoxShape.circle,
+                                    _buildQuickInfoChip(
+                                      context,
+                                      Icons.people_outline,
+                                      '${recipe['servings'] ?? 1} servings',
+                                    ),
+                                    const SizedBox(width: 8),
+                                    if (recipe['cuisine']
+                                        ?.toString()
+                                        .isNotEmpty == true)
+                                      _buildQuickInfoChip(
+                                        context,
+                                        Icons.public,
+                                        recipe['cuisine']?.toString() ?? '',
                                       ),
-                                      child: const Icon(
-                                          Icons.eco, color: Colors.white,
-                                          size: 16),
+                                    const SizedBox(width: 8),
+                                    if (recipe['dietaryCategory'] != null &&
+                                        recipe['dietaryCategory'] != 0)
+                                      _buildQuickInfoChip(
+                                        context,
+                                        Icons.eco,
+                                        _getDietaryLabel(
+                                            recipe['dietaryCategory'] as int),
+                                        color: _getDietaryColor(
+                                            recipe['dietaryCategory'] as int),
+                                      ),
+                                  ],
                                 ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment
-                                        .start,
-                                    children: [
-                                      Text(
-                                        ingredient['name']?.toString() ??
-                                            'Unknown Ingredient',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: context.theme.colorScheme
-                                              .onSurface,
-                                        ),
-                                      ),
-                                      Text(
-                                        '${ingredient['quantity'] ?? 0}g',
-                                        style: TextStyle(
-                                          color: context.theme.colorScheme
-                                              .onSurface.withValues(alpha: 0.7),
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )).toList(),
-                        );
-                      }),
-                    ],
-              )
-                  : null,
-            )),
-
-    // Nutrition Information Section
-                const SizedBox(height: 24),
-                Obx(() {
-                  if (nutritionData.value == null) {
-                    return const SizedBox.shrink();
-                  }
-
-                  final nutrition = nutritionData.value!;
-
-                  // Check if nutrition data is meaningful (not all zeros)
-                  final hasNutritionData = (nutrition['calories'] as num? ??
-                      0) > 0 ||
-                      (nutrition['protein'] as num? ?? 0) > 0 ||
-                      (nutrition['carbohydrates'] as num? ?? 0) > 0 ||
-                      (nutrition['fat'] as num? ?? 0) > 0;
-
-                  if (!hasNutritionData) {
-                    return Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.amber.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.amber.withValues(
-                            alpha: 0.3)),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.info_outline, color: Colors.amber[700],
-                              size: 20),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              'Add ingredients to this recipe to view nutrition information',
-                              style: TextStyle(
-                                color: Colors.amber[700],
-                                fontSize: 14,
+                      Positioned(
+                        top: 16,
+                        right: 16,
+                        child: _buildFloatingActionButton(
+                          context,
+                          icon: Icons.close,
+                          onPressed: () => Get.back<void>(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Scrollable content
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (recipe['description']
+                            ?.toString()
+                            .isNotEmpty == true) ...[
+                          _buildSectionHeader(context, 'Description', Icons
+                              .description),
+                          const SizedBox(height: 12),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: context.theme.colorScheme
+                                  .surfaceContainerLowest,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: context.theme.colorScheme.outline
+                                    .withValues(alpha: 0.2),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Nutrition (Per Serving)',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: context.theme.colorScheme.onSurface,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-
-                      // Macronutrients
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: context.theme.colorScheme.primaryContainer
-                              .withValues(alpha: 0.3),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Macronutrients',
+                            child: Text(
+                              recipe['description']?.toString() ?? '',
                               style: TextStyle(
                                 fontSize: 16,
-                                fontWeight: FontWeight.bold,
                                 color: context.theme.colorScheme.onSurface,
+                                height: 1.6,
                               ),
                             ),
-                            const SizedBox(height: 8),
-                            Wrap(
-                              spacing: 16,
-                              runSpacing: 8,
-                              children: [
-                                _buildNutritionItem(context, 'Calories',
-                                    '${nutrition['calories']?.toStringAsFixed(
-                                        0) ?? '0'}', 'kcal'),
-                                _buildNutritionItem(context, 'Protein',
-                                    '${nutrition['protein']?.toStringAsFixed(
-                                        1) ?? '0'}', 'g'),
-                                _buildNutritionItem(context, 'Carbs',
-                                    '${nutrition['carbohydrates']
-                                        ?.toStringAsFixed(1) ?? '0'}', 'g'),
-                                _buildNutritionItem(context, 'Fat',
-                                    '${nutrition['fat']?.toStringAsFixed(1) ??
-                                        '0'}', 'g'),
-                                _buildNutritionItem(context, 'Fiber',
-                                    '${nutrition['fiber']?.toStringAsFixed(1) ??
-                                        '0'}', 'g'),
-                                _buildNutritionItem(context, 'Sugar',
-                                    '${nutrition['sugar']?.toStringAsFixed(1) ??
-                                        '0'}', 'g'),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      if (nutrition['vitamins'] != null) ...[
-                        const SizedBox(height: 12),
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: context.theme.colorScheme.secondaryContainer
-                                .withValues(alpha: 0.3),
-                            borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          const SizedBox(height: 24),
+                        ],
+
+                        _buildSectionHeader(
+                          context,
+                          'Ingredients${recipeIngredients.isNotEmpty
+                              ? ' (${recipeIngredients.length})'
+                              : ''}',
+                          Icons.restaurant_menu,
+                          trailing: Obx(() =>
+                              IconButton(
+                                onPressed: () => isIngredientsExpanded.toggle(),
+                                icon: AnimatedRotation(
+                                  turns: isIngredientsExpanded.value
+                                      ? 0.5
+                                      : 0.0,
+                                  duration: const Duration(milliseconds: 300),
+                                  child: Icon(
+                                    Icons.keyboard_arrow_down,
+                                    color: context.theme.colorScheme.primary,
+                                  ),
+                                ),
+                              )),
+                        ),
+                        const SizedBox(height: 12),
+                        Obx(() =>
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 400),
+                              curve: Curves.easeInOut,
+                              child: isIngredientsExpanded.value
+                                  ? _buildIngredientsContent(
+                                  context, recipeIngredients, ingredientsError,
+                                  isLoadingIngredients, fetchRecipeIngredients)
+                                  : _buildIngredientsPreview(
+                                  context, recipeIngredients, ingredientsError,
+                                  isLoadingIngredients),
+                            )),
+                        const SizedBox(height: 24),
+
+                        Obx(() {
+                          final nutrition = nutritionData.value;
+                          if (nutrition == null) return const SizedBox.shrink();
+
+                          final hasNutritionData = (nutrition['calories'] as num? ??
+                              0) > 0 ||
+                              (nutrition['protein'] as num? ?? 0) > 0 ||
+                              (nutrition['carbohydrates'] as num? ?? 0) > 0 ||
+                              (nutrition['fat'] as num? ?? 0) > 0;
+
+                          if (!hasNutritionData) {
+                            return _buildNutritionPlaceholder(context);
+                          }
+
+                          return Column(
                             children: [
-                              Text(
-                                'Key Vitamins',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: context.theme.colorScheme.onSurface,
+                              _buildSectionHeader(
+                                context,
+                                'Nutrition (Per Serving)',
+                                Icons.analytics,
+                                trailing: IconButton(
+                                  onPressed: () => isNutritionExpanded.toggle(),
+                                  icon: Obx(() =>
+                                      AnimatedRotation(
+                                        turns: isNutritionExpanded.value
+                                            ? 0.5
+                                            : 0.0,
+                                        duration: const Duration(
+                                            milliseconds: 300),
+                                        child: Icon(
+                                          Icons.keyboard_arrow_down,
+                                          color: context.theme.colorScheme
+                                              .primary,
+                                        ),
+                                      )),
                                 ),
                               ),
-                              const SizedBox(height: 8),
-                              Wrap(
-                                spacing: 12,
-                                runSpacing: 6,
-                                children: (nutrition['vitamins'] as Map<
-                                    String,
-                                    dynamic>)
-                                    .entries
-                                    .where((entry) =>
-                                entry.value != null && (entry.value as num) > 0)
-                                    .take(6) // Show top 6 vitamins
-                                    .map((entry) =>
-                                    _buildNutritionItem(
-                                      context,
-                                      'Vitamin ${entry.key}',
-                                      '${entry.value.toStringAsFixed(1)}',
-                                      _getVitaminUnit(entry.key),
-                                    ))
-                                    .toList(),
-                              ),
+                              const SizedBox(height: 12),
+                              Obx(() =>
+                                  AnimatedContainer(
+                                    duration: const Duration(milliseconds: 400),
+                                    curve: Curves.easeInOut,
+                                    child: isNutritionExpanded.value
+                                        ? _buildExpandedNutritionContent(
+                                        context, nutrition)
+                                        : _buildNutritionPreview(
+                                        context, nutrition),
+                                  )),
                             ],
-                          ),
-                        ),
+                          );
+                        }),
                       ],
-
-                      if (nutrition['minerals'] != null) ...[
-                        const SizedBox(height: 12),
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: context.theme.colorScheme.tertiaryContainer
-                                .withValues(alpha: 0.3),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Key Minerals',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: context.theme.colorScheme.onSurface,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Wrap(
-                                spacing: 12,
-                                runSpacing: 6,
-                                children: (nutrition['minerals'] is Map<
-                                    String,
-                                    dynamic>)
-                                    ? (nutrition['minerals'] as Map<
-                                    String,
-                                    dynamic>)
-                                    .entries
-                                    .where((entry) =>
-                                entry.value != null && (entry.value is num) &&
-                                    (entry.value as num) > 0)
-                                    .take(6) // Show top 6 minerals
-                                    .map((entry) =>
-                                    _buildNutritionItem(
-                                      context,
-                                      entry.key,
-                                      '${(entry.value as num).toStringAsFixed(
-                                          1)}',
-                                      'mg',
-                                    ))
-                                    .toList()
-                                    : [],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ],
-                  );
-                }),
-
-                const SizedBox(height: 24),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () => Get.back<void>(),
-                    style: TextButton.styleFrom(
-                      backgroundColor: context.theme.colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
                     ),
-                    child: const Text('Close'),
                   ),
                 ),
               ],
@@ -2081,6 +1798,819 @@ class ReceipesView extends GetView<MealController> {
       ),
     );
   }
+
+  Widget _buildQuickInfoChip(BuildContext context, IconData icon, String text,
+      {Color? color}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: color?.withValues(alpha: 0.9) ??
+            Colors.white.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: Colors.white),
+          const SizedBox(width: 6),
+          Text(
+            text,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFloatingActionButton(BuildContext context, {
+    required IconData icon,
+    required VoidCallback onPressed,
+    Color? color,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.5),
+        shape: BoxShape.circle,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(24),
+          onTap: onPressed,
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Icon(
+              icon,
+              color: color ?? Colors.white,
+              size: 20,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(BuildContext context, String title, IconData icon,
+      {Widget? trailing}) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.primary,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, color: Colors.white, size: 20),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: context.theme.colorScheme.onSurface,
+            ),
+          ),
+        ),
+        if (trailing != null) trailing,
+      ],
+    );
+  }
+
+  Widget _buildIngredientsPreview(BuildContext context,
+      RxList<dynamic> ingredients, RxString error, RxBool isLoading) {
+    return Obx(() {
+      if (isLoading.value) {
+        return _buildLoadingCard(context, 'Loading ingredients...');
+      }
+
+      if (error.value.isNotEmpty) {
+        return _buildErrorCard(context, error.value, () {});
+      }
+
+      if (ingredients.isEmpty) {
+        return _buildEmptyCard(context, 'No ingredients added yet',
+            Icons.restaurant_menu_outlined);
+      }
+
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: context.theme.colorScheme.primaryContainer.withValues(
+              alpha: 0.3),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+              color: context.theme.colorScheme.primary.withValues(alpha: 0.2)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Quick Preview',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: context.theme.colorScheme.onSurface.withValues(
+                    alpha: 0.7),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              ingredients.take(3).map((ing) =>
+              ing['name']?.toString() ?? 'Unknown').join(', ') +
+                  (ingredients.length > 3 ? ', and ${ingredients.length -
+                      3} more...' : ''),
+              style: TextStyle(
+                fontSize: 16,
+                color: context.theme.colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Tap to view all ingredients',
+              style: TextStyle(
+                fontSize: 12,
+                color: context.theme.colorScheme.primary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildIngredientsContent(BuildContext context,
+      RxList<dynamic> ingredients, RxString error, RxBool isLoading,
+      VoidCallback retry) {
+    return Obx(() {
+      if (isLoading.value) {
+        return _buildLoadingCard(context, 'Loading detailed ingredients...');
+      }
+
+      if (error.value.isNotEmpty) {
+        return _buildErrorCard(context, error.value, retry);
+      }
+
+      if (ingredients.isEmpty) {
+        return _buildEmptyCard(
+            context, 'No ingredients added to this recipe yet',
+            Icons.restaurant_menu_outlined);
+      }
+
+      return Column(
+        children: ingredients.map((ingredient) =>
+            Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: context.theme.colorScheme.surfaceContainerLowest,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                    color: context.theme.colorScheme.outline.withValues(
+                        alpha: 0.2)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          context.theme.colorScheme.primary,
+                          context.theme.colorScheme.primary.withValues(
+                              alpha: 0.8),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.eco, color: Colors.white, size: 20),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          ingredient['name']?.toString() ??
+                              'Unknown Ingredient',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: context.theme.colorScheme.onSurface,
+                          ),
+                    ),
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: context.theme.colorScheme.secondaryContainer,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '${ingredient['quantity'] ?? 0}g',
+                        style: TextStyle(
+                          color: context.theme.colorScheme.onSecondaryContainer,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        )).toList(),
+      );
+    });
+  }
+
+  Widget _buildNutritionPreview(BuildContext context,
+      Map<String, dynamic> nutrition) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            context.theme.colorScheme.tertiaryContainer.withValues(alpha: 0.3),
+            context.theme.colorScheme.tertiaryContainer.withValues(alpha: 0.1),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+            color: context.theme.colorScheme.tertiary.withValues(alpha: 0.2)),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(child: _buildNutritionCircle(context, 'Calories',
+                  '${nutrition['calories']?.toStringAsFixed(0) ?? '0'}', 'kcal',
+                  Colors.orange)),
+              Expanded(child: _buildNutritionCircle(context, 'Protein',
+                  '${nutrition['protein']?.toStringAsFixed(1) ?? '0'}', 'g',
+                  Colors.red)),
+              Expanded(child: _buildNutritionCircle(context, 'Carbs',
+                  '${nutrition['carbohydrates']?.toStringAsFixed(1) ?? '0'}',
+                  'g', Colors.blue)),
+              Expanded(child: _buildNutritionCircle(context, 'Fat',
+                  '${nutrition['fat']?.toStringAsFixed(1) ?? '0'}', 'g',
+                  Colors.green)),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Tap to view detailed nutrition breakdown',
+            style: TextStyle(
+              fontSize: 12,
+              color: context.theme.colorScheme.tertiary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNutritionCircle(BuildContext context, String label, String value,
+      String unit, Color color) {
+    return Column(
+      children: [
+        Container(
+          width: 60,
+          height: 60,
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.2),
+            shape: BoxShape.circle,
+            border: Border.all(color: color, width: 2),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
+                Text(
+                  unit,
+                  style: TextStyle(
+                    fontSize: 8,
+                    color: color,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            color: context.theme.colorScheme.onSurface,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildExpandedNutritionContent(BuildContext context,
+      Map<String, dynamic> nutrition) {
+    return Column(
+      children: [
+        // Macronutrients with progress bars
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                context.theme.colorScheme.primaryContainer.withValues(
+                    alpha: 0.5),
+                context.theme.colorScheme.primaryContainer.withValues(
+                    alpha: 0.2),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Macronutrients',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: context.theme.colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 16),
+              _buildNutritionBar(
+                  context,
+                  'Calories',
+                  nutrition['calories'] != null
+                      ? (nutrition['calories'] is num
+                      ? (nutrition['calories'] as num).toDouble()
+                      : double.tryParse(nutrition['calories'].toString()) ?? 0)
+                      : 0,
+                  2000,
+                  'kcal',
+                  Colors.orange),
+              _buildNutritionBar(
+                  context,
+                  'Protein',
+                  nutrition['protein'] != null
+                      ? (nutrition['protein'] is num
+                      ? (nutrition['protein'] as num).toDouble()
+                      : double.tryParse(nutrition['protein'].toString()) ?? 0)
+                      : 0,
+                  50,
+                  'g',
+                  Colors.red),
+              _buildNutritionBar(
+                  context,
+                  'Carbohydrates',
+                  nutrition['carbohydrates'] != null
+                      ? (nutrition['carbohydrates'] is num
+                      ? (nutrition['carbohydrates'] as num).toDouble()
+                      : double.tryParse(
+                      nutrition['carbohydrates'].toString()) ?? 0)
+                      : 0,
+                  300,
+                  'g',
+                  Colors.blue),
+              _buildNutritionBar(
+                  context,
+                  'Fat',
+                  nutrition['fat'] != null
+                      ? (nutrition['fat'] is num ? (nutrition['fat'] as num)
+                      .toDouble() : double.tryParse(
+                      nutrition['fat'].toString()) ?? 0)
+                      : 0,
+                  65,
+                  'g',
+                  Colors.green),
+              _buildNutritionBar(
+                  context,
+                  'Fiber',
+                  nutrition['fiber'] != null
+                      ? (nutrition['fiber'] is num ? (nutrition['fiber'] as num)
+                      .toDouble() : double.tryParse(
+                      nutrition['fiber'].toString()) ?? 0)
+                      : 0,
+                  25,
+                  'g',
+                  Colors.brown),
+              _buildNutritionBar(
+                  context,
+                  'Sugar',
+                  nutrition['sugar'] != null
+                      ? (nutrition['sugar'] is num ? (nutrition['sugar'] as num)
+                      .toDouble() : double.tryParse(
+                      nutrition['sugar'].toString()) ?? 0)
+                      : 0,
+                  50,
+                  'g',
+                  Colors.pink),
+            ],
+          ),
+        ),
+
+        if (nutrition['vitamins'] != null) ...[
+          const SizedBox(height: 16),
+          _buildVitaminsSection(
+              context, nutrition['vitamins'] as Map<String, dynamic>),
+        ],
+
+        if (nutrition['minerals'] != null) ...[
+          const SizedBox(height: 16),
+          _buildMineralsSection(
+              context, nutrition['minerals'] as Map<String, dynamic>),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildNutritionBar(BuildContext context, String label, double value,
+      double maxValue, String unit, Color color) {
+    final percentage = (value / maxValue).clamp(0.0, 1.0);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: context.theme.colorScheme.onSurface,
+                ),
+              ),
+              Text(
+                '${value.toStringAsFixed(value % 1 == 0 ? 0 : 1)}$unit',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Container(
+            height: 8,
+            decoration: BoxDecoration(
+              color: Colors.grey.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: FractionallySizedBox(
+              alignment: Alignment.centerLeft,
+              widthFactor: percentage,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [color, color.withValues(alpha: 0.8)],
+                  ),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVitaminsSection(BuildContext context,
+      Map<String, dynamic> vitamins) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            context.theme.colorScheme.secondaryContainer.withValues(alpha: 0.5),
+            context.theme.colorScheme.secondaryContainer.withValues(alpha: 0.2),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '💊 Essential Vitamins',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: context.theme.colorScheme.onSurface,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: vitamins.entries
+                .where((entry) =>
+            entry.value != null && (entry.value as num) > 0)
+                .take(8)
+                .map((entry) =>
+                _buildVitaminChip(
+                  context,
+                  'Vitamin ${entry.key}',
+                  '${entry.value.toStringAsFixed(1)}${_getVitaminUnit(
+                      entry.key)}',
+                ))
+                .toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMineralsSection(BuildContext context,
+      Map<String, dynamic> minerals) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            context.theme.colorScheme.tertiaryContainer.withValues(alpha: 0.5),
+            context.theme.colorScheme.tertiaryContainer.withValues(alpha: 0.2),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '⚡ Key Minerals',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: context.theme.colorScheme.onSurface,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: (minerals.entries)
+                .where((entry) =>
+            entry.value != null && (entry.value is num) &&
+                (entry.value as num) > 0)
+                .take(8)
+                .map((entry) =>
+                _buildMineralChip(
+                  context,
+                  entry.key,
+                  '${(entry.value as num).toStringAsFixed(1)}mg',
+                ))
+                .toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVitaminChip(BuildContext context, String name, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: context.theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.orange.withValues(alpha: 0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Text(
+            name,
+            style: TextStyle(
+              fontSize: 12,
+              color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Colors.orange,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMineralChip(BuildContext context, String name, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: context.theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.purple.withValues(alpha: 0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.purple.withValues(alpha: 0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Text(
+            name,
+            style: TextStyle(
+              fontSize: 12,
+              color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Colors.purple,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingCard(BuildContext context, String message) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: context.theme.colorScheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+            color: context.theme.colorScheme.outline.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 24,
+            height: 24,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              valueColor: AlwaysStoppedAnimation<Color>(
+                  context.theme.colorScheme.primary),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              message,
+              style: TextStyle(
+                color: context.theme.colorScheme.onSurface.withValues(
+                    alpha: 0.8),
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorCard(BuildContext context, String error,
+      VoidCallback onRetry) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.red.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.error_outline, color: Colors.red, size: 24),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  error,
+                  style: const TextStyle(color: Colors.red, fontSize: 16),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton.icon(
+            onPressed: onRetry,
+            icon: const Icon(Icons.refresh),
+            label: const Text('Retry'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyCard(BuildContext context, String message, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: Colors.amber.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.amber.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, size: 48, color: Colors.amber[700]),
+          const SizedBox(height: 16),
+          Text(
+            message,
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.amber[700],
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNutritionPlaceholder(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.amber.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.amber.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        children: [
+          Icon(Icons.analytics_outlined, size: 48, color: Colors.amber[700]),
+          const SizedBox(height: 16),
+          Text(
+            'Nutrition Coming Soon!',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.amber[700],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Add ingredients to this recipe to unlock detailed nutrition analysis',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.amber[600],
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
   
   Widget _buildInfoChip(BuildContext context, String label, String value, IconData icon) {
     return Container(
