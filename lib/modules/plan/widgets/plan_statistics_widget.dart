@@ -62,26 +62,11 @@ class PlanStatisticsWidget extends GetView<PlanController> {
               const SizedBox(height: 20),
 
               // Quick Stats Row
-              Row(
-                children: [
-                  Expanded(
-                    child: _StatCard(
-                      title: 'Total Plans',
-                      value: controller.mealPlans.length.toString(),
-                      icon: Icons.restaurant,
-                      color: AppColor.chartColors[0],
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _StatCard(
-                      title: "Selected Date's Plans",
-                      value: selectedDateCount.toString(),
-                      icon: Icons.today,
-                      color: AppColor.chartColors[1],
-                    ),
-                  ),
-                ],
+              _StatCard(
+                title: "Selected Date's Plans",
+                value: selectedDateCount.toString(),
+                icon: Icons.today,
+                color: AppColor.chartColors[1],
               ),
               const SizedBox(height: 16),
 
