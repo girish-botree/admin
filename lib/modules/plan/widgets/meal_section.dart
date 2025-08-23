@@ -20,6 +20,53 @@ class MealSection extends StatelessWidget {
     this.borderColor,
   }) : super(key: key);
 
+  Widget _getFoodTypeIcon(FoodType? foodType, ThemeData theme) {
+    if (foodType == null) return const SizedBox.shrink();
+
+    IconData iconData;
+    Color iconColor;
+
+    switch (foodType) {
+      case FoodType.vegetarian:
+        iconData = Icons.eco;
+        iconColor = Colors.green;
+        break;
+      case FoodType.nonVegetarian:
+        iconData = Icons.restaurant;
+        iconColor = Colors.red;
+        break;
+      case FoodType.vegan:
+        iconData = Icons.grass;
+        iconColor = Colors.lightGreen;
+        break;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: iconColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: iconColor.withOpacity(0.3), width: 1),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            iconData,
+            size: 12,
+            color: iconColor,
+          ),
+          const SizedBox(width: 4),
+          AppText(
+            foodType.displayName,
+            color: iconColor,
+            size: 10,
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -86,10 +133,18 @@ class MealSection extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          AppText.medium(
-                            plan.name,
-                            color: theme.colorScheme.onSurface,
-                            size: Responsive.getBodyTextSize(context),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: AppText.medium(
+                                  plan.name,
+                                  color: theme.colorScheme.onSurface,
+                                  size: Responsive.getBodyTextSize(context),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              _getFoodTypeIcon(plan.foodType, theme),
+                            ],
                           ),
                           const SizedBox(height: 4),
                           AppText(
@@ -110,6 +165,11 @@ class MealSection extends StatelessWidget {
                       ),
                     const SizedBox(width: 8),
                     PopupMenuButton<String>(
+                      padding: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      elevation: 8,
+                      color: theme.colorScheme.surface,
                       onSelected: (value) {
                         final controller = Get.find<PlanController>();
                         if (value == 'edit') {
@@ -120,23 +180,43 @@ class MealSection extends StatelessWidget {
                         }
                       },
                       itemBuilder: (context) => [
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'edit',
                           child: Row(
                             children: [
-                              Icon(Icons.edit, size: 16),
-                              SizedBox(width: 8),
-                              Text('Edit'),
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: const Icon(Icons.edit_rounded, size: 14,
+                                    color: Colors.blue),
+                              ),
+                              const SizedBox(width: 12),
+                              const Text('Edit Plan', style: TextStyle(
+                                  fontWeight: FontWeight.w500)),
                             ],
                           ),
                         ),
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'delete',
                           child: Row(
                             children: [
-                              Icon(Icons.delete, size: 16, color: Colors.red),
-                              SizedBox(width: 8),
-                              Text('Delete', style: TextStyle(color: Colors.red)),
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: const Icon(
+                                    Icons.delete_rounded, size: 14,
+                                    color: Colors.red),
+                              ),
+                              const SizedBox(width: 12),
+                              const Text('Delete Plan',
+                                  style: TextStyle(color: Colors.red,
+                                      fontWeight: FontWeight.w500)),
                             ],
                           ),
                         ),
@@ -154,25 +234,131 @@ class MealSection extends StatelessWidget {
 
 
   void _showDeleteDialog(BuildContext context, MealPlan plan, PlanController controller) {
-    showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Meal Plan'),
-        content: Text('Are you sure you want to delete "${plan.name}"?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+    Get.dialog<void>(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        backgroundColor: context.theme.colorScheme.surface,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(24),
           ),
-          ElevatedButton(
-            onPressed: () async {
-              await controller.deleteMealPlan(plan.id!);
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Delete'),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.delete_outline_rounded,
+                  size: 32,
+                  color: Colors.red,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Delete Meal Plan',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  color: context.theme.colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Are you sure you want to delete "${plan.name}"?',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: context.theme.colorScheme.onSurface.withValues(
+                      alpha: 0.8),
+                  height: 1.4,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'This action cannot be undone.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: context.theme.colorScheme.onSurface.withValues(
+                      alpha: 0.6),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Get.back<void>(),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        side: BorderSide(
+                          color: context.theme.colorScheme.outline.withValues(
+                              alpha: 0.5),
+                        ),
+                      ),
+                      child: const Text('Cancel'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: () async {
+                        if (plan.id != null && plan.id!.isNotEmpty) {
+                          try {
+                            print(
+                                'Attempting to delete meal plan with ID: ${plan
+                                    .id}');
+                            print('Meal plan name: ${plan.name}');
+                            Get.back<void>(); // Close dialog first
+                            await controller.deleteMealPlan(plan.id!);
+                            print('Delete operation completed');
+                          } catch (e) {
+                            print('Delete operation failed: $e');
+                            Get.snackbar(
+                              'Error',
+                              'Failed to delete meal plan: ${e.toString()}',
+                              backgroundColor: Colors.red,
+                              colorText: Colors.white,
+                              duration: const Duration(seconds: 5),
+                            );
+                          }
+                        } else {
+                          print(
+                              'Cannot delete meal plan - ID is null or empty: ${plan
+                                  .id}');
+                          Get.back<void>();
+                          Get.snackbar(
+                            'Error',
+                            'Cannot delete meal plan: Invalid ID (${plan.id})',
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                            duration: const Duration(seconds: 5),
+                          );
+                        }
+                      },
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: const Text('Delete'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

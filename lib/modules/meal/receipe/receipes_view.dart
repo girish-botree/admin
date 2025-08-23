@@ -19,15 +19,8 @@ class ReceipesView extends GetView<MealController> {
     
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          title: AppText.semiBold(
-              'Recipes', color: context.theme.colorScheme.onSurface,
-              size: Responsive.getTitleTextSize(context)),
-          leading: IconButton(
-            onPressed: () => Get.back<void>(),
-            icon: Icon(Icons.arrow_back_ios, color: context.theme.colorScheme.onSurface),
-          ),
-        ),
+        backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
+        appBar: _buildModernAppBar(context),
         body: Obx(() {
           if (controller.isLoading.value) {
             return _buildShimmerLoading(context);
@@ -43,116 +36,418 @@ class ReceipesView extends GetView<MealController> {
           
           return _buildRecipeGrid(context, controller);
         }),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => _showAddRecipeDialog(context),
-          backgroundColor: context.theme.colorScheme.onSurface,
-          child: const Icon(Icons.add),
-        ),
+        floatingActionButton: _buildModernFAB(context),
       ),
     );
   }
-  
+
+  PreferredSizeWidget _buildModernAppBar(BuildContext context) {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
+      surfaceTintColor: Colors.transparent,
+      title: Text(
+        'Recipes',
+        style: TextStyle(
+          fontSize: Responsive.getTitleTextSize(context),
+          fontWeight: FontWeight.w600,
+          color: context.theme.colorScheme.onSurface,
+          letterSpacing: -0.5,
+        ),
+      ),
+      leading: IconButton(
+        onPressed: () => Get.back<void>(),
+        icon: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.surfaceContainerLowest,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: context.theme.colorScheme.onSurface.withValues(alpha: 0.2),
+            ),
+          ),
+          child: Icon(
+            Icons.arrow_back_ios_new,
+            size: 18,
+            color: context.theme.colorScheme.onSurface,
+          ),
+        ),
+      ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 16),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: context.theme.colorScheme.onSurface.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Obx(() =>
+                Text(
+                  '${controller.recipes.length} recipes',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: context.theme.colorScheme.onSurface,
+                  ),
+                )),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildModernFAB(BuildContext context) {
+    return FloatingActionButton.extended(
+      onPressed: () => _showAddRecipeDialog(context),
+      backgroundColor: context.theme.colorScheme.onSurface,
+      foregroundColor: context.theme.colorScheme.surfaceContainerLowest,
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      icon: const Icon(Icons.add_rounded),
+      label: const Text(
+        'Add Recipe',
+        style: TextStyle(fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+
   Widget _buildErrorState(BuildContext context, MealController controller) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.error_outline, size: 48, color: Colors.red),
-          const SizedBox(height: 16),
-          const Text(
-            'Error: Data not found, try restarting the app',
-            style: TextStyle(color: Colors.red, fontSize: 16),
-            textAlign: TextAlign.center,
+      child: Container(
+        margin: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: context.theme.colorScheme.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.2),
+            width: 1,
           ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () => controller.fetchRecipes(),
-            child: const Text('Try Again'),
-          ),
-        ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: context.theme.colorScheme.onSurface.withValues(
+                    alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.error_outline_rounded,
+                size: 48,
+                color: context.theme.colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Something went wrong',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: context.theme.colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Unable to load recipes. Please try again.',
+              style: TextStyle(
+                fontSize: 16,
+                color: context.theme.colorScheme.onSurface.withValues(
+                    alpha: 0.7),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: () => controller.fetchRecipes(),
+              icon: const Icon(Icons.refresh_rounded),
+              label: const Text('Try Again'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: context.theme.colorScheme.onSurface,
+                foregroundColor: context.theme.colorScheme
+                    .surfaceContainerLowest,
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
   
   Widget _buildEmptyState(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.restaurant_menu, size: 64, color: Colors.grey),
-          const SizedBox(height: 16),
-          const Text(
-            'No recipes found',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Add recipes to get started',
-            style: TextStyle(color: Colors.grey),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton.icon(
-            onPressed: () => _showAddRecipeDialog(context),
-            icon: const Icon(Icons.add),
-            label: const Text('Add Recipe'),
-          ),
-        ],
+      child: Container(
+        margin: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: context.theme.colorScheme.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: context.theme.colorScheme.onSurface.withValues(
+                    alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.restaurant_menu_rounded,
+                size: 64,
+                color: context.theme.colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'No recipes yet',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w600,
+                color: context.theme.colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Start creating delicious recipes\nfor your meal plans',
+              style: TextStyle(
+                fontSize: 16,
+                color: context.theme.colorScheme.onSurface.withValues(
+                    alpha: 0.7),
+                height: 1.4,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton.icon(
+              onPressed: () => _showAddRecipeDialog(context),
+              icon: const Icon(Icons.add_rounded),
+              label: const Text('Create First Recipe'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: context.theme.colorScheme.onSurface,
+                foregroundColor: context.theme.colorScheme
+                    .surfaceContainerLowest,
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24, vertical: 16),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16)),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
   
   Widget _buildRecipeGrid(BuildContext context, MealController controller) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        int crossAxisCount = constraints.maxWidth > 1200 ? 5 : 
-                            constraints.maxWidth > 900 ? 4 : 
-                            constraints.maxWidth > 600 ? 3 : 2;
-        
-        return GridView.builder(
-          padding: const EdgeInsets.all(16),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: crossAxisCount,
-            childAspectRatio: 1.0,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+          sliver: SliverLayoutBuilder(
+            builder: (context, constraints) {
+              int crossAxisCount = _getCrossAxisCount(
+                  constraints.crossAxisExtent);
+
+              return SliverGrid(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  childAspectRatio: 1,
+                  // Slightly taller for better content display
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                    final recipe = controller.recipes[index];
+                    return _buildModernRecipeCard(context, recipe);
+                  },
+                  childCount: controller.recipes.length,
+                ),
+              );
+            },
           ),
-          itemCount: controller.recipes.length,
-          itemBuilder: (context, index) {
-            final recipe = controller.recipes[index];
-            return _buildRecipeCard(context, recipe);
-          },
-        );
-      },
+        ),
+      ],
     );
   }
-  
-  Widget _buildRecipeCard(BuildContext context, dynamic recipe) {
-    return GestureDetector(
-      onTap: () => _showRecipeDetails(context, recipe),
-      child: Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        clipBehavior: Clip.antiAlias,
-        child: Stack(
-          children: [
-            Positioned.fill(child: _buildPlaceholderImage(context, recipe)),
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [Colors.transparent, Colors.black.withValues(alpha: 0.7)],
-                    stops: const [0.5, 1.0],
+
+  int _getCrossAxisCount(double width) {
+    if (width > 1400) return 5; // Reduced from 6 for better card size
+    if (width > 1100) return 4; // Reduced from 5 for better card size
+    if (width > 800) return 3; // Reduced from 4 for better card size
+    if (width > 600) return 2; // Reduced from 3 for better card size
+    if (width > 300) return 2; // Added breakpoint for larger phones
+    return 1; // Single column for very small screens
+  }
+
+  /// Modernized recipe card for grid
+  Widget _buildModernRecipeCard(BuildContext context, dynamic recipe) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: () => _showRecipeDetails(context, recipe),
+        child: Container(
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.surfaceContainerLowest,
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                color: context.theme.colorScheme.onSurface.withOpacity(0.08),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+            border: Border.all(
+                color: context.theme.colorScheme.onSurface.withOpacity(0.08)),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(18),
+            child: Stack(
+              children: [
+                // Background image
+                Positioned.fill(
+                  child: _buildPlaceholderImage(context, recipe),
+                ),
+                // Gradient overlay for better text readability
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black.withOpacity(0.1),
+                          Colors.black.withOpacity(0.3),
+                          Colors.black.withOpacity(0.7),
+                        ],
+                        stops: const [0.0, 0.5, 1.0],
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                // Popup menu top right
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: _buildPopupMenu(context, recipe),
+                ),
+                // Dietary badge top left
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: _buildDietaryBadge(context, recipe),
+                ),
+                // Card content at bottom
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Recipe name with proper overflow handling
+                        Container(
+                          width: double.infinity,
+                          child: Text(
+                            recipe['name']?.toString() ?? 'Unnamed Recipe',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: -0.2,
+                              height: 1.2,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        // Info chips with better spacing and overflow handling
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          physics: const BouncingScrollPhysics(),
+                          child: Row(
+                            children: [
+                              if (recipe['cuisine']
+                                  ?.toString()
+                                  .isNotEmpty == true) ...[
+                                _buildModernCardChip(
+                                  context,
+                                  Icons.public_rounded,
+                                  recipe['cuisine']?.toString() ?? '',
+                                  context.theme.colorScheme.onSurface
+                                      .withOpacity(0.16),
+                                ),
+                                const SizedBox(width: 6),
+                              ],
+                              if (recipe['servings'] != null)
+                                _buildModernCardChip(
+                                  context,
+                                  Icons.people_alt_rounded,
+                                  '${recipe['servings'].toString()} servings',
+                                  context.theme.colorScheme.onSurface
+                                      .withOpacity(0.14),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-            _buildRecipeInfo(context, recipe),
-            _buildPopupMenu(context, recipe),
-            _buildDietaryBadge(context, recipe),
-          ],
+          ),
         ),
+      ),
+    );
+  }
+
+  /// Improved card chip with better sizing and overflow handling
+  Widget _buildModernCardChip(BuildContext context, IconData icon, String label,
+      Color background) {
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 120), // Prevent overflow
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.2),
+          width: 0.5,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: Colors.white, size: 12),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.w500,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -244,97 +539,109 @@ class ReceipesView extends GetView<MealController> {
     }
   }
   
-  Widget _buildRecipeInfo(BuildContext context, dynamic recipe) {
-    return Positioned(
-      bottom: 0,
-      left: 0,
-      right: 0,
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              recipe['name']?.toString() ?? 'Unnamed Recipe',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
   
-  Widget _buildChip(String text, IconData icon) {
+  
+  Widget _buildPopupMenu(BuildContext context, dynamic recipe) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      width: 32,
+      height: 32,
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 12, color: Colors.white),
-          const SizedBox(width: 4),
-          Text(
-            text,
-            style: const TextStyle(color: Colors.white, fontSize: 10),
+        color: context.theme.colorScheme.onSurface.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: context.theme.colorScheme.surfaceContainerLowest.withOpacity(
+              0.2),
+          width: 0.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: context.theme.colorScheme.onSurface.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-    );
-  }
-  
-  Widget _buildPopupMenu(BuildContext context, dynamic recipe) {
-    return Positioned(
-      top: 8,
-      right: 8,
-      child: Container(
-        decoration: BoxDecoration(
-          color: context.theme.colorScheme.onSurface.withValues(alpha: 0.5),
-          shape: BoxShape.circle,
+      child: PopupMenuButton<String>(
+        padding: EdgeInsets.zero,
+        icon: Icon(
+          Icons.more_vert_rounded,
+          color: context.theme.colorScheme.surfaceContainerLowest,
+          size: 16,
         ),
-        child: PopupMenuButton<String>(
-          icon: const Icon(Icons.more_vert, color: Colors.white),
-          onSelected: (value) {
-            switch (value) {
-              case 'edit':
-                _showEditRecipeDialog(context, recipe);
-                break;
-              case 'delete':
-                _showDeleteConfirmation(context, recipe);
-                break;
-            }
-          },
-          itemBuilder: (context) => [
-            const PopupMenuItem(
-              value: 'edit',
-              child: Row(
-                children: [
-                  Icon(Icons.edit),
-                  SizedBox(width: 8),
-                  Text('Edit'),
-                ],
-              ),
-            ),
-            const PopupMenuItem(
-              value: 'delete',
-              child: Row(
-                children: [
-                  Icon(Icons.delete, color: Colors.red),
-                  SizedBox(width: 8),
-                  Text('Delete', style: TextStyle(color: Colors.red)),
-                ],
-              ),
-            ),
-          ],
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        elevation: 12,
+        color: context.theme.colorScheme.surfaceContainerLowest,
+        constraints: const BoxConstraints(
+          minWidth: 180,
+          maxWidth: 220,
         ),
+        onSelected: (value) {
+          switch (value) {
+            case 'edit':
+              _showEditRecipeDialog(context, recipe);
+              break;
+            case 'delete':
+              _showDeleteConfirmation(context, recipe);
+              break;
+          }
+        },
+        itemBuilder: (context) =>
+        [
+          PopupMenuItem(
+            value: 'edit',
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: context.theme.colorScheme.onSurface.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                      Icons.edit_rounded, size: 16,
+                      color: context.theme.colorScheme.onSurface),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Edit Recipe',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      color: context.theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          PopupMenuItem(
+            value: 'delete',
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: context.theme.colorScheme.onSurface.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                      Icons.delete_rounded, size: 16,
+                      color: context.theme.colorScheme.onSurface),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                      'Delete Recipe',
+                      style: TextStyle(
+                          color: context.theme.colorScheme.onSurface,
+                          fontWeight: FontWeight.w500
+                      )
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -344,34 +651,43 @@ class ReceipesView extends GetView<MealController> {
     if (dietaryCategory == null || dietaryCategory == 0) {
       return const SizedBox.shrink();
     }
-    
-    return Positioned(
-      top: 8,
-      left: 8,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-          color: _getDietaryColor(dietaryCategory),
-          borderRadius: BorderRadius.circular(12),
+
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 80), // Prevent overflow
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: context.theme.colorScheme.onSurface.withOpacity(0.9),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: context.theme.colorScheme.surfaceContainerLowest.withOpacity(
+              0.3),
+          width: 0.5,
         ),
-        child: Text(
-          _getDietaryLabel(dietaryCategory),
-          style: const TextStyle(color: Colors.white, fontSize: 10),
+        boxShadow: [
+          BoxShadow(
+            color: context.theme.colorScheme.onSurface.withOpacity(0.3),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Text(
+        _getDietaryLabel(dietaryCategory),
+        style: TextStyle(
+          color: context.theme.colorScheme.surfaceContainerLowest,
+          fontSize: 9,
+          fontWeight: FontWeight.w600,
         ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
       ),
     );
   }
   
   Color _getDietaryColor(int category) {
-    switch (category) {
-      case 1: return Colors.green;
-      case 2: return Colors.lightGreen;
-      case 3: return Colors.orange;
-      case 4: return Colors.blue;
-      case 5: return Colors.purple;
-      case 6: return Colors.brown;
-      default: return Colors.grey;
-    }
+    // Return consistent onSurface color for all dietary categories
+    return Colors.grey;
   }
   
   String _getDietaryLabel(int category) {
@@ -394,107 +710,172 @@ class ReceipesView extends GetView<MealController> {
     bool isDialogActive = true;
     
     Get.dialog<void>(
-      Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.8,
-          constraints: const BoxConstraints(maxWidth: 800),
-          padding: const EdgeInsets.all(24),
-          child: StatefulBuilder(
-            builder: (dialogContext, setState) {
-              if (!isDialogActive) return Container(); // Safety check
+      Dialog.fullscreen(
+        child: Material(
+          child: Container(
+            color: context.theme.colorScheme.surfaceContainerLowest,
+            child: StatefulBuilder(
+              builder: (dialogContext, setState) {
+                if (!isDialogActive) return Container();
 
-              return SingleChildScrollView(
-                child: Obx(() =>
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Add New Recipe',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: dialogContext.theme.colorScheme.onSurface,
+                return Scaffold(
+                  backgroundColor: dialogContext.theme.colorScheme
+                      .surfaceContainerLowest,
+                  appBar: AppBar(
+                    backgroundColor: dialogContext.theme.colorScheme
+                        .surfaceContainerLowest,
+                    elevation: 0,
+                    leading: IconButton(
+                      onPressed: () {
+                        isDialogActive = false;
+                        Get.back<void>();
+                      },
+                      icon: Icon(
+                        Icons.close,
+                        color: dialogContext.theme.colorScheme.onSurface,
+                      ),
+                    ),
+                    title: Text(
+                      'Create Recipe',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w600,
+                        color: dialogContext.theme.colorScheme.onSurface,
+                      ),
+                    ),
+                    actions: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 16),
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            if (controller.validateRecipeForm()) {
+                              final data = controller.createRecipeData(
+                                  dietaryCategory, ingredients);
+                              if (image != null) {
+                                try {
+                                  final bytes = await image!.readAsBytes();
+                                  final base64String = base64Encode(bytes);
+                                  data['imageUrl'] = base64String;
+                                } catch (e) {
+                                  Get.snackbar(
+                                      'Error', 'Failed to process image');
+                                  return;
+                                }
+                              }
+                              controller.createRecipe(data).then((success) {
+                                if (success) {
+                                  isDialogActive = false;
+                                  Get.back<void>();
+                                  Get.snackbar(
+                                      'Success', 'Recipe created successfully');
+                                }
+                              });
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: dialogContext.theme.colorScheme
+                                .onSurface,
+                            foregroundColor: dialogContext.theme.colorScheme
+                                .surfaceContainerLowest,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 24, vertical: 12),
                           ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    _buildValidatedTextField(
-                      controller.nameController,
-                      'Recipe Name',
-                      dialogContext,
-                      isRequired: true,
-                      errorText: controller.nameError.value,
-                      onChanged: controller.validateName,
-                    ),
-                    const SizedBox(height: 16),
-                    _buildValidatedTextField(
-                      controller.descriptionController,
-                      'Description',
-                      dialogContext,
-                      maxLines: 3,
-                      errorText: controller.descriptionError.value,
-                      onChanged: controller.validateDescription,
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildValidatedTextField(
-                            controller.servingsController,
-                            'Servings',
-                            dialogContext,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: MealController
-                                .getIntegerInputFormatters(),
-                            isRequired: true,
-                            errorText: controller.servingsError.value,
-                            onChanged: controller.validateServings,
+                          child: const Text('Save Recipe'),
+                        ),
+                      ),
+                    ],
+                  ),
+                  body: SingleChildScrollView(
+                    padding: const EdgeInsets.all(24),
+                    child: Obx(() =>
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Hero Image Section
+                            Card(
+                              elevation: 0,
+                              color: dialogContext.theme.colorScheme
+                                  .surfaceContainerLowest,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                side: BorderSide(
+                                  color: dialogContext.theme.colorScheme
+                                      .onSurface
+                                      .withValues(alpha: 0.2),
+                                ),
+                          ),
+                          child: Container(
+                            height: 200,
+                            width: double.infinity,
+                            child: image != null
+                                ? Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: Image.file(
+                                    image!,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 8,
+                                  right: 8,
+                                  child: IconButton.filledTonal(
+                                    onPressed: () =>
+                                        setState(() => image = null),
+                                    icon: const Icon(Icons.close),
+                                    style: IconButton.styleFrom(
+                                      backgroundColor: dialogContext.theme
+                                          .colorScheme.onSurface.withOpacity(
+                                          0.7),
+                                      foregroundColor: dialogContext.theme
+                                          .colorScheme.surfaceContainerLowest,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                                : Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.add_photo_alternate_outlined,
+                                  size: 64,
+                                  color: dialogContext.theme.colorScheme
+                                      .onSurface.withValues(alpha: 0.6),
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'Add Recipe Photo',
+                                  style: dialogContext.theme.textTheme
+                                      .titleMedium?.copyWith(
+                                    color: dialogContext.theme.colorScheme
+                                        .onSurface,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Make your recipe more appealing with a photo',
+                                  style: dialogContext.theme.textTheme.bodySmall
+                                      ?.copyWith(
+                                    color: dialogContext.theme.colorScheme
+                                        .onSurface.withValues(alpha: 0.7),
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _buildTextField(
-                              controller.cuisineController, 'Cuisine',
-                              dialogContext),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
 
-                    _buildDietaryDropdown(
-                        dialogContext, dietaryCategory, (value) =>
-                        setState(() => dietaryCategory = value ?? 0)),
-                    const SizedBox(height: 24),
-
-                    _buildIngredientsSection(
-                        dialogContext, ingredients, setState),
-                    const SizedBox(height: 24),
-
-                        Text(
-                          'Recipe Image (Optional)',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: dialogContext.theme.colorScheme.onSurface,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Select an image from your gallery or take a photo',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: dialogContext.theme.colorScheme.onSurface
-                                .withValues(alpha: 0.6),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
+                        // Image Action Buttons
+                        const SizedBox(height: 16),
                         Row(
                           children: [
                             Expanded(
-                              child: ElevatedButton.icon(
+                              child: OutlinedButton.icon(
                                 onPressed: () async {
                                   final picker = ImagePicker();
                                   final XFile? photo = await picker.pickImage(
@@ -503,21 +884,22 @@ class ReceipesView extends GetView<MealController> {
                                     setState(() => image = File(photo.path));
                                   }
                                 },
-                                icon: const Icon(Icons.photo_library),
-                                label: const Text('Gallery'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: dialogContext.theme
-                                      .colorScheme
-                                      .primaryContainer,
-                                  foregroundColor: dialogContext.theme
-                                      .colorScheme
-                                      .onPrimaryContainer,
+                                icon: Icon(Icons.photo_library_outlined,
+                                    color: dialogContext.theme.colorScheme
+                                        .onSurface),
+                                label: Text('Gallery', style: TextStyle(
+                                    color: dialogContext.theme.colorScheme
+                                        .onSurface)),
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(
+                                      color: dialogContext.theme.colorScheme
+                                          .onSurface.withValues(alpha: 0.3)),
                                 ),
                               ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: ElevatedButton.icon(
+                              child: OutlinedButton.icon(
                                 onPressed: () async {
                                   final picker = ImagePicker();
                                   final XFile? photo = await picker.pickImage(
@@ -526,113 +908,405 @@ class ReceipesView extends GetView<MealController> {
                                     setState(() => image = File(photo.path));
                                   }
                                 },
-                                icon: const Icon(Icons.camera_alt),
-                                label: const Text('Camera'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: dialogContext.theme
-                                      .colorScheme
-                                      .secondaryContainer,
-                                  foregroundColor: dialogContext.theme
-                                      .colorScheme
-                                      .onSecondaryContainer,
+                                icon: Icon(Icons.camera_alt_outlined,
+                                    color: dialogContext.theme.colorScheme
+                                        .onSurface),
+                                label: Text('Camera', style: TextStyle(
+                                    color: dialogContext.theme.colorScheme
+                                        .onSurface)),
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(
+                                      color: dialogContext.theme.colorScheme
+                                          .onSurface.withValues(alpha: 0.3)),
                                 ),
                               ),
                             ),
                           ],
                         ),
+
+                        const SizedBox(height: 32),
+
+                        // Basic Information Section
+                        Text(
+                          'Basic Information',
+                          style: dialogContext.theme.textTheme.headlineSmall
+                              ?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: dialogContext.theme.colorScheme.onSurface,
+                          ),
+                        ),
                         const SizedBox(height: 16),
-                        if (image != null)
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment
-                                    .spaceBetween,
-                                children: [
-                                  Text(
-                                    'Image Preview:',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
+
+                        _buildValidatedTextField(
+                          controller.nameController,
+                          'Recipe Name',
+                          dialogContext,
+                          isRequired: true,
+                          errorText: controller.nameError.value,
+                          onChanged: controller.validateName,
+                          prefixIcon: Icons.restaurant_menu,
+                        ),
+                        const SizedBox(height: 16),
+
+                        _buildValidatedTextField(
+                          controller.descriptionController,
+                          'Description',
+                          dialogContext,
+                          maxLines: 3,
+                          errorText: controller.descriptionError.value,
+                          onChanged: controller.validateDescription,
+                          prefixIcon: Icons.description_outlined,
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Recipe Details Section
+                        Text(
+                          'Recipe Details',
+                          style: dialogContext.theme.textTheme.headlineSmall
+                              ?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: dialogContext.theme.colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildValidatedTextField(
+                                controller.servingsController,
+                                'Servings',
+                                dialogContext,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: MealController
+                                    .getIntegerInputFormatters(),
+                                isRequired: true,
+                                errorText: controller.servingsError.value,
+                                onChanged: controller.validateServings,
+                                prefixIcon: Icons.people_outline,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: _buildTextField(
+                                controller.cuisineController,
+                                'Cuisine',
+                                dialogContext,
+                                prefixIcon: Icons.public_outlined,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Dietary Category Card
+                        Card(
+                          elevation: 0,
+                          color: dialogContext.theme.colorScheme
+                              .surfaceContainerLowest,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(
+                              color: dialogContext.theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.2),
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.eco_outlined,
                                       color: dialogContext.theme.colorScheme
                                           .onSurface,
                                     ),
-                                  ),
-                                  TextButton.icon(
-                                    onPressed: () =>
-                                        setState(() => image = null),
-                                    icon: const Icon(Icons.clear, size: 16),
-                                    label: const Text('Remove'),
-                                    style: TextButton.styleFrom(
-                                      foregroundColor: Colors.red,
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Dietary Category',
+                                      style: dialogContext.theme.textTheme
+                                          .titleMedium?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        color: dialogContext.theme.colorScheme
+                                            .onSurface,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Container(
-                                width: double.infinity,
-                                constraints: const BoxConstraints(
-                                    maxWidth: 320, maxHeight: 180),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: dialogContext.theme.colorScheme
-                                        .primary.withOpacity(0.15),
-                                  ),
-                                  color: Colors.black12,
+                                  ],
                                 ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: image != null
-                                      ? Image.file(
-                                    image!,
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                    height: 180,
-                                  )
-                                      : Center(
-                                    child: Icon(
-                                      Icons.image,
-                                      size: 48,
+                                const SizedBox(height: 12),
+                                DropdownButtonFormField<int>(
+                                  value: dietaryCategory,
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                          color: dialogContext.theme.colorScheme
+                                              .onSurface.withValues(
+                                              alpha: 0.3)),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                          color: dialogContext.theme.colorScheme
+                                              .onSurface.withValues(
+                                              alpha: 0.3)),
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 12),
+                                    fillColor: dialogContext.theme.colorScheme
+                                        .surfaceContainerLowest,
+                                    filled: true,
+                                  ),
+                                  dropdownColor: dialogContext.theme.colorScheme
+                                      .surfaceContainerLowest,
+                                  style: TextStyle(
                                       color: dialogContext.theme.colorScheme
-                                          .onSurface.withOpacity(0.2),
-                                    ),
-                                  ),
+                                          .onSurface),
+                                  items: [
+                                    DropdownMenuItem(value: 0,
+                                        child: Text('Regular', style: TextStyle(
+                                            color: dialogContext.theme
+                                                .colorScheme.onSurface))),
+                                    DropdownMenuItem(value: 1,
+                                        child: Text('Vegetarian',
+                                            style: TextStyle(
+                                                color: dialogContext.theme
+                                                    .colorScheme.onSurface))),
+                                    DropdownMenuItem(value: 2,
+                                        child: Text('Vegan', style: TextStyle(
+                                            color: dialogContext.theme
+                                                .colorScheme.onSurface))),
+                                    DropdownMenuItem(value: 3,
+                                        child: Text('Gluten-Free',
+                                            style: TextStyle(
+                                                color: dialogContext.theme
+                                                    .colorScheme.onSurface))),
+                                    DropdownMenuItem(value: 4,
+                                        child: Text('Dairy-Free',
+                                            style: TextStyle(
+                                                color: dialogContext.theme
+                                                    .colorScheme.onSurface))),
+                                    DropdownMenuItem(value: 5,
+                                        child: Text('Keto', style: TextStyle(
+                                            color: dialogContext.theme
+                                                .colorScheme.onSurface))),
+                                    DropdownMenuItem(value: 6,
+                                        child: Text('Paleo', style: TextStyle(
+                                            color: dialogContext.theme
+                                                .colorScheme.onSurface))),
+                                  ],
+                                  onChanged: (value) =>
+                                      setState(() =>
+                                      dietaryCategory = value ?? 0),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                    const SizedBox(height: 32),
+                        ),
 
-                    _buildDialogActions(dialogContext, () async {
-                      if (controller.validateRecipeForm()) {
-                        final data = controller.createRecipeData(
-                            dietaryCategory, ingredients);
-                        if (image != null) {
-                          try {
-                            final bytes = await image!.readAsBytes();
-                            final base64String = base64Encode(bytes);
-                            data['imageUrl'] = base64String;
-                          } catch (e) {
-                            Get.snackbar('Error', 'Failed to process image');
-                            return;
-                          }
-                        }
-                        controller.createRecipe(data).then((success) {
-                          if (success) {
-                            isDialogActive = false;
-                            Get.back<void>();
-                            Get.snackbar(
-                                'Success', 'Recipe created successfully');
-                          }
-                        });
-                      }
-                    }),
-                  ],
-                )),
-              );
-            },
+                        const SizedBox(height: 24),
+
+                        // Ingredients Section
+                        Card(
+                          elevation: 0,
+                          color: dialogContext.theme.colorScheme
+                              .surfaceContainerLowest,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(
+                              color: dialogContext.theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.2),
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment
+                                      .spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.inventory_2_outlined,
+                                          color: dialogContext.theme.colorScheme
+                                              .onSurface,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          'Ingredients',
+                                          style: dialogContext.theme.textTheme
+                                              .titleMedium?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            color: dialogContext.theme
+                                                .colorScheme.onSurface,
+                                          ),
+                                        ),
+                                        if (ingredients.isNotEmpty) ...[
+                                          const SizedBox(width: 8),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: dialogContext.theme
+                                                  .colorScheme.onSurface
+                                                  .withValues(alpha: 0.1),
+                                              borderRadius: BorderRadius
+                                                  .circular(12),
+                                            ),
+                                            child: Text(
+                                              '${ingredients.length}',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: dialogContext.theme
+                                                    .colorScheme.onSurface,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                    ElevatedButton.icon(
+                                      onPressed: () =>
+                                          _showAddIngredientDialog(
+                                              dialogContext, ingredients,
+                                              setState),
+                                      icon: const Icon(Icons.add, size: 18),
+                                      label: const Text('Add'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: dialogContext.theme
+                                            .colorScheme.onSurface,
+                                        foregroundColor: dialogContext.theme
+                                            .colorScheme.surfaceContainerLowest,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16, vertical: 8),
+                                        minimumSize: Size.zero,
+                                        tapTargetSize: MaterialTapTargetSize
+                                            .shrinkWrap,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                if (ingredients.isEmpty)
+                                  Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.all(24),
+                                    decoration: BoxDecoration(
+                                      color: dialogContext.theme.colorScheme
+                                          .onSurface.withValues(alpha: 0.05),
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: dialogContext.theme.colorScheme
+                                            .onSurface.withValues(alpha: 0.2),
+                                        style: BorderStyle.solid,
+                                        strokeAlign: BorderSide
+                                            .strokeAlignInside,
+                                      ),
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        Icon(
+                                          Icons.inventory_2_outlined,
+                                          size: 32,
+                                          color: dialogContext.theme.colorScheme
+                                              .onSurface.withValues(alpha: 0.6),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          'No ingredients added yet',
+                                          style: dialogContext.theme.textTheme
+                                              .bodyMedium?.copyWith(
+                                            color: dialogContext.theme
+                                                .colorScheme.onSurface
+                                                .withValues(alpha: 0.7),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'Add ingredients to make your recipe complete',
+                                          style: dialogContext.theme.textTheme
+                                              .bodySmall?.copyWith(
+                                            color: dialogContext.theme
+                                                .colorScheme.onSurface
+                                                .withValues(alpha: 0.6),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                else
+                                  Column(
+                                    children: ingredients.map<Widget>((
+                                        ingredient) {
+                                      return Card(
+                                        margin: const EdgeInsets.only(
+                                            bottom: 8),
+                                        color: dialogContext.theme.colorScheme
+                                            .surfaceContainerLowest,
+                                        child: ListTile(
+                                          leading: CircleAvatar(
+                                            backgroundColor: dialogContext.theme
+                                                .colorScheme.onSurface
+                                                .withValues(alpha: 0.1),
+                                            child: Icon(
+                                              Icons.eco,
+                                              color: dialogContext.theme
+                                                  .colorScheme.onSurface,
+                                              size: 20,
+                                            ),
+                                          ),
+                                          title: Text(
+                                            ingredient['ingredientName']
+                                                ?.toString() ??
+                                                ingredient['name']
+                                                    ?.toString() ??
+                                                'Ingredient',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              color: dialogContext.theme
+                                                  .colorScheme.onSurface,
+                                            ),
+                                          ),
+                                          subtitle: Text(
+                                            '${ingredient['quantity']}g',
+                                            style: TextStyle(
+                                                color: dialogContext.theme
+                                                    .colorScheme.onSurface
+                                                    .withValues(alpha: 0.7)),
+                                          ),
+                                          trailing: IconButton(
+                                            onPressed: () =>
+                                                setState(() =>
+                                                    ingredients.remove(
+                                                        ingredient)),
+                                            icon: const Icon(
+                                                Icons.delete_outline),
+                                            color: dialogContext.theme
+                                                .colorScheme.onSurface,
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 32),
+                      ],
+                    )),
+                  ),
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -933,6 +1607,7 @@ class ReceipesView extends GetView<MealController> {
     String? errorText,
     void Function(String)? onChanged,
     bool isRequired = false,
+        IconData? prefixIcon,
   }) {
     // Check if controller is disposed to prevent errors
     try {
@@ -953,26 +1628,37 @@ class ReceipesView extends GetView<MealController> {
       decoration: InputDecoration(
         labelText: isRequired ? '$label *' : label,
         labelStyle: TextStyle(color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7)),
+        prefixIcon: prefixIcon != null
+            ? Icon(prefixIcon,
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7))
+            : null,
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: context.theme.colorScheme.outline.withValues(alpha: 0.5)),
-          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+              color: context.theme.colorScheme.onSurface.withValues(
+                  alpha: 0.3)),
+          borderRadius: BorderRadius.circular(12),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: context.theme.colorScheme.primary, width: 2),
-          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+              color: context.theme.colorScheme.onSurface, width: 2),
+          borderRadius: BorderRadius.circular(12),
         ),
         errorBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Colors.red, width: 1),
-          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+              color: context.theme.colorScheme.onSurface, width: 1),
+          borderRadius: BorderRadius.circular(12),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Colors.red, width: 2),
-          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+              color: context.theme.colorScheme.onSurface, width: 2),
+          borderRadius: BorderRadius.circular(12),
         ),
         errorText: errorText != null && errorText.isNotEmpty ? errorText : null,
+        errorStyle: TextStyle(color: context.theme.colorScheme.onSurface),
         filled: true,
-        fillColor: context.theme.colorScheme.surface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        fillColor: context.theme.colorScheme.surfaceContainerLowest,
+        contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16, vertical: 16),
       ),
     );
   }
@@ -983,6 +1669,7 @@ class ReceipesView extends GetView<MealController> {
     BuildContext context, {
     int maxLines = 1,
     TextInputType? keyboardType,
+        IconData? prefixIcon,
   }) {
     // Check if controller is disposed to prevent errors
     try {
@@ -1001,17 +1688,25 @@ class ReceipesView extends GetView<MealController> {
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7)),
+        prefixIcon: prefixIcon != null
+            ? Icon(prefixIcon,
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7))
+            : null,
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: context.theme.colorScheme.outline.withValues(alpha: 0.5)),
-          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+              color: context.theme.colorScheme.onSurface.withValues(
+                  alpha: 0.3)),
+          borderRadius: BorderRadius.circular(12),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: context.theme.colorScheme.primary, width: 2),
-          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+              color: context.theme.colorScheme.onSurface, width: 2),
+          borderRadius: BorderRadius.circular(12),
         ),
         filled: true,
-        fillColor: context.theme.colorScheme.surface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        fillColor: context.theme.colorScheme.surfaceContainerLowest,
+        contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16, vertical: 16),
       ),
     );
   }
@@ -1021,28 +1716,47 @@ class ReceipesView extends GetView<MealController> {
       value: value,
       decoration: InputDecoration(
         labelText: 'Dietary Category',
+        labelStyle: TextStyle(
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7)),
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: context.theme.colorScheme.outline.withValues(alpha: 0.5)),
+          borderSide: BorderSide(
+              color: context.theme.colorScheme.onSurface.withValues(
+                  alpha: 0.3)),
           borderRadius: BorderRadius.circular(8),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: context.theme.colorScheme.primary, width: 2),
+          borderSide: BorderSide(
+              color: context.theme.colorScheme.onSurface, width: 2),
           borderRadius: BorderRadius.circular(8),
         ),
         filled: true,
-        fillColor: context.theme.colorScheme.surface,
+        fillColor: context.theme.colorScheme.surfaceContainerLowest,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
       style: TextStyle(color: context.theme.colorScheme.onSurface),
-      dropdownColor: context.theme.colorScheme.surface,
-      items: const [
-        DropdownMenuItem(value: 0, child: Text('Regular')),
-        DropdownMenuItem(value: 1, child: Text('Vegetarian')),
-        DropdownMenuItem(value: 2, child: Text('Vegan')),
-        DropdownMenuItem(value: 3, child: Text('Gluten-Free')),
-        DropdownMenuItem(value: 4, child: Text('Dairy-Free')),
-        DropdownMenuItem(value: 5, child: Text('Keto')),
-        DropdownMenuItem(value: 6, child: Text('Paleo')),
+      dropdownColor: context.theme.colorScheme.surfaceContainerLowest,
+      items: [
+        DropdownMenuItem(value: 0,
+            child: Text('Regular',
+                style: TextStyle(color: context.theme.colorScheme.onSurface))),
+        DropdownMenuItem(value: 1,
+            child: Text('Vegetarian',
+                style: TextStyle(color: context.theme.colorScheme.onSurface))),
+        DropdownMenuItem(value: 2,
+            child: Text('Vegan',
+                style: TextStyle(color: context.theme.colorScheme.onSurface))),
+        DropdownMenuItem(value: 3,
+            child: Text('Gluten-Free',
+                style: TextStyle(color: context.theme.colorScheme.onSurface))),
+        DropdownMenuItem(value: 4,
+            child: Text('Dairy-Free',
+                style: TextStyle(color: context.theme.colorScheme.onSurface))),
+        DropdownMenuItem(value: 5,
+            child: Text('Keto',
+                style: TextStyle(color: context.theme.colorScheme.onSurface))),
+        DropdownMenuItem(value: 6,
+            child: Text('Paleo',
+                style: TextStyle(color: context.theme.colorScheme.onSurface))),
       ],
       onChanged: onChanged,
     );
@@ -1069,8 +1783,11 @@ class ReceipesView extends GetView<MealController> {
           : Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                border: Border.all(color: context.theme.colorScheme.outline.withValues(alpha: 0.5)),
+                border: Border.all(
+                    color: context.theme.colorScheme.onSurface.withValues(
+                        alpha: 0.3)),
                 borderRadius: BorderRadius.circular(8),
+                color: context.theme.colorScheme.surfaceContainerLowest,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1080,12 +1797,17 @@ class ReceipesView extends GetView<MealController> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                        child: Text('• ${ingredient['ingredientName'] ??
-                            ingredient['name'] ??
-                            'Ingredient'} (${ingredient['quantity']}g)'),
+                        child: Text(
+                          '• ${ingredient['ingredientName'] ??
+                              ingredient['name'] ??
+                              'Ingredient'} (${ingredient['quantity']}g)',
+                          style: TextStyle(color: context.theme.colorScheme
+                              .onSurface),
+                        ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete, size: 16, color: Colors.red),
+                        icon: Icon(Icons.delete, size: 16, color: context.theme
+                            .colorScheme.onSurface),
                         onPressed: () => setState(() => ingredients.remove(ingredient)),
                       ),
                     ],
@@ -1099,8 +1821,8 @@ class ReceipesView extends GetView<MealController> {
           icon: const Icon(Icons.add),
           label: const Text('Add Ingredient'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: context.theme.colorScheme.primaryContainer,
-            foregroundColor: context.theme.colorScheme.onPrimaryContainer,
+            backgroundColor: context.theme.colorScheme.onSurface,
+            foregroundColor: context.theme.colorScheme.surfaceContainerLowest,
           ),
         ),
       ],
@@ -1246,8 +1968,8 @@ class ReceipesView extends GetView<MealController> {
                             return ListTile(
                               title: Text(
                                 ingredient['name']?.toString() ??
-                                    ingredient['ingredientName']
-                                        ?.toString() ?? 'Unknown',
+                                    ingredient['ingredientName']?.toString() ??
+                                    'Unknown',
                                 style: TextStyle(
                                   color: dialogContext.theme.colorScheme
                                       .onSurface,
@@ -1257,8 +1979,9 @@ class ReceipesView extends GetView<MealController> {
                                 ),
                               ),
                               subtitle: Text(
-                                ingredient['description']?.toString() ??
-                                    'No description',
+                                (ingredient['description'] != null
+                                    ? ingredient['description'].toString()
+                                    : 'No description'),
                                 style: TextStyle(
                                   color: dialogContext.theme.colorScheme
                                       .onSurface
@@ -1441,20 +2164,28 @@ class ReceipesView extends GetView<MealController> {
         backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
         title: Text('Delete Recipe', style: TextStyle(color: context.theme.colorScheme.onSurface)),
         content: Text(
-          'Are you sure you want to delete "${recipe['name']?.toString() ??
-              'this recipe'}"?',
+          'Are you sure you want to delete "${recipe['name'] != null
+              ? recipe['name'].toString()
+              : 'this recipe'}"?',
           style: TextStyle(color: context.theme.colorScheme.onSurface.withValues(alpha: 0.8)),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back<void>(),
-            style: TextButton.styleFrom(foregroundColor: context.theme.colorScheme.onSurface.withValues(alpha: 0.8)),
+            style: TextButton.styleFrom(
+              foregroundColor: context.theme.colorScheme.onSurface.withValues(
+                  alpha: 0.8),
+            ),
             child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
+              final recipeId = recipe['recipeId'];
+              final recipeIdString = recipeId != null
+                  ? recipeId.toString()
+                  : '';
               controller
-                  .deleteRecipe(recipe['recipeId']?.toString() ?? '')
+                  .deleteRecipe(recipeIdString)
                   .then((success) {
                 if (success) {
                   Get.back<void>();
@@ -1462,7 +2193,9 @@ class ReceipesView extends GetView<MealController> {
                 }
               });
             },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            style: TextButton.styleFrom(
+              foregroundColor: context.theme.colorScheme.onSurface,
+            ),
             child: const Text('Delete'),
           ),
         ],
@@ -2724,110 +3457,170 @@ class ReceipesView extends GetView<MealController> {
 
 
   Widget _buildShimmerLoading(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        int crossAxisCount = constraints.maxWidth > 1200 ? 5 :
-        constraints.maxWidth > 900 ? 4 :
-        constraints.maxWidth > 600 ? 3 : 2;
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+          sliver: SliverLayoutBuilder(
+            builder: (context, constraints) {
+              int crossAxisCount = _getCrossAxisCount(
+                  constraints.crossAxisExtent);
 
-        return GridView.builder(
-          padding: const EdgeInsets.all(16),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: crossAxisCount,
-            childAspectRatio: 1.0,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
+              return SliverGrid(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  childAspectRatio: 1.0, // Square format
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                    return _ShimmerRecipeCard();
+                  },
+                  childCount: 12,
+                ),
+              );
+            },
           ),
-          itemCount: 12,
-          itemBuilder: (context, index) {
-            return _buildShimmerRecipeCard(context);
-          },
-        );
-      },
+        ),
+      ],
     );
   }
 
-  Widget _buildShimmerRecipeCard(BuildContext context) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      clipBehavior: Clip.antiAlias,
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: _buildShimmerContainer(
-                double.infinity, double.infinity, borderRadius: 16),
+}
+
+class _ShimmerRecipeCard extends StatefulWidget {
+  @override
+  _ShimmerRecipeCardState createState() => _ShimmerRecipeCardState();
+}
+
+class _ShimmerRecipeCardState extends State<_ShimmerRecipeCard>
+    with TickerProviderStateMixin {
+  late AnimationController _shimmerController;
+  late Animation<double> _shimmerAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _shimmerController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+    _shimmerAnimation = Tween<double>(
+      begin: -2.0,
+      end: 2.0,
+    ).animate(CurvedAnimation(
+      parent: _shimmerController,
+      curve: Curves.easeInOutSine,
+    ));
+    _shimmerController.repeat();
+  }
+
+  @override
+  void dispose() {
+    _shimmerController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _shimmerAnimation,
+      builder: (context, child) {
+        return Container(
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                color: context.theme.colorScheme.shadow.withOpacity(0.1),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black.withValues(alpha: 0.3)],
-                  stops: const [0.5, 1.0],
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: _buildShimmerContainer(
+                      double.infinity, double.infinity, borderRadius: 18),
                 ),
               ),
-            ),
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildShimmerContainer(120, 16, borderRadius: 8),
-                  const SizedBox(height: 4),
-                  Row(
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(18),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withOpacity(0.3)
+                      ],
+                      stops: const [0.5, 1.0],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Padding(
+                  padding: const EdgeInsets.all(18),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildShimmerContainer(80, 12, borderRadius: 6),
+                      _buildShimmerContainer(120, 16, borderRadius: 8),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          _buildShimmerContainer(60, 12, borderRadius: 6),
+                          const SizedBox(width: 8),
+                          _buildShimmerContainer(40, 12, borderRadius: 6),
+                        ],
+                      ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
+              Positioned(
+                top: 6,
+                right: 6,
+                child: _buildShimmerContainer(24, 24, borderRadius: 12),
+              ),
+              Positioned(
+                top: 6,
+                left: 6,
+                child: _buildShimmerContainer(60, 20, borderRadius: 10),
+              ),
+            ],
           ),
-          Positioned(
-            top: 8,
-            right: 8,
-            child: _buildShimmerContainer(24, 24, borderRadius: 12),
-          ),
-          Positioned(
-            top: 8,
-            left: 8,
-            child: _buildShimmerContainer(60, 20, borderRadius: 10),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
   Widget _buildShimmerContainer(double width, double height,
       {double borderRadius = 4}) {
-    return StatefulBuilder(
-      builder: (context, setState) {
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 1200),
-          width: width,
-          height: height,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(borderRadius),
-            gradient: const LinearGradient(
-              begin: Alignment(-1.0, -0.3),
-              end: Alignment(1.0, 0.3),
-              colors: [
-                Color(0xFFF0F0F0),
-                Color(0xFFE0E0E0),
-                Color(0xFFF0F0F0),
-              ],
-              stops: [0.0, 0.5, 1.0],
-            ),
-          ),
-        );
-      },
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(borderRadius),
+        gradient: LinearGradient(
+          begin: Alignment(_shimmerAnimation.value - 1, 0),
+          end: Alignment(_shimmerAnimation.value, 0),
+          colors: const [
+            Color(0xFFEBEBF4),
+            Color(0xFFF4F4F4),
+            Color(0xFFEBEBF4),
+          ],
+          stops: const [0.1, 0.3, 0.4],
+        ),
+      ),
     );
   }
 

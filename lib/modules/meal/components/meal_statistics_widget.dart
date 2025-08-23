@@ -14,117 +14,219 @@ class MealStatisticsWidget extends GetView<MealController> {
         return const _StatisticsLoadingWidget();
       }
 
-      return Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        color: context.theme.colorScheme.surfaceContainerLowest,
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.analytics,
-                    color: context.theme.colorScheme.primary,
-                    size: 24,
-                  ),
-                  const SizedBox(width: 8),
-                  AppText.h5(
-                    'Meal Statistics',
-                    color: context.theme.colorScheme.onSurface,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
+      return Column(
+        children: [
+          // Main stats grid
+          _buildStatsGrid(context),
+          const SizedBox(height: 24),
 
-              // Quick Stats Row
-              Row(
-                children: [
-                  Expanded(
-                    child: _StatCard(
-                      title: 'Total Recipes',
-                      value: controller.recipes.length.toString(),
-                      icon: Icons.restaurant_menu,
-                      color: AppColor.chartColors[0],
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _StatCard(
-                      title: 'Total Ingredients',
-                      value: controller.ingredients.length.toString(),
-                      icon: Icons.eco,
-                      color: AppColor.chartColors[2],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Cuisine Distribution
-              _CuisineDistribution(recipes: controller.recipes),
-              const SizedBox(height: 16),
-
-              // Nutritional Overview
-              _NutritionalOverview(ingredients: controller.ingredients),
-              const SizedBox(height: 16),
-
-              // Category Distribution
-              _CategoryDistribution(ingredients: controller.ingredients),
-            ],
-          ),
-        ),
+          // Distribution cards
+          _buildDistributionCards(context),
+        ],
       );
     });
   }
+
+  Widget _buildStatsGrid(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final crossAxisCount = screenWidth < 600 ? 2 : (screenWidth < 900 ? 3 : 4);
+    final childAspectRatio = screenWidth < 600 ? 1.2 : 1.4;
+
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: crossAxisCount.clamp(2, 2),
+      // Keep it as 2 for better layout
+      childAspectRatio: childAspectRatio,
+      crossAxisSpacing: 16,
+      mainAxisSpacing: 16,
+      children: [
+        _ModernStatCard(
+          title: 'Recipes',
+          value: controller.recipes.length.toString(),
+          icon: Icons.restaurant_menu_outlined,
+          gradient: const LinearGradient(
+            colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        _ModernStatCard(
+          title: 'Ingredients',
+          value: controller.ingredients.length.toString(),
+          icon: Icons.eco_outlined,
+          gradient: const LinearGradient(
+            colors: [Color(0xFF10B981), Color(0xFF059669)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDistributionCards(BuildContext context) {
+    return Column(
+      children: [
+        _ModernDistributionCard(
+          title: 'Cuisine Types',
+          icon: Icons.public_outlined,
+          child: _CuisineDistribution(recipes: controller.recipes),
+        ),
+        const SizedBox(height: 16),
+        _ModernDistributionCard(
+          title: 'Nutrition Overview',
+          icon: Icons.analytics_outlined,
+          child: _NutritionalOverview(ingredients: controller.ingredients),
+        ),
+      ],
+    );
+  }
 }
 
-class _StatCard extends StatelessWidget {
+class _ModernStatCard extends StatelessWidget {
   final String title;
   final String value;
   final IconData icon;
-  final Color color;
+  final Gradient gradient;
 
-  const _StatCard({
+  const _ModernStatCard({
     required this.title,
     required this.value,
     required this.icon,
-    required this.color,
+    required this.gradient,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, color: color, size: 20),
-              const SizedBox(width: 8),
-              Expanded(
-                child: AppText.regular(
-                  title,
-                  color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                  size: 12,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          AppText.h4(
-            value,
-            color: color,
+        borderRadius: BorderRadius.circular(20),
+        gradient: gradient,
+        boxShadow: [
+          BoxShadow(
+            color: gradient.colors.first.withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+            const Spacer(),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: AppText(
+                    value,
+                    color: Colors.white,
+                    size: 28,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                AppText(
+                  title,
+                  color: Colors.white.withOpacity(0.9),
+                  size: 12,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ModernDistributionCard extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final Widget child;
+
+  const _ModernDistributionCard({
+    required this.title,
+    required this.icon,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: context.theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: context.theme.shadowColor.withOpacity(0.08),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
+          ),
+        ],
+        border: Border.all(
+          color: context.theme.colorScheme.outline.withOpacity(0.08),
+          width: 1,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: context.theme.colorScheme.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: context.theme.colorScheme.primary,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: AppText(
+                    title,
+                    color: context.theme.colorScheme.onSurface,
+                    size: 18,
+                    fontWeight: FontWeight.w600,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            child,
+          ],
+        ),
       ),
     );
   }
@@ -139,63 +241,113 @@ class _CuisineDistribution extends StatelessWidget {
   Widget build(BuildContext context) {
     final cuisineStats = _getCuisineStats();
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.theme.colorScheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AppText.semiBold(
-            'Cuisine Distribution',
-            color: context.theme.colorScheme.onSurface,
-            size: 14,
-          ),
-          const SizedBox(height: 12),
-          if (cuisineStats.isEmpty)
-            AppText.regular(
-              'No cuisine data available',
-              color: context.theme.colorScheme.onSurface.withValues(alpha: 0.6),
-              size: 12,
-            )
-          else
-            ...cuisineStats.entries.take(5).map((entry) =>
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Row(
+    if (cuisineStats.isEmpty) {
+      return _buildEmptyState(context);
+    }
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: cuisineStats.entries.take(4).map((entry) {
+        final index = cuisineStats.keys.toList().indexOf(entry.key);
+        final percentage = recipes.isNotEmpty ? (entry.value / recipes.length *
+            100).round() : 0;
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          child: IntrinsicHeight(
+            child: Row(
+              children: [
+                Container(
+                  width: 12,
+                  height: 12,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: _getGradientColors(index),
+                    ),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Container(
-                        width: 12,
-                        height: 12,
-                        decoration: BoxDecoration(
-                          color: AppColor.chartColors[cuisineStats.keys
-                              .toList()
-                              .indexOf(entry.key) %
-                              AppColor.chartColors.length],
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: AppText.regular(
-                          entry.key.isEmpty ? 'Other' : entry.key,
-                          color: context.theme.colorScheme.onSurface,
-                          size: 12,
-                        ),
-                      ),
-                      AppText.semiBold(
-                        '${entry.value}',
+                      AppText(
+                        entry.key.isEmpty ? 'Other' : entry.key,
                         color: context.theme.colorScheme.onSurface,
-                        size: 12,
+                        size: 14,
+                        fontWeight: FontWeight.w500,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      AppText(
+                        '$percentage% of recipes',
+                        color: context.theme.colorScheme.onSurface.withOpacity(
+                            0.6),
+                        size: 11,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
-                )),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: context.theme.colorScheme.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: AppText(
+                    '${entry.value}',
+                    color: context.theme.colorScheme.primary,
+                    size: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.restaurant_outlined,
+            size: 48,
+            color: context.theme.colorScheme.onSurface.withOpacity(0.3),
+          ),
+          const SizedBox(height: 12),
+          AppText(
+            'No cuisine data available',
+            color: context.theme.colorScheme.onSurface.withOpacity(0.6),
+            size: 14,
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );
+  }
+
+  List<Color> _getGradientColors(int index) {
+    const gradients = [
+      [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+      [Color(0xFF10B981), Color(0xFF059669)],
+      [Color(0xFFF59E0B), Color(0xFFEF4444)],
+      [Color(0xFF8B5CF6), Color(0xFFEC4899)],
+    ];
+    return gradients[index % gradients.length];
   }
 
   Map<String, int> _getCuisineStats() {
@@ -218,65 +370,80 @@ class _NutritionalOverview extends StatelessWidget {
   Widget build(BuildContext context) {
     final nutritionStats = _getNutritionStats();
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.theme.colorScheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(8),
-      ),
+    if (nutritionStats.isEmpty) {
+      return _buildEmptyState(context);
+    }
+
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
+    final crossAxisCount = screenWidth < 400
+        ? 2
+        : 2; // Keep 2 columns for better readability
+    final childAspectRatio = screenWidth < 400 ? 1.6 : 1.8;
+
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: crossAxisCount,
+      childAspectRatio: childAspectRatio,
+      crossAxisSpacing: 12,
+      mainAxisSpacing: 12,
+      children: [
+        _NutrientCard(
+          label: 'Calories',
+          value: nutritionStats['avgCalories']?.toStringAsFixed(0) ?? '0',
+          unit: 'kcal',
+          gradient: const LinearGradient(
+            colors: [Color(0xFFFF6B6B), Color(0xFFFF8E8E)],
+          ),
+        ),
+        _NutrientCard(
+          label: 'Protein',
+          value: nutritionStats['avgProtein']?.toStringAsFixed(1) ?? '0',
+          unit: 'g',
+          gradient: const LinearGradient(
+            colors: [Color(0xFF4ECDC4), Color(0xFF44A08D)],
+          ),
+        ),
+        _NutrientCard(
+          label: 'Carbs',
+          value: nutritionStats['avgCarbs']?.toStringAsFixed(1) ?? '0',
+          unit: 'g',
+          gradient: const LinearGradient(
+            colors: [Color(0xFF45B7D1), Color(0xFF2196F3)],
+          ),
+        ),
+        _NutrientCard(
+          label: 'Fat',
+          value: nutritionStats['avgFat']?.toStringAsFixed(1) ?? '0',
+          unit: 'g',
+          gradient: const LinearGradient(
+            colors: [Color(0xFFFFA726), Color(0xFFFF9800)],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(20),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          AppText.semiBold(
-            'Nutritional Overview (Average per Ingredient)',
-            color: context.theme.colorScheme.onSurface,
-            size: 14,
+          Icon(
+            Icons.analytics_outlined,
+            size: 48,
+            color: context.theme.colorScheme.onSurface.withOpacity(0.3),
           ),
           const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _NutrientCard(
-                  label: 'Calories',
-                  value: nutritionStats['avgCalories']?.toStringAsFixed(0) ??
-                      '0',
-                  unit: 'kcal',
-                  color: Colors.orange,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _NutrientCard(
-                  label: 'Protein',
-                  value: nutritionStats['avgProtein']?.toStringAsFixed(1) ??
-                      '0',
-                  unit: 'g',
-                  color: Colors.red,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: _NutrientCard(
-                  label: 'Carbs',
-                  value: nutritionStats['avgCarbs']?.toStringAsFixed(1) ?? '0',
-                  unit: 'g',
-                  color: Colors.blue,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _NutrientCard(
-                  label: 'Fat',
-                  value: nutritionStats['avgFat']?.toStringAsFixed(1) ?? '0',
-                  unit: 'g',
-                  color: Colors.green,
-                ),
-              ),
-            ],
+          AppText(
+            'No nutrition data available',
+            color: context.theme.colorScheme.onSurface.withOpacity(0.6),
+            size: 14,
+            textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -312,131 +479,71 @@ class _NutrientCard extends StatelessWidget {
   final String label;
   final String value;
   final String unit;
-  final Color color;
+  final Gradient gradient;
 
   const _NutrientCard({
     required this.label,
     required this.value,
     required this.unit,
-    required this.color,
+    required this.gradient,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
-      ),
-      child: Column(
-        children: [
-          AppText.regular(
-            label,
-            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
-            size: 11,
-          ),
-          const SizedBox(height: 4),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              AppText.semiBold(
-                value,
-                color: color,
-                size: 16,
-              ),
-              const SizedBox(width: 2),
-              AppText.regular(
-                unit,
-                color: color,
-                size: 10,
-              ),
-            ],
+        gradient: gradient,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: gradient.colors.first.withOpacity(0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _CategoryDistribution extends StatelessWidget {
-  final List<dynamic> ingredients;
-
-  const _CategoryDistribution({required this.ingredients});
-
-  @override
-  Widget build(BuildContext context) {
-    final categoryStats = _getCategoryStats();
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.theme.colorScheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AppText.semiBold(
-            'Ingredient Categories',
-            color: context.theme.colorScheme.onSurface,
-            size: 14,
-          ),
-          const SizedBox(height: 12),
-          if (categoryStats.isEmpty)
-            AppText.regular(
-              'No category data available',
-              color: context.theme.colorScheme.onSurface.withValues(alpha: 0.6),
-              size: 12,
-            )
-          else
-            ...categoryStats.entries.take(4).map((entry) =>
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 12,
-                        height: 12,
-                        decoration: BoxDecoration(
-                          color: AppColor.chartColors[categoryStats.keys
-                              .toList().indexOf(entry.key) %
-                              AppColor.chartColors.length],
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: AppText.regular(
-                          entry.key.isEmpty ? 'Other' : entry.key,
-                          color: context.theme.colorScheme.onSurface,
-                          size: 12,
-                        ),
-                      ),
-                      AppText.semiBold(
-                        '${entry.value}',
-                        color: context.theme.colorScheme.onSurface,
-                        size: 12,
-                      ),
-                    ],
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            AppText(
+              label,
+              color: Colors.white.withOpacity(0.9),
+              size: 11,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const Spacer(),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: AppText(
+                      value,
+                      color: Colors.white,
+                      size: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                )),
-        ],
+                ),
+                const SizedBox(width: 2),
+                AppText(
+                  unit,
+                  color: Colors.white.withOpacity(0.8),
+                  size: 10,
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
-  }
-
-  Map<String, int> _getCategoryStats() {
-    final stats = <String, int>{};
-    for (final ingredient in ingredients) {
-      final category = (ingredient['category'] as String?) ?? 'Other';
-      stats[category] = (stats[category] ?? 0) + 1;
-    }
-    return Map.fromEntries(stats.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value)));
   }
 }
 
@@ -445,72 +552,51 @@ class _StatisticsLoadingWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: context.theme.colorScheme.surfaceContainerLowest,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: context.theme.colorScheme.onSurface.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  width: 120,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    color: context.theme.colorScheme.onSurface.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: context.theme.colorScheme.onSurface.withValues(alpha: 
-                          0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Container(
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: context.theme.colorScheme.onSurface.withValues(alpha: 
-                          0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Container(
-              height: 120,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: context.theme.colorScheme.onSurface.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          ],
+    return Column(
+      children: [
+        // Loading skeleton for stats grid
+        GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 2,
+          childAspectRatio: 1.4,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          children: List.generate(2, (index) => _buildLoadingSkeleton(context)),
         ),
+        const SizedBox(height: 24),
+
+        // Loading skeleton for distribution cards
+        ...[1, 2].map((index) =>
+            Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              height: 180,
+              decoration: BoxDecoration(
+                color: context.theme.colorScheme.surface,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: context.theme.colorScheme.outline.withOpacity(0.08),
+                ),
+              ),
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            )),
+      ],
+    );
+  }
+
+  Widget _buildLoadingSkeleton(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: context.theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: context.theme.colorScheme.outline.withOpacity(0.08),
+        ),
+      ),
+      child: const Center(
+        child: CircularProgressIndicator(),
       ),
     );
   }

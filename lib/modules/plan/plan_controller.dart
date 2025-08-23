@@ -6,7 +6,6 @@ import '../../network_service/dio_network_service.dart';
 import '../../widgets/custom_displays.dart';
 import 'meal_plan_model.dart';
 import 'meal_plan_assignment_model.dart';
-import 'widgets/meal_plan_form_dialog.dart';
 
 class PlanController extends GetxController {
   final RxList<MealPlan> mealPlans = <MealPlan>[].obs;
@@ -38,6 +37,12 @@ class PlanController extends GetxController {
   // Current editing items
   MealPlan? currentMealPlan;
   MealPlanAssignment? currentAssignment;
+
+  // Enhanced meal creation flow properties
+  final RxBool showDietTypeSelection = true.obs;
+  final Rx<MealCategory?> selectedDietType = Rx<MealCategory?>(null);
+  final RxMap<MealPeriod, String> selectedMealRecipes = <MealPeriod, String>{}
+      .obs;
 
   @override
   void onInit() {
@@ -275,18 +280,30 @@ class PlanController extends GetxController {
 
   // Delete meal plan
   Future<void> deleteMealPlan(String id) async {
+    print('DELETE MEAL PLAN CALLED with ID: $id');
     try {
+      print('Sending DELETE request to: api/admin/AdminMealPlan/$id');
       final response = await DioNetworkService.deleteData('api/admin/AdminMealPlan/$id');
-      
+
+      print('Delete response: $response');
+
       // Check if the HTTP response was successful
       final httpStatus = response['httpResponse']?['status'] ?? 0;
+      print('HTTP Status: $httpStatus');
+
       if (httpStatus == 200 || httpStatus == 204) {
+        print('Delete successful, refreshing data...');
         CustomDisplays.showSnackBar(message: PlanConstants.mealPlanDeleted);
         await getMealPlans();
         await getMealPlansByDate();
+        print('Data refresh completed');
+      } else {
+        print('Delete failed - unexpected status code: $httpStatus');
+        CustomDisplays.showSnackBar(message: 'Delete failed: HTTP $httpStatus');
       }
     } catch (e) {
-      CustomDisplays.showSnackBar(message: 'Failed to delete meal plan');
+      print('Delete error: $e');
+      CustomDisplays.showSnackBar(message: 'Failed to delete meal plan: $e');
       debugPrint('Error deleting meal plan: $e');
     }
   }
@@ -323,7 +340,6 @@ class PlanController extends GetxController {
     selectedBmiCategory.value = assignment.bmiCategory;
   }
 
-  // Clear form
   void clearForm() {
     currentMealPlan = null;
     nameController.clear();
@@ -331,9 +347,8 @@ class PlanController extends GetxController {
     priceController.clear();
     imageUrlController.clear();
     isActive.value = true;
+    _resetEnhancedForm();
   }
-
-
 
   // Clear assignment form
   void clearAssignmentForm() {
@@ -790,5 +805,138 @@ class PlanController extends GetxController {
   void updateSelectedDate(DateTime date) {
     selectedCalendarDate.value = date;
     focusedDay.value = date;
+  }
+
+  // Enhanced meal creation flow methods
+  void proceedToMealSelection() {
+    showDietTypeSelection.value = false;
+    selectedCategory.value = selectedDietType.value ?? MealCategory.vegetarian;
+    // Set selected date for meals to the calendar selected date
+    selectedMealDate.value = selectedCalendarDate.value;
+  }
+
+  List<dynamic> getFilteredRecipes() {
+    if (selectedDietType.value == null) return recipes;
+
+    // Filter recipes based on selected diet type
+    // Note: This assumes recipes have a 'category' field that matches our MealCategory
+    return recipes.where((recipe) {
+      if (recipe is Map<String, dynamic>) {
+        final recipeCategory = recipe['category'];
+        if (recipeCategory is int) {
+          return MealCategory.values[recipeCategory] == selectedDietType.value;
+        }
+      }
+      return true; // Show all if filtering fails
+    }).toList();
+  }
+
+  String getSelectedRecipeForPeriod(MealPeriod period) {
+    return selectedMealRecipes[period] ?? '';
+  }
+
+  void setSelectedRecipeForPeriod(MealPeriod period, String recipeId) {
+    if (recipeId.isEmpty) {
+      selectedMealRecipes.remove(period);
+    } else {
+      selectedMealRecipes[period] = recipeId;
+    }
+  }
+
+  bool hasSelectedMeals() {
+    return selectedMealRecipes.isNotEmpty;
+  }
+
+  Future<void> createMultipleMealPlans() async {
+    if (selectedDietType.value == null || selectedMealRecipes.isEmpty) {
+      CustomDisplays.showSnackBar(message: 'Please select at least one meal');
+      return;
+    }
+
+    // Show loading state
+    isLoading.value = true;
+
+    try {
+      List<Future<dynamic>> createRequests = [];
+
+      for (var entry in selectedMealRecipes.entries) {
+        final mealPlanData = {
+          'recipeId': entry.value,
+          'mealDate': selectedMealDate.value.toIso8601String(),
+          'period': entry.key.index,
+          'category': selectedDietType.value!.index,
+          'bmiCategory': selectedBmiCategory.value.index,
+        };
+
+        createRequests.add(
+            DioNetworkService.postData(mealPlanData, 'api/admin/AdminMealPlan')
+        );
+      }
+
+      // Execute all requests
+      final responses = await Future.wait(createRequests);
+
+      // Check if all were successful
+      bool allSuccessful = responses.every((response) {
+        final httpStatus = response['httpResponse']?['status'] ?? 0;
+        return httpStatus == 200 || httpStatus == 201;
+      });
+
+      if (allSuccessful) {
+        // Success feedback
+        final mealCount = selectedMealRecipes.length;
+        final mealText = mealCount == 1 ? 'meal plan' : 'meal plans';
+        CustomDisplays.showSnackBar(
+            message: '$mealCount $mealText created successfully!');
+
+        // Refresh data
+        await getMealPlansByDate();
+        await getMealPlans();
+
+        // Reset form and close dialog
+        _resetEnhancedForm();
+
+        // Add a brief delay to show success message, then close dialog
+        await Future<void>.delayed(const Duration(milliseconds: 800));
+
+        // Ensure dialog closes
+        if (Get.isDialogOpen ?? false) {
+          Get.back<void>();
+        }
+      } else {
+        // Handle partial failures
+        final successCount = responses.where((response) {
+          final httpStatus = response['httpResponse']?['status'] ?? 0;
+          return httpStatus == 200 || httpStatus == 201;
+        }).length;
+
+        final totalCount = responses.length;
+
+        if (successCount > 0) {
+          CustomDisplays.showSnackBar(
+              message: '$successCount of $totalCount meal plans created successfully');
+          // Refresh data even with partial success
+          await getMealPlansByDate();
+          await getMealPlans();
+        } else {
+          CustomDisplays.showSnackBar(
+              message: 'Failed to create any meal plans. Please try again.');
+        }
+      }
+    } catch (e) {
+      CustomDisplays.showSnackBar(
+          message: 'Failed to create meal plans: ${e.toString()}');
+      debugPrint('Error creating multiple meal plans: $e');
+    } finally {
+      // Always hide loading state
+      isLoading.value = false;
+    }
+  }
+
+  void _resetEnhancedForm() {
+    showDietTypeSelection.value = true;
+    selectedDietType.value = null;
+    selectedMealRecipes.clear();
+    selectedBmiCategory.value = BmiCategory.normal;
   }
 }

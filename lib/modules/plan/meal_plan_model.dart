@@ -1,3 +1,21 @@
+enum FoodType {
+  vegetarian,
+  nonVegetarian,
+  vegan,
+}
+
+extension FoodTypeExtension on FoodType {
+  String get displayName {
+    switch (this) {
+      case FoodType.vegetarian:
+        return 'Vegetarian';
+      case FoodType.nonVegetarian:
+        return 'Non-Vegetarian';
+      case FoodType.vegan:
+        return 'Vegan';
+    }
+  }
+}
 
 class MealPlan {
   final String? id;
@@ -6,6 +24,7 @@ class MealPlan {
   final String? imageUrl;
   final double? price;
   final bool isActive;
+  final FoodType? foodType;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -16,11 +35,51 @@ class MealPlan {
     this.imageUrl,
     this.price,
     this.isActive = true,
+    this.foodType,
     this.createdAt,
     this.updatedAt,
   });
 
   factory MealPlan.fromJson(Map<String, dynamic> json) {
+    FoodType? foodType;
+
+    // First check for 'foodType' field directly
+    if (json['foodType'] != null) {
+      switch (json['foodType'].toString().toLowerCase()) {
+        case 'vegetarian':
+          foodType = FoodType.vegetarian;
+          break;
+        case 'nonvegetarian':
+        case 'non_vegetarian':
+        case 'non-vegetarian':
+          foodType = FoodType.nonVegetarian;
+          break;
+        case 'vegan':
+          foodType = FoodType.vegan;
+          break;
+      }
+    }
+
+    // If foodType is not set, check for 'category' field (for meal plan assignments)
+    if (foodType == null && json['category'] != null) {
+      final category = json['category'] as int?;
+      switch (category) {
+        case 0:
+          foodType = FoodType.vegetarian;
+          break;
+        case 1:
+          foodType = FoodType.vegan;
+          break;
+        case 2:
+          foodType = FoodType.nonVegetarian;
+          break;
+        default:
+        // Any other value defaults to vegetarian
+          foodType = FoodType.vegetarian;
+          break;
+      }
+    }
+
     return MealPlan(
       id: json['recipeId']?.toString() ?? json['id']?.toString(),
       name: (json['recipeName'] as String?) ?? (json['name'] as String?) ?? '',
@@ -32,6 +91,7 @@ class MealPlan {
           json['recipeImageUrl']?.toString() ?? json['imageUrl']?.toString(),
       price: (json['price'] as num?)?.toDouble(),
       isActive: (json['isActive'] as bool?) ?? true,
+      foodType: foodType,
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'].toString())
           : null,
@@ -49,6 +109,7 @@ class MealPlan {
       if (imageUrl != null) 'imageUrl': imageUrl,
       if (price != null) 'price': price,
       'isActive': isActive,
+      if (foodType != null) 'foodType': foodType!.name,
     };
   }
 
@@ -59,6 +120,7 @@ class MealPlan {
     String? imageUrl,
     double? price,
     bool? isActive,
+    FoodType? foodType,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -69,6 +131,7 @@ class MealPlan {
       imageUrl: imageUrl ?? this.imageUrl,
       price: price ?? this.price,
       isActive: isActive ?? this.isActive,
+      foodType: foodType ?? this.foodType,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

@@ -14,15 +14,8 @@ class IngredientsView extends GetView<MealController> {
     
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          title: AppText.bold(
-              'Ingredients', color: context.theme.colorScheme.onSurface,
-              size: Responsive.getTitleTextSize(context)),
-          leading: IconButton(
-            onPressed: () => Get.back<void>(), 
-            icon: Icon(Icons.arrow_back_ios, color: context.theme.colorScheme.onSurface)
-          ),
-        ),
+        backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
+        appBar: _buildModernAppBar(context),
         body: Obx(() {
           if (controller.isLoading.value) {
             return _buildShimmerLoading(context);
@@ -38,251 +31,609 @@ class IngredientsView extends GetView<MealController> {
           
           return _buildIngredientGrid(context, controller);
         }),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => _showAddIngredientDialog(context),
-          backgroundColor: context.theme.colorScheme.onSurface,
-          foregroundColor: context.theme.colorScheme.surfaceContainerLowest,
-          child: const Icon(Icons.add),
+        floatingActionButton: _buildModernFAB(context),
+      ),
+    );
+  }
+
+  PreferredSizeWidget _buildModernAppBar(BuildContext context) {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
+      surfaceTintColor: Colors.transparent,
+      title: Text(
+        'Ingredients',
+        style: TextStyle(
+          fontSize: Responsive.getTitleTextSize(context),
+          fontWeight: FontWeight.w600,
+          color: context.theme.colorScheme.onSurface,
+          letterSpacing: -0.5,
         ),
+      ),
+      leading: IconButton(
+        onPressed: () => Get.back<void>(),
+        icon: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.surfaceContainer,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            Icons.arrow_back_ios_new,
+            size: 18,
+            color: context.theme.colorScheme.onSurface,
+          ),
+        ),
+      ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 16),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: context.theme.colorScheme.primaryContainer.withValues(
+                  alpha: 0.3),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Obx(() =>
+                Text(
+                  '${controller.ingredients.length} items',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: context.theme.colorScheme.primary,
+                  ),
+                )),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildModernFAB(BuildContext context) {
+    return FloatingActionButton.extended(
+      onPressed: () => _showAddIngredientDialog(context),
+      backgroundColor: context.theme.colorScheme.primary,
+      foregroundColor: context.theme.colorScheme.onPrimary,
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      icon: const Icon(Icons.add_rounded),
+      label: const Text(
+        'Add Ingredient',
+        style: TextStyle(fontWeight: FontWeight.w600),
       ),
     );
   }
   
   Widget _buildErrorState(BuildContext context, MealController controller) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.error_outline, size: 48, color: Colors.red),
-          const SizedBox(height: 16),
-          Text(
-            'Error: Data not found, try restarting the app',
-            style: TextStyle(color: Colors.red, fontSize: 16),
-            textAlign: TextAlign.center,
+      child: Container(
+        margin: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: context.theme.colorScheme.errorContainer.withValues(
+              alpha: 0.1),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: context.theme.colorScheme.error.withValues(alpha: 0.2),
+            width: 1,
           ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () => controller.fetchIngredients(),
-            child: const Text('Try Again'),
-          ),
-        ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: context.theme.colorScheme.error.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.error_outline_rounded,
+                size: 48,
+                color: context.theme.colorScheme.error,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Something went wrong',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: context.theme.colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Data not found, try restarting the app',
+              style: TextStyle(
+                fontSize: 16,
+                color: context.theme.colorScheme.onSurface.withValues(
+                    alpha: 0.7),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              onPressed: () => controller.fetchIngredients(),
+              icon: const Icon(Icons.refresh_rounded),
+              label: const Text('Try Again'),
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
   
   Widget _buildEmptyState(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.no_food, size: 64, color: Colors.grey),
-          const SizedBox(height: 16),
-          Text(
-            'No ingredients found',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Add ingredients to get started',
-            style: TextStyle(color: Colors.grey),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton.icon(
-            onPressed: () => _showAddIngredientDialog(context),
-            icon: const Icon(Icons.add),
-            label: const Text('Add Ingredient'),
-          ),
-        ],
+      child: Container(
+        margin: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: context.theme.colorScheme.surfaceContainer,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    context.theme.colorScheme.primary.withValues(alpha: 0.2),
+                    context.theme.colorScheme.primary.withValues(alpha: 0.1),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.eco_rounded,
+                size: 64,
+                color: context.theme.colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'No ingredients yet',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w600,
+                color: context.theme.colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Start building your ingredient library\nby adding your first ingredient',
+              style: TextStyle(
+                fontSize: 16,
+                color: context.theme.colorScheme.onSurface.withValues(
+                    alpha: 0.7),
+                height: 1.4,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            FilledButton.icon(
+              onPressed: () => _showAddIngredientDialog(context),
+              icon: const Icon(Icons.add_rounded),
+              label: const Text('Add First Ingredient'),
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24, vertical: 16),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16)),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
   
   Widget _buildIngredientGrid(BuildContext context, MealController controller) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          int crossAxisCount = constraints.maxWidth > 1200 ? 5 : 
-                              constraints.maxWidth > 900 ? 4 : 
-                              constraints.maxWidth > 600 ? 3 : 2;
-          
-          return GridView.builder(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: crossAxisCount,
-              childAspectRatio: 1.0,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-            ),
-            itemCount: controller.ingredients.length,
-            itemBuilder: (context, index) {
-              final ingredient = controller.ingredients[index];
-              return _buildIngredientCard(context, ingredient);
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 121),
+          sliver: SliverLayoutBuilder(
+            builder: (context, constraints) {
+              int crossAxisCount = _getCrossAxisCount(
+                  constraints.crossAxisExtent);
+
+              return SliverGrid(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  childAspectRatio: 1.0, // Square format
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                    final ingredient = controller.ingredients[index];
+                    return _buildCompactIngredientCard(context, ingredient);
+                  },
+                  childCount: controller.ingredients.length,
+                ),
+              );
             },
-          );
-        },
-      ),
+          ),
+        ),
+      ],
     );
   }
-  
-  Widget _buildIngredientCard(BuildContext context, dynamic ingredient) {
-    return GestureDetector(
-      onTap: () => _showIngredientDetails(context, ingredient),
-      child: Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        color: context.theme.colorScheme.surfaceContainerLowest,
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      (ingredient['name'] as String?) ?? 'Unknown',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: context.theme.colorScheme.onSurface,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+
+  int _getCrossAxisCount(double width) {
+    if (width > 1200) return 7; // More columns for larger screens
+    if (width > 900) return 5;
+    if (width > 700) return 4;
+    if (width > 500) return 3;
+    if (width > 300) return 2;
+    return 1; // Minimum 1 column to prevent overflow
+  }
+
+  Widget _buildCompactIngredientCard(BuildContext context, dynamic ingredient) {
+    final colors = [
+      Colors.deepPurple,
+      Colors.indigo,
+      Colors.teal,
+      Colors.orange,
+      Colors.pink,
+      Colors.cyan,
+      Colors.amber,
+      Colors.green,
+    ];
+    final color = colors[ingredient['name']
+        .toString()
+        .length % colors.length];
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0.0, end: 1.0),
+      duration: Duration(milliseconds: 200 + (ingredient['name']
+          .toString()
+          .length % 3) * 30),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) {
+        return Transform.scale(
+          scale: value,
+          child: GestureDetector(
+            onTap: () => _showIngredientDetails(context, ingredient),
+            child: Container(
+              decoration: BoxDecoration(
+                color: context.theme.colorScheme.surface,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: color.withValues(alpha: 0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                    spreadRadius: 1,
                   ),
-                  _buildPopupMenu(context, ingredient),
+                  BoxShadow(
+                    color: context.theme.colorScheme.shadow.withValues(
+                        alpha: 0.05),
+                    blurRadius: 16,
+                    offset: const Offset(0, 8),
+                  ),
                 ],
               ),
-              const SizedBox(height: 8),
-              Text(
-                (ingredient['description'] as String?) ?? 'No description',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Compact header
+                    Container(
+                      height: 50, // Reduced height for square format
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            color.withValues(alpha: 0.8),
+                            color.withValues(alpha: 0.6),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: Stack(
+                        children: [
+                          // Simple background pattern
+                          Positioned(
+                            right: -10,
+                            top: -10,
+                            child: Container(
+                              width: 30,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.1),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+
+                          // Compact icon
+                          Positioned(
+                            left: 10,
+                            top: 10,
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Icon(
+                                _getIngredientIcon(
+                                    ingredient['category'] as String?),
+                                size: 14,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+
+                          // Compact menu
+                          Positioned(
+                            right: 6,
+                            top: 6,
+                            child: _buildCompactPopupMenu(context, ingredient),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Compact content
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(12), // Reduced padding
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Name - single line
+                            Text(
+                              (ingredient['name'] as String?) ?? 'Unknown',
+                              style: TextStyle(
+                                fontSize: 13, // Reduced font size
+                                fontWeight: FontWeight.w700,
+                                color: context.theme.colorScheme.onSurface,
+                                height: 1.1,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4), // Reduced spacing
+
+                            // Category badge - smaller
+                            if ((ingredient['category'] as String?)
+                                ?.isNotEmpty == true)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 4, vertical: 1),
+                                decoration: BoxDecoration(
+                                  color: color.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  ingredient['category'] as String,
+                                  style: TextStyle(
+                                    fontSize: 7, // Reduced font size
+                                    fontWeight: FontWeight.w600,
+                                    color: color,
+                                  ),
+                                ),
+                              ),
+
+                            const Spacer(),
+
+                            // Compact nutrition - horizontal layout
+                            _buildCompactNutrientDisplay(
+                                context, ingredient, color),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 6),
-              Divider(height: 10, color: context.theme.colorScheme.outline),
-              _buildNutrientChips(context, ingredient),
-            ],
+            ),
           ),
+        );
+      },
+    );
+  }
+
+  IconData _getIngredientIcon(String? category) {
+    switch (category?.toLowerCase()) {
+      case 'vegetable':
+      case 'vegetables':
+        return Icons.local_florist_rounded;
+      case 'fruit':
+      case 'fruits':
+        return Icons.apple_rounded;
+      case 'meat':
+      case 'protein':
+        return Icons.set_meal_rounded;
+      case 'dairy':
+        return Icons.emoji_food_beverage_rounded;
+      case 'grain':
+      case 'grains':
+        return Icons.grain_rounded;
+      case 'spice':
+      case 'spices':
+        return Icons.scatter_plot_rounded;
+      case 'oil':
+      case 'oils':
+        return Icons.opacity_rounded;
+      case 'nut':
+      case 'nuts':
+        return Icons.circle_rounded;
+      case 'seafood':
+      case 'fish':
+        return Icons.set_meal_outlined;
+      default:
+        return Icons.eco_rounded;
+    }
+  }
+
+  Widget _buildCompactPopupMenu(BuildContext context, dynamic ingredient) {
+    return Container(
+      width: 28,
+      height: 28,
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: PopupMenuButton<String>(
+        padding: EdgeInsets.zero,
+        icon: Icon(
+          Icons.more_vert_rounded,
+          size: 14,
+          color: Colors.white,
         ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: 8,
+        color: context.theme.colorScheme.surface,
+        onSelected: (value) {
+          switch (value) {
+            case 'edit':
+              _showEditIngredientDialog(context, ingredient);
+              break;
+            case 'delete':
+              _showDeleteConfirmation(context, ingredient);
+              break;
+          }
+        },
+        itemBuilder: (context) =>
+        [
+          PopupMenuItem(
+            value: 'edit',
+            child: Row(
+              children: [
+                Icon(Icons.edit_rounded, size: 16, color: Colors.blue),
+                SizedBox(width: 8),
+                Text('Edit', style: TextStyle(fontSize: 13)),
+              ],
+            ),
+          ),
+          PopupMenuItem(
+            value: 'delete',
+            child: Row(
+              children: [
+                Icon(Icons.delete_rounded, size: 16, color: Colors.red),
+                SizedBox(width: 8),
+                Text('Delete',
+                    style: TextStyle(fontSize: 13, color: Colors.red)),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
-  
-  Widget _buildPopupMenu(BuildContext context, dynamic ingredient) {
-    return PopupMenuButton<String>(
-      icon: Icon(Icons.more_vert, color: context.theme.colorScheme.onSurface),
-      padding: EdgeInsets.zero,
-      onSelected: (value) {
-        switch (value) {
-          case 'edit':
-            _showEditIngredientDialog(context, ingredient);
-            break;
-          case 'delete':
-            _showDeleteConfirmation(context, ingredient);
-            break;
-        }
-      },
-      itemBuilder: (context) => [
-        const PopupMenuItem(
-          value: 'edit',
-          child: Row(
-            children: [
-              Icon(Icons.edit),
-              SizedBox(width: 8),
-              Text('Edit'),
-            ],
+
+  Widget _buildCompactNutrientDisplay(BuildContext context, dynamic ingredient,
+      Color primaryColor) {
+    return Container(
+      padding: const EdgeInsets.all(6), // Reduced padding
+      decoration: BoxDecoration(
+        color: context.theme.colorScheme.surfaceContainer.withValues(
+            alpha: 0.3),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildCompactNutrientItem(
+            context,
+            Icons.local_fire_department_rounded,
+            '${((ingredient['calories'] as num?) ?? 0).toInt()}',
+            Colors.orange,
           ),
-        ),
-        const PopupMenuItem(
-          value: 'delete',
-          child: Row(
-            children: [
-              Icon(Icons.delete, color: Colors.red),
-              SizedBox(width: 8),
-              Text('Delete', style: TextStyle(color: Colors.red)),
-            ],
+          _buildCompactNutrientItem(
+            context,
+            Icons.fitness_center_rounded,
+            '${((ingredient['protein'] as num?) ?? 0).toInt()}g',
+            Colors.red,
           ),
-        ),
-      ],
+          _buildCompactNutrientItem(
+            context,
+            Icons.grain_rounded,
+            '${((ingredient['carbohydrates'] as num?) ?? 0).toInt()}g',
+            Colors.blue,
+          ),
+          _buildCompactNutrientItem(
+            context,
+            Icons.opacity_rounded,
+            '${((ingredient['fat'] as num?) ?? 0).toInt()}g',
+            Colors.green,
+          ),
+        ],
+      ),
     );
   }
-  
-  Widget _buildNutrientChips(BuildContext context, dynamic ingredient) {
+
+  Widget _buildCompactNutrientItem(BuildContext context, IconData icon,
+      String value, Color color) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Row(
-          children: [
-            _buildNutrientChip(
-                context, 'Cal',
-                '${((ingredient['calories'] as num?) ?? 0).toInt()}',
-                Icons.local_fire_department),
-            _buildNutrientChip(
-                context, 'Prot',
-                '${((ingredient['protein'] as num?) ?? 0).toInt()}g',
-                Icons.fitness_center),
-          ],
-        ),
+        Icon(icon, size: 12, color: color.withValues(alpha: 0.7)),
+        // Reduced icon size
         const SizedBox(height: 2),
-        Row(
-          children: [
-            _buildNutrientChip(context, 'Carbs',
-                '${((ingredient['carbohydrates'] as num?) ?? 0).toInt()}g',
-                Icons.grain),
-            _buildNutrientChip(
-                context, 'Fat',
-                '${((ingredient['fat'] as num?) ?? 0).toInt()}g',
-                Icons.opacity),
-          ],
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 9, // Reduced font size
+            fontWeight: FontWeight.w600,
+            color: context.theme.colorScheme.onSurface,
+          ),
         ),
       ],
     );
   }
-  
-  Widget _buildNutrientChip(BuildContext context, String label, String value, IconData icon) {
+
+  Widget _buildMacroChip(BuildContext context, String label, String value,
+      IconData icon, Color color) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
         margin: const EdgeInsets.symmetric(horizontal: 2),
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
         decoration: BoxDecoration(
-          color: context.theme.colorScheme.primaryContainer.withValues(alpha: 0.7),
-          borderRadius: BorderRadius.circular(8),
+          color: color.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: color.withValues(alpha: 0.2),
+            width: 1,
+          ),
         ),
-        child: Row(
+        child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 10, color: context.theme.colorScheme.onPrimaryContainer),
-            const SizedBox(width: 2),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 8,
-                      color: context.theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Text(
-                    value,
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: context.theme.colorScheme.onPrimaryContainer,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+            Icon(icon, size: 12, color: color.withValues(alpha: 0.8)),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 9,
+                fontWeight: FontWeight.w600,
+                color: color.withValues(alpha: 0.9),
+              ),
+            ),
+            const SizedBox(height: 1),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: context.theme.colorScheme.onSurface,
               ),
             ),
           ],
@@ -290,209 +641,279 @@ class IngredientsView extends GetView<MealController> {
       ),
     );
   }
+
   
   void _showAddIngredientDialog(BuildContext context) {
     controller.clearIngredientForm();
     int dietaryCategory = 0;
-    
+
     Get.dialog<void>(
-      Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.8,
-          constraints: BoxConstraints(maxWidth: 800),
-          padding: const EdgeInsets.all(24),
-          child: SingleChildScrollView(
-            child: Obx(() => Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Add New Ingredient',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: context.theme.colorScheme.onSurface,
+      Dialog.fullscreen(
+        backgroundColor: context.theme.colorScheme.surface,
+        child: Scaffold(
+          backgroundColor: context.theme.colorScheme.surface,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              onPressed: () => Get.back<void>(),
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: context.theme.colorScheme.surfaceContainer,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.close_rounded,
+                  size: 20,
+                  color: context.theme.colorScheme.onSurface,
+                ),
+              ),
+            ),
+            title: Text(
+              'Add New Ingredient',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+                color: context.theme.colorScheme.onSurface,
+              ),
+            ),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: FilledButton.icon(
+                  onPressed: () {
+                    if (controller.validateIngredientForm()) {
+                      final data = controller.createIngredientData(
+                          dietaryCategory);
+                      controller.createIngredient(data).then((success) {
+                        if (success) {
+                          Get.back<void>();
+                          Get.snackbar(
+                              'Success', 'Ingredient created successfully');
+                        }
+                      });
+                    }
+                  },
+                  icon: const Icon(Icons.save_rounded),
+                  label: const Text('Save'),
+                  style: FilledButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
                   ),
                 ),
-                const SizedBox(height: 24),
-                
-                _buildSectionTitle(context, 'Basic Information'),
-                const SizedBox(height: 12),
-                _buildValidatedTextField(
-                  controller.nameController,
-                  'Ingredient Name',
+              ),
+            ],
+          ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Obx(() => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildModernSection(
                   context,
-                  isRequired: true,
-                  errorText: controller.nameError.value,
-                  onChanged: controller.validateName,
-                ),
-                const SizedBox(height: 12),
-                _buildValidatedTextField(
-                  controller.descriptionController,
-                  'Description',
-                  context,
-                  maxLines: 3,
-                  errorText: controller.descriptionError.value,
-                  onChanged: controller.validateDescription,
-                ),
-                const SizedBox(height: 12),
-                _buildValidatedTextField(
-                  controller.categoryController,
-                  'Category',
-                  context,
-                ),
-                const SizedBox(height: 24),
-                
-                _buildSectionTitle(context, 'Nutritional Information'),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildValidatedTextField(
-                        controller.caloriesController,
-                        'Calories',
-                        context,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: MealController.getIntegerInputFormatters(),
-                        errorText: controller.caloriesError.value,
-                        onChanged: controller.validateCalories,
-                      ),
+                  'Basic Information',
+                  Icons.info_outline_rounded,
+                  [
+                    _buildValidatedTextField(
+                      controller.nameController,
+                      'Ingredient Name',
+                      context,
+                      isRequired: true,
+                      errorText: controller.nameError.value,
+                      onChanged: controller.validateName,
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildValidatedTextField(
-                        controller.proteinController,
-                        'Protein (g)',
-                        context,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: MealController.getNumberInputFormatters(),
-                        errorText: controller.proteinError.value,
-                        onChanged: (value) => controller.validateNutrient(value, controller.proteinError, 'Protein'),
-                      ),
+                    const SizedBox(height: 16),
+                    _buildValidatedTextField(
+                      controller.descriptionController,
+                      'Description',
+                      context,
+                      maxLines: 3,
+                      errorText: controller.descriptionError.value,
+                      onChanged: controller.validateDescription,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildValidatedTextField(
+                      controller.categoryController,
+                      'Category',
+                      context,
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildValidatedTextField(
-                        controller.carbsController,
-                        'Carbs (g)',
-                        context,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: MealController.getNumberInputFormatters(),
-                        errorText: controller.carbsError.value,
-                        onChanged: (value) => controller.validateNutrient(value, controller.carbsError, 'Carbs'),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildValidatedTextField(
-                        controller.fatController,
-                        'Fat (g)',
-                        context,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: MealController.getNumberInputFormatters(),
-                        errorText: controller.fatError.value,
-                        onChanged: (value) => controller.validateNutrient(value, controller.fatError, 'Fat'),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildValidatedTextField(
-                        controller.fiberController,
-                        'Fiber (g)',
-                        context,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: MealController.getNumberInputFormatters(),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildValidatedTextField(
-                        controller.sugarController,
-                        'Sugar (g)',
-                        context,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: MealController.getNumberInputFormatters(),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                
-                _buildSectionTitle(context, 'Fat Breakdown'),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildValidatedTextField(
-                        controller.saturatedFatController,
-                        'Saturated (g)',
-                        context,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: MealController.getNumberInputFormatters(),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildValidatedTextField(
-                        controller.monoFatController,
-                        'Monounsaturated (g)',
-                        context,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: MealController.getNumberInputFormatters(),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                _buildValidatedTextField(
-                  controller.polyFatController,
-                  'Polyunsaturated (g)',
-                  context,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: MealController.getNumberInputFormatters(),
-                ),
-                const SizedBox(height: 24),
-                
-                _buildSectionTitle(context, 'Additional Information'),
-                const SizedBox(height: 12),
-                _buildValidatedTextField(
-                  controller.vitaminsController,
-                  'Vitamins (JSON format)',
-                  context,
-                  maxLines: 3,
-                ),
-                const SizedBox(height: 12),
-                _buildValidatedTextField(
-                  controller.mineralsController,
-                  'Minerals (JSON format)',
-                  context,
-                  maxLines: 3,
-                ),
-                const SizedBox(height: 12),
-                _buildDietaryDropdown(context, dietaryCategory, (value) => dietaryCategory = value ?? 0),
+
                 const SizedBox(height: 32),
-                
-                _buildDialogActions(context, () {
-                  if (controller.validateIngredientForm()) {
-                    final data = controller.createIngredientData(dietaryCategory);
-                    controller.createIngredient(data).then((success) {
-                      if (success) {
-                        Get.back<void>();
-                        Get.snackbar('Success', 'Ingredient created successfully');
-                      }
-                    });
-                  }
-                }),
+
+                _buildModernSection(
+                  context,
+                  'Nutritional Information',
+                  Icons.analytics_outlined,
+                  [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildValidatedTextField(
+                            controller.caloriesController,
+                            'Calories',
+                            context,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: MealController
+                                .getIntegerInputFormatters(),
+                            errorText: controller.caloriesError.value,
+                            onChanged: controller.validateCalories,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildValidatedTextField(
+                            controller.proteinController,
+                            'Protein (g)',
+                            context,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: MealController
+                                .getNumberInputFormatters(),
+                            errorText: controller.proteinError.value,
+                            onChanged: (value) =>
+                                controller.validateNutrient(
+                                    value, controller.proteinError, 'Protein'),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildValidatedTextField(
+                            controller.carbsController,
+                            'Carbs (g)',
+                            context,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: MealController
+                                .getNumberInputFormatters(),
+                            errorText: controller.carbsError.value,
+                            onChanged: (value) =>
+                                controller.validateNutrient(
+                                    value, controller.carbsError, 'Carbs'),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildValidatedTextField(
+                            controller.fatController,
+                            'Fat (g)',
+                            context,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: MealController
+                                .getNumberInputFormatters(),
+                            errorText: controller.fatError.value,
+                            onChanged: (value) =>
+                                controller.validateNutrient(
+                                    value, controller.fatError, 'Fat'),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildValidatedTextField(
+                            controller.fiberController,
+                            'Fiber (g)',
+                            context,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: MealController
+                                .getNumberInputFormatters(),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildValidatedTextField(
+                            controller.sugarController,
+                            'Sugar (g)',
+                            context,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: MealController
+                                .getNumberInputFormatters(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 32),
+
+                _buildModernSection(
+                  context,
+                  'Fat Breakdown',
+                  Icons.pie_chart_outline_rounded,
+                  [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildValidatedTextField(
+                            controller.saturatedFatController,
+                            'Saturated (g)',
+                            context,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: MealController
+                                .getNumberInputFormatters(),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildValidatedTextField(
+                            controller.monoFatController,
+                            'Monounsaturated (g)',
+                            context,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: MealController
+                                .getNumberInputFormatters(),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    _buildValidatedTextField(
+                      controller.polyFatController,
+                      'Polyunsaturated (g)',
+                      context,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: MealController
+                          .getNumberInputFormatters(),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 32),
+
+                _buildModernSection(
+                  context,
+                  'Additional Information',
+                  Icons.more_horiz_rounded,
+                  [
+                    _buildValidatedTextField(
+                      controller.vitaminsController,
+                      'Vitamins (JSON format)',
+                      context,
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildValidatedTextField(
+                      controller.mineralsController,
+                      'Minerals (JSON format)',
+                      context,
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildModernDietaryDropdown(
+                        context, dietaryCategory, (value) =>
+                    dietaryCategory = value ?? 0),
+                  ],
+                ),
+
+                const SizedBox(height: 100), // Bottom padding for scrolling
               ],
             )),
           ),
@@ -500,7 +921,100 @@ class IngredientsView extends GetView<MealController> {
       ),
     );
   }
-  
+
+  // Removed obsolete _buildModernNutrientChips and _buildCompactNutrientChip methods.
+
+  Widget _buildModernSection(BuildContext context, String title, IconData icon,
+      List<Widget> children) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: context.theme.colorScheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: context.theme.colorScheme.outline.withValues(alpha: 0.1),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: context.theme.colorScheme.primary.withValues(
+                      alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  icon,
+                  size: 24,
+                  color: context.theme.colorScheme.primary,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: context.theme.colorScheme.onSurface,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          ...children,
+        ],
+      ),
+    );
+  }
+
+  /// Modern dietary dropdown for Material 3 design in add dialog
+  Widget _buildModernDietaryDropdown(BuildContext context, int value,
+      void Function(int?) onChanged) {
+    return DropdownButtonFormField<int>(
+      value: value,
+      decoration: InputDecoration(
+        labelText: 'Dietary Category',
+        labelStyle: TextStyle(
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7)),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+              color: context.theme.colorScheme.outline.withValues(alpha: 0.5)),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+              color: context.theme.colorScheme.primary, width: 2),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        filled: true,
+        fillColor: context.theme.colorScheme.surfaceContainerLowest,
+        contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16, vertical: 14),
+      ),
+      style: TextStyle(color: context.theme.colorScheme.onSurface),
+      dropdownColor: context.theme.colorScheme.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(16),
+      icon: Icon(Icons.arrow_drop_down_rounded,
+          color: context.theme.colorScheme.onSurface.withValues(alpha: 0.8)),
+      items: const [
+        DropdownMenuItem(value: 0, child: Text('Regular')),
+        DropdownMenuItem(value: 1, child: Text('Vegetarian')),
+        DropdownMenuItem(value: 2, child: Text('Vegan')),
+        DropdownMenuItem(value: 3, child: Text('Gluten-Free')),
+        DropdownMenuItem(value: 4, child: Text('Dairy-Free')),
+        DropdownMenuItem(value: 5, child: Text('Keto')),
+        DropdownMenuItem(value: 6, child: Text('Paleo')),
+      ],
+      onChanged: onChanged,
+    );
+  }
+
   void _showEditIngredientDialog(BuildContext context, dynamic ingredient) {
     controller.setupIngredientForm(ingredient);
     int dietaryCategory = (ingredient['dietaryCategory'] as int?) ?? 0;
@@ -639,36 +1153,76 @@ class IngredientsView extends GetView<MealController> {
     void Function(String)? onChanged,
     bool isRequired = false,
   }) {
-    return TextField(
-      controller: textController,
-      maxLines: maxLines,
-      keyboardType: keyboardType,
-      inputFormatters: inputFormatters,
-      style: TextStyle(color: context.theme.colorScheme.onSurface),
-      onChanged: onChanged,
-      decoration: InputDecoration(
-        labelText: isRequired ? '$label *' : label,
-        labelStyle: TextStyle(color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7)),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: context.theme.colorScheme.outline.withValues(alpha: 0.5)),
-          borderRadius: BorderRadius.circular(8),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: context.theme.colorScheme.shadow.withValues(alpha: 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: textController,
+        maxLines: maxLines,
+        keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
+        style: TextStyle(
+          color: context.theme.colorScheme.onSurface,
+          fontSize: 16,
         ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: context.theme.colorScheme.primary, width: 2),
-          borderRadius: BorderRadius.circular(8),
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          labelText: isRequired ? '$label *' : label,
+          labelStyle: TextStyle(
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
+            fontSize: 16,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: context.theme.colorScheme.outline.withValues(alpha: 0.3),
+              width: 1.5,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: context.theme.colorScheme.primary,
+              width: 2,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Colors.red, width: 2),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Colors.red, width: 2),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          errorText: errorText != null && errorText.isNotEmpty
+              ? errorText
+              : null,
+          errorStyle: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+          filled: true,
+          fillColor: context.theme.colorScheme.surfaceContainerLowest,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: maxLines > 1 ? 16 : 14,
+          ),
+          suffixIcon: isRequired
+              ? Icon(
+            Icons.star,
+            size: 12,
+            color: Colors.red.withValues(alpha: 0.6),
+          )
+              : null,
         ),
-        errorBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.red, width: 1),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.red, width: 2),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        errorText: errorText != null && errorText.isNotEmpty ? errorText : null,
-        filled: true,
-        fillColor: context.theme.colorScheme.surface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
     );
   }
@@ -680,132 +1234,288 @@ class IngredientsView extends GetView<MealController> {
     int maxLines = 1,
     TextInputType? keyboardType,
   }) {
-    return TextField(
-      controller: textController,
-      maxLines: maxLines,
-      keyboardType: keyboardType,
-      style: TextStyle(color: context.theme.colorScheme.onSurface),
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7)),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: context.theme.colorScheme.outline.withValues(alpha: 0.5)),
-          borderRadius: BorderRadius.circular(8),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: context.theme.colorScheme.shadow.withValues(alpha: 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: textController,
+        maxLines: maxLines,
+        keyboardType: keyboardType,
+        style: TextStyle(
+          color: context.theme.colorScheme.onSurface,
+          fontSize: 16,
         ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: context.theme.colorScheme.primary, width: 2),
-          borderRadius: BorderRadius.circular(8),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
+            fontSize: 16,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: context.theme.colorScheme.outline.withValues(alpha: 0.3),
+              width: 1.5,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: context.theme.colorScheme.primary,
+              width: 2,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          filled: true,
+          fillColor: context.theme.colorScheme.surfaceContainerLowest,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: maxLines > 1 ? 16 : 14,
+          ),
         ),
-        filled: true,
-        fillColor: context.theme.colorScheme.surface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
     );
   }
   
   Widget _buildSectionTitle(BuildContext context, String title) {
-    return Text(
-      title,
-      style: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-        color: context.theme.colorScheme.onSurface,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: context.theme.colorScheme.onSurface,
+          letterSpacing: -0.2,
+        ),
       ),
     );
   }
 
   Widget _buildDietaryDropdown(BuildContext context, int value,
       void Function(int?) onChanged) {
-    return DropdownButtonFormField<int>(
-      value: value,
-      decoration: InputDecoration(
-        labelText: 'Dietary Category',
-        labelStyle: TextStyle(color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7)),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: context.theme.colorScheme.outline.withValues(alpha: 0.5)),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: context.theme.colorScheme.primary, width: 2),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        filled: true,
-        fillColor: context.theme.colorScheme.surface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: context.theme.colorScheme.shadow.withValues(alpha: 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      style: TextStyle(color: context.theme.colorScheme.onSurface),
-      dropdownColor: context.theme.colorScheme.surface,
-      items: const [
-        DropdownMenuItem(value: 0, child: Text('Regular')),
-        DropdownMenuItem(value: 1, child: Text('Vegetarian')),
-        DropdownMenuItem(value: 2, child: Text('Vegan')),
-        DropdownMenuItem(value: 3, child: Text('Gluten-Free')),
-        DropdownMenuItem(value: 4, child: Text('Dairy-Free')),
-        DropdownMenuItem(value: 5, child: Text('Keto')),
-        DropdownMenuItem(value: 6, child: Text('Paleo')),
-      ],
-      onChanged: onChanged,
+      child: DropdownButtonFormField<int>(
+        value: value,
+        decoration: InputDecoration(
+          labelText: 'Dietary Category',
+          labelStyle: TextStyle(
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
+            fontSize: 16,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: context.theme.colorScheme.outline.withValues(alpha: 0.3),
+              width: 1.5,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: context.theme.colorScheme.primary,
+              width: 2,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          filled: true,
+          fillColor: context.theme.colorScheme.surfaceContainerLowest,
+          contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16, vertical: 14),
+        ),
+        style: TextStyle(
+          color: context.theme.colorScheme.onSurface,
+          fontSize: 16,
+        ),
+        dropdownColor: context.theme.colorScheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(16),
+        icon: Icon(
+          Icons.arrow_drop_down_rounded,
+          color: context.theme.colorScheme.onSurface.withValues(alpha: 0.8),
+        ),
+        items: const [
+          DropdownMenuItem(value: 0, child: Text('Regular')),
+          DropdownMenuItem(value: 1, child: Text('Vegetarian')),
+          DropdownMenuItem(value: 2, child: Text('Vegan')),
+          DropdownMenuItem(value: 3, child: Text('Gluten-Free')),
+          DropdownMenuItem(value: 4, child: Text('Dairy-Free')),
+          DropdownMenuItem(value: 5, child: Text('Keto')),
+          DropdownMenuItem(value: 6, child: Text('Paleo')),
+        ],
+        onChanged: onChanged,
+      ),
     );
   }
   
   Widget _buildDialogActions(BuildContext context, VoidCallback onSave) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        TextButton(
-          onPressed: () => Get.back<void>(),
-          style: TextButton.styleFrom(
-            foregroundColor: context.theme.colorScheme.onSurface.withValues(alpha: 0.8),
-          ),
-          child: const Text('Cancel'),
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.theme.colorScheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: context.theme.colorScheme.outline.withValues(alpha: 0.1),
         ),
-        const SizedBox(width: 16),
-        ElevatedButton(
-          onPressed: onSave,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: context.theme.colorScheme.onSurface,
-            foregroundColor: context.theme.colorScheme.surfaceContainerLowest,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: OutlinedButton.icon(
+              onPressed: () => Get.back<void>(),
+              icon: const Icon(Icons.close_rounded),
+              label: const Text('Cancel'),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24, vertical: 16),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                side: BorderSide(
+                  color: context.theme.colorScheme.outline.withValues(
+                      alpha: 0.5),
+                ),
+              ),
+            ),
           ),
-          child: const Text('Save'),
-        ),
-      ],
+          const SizedBox(width: 16),
+          Expanded(
+            child: FilledButton.icon(
+              onPressed: onSave,
+              icon: const Icon(Icons.save_rounded),
+              label: const Text('Save'),
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24, vertical: 16),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
   
   void _showDeleteConfirmation(BuildContext context, dynamic ingredient) {
     Get.dialog<void>(
-      AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
-        title: Text('Delete Ingredient', style: TextStyle(color: context.theme.colorScheme.onSurface)),
-        content: Text(
-          'Are you sure you want to delete "${(ingredient['name'] as String?) ??
-              (ingredient['ingredientName'] as String?) ?? 'Unknown'}"?',
-          style: TextStyle(color: context.theme.colorScheme.onSurface.withValues(alpha: 0.8)),
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        backgroundColor: context.theme.colorScheme.surface,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.delete_outline_rounded,
+                  size: 32,
+                  color: Colors.red,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Delete Ingredient',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  color: context.theme.colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Are you sure you want to delete "${(ingredient['name'] as String?) ??
+                    (ingredient['ingredientName'] as String?) ?? 'Unknown'}"?',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: context.theme.colorScheme.onSurface.withValues(
+                      alpha: 0.8),
+                  height: 1.4,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'This action cannot be undone.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: context.theme.colorScheme.onSurface.withValues(
+                      alpha: 0.6),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Get.back<void>(),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        side: BorderSide(
+                          color: context.theme.colorScheme.outline.withValues(
+                              alpha: 0.5),
+                        ),
+                      ),
+                      child: const Text('Cancel'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: () {
+                        final ingredientId = (ingredient['ingredientId'] as String?) ??
+                            '';
+                        controller.deleteIngredient(ingredientId).then((
+                            success) {
+                          if (success) {
+                            Get.back<void>();
+                            Get.snackbar(
+                                'Success', 'Ingredient deleted successfully');
+                          }
+                        });
+                      },
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: const Text('Delete'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back<void>(),
-            style: TextButton.styleFrom(foregroundColor: context.theme.colorScheme.onSurface.withValues(alpha: 0.8)),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              final ingredientId = (ingredient['ingredientId'] as String?) ??
-                  '';
-              controller.deleteIngredient(ingredientId).then((success) {
-                if (success) {
-                  Get.back<void>();
-                  Get.snackbar('Success', 'Ingredient deleted successfully');
-                }
-              });
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
-          ),
-        ],
       ),
     );
   }
@@ -933,16 +1643,14 @@ class IngredientsView extends GetView<MealController> {
       padding: const EdgeInsets.all(16),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          int crossAxisCount = constraints.maxWidth > 1200 ? 5 :
-          constraints.maxWidth > 900 ? 4 :
-          constraints.maxWidth > 600 ? 3 : 2;
+          int crossAxisCount = _getCrossAxisCount(constraints.maxWidth);
 
           return GridView.builder(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: crossAxisCount,
-              childAspectRatio: 1.0,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
+              childAspectRatio: 1.0, // Square format
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
             ),
             itemCount: 12,
             itemBuilder: (context, index) {
