@@ -72,20 +72,27 @@ class MealPlanAssignment {
     if (value is int) {
       switch (value) {
         case 0:
+          print('Backend returned 0, mapping to MealCategory.vegan');
           return MealCategory.vegan;
         case 1:
+          print('Backend returned 1, mapping to MealCategory.vegetarian');
           return MealCategory.vegetarian;
         case 2:
+          print('Backend returned 2, mapping to MealCategory.nonVegetarian');
           return MealCategory.nonVegetarian;
         default:
+          print(
+              'Backend returned unknown int $value, defaulting to vegetarian');
           return MealCategory.vegetarian;
       }
     } else if (value is String) {
+      print('Backend returned string "$value", attempting to parse');
       return MealCategory.values.firstWhere(
             (e) => e.name.toUpperCase() == value.toUpperCase(),
         orElse: () => MealCategory.vegetarian,
       );
     }
+    print('Backend returned unknown type, defaulting to vegetarian');
     return MealCategory.vegetarian;
   }
 

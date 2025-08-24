@@ -868,6 +868,11 @@ class PlanController extends GetxController {
           'bmiCategory': selectedBmiCategory.value.index,
         };
 
+        // Debug logging
+        print('Creating meal plan with data: $mealPlanData');
+        print('Selected diet type: ${selectedDietType
+            .value} (index: ${selectedDietType.value!.index})');
+
         createRequests.add(
             DioNetworkService.postData(mealPlanData, 'api/admin/AdminMealPlan')
         );
@@ -938,5 +943,73 @@ class PlanController extends GetxController {
     selectedDietType.value = null;
     selectedMealRecipes.clear();
     selectedBmiCategory.value = BmiCategory.normal;
+  }
+
+  // Delete all meal plans for a specific date
+  Future<void> deleteAllMealPlansForDate(DateTime date) async {
+    final dateStr = '${date.year.toString().padLeft(4, '0')}-${date.month
+        .toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+
+    // Get all meal plan assignments for the date
+    final assignments = mealPlanAssignments.where((assignment) =>
+    assignment.mealDate.year == date.year &&
+        assignment.mealDate.month == date.month &&
+        assignment.mealDate.day == date.day
+    ).toList();
+
+    if (assignments.isEmpty) {
+      CustomDisplays.showSnackBar(message: 'No meals found for this date');
+      return;
+    }
+
+    try {
+      // Create list of delete requests
+      List<Future<dynamic>> deleteRequests = [];
+
+      for (var assignment in assignments) {
+        if (assignment.id != null) {
+          deleteRequests.add(DioNetworkService.deleteData(
+              'api/admin/AdminMealPlan/${assignment.id}'));
+        }
+      }
+
+      // Execute all delete requests
+      final responses = await Future.wait(deleteRequests);
+
+      // Check if all were successful
+      bool allSuccessful = responses.every((response) {
+        final httpStatus = response['httpResponse']?['status'] ?? 0;
+        return httpStatus == 200 || httpStatus == 204;
+      });
+
+      if (allSuccessful) {
+        CustomDisplays.showSnackBar(
+            message: 'All meals deleted for ${_formatDate(date)}');
+        await getMealPlans();
+        await getMealPlansByDate();
+      } else {
+        final successCount = responses.where((response) {
+          final httpStatus = response['httpResponse']?['status'] ?? 0;
+          return httpStatus == 200 || httpStatus == 204;
+        }).length;
+
+        CustomDisplays.showSnackBar(
+            message: '$successCount of ${assignments.length} meals deleted');
+        await getMealPlans();
+        await getMealPlansByDate();
+      }
+    } catch (e) {
+      CustomDisplays.showSnackBar(message: 'Failed to delete meals: $e');
+      debugPrint('Error deleting all meal plans for date: $e');
+    }
+  }
+
+  // Helper method to format date - moved from view to controller
+  String _formatDate(DateTime date) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }
 }

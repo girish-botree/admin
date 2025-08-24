@@ -71,10 +71,28 @@ class PlanView extends GetView<PlanController> {
                 const SizedBox(height: _spacingLarge),
                 
                 // Selected Date Display
-                AppText.semiBold(
-                  'Meal Plans for ${_formatDate(controller.selectedCalendarDate.value)}',
-                  color: context.theme.colorScheme.onSurface,
-                  size: Responsive.getSubtitleTextSize(context),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: AppText.semiBold(
+                        'Meal Plans for ${_formatDate(
+                            controller.selectedCalendarDate.value)}',
+                        color: context.theme.colorScheme.onSurface,
+                        size: Responsive.getSubtitleTextSize(context),
+                      ),
+                    ),
+                    if (!_hasNoMealsForDay())
+                      IconButton(
+                        onPressed: () => _showDeleteAllConfirmation(context),
+                        icon: const Icon(
+                          Icons.delete_sweep,
+                          color: Colors.red,
+                          size: 24,
+                        ),
+                        tooltip: 'Delete all meals for this day',
+                      ),
+                  ],
                 ),
                 const SizedBox(height: _spacingMedium),
                 
@@ -213,7 +231,53 @@ class PlanView extends GetView<PlanController> {
     controller.clearForm();
     Get.dialog<void>(const MealPlanFormDialog());
   }
-  
+
+  void _showDeleteAllConfirmation(BuildContext context) {
+    Get.dialog<void>(
+      AlertDialog(
+        title: const Row(
+          children: [
+            Icon(
+              Icons.warning,
+              color: Colors.red,
+              size: 24,
+            ),
+            SizedBox(width: 8),
+            Text('Delete All Meals'),
+          ],
+        ),
+        content: Text(
+          'Are you sure you want to delete all meals for ${_formatDate(
+              controller.selectedCalendarDate
+                  .value)}?\n\nThis action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: context.theme.colorScheme.onSurface.withValues(
+                    alpha: 0.7),
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              Get.back(); // Close dialog first
+              await controller.deleteAllMealPlansForDate(
+                  controller.selectedCalendarDate.value);
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.red,
+            ),
+            child: const Text('Delete All'),
+          ),
+        ],
+      ),
+    );
+  }
+
   String _formatDate(DateTime date) {
     const months = [
       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',

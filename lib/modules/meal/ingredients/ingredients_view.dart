@@ -67,7 +67,7 @@ class IngredientsView extends GetView<MealController> {
       ),
       actions: [
         Padding(
-          padding: const EdgeInsets.only(right: 16),
+          padding: const EdgeInsets.only(right: 8),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
@@ -86,7 +86,215 @@ class IngredientsView extends GetView<MealController> {
                 )),
           ),
         ),
+        Obx(() =>
+        controller.ingredients.isNotEmpty ? PopupMenuButton<String>(
+          icon: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: context.theme.colorScheme.surfaceContainer,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              Icons.more_vert_rounded,
+              size: 20,
+              color: context.theme.colorScheme.onSurface,
+            ),
+          ),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16)),
+          elevation: 12,
+          color: context.theme.colorScheme.surface,
+          onSelected: (value) {
+            switch (value) {
+              case 'delete_all':
+                _showDeleteAllConfirmation(context);
+                break;
+            }
+          },
+          itemBuilder: (context) =>
+          [
+            PopupMenuItem(
+              value: 'delete_all',
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.delete_sweep_rounded,
+                      size: 16,
+                      color: Colors.red,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'Delete All Ingredients',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ) : const SizedBox.shrink()),
+        const SizedBox(width: 16),
       ],
+    );
+  }
+
+  void _showDeleteAllConfirmation(BuildContext context) {
+    Get.dialog<void>(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        backgroundColor: context.theme.colorScheme.surface,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.delete_sweep_rounded,
+                  size: 32,
+                  color: Colors.red,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Delete All Ingredients',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  color: context.theme.colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Are you sure you want to delete ALL ingredients? This action cannot be undone.',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: context.theme.colorScheme.onSurface.withValues(
+                      alpha: 0.8),
+                  height: 1.4,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Get.back<void>(),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        side: BorderSide(
+                          color: context.theme.colorScheme.outline.withValues(
+                              alpha: 0.5),
+                        ),
+                      ),
+                      child: const Text('Cancel'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: () async {
+                        Get.back<void>(); // Close dialog first
+
+                        if (controller.ingredients.isEmpty) return;
+
+                        final ingredientCount = controller.ingredients.length;
+                        bool allDeleted = true;
+
+                        // Show loading
+                        Get.dialog(
+                          Center(
+                            child: Container(
+                              padding: const EdgeInsets.all(24),
+                              decoration: BoxDecoration(
+                                color: context.theme.colorScheme.surface,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  CircularProgressIndicator(),
+                                  SizedBox(height: 16),
+                                  Text('Deleting ingredients...',
+                                      style: TextStyle(
+                                          color: context.theme.colorScheme
+                                              .onSurface)),
+                                ],
+                              ),
+                            ),
+                          ),
+                          barrierDismissible: false,
+                        );
+
+                        // Delete all ingredients
+                        final ingredientIds = controller.ingredients.map((
+                            ingredient) =>
+                        ingredient['ingredientId']?.toString() ?? '').toList();
+                        for (final ingredientId in ingredientIds) {
+                          if (ingredientId.isNotEmpty) {
+                            try {
+                              final success = await controller.deleteIngredient(
+                                  ingredientId);
+                              if (!success) {
+                                allDeleted = false;
+                                break;
+                              }
+                            } catch (e) {
+                              allDeleted = false;
+                              break;
+                            }
+                          }
+                        }
+
+                        Get.back<void>(); // Close loading dialog
+
+                        if (allDeleted) {
+                          Get.snackbar('Success',
+                              'All $ingredientCount ingredients deleted successfully');
+                        } else {
+                          Get.snackbar(
+                              'Error', 'Some ingredients could not be deleted');
+                        }
+                      },
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: const Text('Delete All'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -401,7 +609,7 @@ class IngredientsView extends GetView<MealController> {
                             Text(
                               (ingredient['name'] as String?) ?? 'Unknown',
                               style: TextStyle(
-                                fontSize: 13, // Reduced font size
+                                fontSize: 16, // Reduced font size
                                 fontWeight: FontWeight.w700,
                                 color: context.theme.colorScheme.onSurface,
                                 height: 1.1,
@@ -493,7 +701,7 @@ class IngredientsView extends GetView<MealController> {
       ),
       child: PopupMenuButton<String>(
         padding: EdgeInsets.zero,
-        icon: Icon(
+        icon: const Icon(
           Icons.more_vert_rounded,
           size: 14,
           color: Colors.white,
@@ -513,7 +721,7 @@ class IngredientsView extends GetView<MealController> {
         },
         itemBuilder: (context) =>
         [
-          PopupMenuItem(
+          const PopupMenuItem(
             value: 'edit',
             child: Row(
               children: [
@@ -523,7 +731,7 @@ class IngredientsView extends GetView<MealController> {
               ],
             ),
           ),
-          PopupMenuItem(
+          const PopupMenuItem(
             value: 'delete',
             child: Row(
               children: [
@@ -1026,7 +1234,7 @@ class IngredientsView extends GetView<MealController> {
         backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
         child: Container(
           width: MediaQuery.of(context).size.width * 0.8,
-          constraints: BoxConstraints(maxWidth: 800),
+          constraints: const BoxConstraints(maxWidth: 800),
           padding: const EdgeInsets.all(24),
           child: SingleChildScrollView(
             child: StatefulBuilder(
@@ -1529,7 +1737,7 @@ class IngredientsView extends GetView<MealController> {
         child: Container(
           width: MediaQuery.of(context).size.width * 0.8,
           padding: const EdgeInsets.all(24),
-          constraints: BoxConstraints(maxWidth: 800),
+          constraints: const BoxConstraints(maxWidth: 800),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
