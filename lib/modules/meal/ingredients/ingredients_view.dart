@@ -17,35 +17,107 @@ class IngredientsView extends GetView<MealController> {
       child: Scaffold(
         backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
         appBar: _buildAppBar(context, controller),
-        body: Obx(() {
-          if (controller.isLoading.value) {
-            return _buildShimmerLoading(context);
-          }
+        body: Column(
+          children: [
+            // Search bar
+            ModernSearchBar(
+              controller: controller.searchController,
+              hintText: 'Search ingredients, categories...',
+              onChanged: (value) {
+                // This will trigger the reactive update
+              },
+              onClear: () => controller.clearSearch(),
+            ),
 
-          if (controller.error.value.isNotEmpty) {
-            return _buildErrorState(context, controller);
-          }
+            // Sort and filter bar
+            Obx(() =>
+                SortFilterBar(
+                  sortBy: controller.ingredientSortBy.value,
+                  sortAscending: controller.sortAscending.value,
+                  sortOptions: const ['name', 'calories', 'protein', 'carbs'],
+                  sortLabels: const {
+                    'name': 'Name',
+                    'calories': 'Calories',
+                    'protein': 'Protein',
+                    'carbs': 'Carbs',
+                  },
+                  onFilterTap: () => controller.toggleFilterVisibility(),
+                  onSortChanged: (value) =>
+                  controller.ingredientSortBy.value = value,
+                  onSortOrderToggle: () =>
+                  controller.sortAscending.value =
+                  !controller.sortAscending.value,
+                  hasActiveFilters: _hasActiveFilters(),
+                )),
 
-          if (controller.ingredients.isEmpty) {
-            return _buildEmptyState(context);
-          }
+            // Filter panel
+            Obx(() =>
+                FilterPanel(
+                  isVisible: controller.showFilters.value,
+                  categoryOptions: controller.availableIngredientCategories,
+                  selectedCategory: controller.selectedIngredientCategory.value,
+                  onCategoryChanged: (value) =>
+                  controller.selectedIngredientCategory.value = value,
+                  calorieRange: controller.calorieRange.value,
+                  onCalorieRangeChanged: (values) =>
+                  controller.calorieRange.value = values,
+                  proteinRange: controller.proteinRange.value,
+                  onProteinRangeChanged: (values) =>
+                  controller.proteinRange.value = values,
+                  onReset: () => controller.resetFilters(),
+                )),
 
-          return _buildIngredientGrid(context, controller);
-        }),
+            // Content
+            Expanded(
+              child: Obx(() {
+                if (controller.isLoading.value) {
+                  return _buildShimmerLoading(context);
+                }
+
+                if (controller.error.value.isNotEmpty) {
+                  return _buildErrorState(context, controller);
+                }
+
+                if (controller.ingredients.isEmpty) {
+                  return _buildEmptyState(context);
+                }
+
+                if (controller.filteredIngredients.isEmpty) {
+                  return _buildNoResultsState(context);
+                }
+
+                return _buildIngredientGrid(context, controller);
+              }),
+            ),
+          ],
+        ),
         floatingActionButton: _buildModernFAB(context),
       ),
     );
   }
 
+  bool _hasActiveFilters() {
+    return controller.selectedIngredientCategory.value != 'All' ||
+        controller.calorieRange.value.start != 0 ||
+        controller.calorieRange.value.end != 1000 ||
+        controller.proteinRange.value.start != 0 ||
+        controller.proteinRange.value.end != 100;
+  }
+
   PreferredSizeWidget _buildAppBar(BuildContext context,
       MealController controller) {
-    return ModernAppBar(
-      title: 'Ingredients',
-      itemCount: controller.ingredients.length,
-      itemLabel: 'items',
-      showDeleteAll: true,
-      onDeleteAll: () =>
-          IngredientDialogs.showDeleteAllConfirmation(context, controller),
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(kToolbarHeight),
+      child: Obx(() =>
+          ModernAppBar(
+            title: 'Ingredients',
+            itemCount: controller.filteredIngredients.length,
+            itemLabel: 'items',
+            showDeleteAll: true,
+            onDeleteAll: () =>
+                IngredientDialogs.showDeleteAllConfirmation(
+                    context, controller),
+          )),
     );
   }
 
@@ -76,8 +148,20 @@ class IngredientsView extends GetView<MealController> {
     );
   }
 
+  Widget _buildNoResultsState(BuildContext context) {
+    return NoResultsWidget(
+      title: 'No ingredients found',
+      subtitle: 'Try adjusting your search or filters\nto find what you\'re looking for',
+      icon: Icons.search_rounded,
+      onReset: () {
+        controller.clearSearch();
+        controller.resetFilters();
+      },
+    );
+  }
+
   Widget _buildIngredientGrid(BuildContext context, MealController controller) {
-    final ingredientCards = controller.ingredients.map((ingredient) =>
+    final ingredientCards = controller.filteredIngredients.map((ingredient) =>
         IngredientCard(
           ingredient: ingredient,
           onTap: () =>
@@ -94,6 +178,9 @@ class IngredientsView extends GetView<MealController> {
     return ResponsiveGrid(
       children: ingredientCards,
       getCrossAxisCount: _getCrossAxisCount,
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+      crossAxisSpacing: 16,
+      mainAxisSpacing: 16,
     );
   }
 

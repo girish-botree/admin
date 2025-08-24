@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:admin/config/app_config.dart';
 import 'package:admin/modules/admins/create_admins/create_admin_controller.dart';
 import 'package:admin/utils/responsive.dart';
+import 'package:admin/widgets/searchable_dropdown.dart';
+import 'package:admin/config/dropdown_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -402,29 +404,20 @@ class AdminBottomSheets {
                         web: 24.0,
                       )),
 
-                      // Vehicle Type Dropdown
-                      Obx(() =>
-                          DropdownButtonFormField<String>(
-                            value: controller.selectedVehicleType.value,
-                            decoration: _createInputDecoration(
-                                context, 'Vehicle Type'),
-                            style: TextStyle(
-                                color: context.theme.colorScheme.onSurface),
-                            dropdownColor: context.theme.colorScheme
-                                .surfaceContainerLowest,
-                            items: controller.vehicleTypes.map((
-                                String vehicleType) {
-                              return DropdownMenuItem<String>(
-                                value: vehicleType,
-                                child: Text(vehicleType),
-                              );
-                            }).toList(),
-                            onChanged: (String? newValue) {
-                              if (newValue != null) {
-                                controller.selectedVehicleType.value = newValue;
-                              }
-                            },
-                          )),
+                      // Vehicle Type Dropdown - Using new searchable dropdown
+                      SearchableDropdown<String>(
+                        items: _getVehicleTypeItems(),
+                        value: controller.selectedVehicleType.value.isNotEmpty
+                            ? controller.selectedVehicleType.value
+                            : null,
+                        label: 'Vehicle Type',
+                        hint: 'Select vehicle type',
+                        onChanged: (String? newValue) {
+                          if (newValue != null) {
+                            controller.selectedVehicleType.value = newValue;
+                          }
+                        },
+                      ),
                       SizedBox(height: Responsive.responsiveValue(
                         context,
                         mobile: 16.0,
@@ -734,5 +727,41 @@ class AdminBottomSheets {
         );
       },
     );
+  }
+
+  // Helper method to create vehicle type dropdown items
+  static List<DropdownItem> _getVehicleTypeItems() {
+    return [
+      DropdownItem(
+        value: 'Bicycle',
+        label: 'Bicycle',
+        description: 'Eco-friendly short distance delivery',
+        icon: '🚲',
+      ),
+      DropdownItem(
+        value: 'Motorcycle',
+        label: 'Motorcycle',
+        description: 'Fast urban delivery',
+        icon: '🏍️',
+      ),
+      DropdownItem(
+        value: 'Car',
+        label: 'Car',
+        description: 'Comfortable delivery option',
+        icon: '🚗',
+      ),
+      DropdownItem(
+        value: 'Van',
+        label: 'Van',
+        description: 'Large capacity delivery',
+        icon: '🚐',
+      ),
+      DropdownItem(
+        value: 'Truck',
+        label: 'Truck',
+        description: 'Heavy duty delivery',
+        icon: '🚛',
+      ),
+    ];
   }
 }

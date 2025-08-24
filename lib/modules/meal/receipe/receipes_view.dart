@@ -16,35 +16,100 @@ class ReceipesView extends GetView<MealController> {
       child: Scaffold(
         backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
         appBar: _buildAppBar(context, controller),
-        body: Obx(() {
-          if (controller.isLoading.value) {
-            return _buildShimmerLoading(context);
-          }
+        body: Column(
+          children: [
+            // Search bar
+            ModernSearchBar(
+              controller: controller.searchController,
+              hintText: 'Search recipes, cuisines...',
+              onChanged: (value) {
+                // This will trigger the reactive update
+              },
+              onClear: () => controller.clearSearch(),
+            ),
 
-          if (controller.error.value.isNotEmpty) {
-            return _buildErrorState(context, controller);
-          }
+            // Sort and filter bar
+            Obx(() =>
+                SortFilterBar(
+                  sortBy: controller.recipeSortBy.value,
+                  sortAscending: controller.sortAscending.value,
+                  sortOptions: const ['name', 'servings', 'calories'],
+                  sortLabels: const {
+                    'name': 'Name',
+                    'servings': 'Servings',
+                    'calories': 'Calories',
+                  },
+                  onFilterTap: () => controller.toggleFilterVisibility(),
+                  onSortChanged: (value) =>
+                  controller.recipeSortBy.value = value,
+                  onSortOrderToggle: () =>
+                  controller.sortAscending.value =
+                  !controller.sortAscending.value,
+                  hasActiveFilters: _hasActiveFilters(),
+                )),
 
-          if (controller.recipes.isEmpty) {
-            return _buildEmptyState(context);
-          }
+            // Filter panel
+            Obx(() =>
+                FilterPanel(
+                  isVisible: controller.showFilters.value,
+                  categoryOptions: controller.availableRecipeCuisines,
+                  selectedCategory: controller.selectedRecipeCuisine.value,
+                  onCategoryChanged: (value) =>
+                  controller.selectedRecipeCuisine.value = value,
+                  calorieRange: controller.calorieRange.value,
+                  onCalorieRangeChanged: (values) =>
+                  controller.calorieRange.value = values,
+                  onReset: () => controller.resetFilters(),
+                )),
 
-          return _buildRecipeGrid(context, controller);
-        }),
+            // Content
+            Expanded(
+              child: Obx(() {
+                if (controller.isLoading.value) {
+                  return _buildShimmerLoading(context);
+                }
+
+                if (controller.error.value.isNotEmpty) {
+                  return _buildErrorState(context, controller);
+                }
+
+                if (controller.recipes.isEmpty) {
+                  return _buildEmptyState(context);
+                }
+
+                if (controller.filteredRecipes.isEmpty) {
+                  return _buildNoResultsState(context);
+                }
+
+                return _buildRecipeGrid(context, controller);
+              }),
+            ),
+          ],
+        ),
         floatingActionButton: _buildModernFAB(context),
       ),
     );
   }
 
+  bool _hasActiveFilters() {
+    return controller.selectedRecipeCuisine.value != 'All' ||
+        controller.calorieRange.value.start != 0 ||
+        controller.calorieRange.value.end != 1000;
+  }
+
   PreferredSizeWidget _buildAppBar(BuildContext context,
       MealController controller) {
-    return ModernAppBar(
-      title: 'Recipes',
-      itemCount: controller.recipes.length,
-      itemLabel: 'recipes',
-      showDeleteAll: true,
-      onDeleteAll: () =>
-          RecipeDialogs.showDeleteAllConfirmation(context, controller),
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(kToolbarHeight),
+      child: Obx(() =>
+          ModernAppBar(
+            title: 'Recipes',
+            itemCount: controller.filteredRecipes.length,
+            itemLabel: 'recipes',
+            showDeleteAll: true,
+            onDeleteAll: () =>
+                RecipeDialogs.showDeleteAllConfirmation(context, controller),
+          )),
     );
   }
 
@@ -74,8 +139,20 @@ class ReceipesView extends GetView<MealController> {
     );
   }
 
+  Widget _buildNoResultsState(BuildContext context) {
+    return NoResultsWidget(
+      title: 'No recipes found',
+      subtitle: 'Try adjusting your search or filters\nto find what you\'re looking for',
+      icon: Icons.search_rounded,
+      onReset: () {
+        controller.clearSearch();
+        controller.resetFilters();
+      },
+    );
+  }
+
   Widget _buildRecipeGrid(BuildContext context, MealController controller) {
-    final recipeCards = controller.recipes.map((recipe) =>
+    final recipeCards = controller.filteredRecipes.map((recipe) =>
         RecipeCard(
           recipe: recipe,
           onTap: () => RecipeDetailsDialog.show(context, recipe),

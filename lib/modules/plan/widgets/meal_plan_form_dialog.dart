@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../config/app_text.dart';
+import '../../../widgets/searchable_dropdown.dart';
+import '../../../config/dropdown_data.dart';
 import '../plan_controller.dart';
 import '../meal_plan_assignment_model.dart'
     show MealPeriod, MealCategory, BmiCategory;
@@ -268,59 +270,60 @@ class MealPlanFormDialog extends StatelessWidget {
                       ? color
                       : theme.colorScheme.outline.withAlpha(50),
                   width: controller.selectedDietType.value == category ? 2 : 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: color.withAlpha(50),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(icon, color: color, size: 24),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AppText.semiBold(
+                          title,
+                          color: theme.colorScheme.onSurface,
+                          size: 16,
+                        ),
+                        const SizedBox(height: 4),
+                        AppText.body2(
+                          description,
+                          color: theme.colorScheme.onSurface.withAlpha(140),
+                        ),
+                      ],
+                    ),
+                  ),
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    child: controller.selectedDietType.value == category
+                        ? Container(
+                      key: ValueKey(category),
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: color,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.check,
+                        color: Colors.white,
+                        size: 16,
+                      ),
+                    )
+                        : const SizedBox(width: 28, height: 28),
+                  ),
+                ],
+              ),
             ),
           ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: color.withAlpha(50),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, color: color, size: 24),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AppText.semiBold(
-                      title,
-                      color: theme.colorScheme.onSurface,
-                      size: 16,
-                    ),
-                    const SizedBox(height: 4),
-                    AppText.body2(
-                      description,
-                      color: theme.colorScheme.onSurface.withAlpha(140),
-                    ),
-                  ],
-                ),
-              ),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                child: controller.selectedDietType.value == category
-                    ? Container(
-                  key: ValueKey(category),
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: color,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.check,
-                    color: Colors.white,
-                    size: 16,
-                  ),
-                )
-                    : const SizedBox(width: 28, height: 28),
-              ),
-            ],
-          ),
         ),
-      ),
-    ));
+    );
   }
 
   Widget _buildMealPlanForm(BuildContext context, PlanController controller,
@@ -439,36 +442,23 @@ class MealPlanFormDialog extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // BMI Category Selection
+            // BMI Category Selection using new dropdown
             AppText.semiBold(
                 'BMI Category', color: theme.colorScheme.onSurface),
             const SizedBox(height: 8),
             Obx(() =>
-                DropdownButtonFormField<BmiCategory>(
-                  value: controller.selectedBmiCategory.value,
-                  style: TextStyle(color: theme.colorScheme.onSurface),
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: theme.colorScheme.surfaceContainerLow,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 16),
-                  ),
-                  dropdownColor: theme.colorScheme.surface,
-                  items: BmiCategory.values.map((category) {
-                    return DropdownMenuItem(
-                      value: category,
-                      child: AppText.medium(
-                        _formatBmiCategory(category),
-                        color: theme.colorScheme.onSurface,
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (value) =>
-                  controller.selectedBmiCategory.value = value!,
+                TypedSearchableDropdown(
+                  dropdownType: DropdownType.bmiCategories,
+                  value: _bmiCategoryToString(
+                      controller.selectedBmiCategory.value),
+                  label: 'BMI Category',
+                  hint: 'Select BMI category',
+                  onChanged: (value) {
+                    final category = _stringToBmiCategory(value as String?);
+                    if (category != null) {
+                      controller.selectedBmiCategory.value = category;
+                    }
+                  },
                 )),
             const SizedBox(height: 20),
 
@@ -734,6 +724,37 @@ class MealPlanFormDialog extends StatelessWidget {
         return 'Overweight';
       case BmiCategory.obese:
         return 'Obese';
+    }
+  }
+
+  // Helper methods for BMI category conversion
+  String? _bmiCategoryToString(BmiCategory? category) {
+    if (category == null) return null;
+    switch (category) {
+      case BmiCategory.underweight:
+        return 'underweight';
+      case BmiCategory.normal:
+        return 'normal';
+      case BmiCategory.overweight:
+        return 'overweight';
+      case BmiCategory.obese:
+        return 'obese';
+    }
+  }
+
+  BmiCategory? _stringToBmiCategory(String? value) {
+    if (value == null) return null;
+    switch (value) {
+      case 'underweight':
+        return BmiCategory.underweight;
+      case 'normal':
+        return BmiCategory.normal;
+      case 'overweight':
+        return BmiCategory.overweight;
+      case 'obese':
+        return BmiCategory.obese;
+      default:
+        return null;
     }
   }
 }

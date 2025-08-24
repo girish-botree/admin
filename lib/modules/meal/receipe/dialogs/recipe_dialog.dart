@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../meal_controller.dart';
+import '../../../../widgets/searchable_dropdown.dart';
+import '../../../../config/dropdown_data.dart';
 
 class RecipeDialogs {
   static void showAddRecipeDialog(BuildContext context,
@@ -1159,25 +1161,25 @@ class RecipeValidatedTextField extends StatelessWidget {
             color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7))
             : null,
         enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
               color: context.theme.colorScheme.onSurface.withValues(
                   alpha: 0.3)),
-          borderRadius: BorderRadius.circular(12),
         ),
         focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
               color: context.theme.colorScheme.onSurface, width: 2),
-          borderRadius: BorderRadius.circular(12),
         ),
         errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
               color: context.theme.colorScheme.onSurface, width: 1),
-          borderRadius: BorderRadius.circular(12),
         ),
         focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
               color: context.theme.colorScheme.onSurface, width: 2),
-          borderRadius: BorderRadius.circular(12),
         ),
         errorText: errorText != null && errorText!.isNotEmpty
             ? errorText
@@ -1231,15 +1233,15 @@ class RecipeTextField extends StatelessWidget {
             color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7))
             : null,
         enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
               color: context.theme.colorScheme.onSurface.withValues(
                   alpha: 0.3)),
-          borderRadius: BorderRadius.circular(12),
         ),
         focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
               color: context.theme.colorScheme.onSurface, width: 2),
-          borderRadius: BorderRadius.circular(12),
         ),
         filled: true,
         fillColor: context.theme.colorScheme.surfaceContainerLowest,
@@ -1260,52 +1262,12 @@ class RecipeDietaryDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonFormField<int>(
+    return TypedSearchableDropdown(
+      dropdownType: DropdownType.dietaryCategories,
       value: value,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-              color: context.theme.colorScheme.onSurface.withValues(
-                  alpha: 0.3)),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-              color: context.theme.colorScheme.onSurface.withValues(
-                  alpha: 0.3)),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16, vertical: 12),
-        fillColor: context.theme.colorScheme.surfaceContainerLowest,
-        filled: true,
-      ),
-      dropdownColor: context.theme.colorScheme.surfaceContainerLowest,
-      style: TextStyle(color: context.theme.colorScheme.onSurface),
-      items: [
-        DropdownMenuItem(value: 0,
-            child: Text('Regular',
-                style: TextStyle(color: context.theme.colorScheme.onSurface))),
-        DropdownMenuItem(value: 1,
-            child: Text('Vegetarian',
-                style: TextStyle(color: context.theme.colorScheme.onSurface))),
-        DropdownMenuItem(value: 2,
-            child: Text('Vegan',
-                style: TextStyle(color: context.theme.colorScheme.onSurface))),
-        DropdownMenuItem(value: 3,
-            child: Text('Gluten-Free',
-                style: TextStyle(color: context.theme.colorScheme.onSurface))),
-        DropdownMenuItem(value: 4,
-            child: Text('Dairy-Free',
-                style: TextStyle(color: context.theme.colorScheme.onSurface))),
-        DropdownMenuItem(value: 5,
-            child: Text('Keto',
-                style: TextStyle(color: context.theme.colorScheme.onSurface))),
-        DropdownMenuItem(value: 6,
-            child: Text('Paleo',
-                style: TextStyle(color: context.theme.colorScheme.onSurface))),
-      ],
-      onChanged: onChanged,
+      label: 'Dietary Category',
+      hint: 'Select dietary category',
+      onChanged: (dynamic newValue) => onChanged(newValue as int?),
     );
   }
 }
@@ -1320,75 +1282,142 @@ class RecipeCuisineDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cuisines = [
-      'Italian',
-      'Chinese',
-      'Mexican',
-      'Indian',
-      'Japanese',
-      'Thai',
-      'French',
-      'Mediterranean',
-      'American',
-      'Korean',
-      'Vietnamese',
-      'Greek',
-      'Spanish',
-      'Lebanese',
-      'Turkish',
-      'Moroccan',
-      'Brazilian',
-      'German',
-      'British',
-      'Russian',
-      'Ethiopian',
-      'Peruvian',
-      'Other'
-    ];
-
-    return DropdownButtonFormField<String>(
-      value: cuisines.contains(value) ? value : null,
-      isExpanded: true,
-      menuMaxHeight: 300,
-      decoration: InputDecoration(
-        labelText: 'Cuisine',
-        labelStyle: TextStyle(
-            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7)),
-        prefixIcon: Icon(Icons.public_outlined,
-            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7)),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-              color: context.theme.colorScheme.onSurface.withValues(
-                  alpha: 0.3)),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-              color: context.theme.colorScheme.onSurface.withValues(
-                  alpha: 0.3)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-              color: context.theme.colorScheme.onSurface, width: 2),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16, vertical: 16),
-        fillColor: context.theme.colorScheme.surfaceContainerLowest,
-        filled: true,
-      ),
-      dropdownColor: context.theme.colorScheme.surfaceContainerLowest,
-      style: TextStyle(color: context.theme.colorScheme.onSurface),
-      items: cuisines.map((String cuisine) {
-        return DropdownMenuItem(
-            value: cuisine,
-            child: Text(cuisine,
-                style: TextStyle(color: context.theme.colorScheme.onSurface))
-        );
-      }).toList(),
+    return SearchableDropdown<String>(
+      items: _getCuisineItems(),
+      value: value.isNotEmpty ? value : null,
+      label: 'Cuisine',
+      hint: 'Select cuisine type',
+      prefixIcon: Icon(Icons.public_outlined),
       onChanged: onChanged,
     );
+  }
+
+  List<DropdownItem> _getCuisineItems() {
+    final cuisines = [
+      {
+        'name': 'Italian',
+        'icon': '🇮🇹',
+        'desc': 'Pasta, pizza, and Mediterranean flavors'
+      },
+      {
+        'name': 'Chinese',
+        'icon': '🇨🇳',
+        'desc': 'Stir-fries, dumplings, and traditional dishes'
+      },
+      {
+        'name': 'Mexican',
+        'icon': '🇲🇽',
+        'desc': 'Spicy, flavorful dishes with beans and rice'
+      },
+      {
+        'name': 'Indian',
+        'icon': '🇮🇳',
+        'desc': 'Rich spices, curries, and traditional recipes'
+      },
+      {
+        'name': 'Japanese',
+        'icon': '🇯🇵',
+        'desc': 'Sushi, ramen, and fresh ingredients'
+      },
+      {
+        'name': 'Thai',
+        'icon': '🇹🇭',
+        'desc': 'Sweet, sour, and spicy balanced flavors'
+      },
+      {
+        'name': 'French',
+        'icon': '🇫🇷',
+        'desc': 'Classic techniques and refined dishes'
+      },
+      {
+        'name': 'Mediterranean',
+        'icon': '🫒',
+        'desc': 'Olive oil, herbs, and fresh vegetables'
+      },
+      {
+        'name': 'American',
+        'icon': '🇺🇸',
+        'desc': 'Comfort food and classic favorites'
+      },
+      {
+        'name': 'Korean',
+        'icon': '🇰🇷',
+        'desc': 'Fermented foods and bold flavors'
+      },
+      {
+        'name': 'Vietnamese',
+        'icon': '🇻🇳',
+        'desc': 'Fresh herbs and light, flavorful broths'
+      },
+      {
+        'name': 'Greek',
+        'icon': '🇬🇷',
+        'desc': 'Fresh seafood, olives, and feta cheese'
+      },
+      {
+        'name': 'Spanish',
+        'icon': '🇪🇸',
+        'desc': 'Tapas, paella, and olive oil dishes'
+      },
+      {
+        'name': 'Lebanese',
+        'icon': '🇱🇧',
+        'desc': 'Middle Eastern spices and fresh ingredients'
+      },
+      {
+        'name': 'Turkish',
+        'icon': '🇹🇷',
+        'desc': 'Ottoman cuisine with rich flavors'
+      },
+      {
+        'name': 'Moroccan',
+        'icon': '🇲🇦',
+        'desc': 'Tagines and exotic spice blends'
+      },
+      {
+        'name': 'Brazilian',
+        'icon': '🇧🇷',
+        'desc': 'Tropical fruits and grilled meats'
+      },
+      {
+        'name': 'German',
+        'icon': '🇩🇪',
+        'desc': 'Hearty dishes and traditional recipes'
+      },
+      {
+        'name': 'British',
+        'icon': '🇬🇧',
+        'desc': 'Traditional pub food and comfort meals'
+      },
+      {
+        'name': 'Russian',
+        'icon': '🇷🇺',
+        'desc': 'Hearty soups and warming dishes'
+      },
+      {
+        'name': 'Ethiopian',
+        'icon': '🇪🇹',
+        'desc': 'Spicy stews and injera bread'
+      },
+      {
+        'name': 'Peruvian',
+        'icon': '🇵🇪',
+        'desc': 'Fresh ingredients and fusion flavors'
+      },
+      {
+        'name': 'Other',
+        'icon': '🌍',
+        'desc': 'International and fusion cuisines'
+      },
+    ];
+
+    return cuisines.map((cuisine) =>
+        DropdownItem(
+          value: cuisine['name']!,
+          label: cuisine['name']!,
+          description: cuisine['desc']!,
+          icon: cuisine['icon']!,
+        )).toList();
   }
 }
 

@@ -3,28 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../meal_controller.dart';
+import '../../../../widgets/searchable_dropdown.dart';
+import '../../../../widgets/multi_select_dropdown.dart';
+import '../../../../config/dropdown_data.dart';
 
 class IngredientDialogs {
-  // Predefined vitamins and minerals lists
-  static const List<String> availableVitamins = [
-    'Vitamin A', 'Vitamin B1 (Thiamine)', 'Vitamin B2 (Riboflavin)',
-    'Vitamin B3 (Niacin)', 'Vitamin B5 (Pantothenic Acid)', 'Vitamin B6',
-    'Vitamin B7 (Biotin)', 'Vitamin B9 (Folate)', 'Vitamin B12',
-    'Vitamin C', 'Vitamin D', 'Vitamin E', 'Vitamin K'
-  ];
-
-  static const List<String> availableMinerals = [
-    'Calcium', 'Iron', 'Magnesium', 'Phosphorus', 'Potassium', 'Sodium',
-    'Zinc', 'Copper', 'Manganese', 'Selenium', 'Chromium', 'Molybdenum',
-    'Fluoride', 'Iodine'
-  ];
-
   static void showAddIngredientDialog(BuildContext context,
       MealController controller) {
     controller.clearIngredientForm();
     int dietaryCategory = 0;
-    List<String> selectedVitamins = [];
-    List<String> selectedMinerals = [];
+    List<dynamic> selectedVitamins = [];
+    List<dynamic> selectedMinerals = [];
 
     Get.dialog<void>(
       Dialog.fullscreen(
@@ -272,56 +261,72 @@ class IngredientDialogs {
                       children: [
                         StatefulBuilder(
                           builder: (context, setState) =>
-                              IngredientMultiSelectField(
+                              TypedMultiSelectDropdown(
+                                dropdownType: DropdownType.vitamins,
+                                selectedValues: selectedVitamins,
                                 label: 'Vitamins (per 100g)',
-                                options: availableVitamins,
-                                selectedItems: selectedVitamins,
-                                onSelectionChanged: (selected) {
+                                hint: 'Select vitamins',
+                                onChanged: (selected) {
                                   setState(() => selectedVitamins = selected);
                                   // Update the controller with JSON format
                                   final vitaminMap = <String, dynamic>{};
                                   for (final vitamin in selected) {
-                                    vitaminMap[vitamin] =
-                                    0.0; // Default value, user can edit later
+                                    final item = DropdownDataManager
+                                        .findItemByValue(
+                                        DropdownDataManager.vitamins,
+                                        vitamin
+                                    );
+                                    if (item != null) {
+                                      vitaminMap[item.label] =
+                                      0.0; // Default value
+                                    }
                                   }
                                   controller.vitaminsController.text =
                                   vitaminMap.isEmpty ? '' : jsonEncode(
                                       vitaminMap);
                                 },
-                                context: context,
                               ),
                         ),
                         const SizedBox(height: 16),
                         StatefulBuilder(
                           builder: (context, setState) =>
-                              IngredientMultiSelectField(
+                              TypedMultiSelectDropdown(
+                                dropdownType: DropdownType.minerals,
+                                selectedValues: selectedMinerals,
                                 label: 'Minerals (per 100g)',
-                                options: availableMinerals,
-                                selectedItems: selectedMinerals,
-                                onSelectionChanged: (selected) {
+                                hint: 'Select minerals',
+                                onChanged: (selected) {
                                   setState(() => selectedMinerals = selected);
                                   // Update the controller with JSON format
                                   final mineralMap = <String, dynamic>{};
                                   for (final mineral in selected) {
-                                    mineralMap[mineral] =
-                                    0.0; // Default value, user can edit later
+                                    final item = DropdownDataManager
+                                        .findItemByValue(
+                                        DropdownDataManager.minerals,
+                                        mineral
+                                    );
+                                    if (item != null) {
+                                      mineralMap[item.label] =
+                                      0.0; // Default value
+                                    }
                                   }
                                   controller.mineralsController.text =
                                   mineralMap.isEmpty ? '' : jsonEncode(
                                       mineralMap);
                                 },
-                                context: context,
                               ),
                         ),
                         const SizedBox(height: 16),
                         StatefulBuilder(
                           builder: (context, setState) =>
-                              IngredientDietaryDropdown(
-                                context: context,
+                              TypedSearchableDropdown(
+                                dropdownType: DropdownType.dietaryCategories,
                                 value: dietaryCategory,
+                                label: 'Dietary Category',
+                                hint: 'Select dietary category',
                                 onChanged: (value) =>
                                     setState(() =>
-                                dietaryCategory = value ?? 0),
+                                    dietaryCategory = (value as int?) ?? 0),
                               ),
                         ),
                       ],
@@ -341,6 +346,12 @@ class IngredientDialogs {
     controller.setupIngredientForm(ingredient);
     int dietaryCategory = (ingredient['dietaryCategory'] as int?) ?? 0;
     bool isActive = (ingredient['isActive'] as bool?) ?? true;
+
+    // Parse existing vitamins and minerals
+    List<dynamic> selectedVitamins = _parseSelectedItems(
+        ingredient['vitamins'], DropdownDataManager.vitamins);
+    List<dynamic> selectedMinerals = _parseSelectedItems(
+        ingredient['minerals'], DropdownDataManager.minerals);
 
     Get.dialog<void>(
       Dialog(
@@ -470,57 +481,58 @@ class IngredientDialogs {
 
                       IngredientSectionTitle(context, 'Additional Information'),
                       const SizedBox(height: 12),
-                      StatefulBuilder(
-                        builder: (context, setState) =>
-                            IngredientMultiSelectField(
-                              label: 'Vitamins (per 100g)',
-                              options: availableVitamins,
-                              selectedItems: _parseJsonKeys(
-                                  ingredient['vitamins']),
-                              onSelectionChanged: (selected) {
-                                setState(() {
-                                  final vitaminMap = <String, dynamic>{};
-                                  for (final vitamin in selected) {
-                                    vitaminMap[vitamin] =
-                                    0.0; // Default value, user can edit later
-                                  }
-                                  controller.vitaminsController.text =
-                                  vitaminMap.isEmpty ? '' : jsonEncode(
-                                      vitaminMap);
-                                });
-                              },
-                              context: context,
-                            ),
+                      TypedMultiSelectDropdown(
+                        dropdownType: DropdownType.vitamins,
+                        selectedValues: selectedVitamins,
+                        label: 'Vitamins (per 100g)',
+                        hint: 'Select vitamins',
+                        onChanged: (selected) {
+                          setState(() => selectedVitamins = selected);
+                          final vitaminMap = <String, dynamic>{};
+                          for (final vitamin in selected) {
+                            final item = DropdownDataManager.findItemByValue(
+                                DropdownDataManager.vitamins,
+                                vitamin
+                            );
+                            if (item != null) {
+                              vitaminMap[item.label] = 0.0;
+                            }
+                          }
+                          controller.vitaminsController.text =
+                          vitaminMap.isEmpty ? '' : jsonEncode(vitaminMap);
+                        },
                       ),
                       const SizedBox(height: 12),
-                      StatefulBuilder(
-                        builder: (context, setState) =>
-                            IngredientMultiSelectField(
-                              label: 'Minerals (per 100g)',
-                              options: availableMinerals,
-                              selectedItems: _parseJsonKeys(
-                                  ingredient['minerals']),
-                              onSelectionChanged: (selected) {
-                                setState(() {
-                                  final mineralMap = <String, dynamic>{};
-                                  for (final mineral in selected) {
-                                    mineralMap[mineral] =
-                                    0.0; // Default value, user can edit later
-                                  }
-                                  controller.mineralsController.text =
-                                  mineralMap.isEmpty ? '' : jsonEncode(
-                                      mineralMap);
-                                });
-                              },
-                              context: context,
-                            ),
+                      TypedMultiSelectDropdown(
+                        dropdownType: DropdownType.minerals,
+                        selectedValues: selectedMinerals,
+                        label: 'Minerals (per 100g)',
+                        hint: 'Select minerals',
+                        onChanged: (selected) {
+                          setState(() => selectedMinerals = selected);
+                          final mineralMap = <String, dynamic>{};
+                          for (final mineral in selected) {
+                            final item = DropdownDataManager.findItemByValue(
+                                DropdownDataManager.minerals,
+                                mineral
+                            );
+                            if (item != null) {
+                              mineralMap[item.label] = 0.0;
+                            }
+                          }
+                          controller.mineralsController.text =
+                          mineralMap.isEmpty ? '' : jsonEncode(mineralMap);
+                        },
                       ),
                       const SizedBox(height: 12),
-                      IngredientDietaryDropdown(
-                        context: context,
+                      TypedSearchableDropdown(
+                        dropdownType: DropdownType.dietaryCategories,
                         value: dietaryCategory,
+                        label: 'Dietary Category',
+                        hint: 'Select dietary category',
                         onChanged: (value) =>
-                            setState(() => dietaryCategory = value ?? 0),
+                            setState(() =>
+                            dietaryCategory = (value as int?) ?? 0),
                       ),
                       const SizedBox(height: 32),
 
@@ -905,7 +917,28 @@ class IngredientDialogs {
     );
   }
 
-  // Helper method to parse JSON keys safely
+  // Helper method to parse JSON keys safely and return dropdown values
+  static List<dynamic> _parseSelectedItems(dynamic jsonData,
+      List<DropdownItem> availableItems) {
+    try {
+      if (jsonData == null) return [];
+      final jsonString = jsonData.toString();
+      if (jsonString.isEmpty) return [];
+      final decoded = jsonDecode(jsonString);
+      if (decoded is Map<String, dynamic>) {
+        final selectedLabels = decoded.keys.toList();
+        return availableItems
+            .where((item) => selectedLabels.contains(item.label))
+            .map((item) => item.value)
+            .toList();
+      }
+    } catch (e) {
+      // Ignore JSON parsing errors
+    }
+    return [];
+  }
+
+  // Helper method to parse JSON keys safely (for backward compatibility)
   static List<String> _parseJsonKeys(dynamic jsonData) {
     try {
       if (jsonData == null) return [];

@@ -8,12 +8,32 @@ import 'dart:convert';
 class MealController extends GetxController {
   // Recipe state
   final recipes = <dynamic>[].obs;
+  final filteredRecipes = <dynamic>[].obs;
   final selectedRecipe = Rxn<dynamic>();
   
   // Ingredient state
   final ingredients = <dynamic>[].obs;
+  final filteredIngredients = <dynamic>[].obs;
   final selectedIngredient = Rxn<dynamic>();
-  
+
+  // Search state
+  final searchController = TextEditingController();
+  final searchQuery = ''.obs;
+
+  // Sort state
+  final recipeSortBy = 'name'.obs; // name, servings, calories
+  final ingredientSortBy = 'name'.obs; // name, calories, protein, carbs
+  final sortAscending = true.obs;
+
+  // Filter state
+  final selectedRecipeCuisine = 'All'.obs;
+  final selectedIngredientCategory = 'All'.obs;
+  final calorieRange = const RangeValues(0, 1000).obs;
+  final proteinRange = const RangeValues(0, 100).obs;
+
+  // Filter visibility
+  final showFilters = false.obs;
+
   // Shared state
   final isLoading = false.obs;
   final error = ''.obs;
@@ -52,6 +72,32 @@ class MealController extends GetxController {
     super.onInit();
     fetchRecipes();
     fetchIngredients();
+
+    // Listen to search query changes
+    searchController.addListener(() {
+      searchQuery.value = searchController.text;
+    });
+
+    // Setup reactive listeners
+    ever(searchQuery, (_) {
+      updateFilteredRecipes();
+      updateFilteredIngredients();
+    });
+
+    ever(recipeSortBy, (_) => updateFilteredRecipes());
+    ever(ingredientSortBy, (_) => updateFilteredIngredients());
+    ever(sortAscending, (_) {
+      updateFilteredRecipes();
+      updateFilteredIngredients();
+    });
+
+    ever(selectedRecipeCuisine, (_) => updateFilteredRecipes());
+    ever(selectedIngredientCategory, (_) => updateFilteredIngredients());
+    ever(calorieRange, (_) {
+      updateFilteredRecipes();
+      updateFilteredIngredients();
+    });
+    ever(proteinRange, (_) => updateFilteredIngredients());
   }
 
   // Recipe methods
@@ -63,8 +109,10 @@ class MealController extends GetxController {
       final response = await DioNetworkService.getRecipes();
       if (response is Map<String, dynamic> && response['data'] != null) {
         recipes.value = (response['data'] as List<dynamic>? ?? []).cast<dynamic>();
+        updateFilteredRecipes();
       } else {
         recipes.value = [];
+        filteredRecipes.value = [];
       }
     } catch (e) {
       error.value = e.toString();
@@ -163,8 +211,10 @@ class MealController extends GetxController {
       final response = await DioNetworkService.getIngredients();
       if (response is Map<String, dynamic> && response['data'] != null) {
         ingredients.value = (response['data'] as List<dynamic>? ?? []).cast<dynamic>();
+        updateFilteredIngredients();
       } else {
         ingredients.value = [];
+        filteredIngredients.value = [];
       }
     } catch (e) {
       error.value = e.toString();
@@ -543,7 +593,177 @@ class MealController extends GetxController {
       }).toList(),
     };
   }
-  
+
+  void updateFilteredRecipes() {
+    List<dynamic> filtered = recipes.value;
+
+    // Apply search filter
+    if (searchQuery.value.isNotEmpty) {
+      filtered = filtered.where((recipe) {
+        final name = (recipe['name'] as String? ?? '').toLowerCase();
+        final description = (recipe['description'] as String? ?? '')
+            .toLowerCase();
+        final cuisine = (recipe['cuisine'] as String? ?? '').toLowerCase();
+        final query = searchQuery.value.toLowerCase();
+
+        return name.contains(query) ||
+            description.contains(query) ||
+            cuisine.contains(query);
+      }).toList();
+    }
+
+    // Apply cuisine filter
+    if (selectedRecipeCuisine.value != 'All') {
+      filtered = filtered.where((recipe) {
+        final cuisine = recipe['cuisine'] as String? ?? '';
+        return cuisine.toLowerCase() ==
+            selectedRecipeCuisine.value.toLowerCase();
+      }).toList();
+    }
+
+    // Apply calorie range filter
+    filtered = filtered.where((recipe) {
+      final calories = (recipe['calories'] as num?)?.toDouble() ?? 0.0;
+      return calories >= calorieRange.value.start &&
+          calories <= calorieRange.value.end;
+    }).toList();
+
+    // Apply sorting
+    filtered.sort((a, b) {
+      int comparison = 0;
+
+      switch (recipeSortBy.value) {
+        case 'name':
+          comparison = (a['name'] as String? ?? '').compareTo(
+              b['name'] as String? ?? '');
+          break;
+        case 'servings':
+          comparison = ((a['servings'] as num?) ?? 0).compareTo(
+              (b['servings'] as num?) ?? 0);
+          break;
+        case 'calories':
+          comparison = ((a['calories'] as num?) ?? 0).compareTo(
+              (b['calories'] as num?) ?? 0);
+          break;
+      }
+
+      return sortAscending.value ? comparison : -comparison;
+    });
+
+    filteredRecipes.value = filtered;
+  }
+
+  void updateFilteredIngredients() {
+    List<dynamic> filtered = ingredients.value;
+
+    // Apply search filter
+    if (searchQuery.value.isNotEmpty) {
+      filtered = filtered.where((ingredient) {
+        final name = (ingredient['name'] as String? ??
+            ingredient['ingredientName'] as String? ?? '').toLowerCase();
+        final description = (ingredient['description'] as String? ?? '')
+            .toLowerCase();
+        final category = (ingredient['category'] as String? ?? '')
+            .toLowerCase();
+        final query = searchQuery.value.toLowerCase();
+
+        return name.contains(query) ||
+            description.contains(query) ||
+            category.contains(query);
+      }).toList();
+    }
+
+    // Apply category filter
+    if (selectedIngredientCategory.value != 'All') {
+      filtered = filtered.where((ingredient) {
+        final category = ingredient['category'] as String? ?? '';
+        return category.toLowerCase() ==
+            selectedIngredientCategory.value.toLowerCase();
+      }).toList();
+    }
+
+    // Apply calorie range filter
+    filtered = filtered.where((ingredient) {
+      final calories = (ingredient['calories'] as num?)?.toDouble() ?? 0.0;
+      return calories >= calorieRange.value.start &&
+          calories <= calorieRange.value.end;
+    }).toList();
+
+    // Apply protein range filter
+    filtered = filtered.where((ingredient) {
+      final protein = (ingredient['protein'] as num?)?.toDouble() ?? 0.0;
+      return protein >= proteinRange.value.start &&
+          protein <= proteinRange.value.end;
+    }).toList();
+
+    // Apply sorting
+    filtered.sort((a, b) {
+      int comparison = 0;
+
+      switch (ingredientSortBy.value) {
+        case 'name':
+          final nameA = a['name'] as String? ??
+              a['ingredientName'] as String? ?? '';
+          final nameB = b['name'] as String? ??
+              b['ingredientName'] as String? ?? '';
+          comparison = nameA.compareTo(nameB);
+          break;
+        case 'calories':
+          comparison = ((a['calories'] as num?) ?? 0).compareTo(
+              (b['calories'] as num?) ?? 0);
+          break;
+        case 'protein':
+          comparison = ((a['protein'] as num?) ?? 0).compareTo(
+              (b['protein'] as num?) ?? 0);
+          break;
+        case 'carbs':
+          comparison = ((a['carbohydrates'] as num?) ?? 0).compareTo(
+              (b['carbohydrates'] as num?) ?? 0);
+          break;
+      }
+
+      return sortAscending.value ? comparison : -comparison;
+    });
+
+    filteredIngredients.value = filtered;
+  }
+
+  // Helper methods for getting filter options
+  List<String> get availableRecipeCuisines {
+    final cuisines = recipes
+        .map((recipe) => recipe['cuisine'] as String? ?? '')
+        .where((c) => c.isNotEmpty)
+        .toSet()
+        .toList();
+    cuisines.sort();
+    return ['All', ...cuisines];
+  }
+
+  List<String> get availableIngredientCategories {
+    final categories = ingredients.map((
+        ingredient) => ingredient['category'] as String? ?? '').where((c) =>
+    c.isNotEmpty).toSet().toList();
+    categories.sort();
+    return ['All', ...categories];
+  }
+
+  // Search and filter control methods
+  void clearSearch() {
+    searchController.clear();
+    searchQuery.value = '';
+  }
+
+  void resetFilters() {
+    selectedRecipeCuisine.value = 'All';
+    selectedIngredientCategory.value = 'All';
+    calorieRange.value = const RangeValues(0, 1000);
+    proteinRange.value = const RangeValues(0, 100);
+  }
+
+  void toggleFilterVisibility() {
+    showFilters.value = !showFilters.value;
+  }
+
   @override
   void onClose() {
     // Dispose controllers
@@ -564,6 +784,7 @@ class MealController extends GetxController {
     saturatedFatController.dispose();
     monoFatController.dispose();
     polyFatController.dispose();
+    searchController.dispose();
     super.onClose();
   }
 }
