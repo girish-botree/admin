@@ -93,44 +93,43 @@ class RecipeDialogs {
                   ),
                   body: SingleChildScrollView(
                     padding: const EdgeInsets.all(24),
-                    child: Obx(() =>
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Hero Image Section
-                            RecipeImageSection(
-                              image: image,
-                              onImageChanged: (File? newImage) =>
-                                  setState(() => image = newImage),
-                            ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Hero Image Section
+                        RecipeImageSection(
+                          image: image,
+                          onImageChanged: (File? newImage) =>
+                              setState(() => image = newImage),
+                        ),
 
-                            const SizedBox(height: 32),
+                        const SizedBox(height: 32),
 
-                            // Basic Information Section
-                            RecipeBasicInfoSection(controller: controller),
+                        // Basic Information Section
+                        RecipeBasicInfoSection(controller: controller),
 
-                            const SizedBox(height: 24),
+                        const SizedBox(height: 24),
 
-                            // Recipe Details Section
-                            RecipeDetailsSection(
-                              controller: controller,
-                              dietaryCategory: dietaryCategory,
-                              onDietaryCategoryChanged: (value) =>
-                                  setState(() => dietaryCategory = value ?? 0),
-                            ),
+                        // Recipe Details Section
+                        RecipeDetailsSection(
+                          controller: controller,
+                          dietaryCategory: dietaryCategory,
+                          onDietaryCategoryChanged: (value) =>
+                              setState(() => dietaryCategory = value ?? 0),
+                        ),
 
-                            const SizedBox(height: 24),
+                        const SizedBox(height: 24),
 
-                            // Ingredients Section
-                            RecipeIngredientsSection(
-                              ingredients: ingredients,
-                              controller: controller,
-                              onIngredientsChanged: () => setState(() {}),
-                            ),
+                        // Ingredients Section
+                        RecipeIngredientsSection(
+                          ingredients: ingredients,
+                          controller: controller,
+                          onIngredientsChanged: () => setState(() {}),
+                        ),
 
-                            const SizedBox(height: 32),
-                          ],
-                        )),
+                        const SizedBox(height: 32),
+                      ],
+                    ),
                   ),
                 );
               },
@@ -182,22 +181,38 @@ class RecipeDialogs {
                     ),
                     const SizedBox(height: 24),
 
-                    RecipeTextField(controller.nameController, 'Recipe Name',
-                        dialogContext),
+                    Obx(() =>
+                        RecipeValidatedTextField(
+                            controller.nameController, 'Recipe Name',
+                            dialogContext, isRequired: true,
+                            errorText: controller.nameError.value,
+                            onChanged: controller.validateName)),
                     const SizedBox(height: 16),
-                    RecipeTextField(
+                    Obx(() =>
+                        RecipeValidatedTextField(
                         controller.descriptionController, 'Description',
-                        dialogContext, maxLines: 3),
+                        dialogContext, maxLines: 3,
+                        errorText: controller.descriptionError.value,
+                        onChanged: controller.validateDescription)),
                     const SizedBox(height: 16),
                     Row(
                       children: [
-                        Expanded(child: RecipeTextField(
-                            controller.servingsController, 'Servings',
-                            dialogContext, keyboardType: TextInputType.number)),
+                        Expanded(child: Obx(() =>
+                            RecipeValidatedTextField(
+                              controller.servingsController, 'Servings',
+                              dialogContext, keyboardType: TextInputType.number,
+                              errorText: controller.servingsError.value,
+                              onChanged: controller.validateServings,
+                              prefixIcon: Icons.people_outline,
+                            ))),
                         const SizedBox(width: 16),
-                        Expanded(child: RecipeTextField(
-                            controller.cuisineController, 'Cuisine',
-                            dialogContext)),
+                        Expanded(child: RecipeCuisineDropdown(
+                          dialogContext,
+                          controller.cuisineController.text,
+                              (String? value) {
+                            controller.cuisineController.text = value ?? '';
+                          },
+                        )),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -563,7 +578,8 @@ class RecipeBasicInfoSection extends StatelessWidget {
         ),
         const SizedBox(height: 16),
 
-        RecipeValidatedTextField(
+        Obx(() =>
+            RecipeValidatedTextField(
           controller.nameController,
           'Recipe Name',
           context,
@@ -571,10 +587,11 @@ class RecipeBasicInfoSection extends StatelessWidget {
           errorText: controller.nameError.value,
           onChanged: controller.validateName,
           prefixIcon: Icons.restaurant_menu,
-        ),
+        )),
         const SizedBox(height: 16),
 
-        RecipeValidatedTextField(
+        Obx(() =>
+            RecipeValidatedTextField(
           controller.descriptionController,
           'Description',
           context,
@@ -582,7 +599,7 @@ class RecipeBasicInfoSection extends StatelessWidget {
           errorText: controller.descriptionError.value,
           onChanged: controller.validateDescription,
           prefixIcon: Icons.description_outlined,
-        ),
+        )),
       ],
     );
   }
@@ -617,7 +634,8 @@ class RecipeDetailsSection extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: RecipeValidatedTextField(
+              child: Obx(() =>
+                  RecipeValidatedTextField(
                 controller.servingsController,
                 'Servings',
                 context,
@@ -627,15 +645,16 @@ class RecipeDetailsSection extends StatelessWidget {
                 errorText: controller.servingsError.value,
                 onChanged: controller.validateServings,
                 prefixIcon: Icons.people_outline,
-              ),
+              )),
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: RecipeTextField(
-                controller.cuisineController,
-                'Cuisine',
+              child: RecipeCuisineDropdown(
                 context,
-                prefixIcon: Icons.public_outlined,
+                controller.cuisineController.text,
+                    (String? value) {
+                  controller.cuisineController.text = value ?? '';
+                },
               ),
             ),
           ],
@@ -1286,6 +1305,88 @@ class RecipeDietaryDropdown extends StatelessWidget {
             child: Text('Paleo',
                 style: TextStyle(color: context.theme.colorScheme.onSurface))),
       ],
+      onChanged: onChanged,
+    );
+  }
+}
+
+class RecipeCuisineDropdown extends StatelessWidget {
+  final BuildContext context;
+  final String value;
+  final void Function(String?) onChanged;
+
+  const RecipeCuisineDropdown(this.context, this.value, this.onChanged,
+      {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final cuisines = [
+      'Italian',
+      'Chinese',
+      'Mexican',
+      'Indian',
+      'Japanese',
+      'Thai',
+      'French',
+      'Mediterranean',
+      'American',
+      'Korean',
+      'Vietnamese',
+      'Greek',
+      'Spanish',
+      'Lebanese',
+      'Turkish',
+      'Moroccan',
+      'Brazilian',
+      'German',
+      'British',
+      'Russian',
+      'Ethiopian',
+      'Peruvian',
+      'Other'
+    ];
+
+    return DropdownButtonFormField<String>(
+      value: cuisines.contains(value) ? value : null,
+      isExpanded: true,
+      menuMaxHeight: 300,
+      decoration: InputDecoration(
+        labelText: 'Cuisine',
+        labelStyle: TextStyle(
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7)),
+        prefixIcon: Icon(Icons.public_outlined,
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+              color: context.theme.colorScheme.onSurface.withValues(
+                  alpha: 0.3)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+              color: context.theme.colorScheme.onSurface.withValues(
+                  alpha: 0.3)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+              color: context.theme.colorScheme.onSurface, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16, vertical: 16),
+        fillColor: context.theme.colorScheme.surfaceContainerLowest,
+        filled: true,
+      ),
+      dropdownColor: context.theme.colorScheme.surfaceContainerLowest,
+      style: TextStyle(color: context.theme.colorScheme.onSurface),
+      items: cuisines.map((String cuisine) {
+        return DropdownMenuItem(
+            value: cuisine,
+            child: Text(cuisine,
+                style: TextStyle(color: context.theme.colorScheme.onSurface))
+        );
+      }).toList(),
       onChanged: onChanged,
     );
   }

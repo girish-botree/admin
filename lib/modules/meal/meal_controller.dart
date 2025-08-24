@@ -478,26 +478,54 @@ class MealController extends GetxController {
   // Create ingredient data from form
   Map<String, dynamic> createIngredientData(int dietaryCategory) {
     final fatBreakdownData = {
-      'Saturated': double.tryParse(saturatedFatController.text) ?? 0,
-      'Monounsaturated': double.tryParse(monoFatController.text) ?? 0,
-      'Polyunsaturated': double.tryParse(polyFatController.text) ?? 0,
+      'Saturated': double.tryParse(saturatedFatController.text) ?? 0.0,
+      'Monounsaturated': double.tryParse(monoFatController.text) ?? 0.0,
+      'Polyunsaturated': double.tryParse(polyFatController.text) ?? 0.0,
     };
-    
-    return {
-      'name': nameController.text,
-      'description': descriptionController.text,
-      'category': categoryController.text,
+
+    // Helper function to validate and format JSON fields
+    String? formatJsonField(String controllerText) {
+      if (controllerText.isEmpty) return null;
+      try {
+        // Validate JSON format
+        final decoded = jsonDecode(controllerText);
+        // Ensure it's a valid object or array
+        if (decoded is Map || decoded is List) {
+          return controllerText;
+        }
+        return null;
+      } catch (e) {
+        debugPrint('Invalid JSON format: $controllerText');
+        return null;
+      }
+    }
+
+    final data = {
+      'name': nameController.text.trim(),
+      'description': descriptionController.text.trim(),
+      'category': categoryController.text.trim(),
       'dietaryCategory': dietaryCategory,
       'calories': int.tryParse(caloriesController.text) ?? 0,
-      'protein': double.tryParse(proteinController.text) ?? 0,
-      'carbohydrates': double.tryParse(carbsController.text) ?? 0,
-      'fat': double.tryParse(fatController.text) ?? 0,
-      'fiber': double.tryParse(fiberController.text) ?? 0,
-      'sugar': double.tryParse(sugarController.text) ?? 0,
-      'vitamins': vitaminsController.text,
-      'minerals': mineralsController.text,
+      'protein': double.tryParse(proteinController.text) ?? 0.0,
+      'carbohydrates': double.tryParse(carbsController.text) ?? 0.0,
+      'fat': double.tryParse(fatController.text) ?? 0.0,
+      'fiber': double.tryParse(fiberController.text) ?? 0.0,
+      'sugar': double.tryParse(sugarController.text) ?? 0.0,
       'fatBreakdown': jsonEncode(fatBreakdownData)
     };
+
+    // Only add vitamins and minerals if they have valid values
+    final vitaminsJson = formatJsonField(vitaminsController.text);
+    if (vitaminsJson != null) {
+      data['vitamins'] = vitaminsJson;
+    }
+
+    final mineralsJson = formatJsonField(mineralsController.text);
+    if (mineralsJson != null) {
+      data['minerals'] = mineralsJson;
+    }
+
+    return data;
   }
   
   // Create recipe data from form

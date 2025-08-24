@@ -9,13 +9,13 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="add confirmation dialogs for bulk deletions and enhance ingredient management in meal and plan modules">
-      <change beforePath="$PROJECT_DIR$/lib/modules/meal/ingredients/widgets/ingredient_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/ingredients/widgets/ingredient_card.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/meal/ingredients/widgets/ingredient_shimmer.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/ingredients/widgets/ingredient_shimmer.dart" afterDir="false" />
+    <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="add confirmation dialogs for bulk deletions and enhance ingredient and recipe management modules">
+      <change beforePath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/ingredients/dialogs/ingredient_dialogs.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/ingredients/dialogs/ingredient_dialogs.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/meal_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/meal_controller.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_dialog.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_dialog.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/meal/receipe/widgets/recipe_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/widgets/recipe_card.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/meal/receipe/widgets/recipe_shimmer.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/widgets/recipe_shimmer.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/meal/shared/widgets/common_widgets.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/shared/widgets/common_widgets.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/receipe/receipes_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/receipes_view.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -155,7 +155,15 @@
       <option name="project" value="LOCAL" />
       <updated>1756004829634</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="add confirmation dialogs for bulk deletions and enhance ingredient and recipe management modules">
+      <option name="closed" value="true" />
+      <created>1756006182295</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1756006182295</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -187,6 +195,7 @@
     <MESSAGE value="fix: improve login flow with internet connectivity check and enhance theme selection UI in settings" />
     <MESSAGE value="remove redundant quick stats row to streamline plan statistics display" />
     <MESSAGE value="add confirmation dialogs for bulk deletions and enhance ingredient management in meal and plan modules" />
-    <option name="LAST_COMMIT_MESSAGE" value="add confirmation dialogs for bulk deletions and enhance ingredient management in meal and plan modules" />
+    <MESSAGE value="add confirmation dialogs for bulk deletions and enhance ingredient and recipe management modules" />
+    <option name="LAST_COMMIT_MESSAGE" value="add confirmation dialogs for bulk deletions and enhance ingredient and recipe management modules" />
   </component>
 </project>

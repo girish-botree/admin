@@ -12,8 +12,6 @@ class ReceipesView extends GetView<MealController> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(MealController());
-
     return SafeArea(
       child: Scaffold(
         backgroundColor: context.theme.colorScheme.surfaceContainerLowest,

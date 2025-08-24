@@ -5,10 +5,26 @@ import 'package:get/get.dart';
 import '../../meal_controller.dart';
 
 class IngredientDialogs {
+  // Predefined vitamins and minerals lists
+  static const List<String> availableVitamins = [
+    'Vitamin A', 'Vitamin B1 (Thiamine)', 'Vitamin B2 (Riboflavin)',
+    'Vitamin B3 (Niacin)', 'Vitamin B5 (Pantothenic Acid)', 'Vitamin B6',
+    'Vitamin B7 (Biotin)', 'Vitamin B9 (Folate)', 'Vitamin B12',
+    'Vitamin C', 'Vitamin D', 'Vitamin E', 'Vitamin K'
+  ];
+
+  static const List<String> availableMinerals = [
+    'Calcium', 'Iron', 'Magnesium', 'Phosphorus', 'Potassium', 'Sodium',
+    'Zinc', 'Copper', 'Manganese', 'Selenium', 'Chromium', 'Molybdenum',
+    'Fluoride', 'Iodine'
+  ];
+
   static void showAddIngredientDialog(BuildContext context,
       MealController controller) {
     controller.clearIngredientForm();
     int dietaryCategory = 0;
+    List<String> selectedVitamins = [];
+    List<String> selectedMinerals = [];
 
     Get.dialog<void>(
       Dialog.fullscreen(
@@ -107,7 +123,7 @@ class IngredientDialogs {
                     const SizedBox(height: 32),
 
                     IngredientFormSection(
-                      title: 'Nutritional Information',
+                      title: 'Nutritional Information (per 100g)',
                       icon: Icons.analytics_outlined,
                       children: [
                         Row(
@@ -115,7 +131,7 @@ class IngredientDialogs {
                             Expanded(
                               child: IngredientValidatedTextField(
                                 controller.caloriesController,
-                                'Calories',
+                                'Calories (per 100g)',
                                 context,
                                 keyboardType: TextInputType.number,
                                 inputFormatters: MealController
@@ -128,7 +144,7 @@ class IngredientDialogs {
                             Expanded(
                               child: IngredientValidatedTextField(
                                 controller.proteinController,
-                                'Protein (g)',
+                                'Protein (g per 100g)',
                                 context,
                                 keyboardType: TextInputType.number,
                                 inputFormatters: MealController
@@ -148,7 +164,7 @@ class IngredientDialogs {
                             Expanded(
                               child: IngredientValidatedTextField(
                                 controller.carbsController,
-                                'Carbs (g)',
+                                'Carbs (g per 100g)',
                                 context,
                                 keyboardType: TextInputType.number,
                                 inputFormatters: MealController
@@ -163,7 +179,7 @@ class IngredientDialogs {
                             Expanded(
                               child: IngredientValidatedTextField(
                                 controller.fatController,
-                                'Fat (g)',
+                                'Fat (g per 100g)',
                                 context,
                                 keyboardType: TextInputType.number,
                                 inputFormatters: MealController
@@ -182,7 +198,7 @@ class IngredientDialogs {
                             Expanded(
                               child: IngredientValidatedTextField(
                                 controller.fiberController,
-                                'Fiber (g)',
+                                'Fiber (g per 100g)',
                                 context,
                                 keyboardType: TextInputType.number,
                                 inputFormatters: MealController
@@ -193,7 +209,7 @@ class IngredientDialogs {
                             Expanded(
                               child: IngredientValidatedTextField(
                                 controller.sugarController,
-                                'Sugar (g)',
+                                'Sugar (g per 100g)',
                                 context,
                                 keyboardType: TextInputType.number,
                                 inputFormatters: MealController
@@ -208,7 +224,7 @@ class IngredientDialogs {
                     const SizedBox(height: 32),
 
                     IngredientFormSection(
-                      title: 'Fat Breakdown',
+                      title: 'Fat Breakdown (per 100g)',
                       icon: Icons.pie_chart_outline_rounded,
                       children: [
                         Row(
@@ -216,7 +232,7 @@ class IngredientDialogs {
                             Expanded(
                               child: IngredientValidatedTextField(
                                 controller.saturatedFatController,
-                                'Saturated (g)',
+                                'Saturated (g per 100g)',
                                 context,
                                 keyboardType: TextInputType.number,
                                 inputFormatters: MealController
@@ -227,7 +243,7 @@ class IngredientDialogs {
                             Expanded(
                               child: IngredientValidatedTextField(
                                 controller.monoFatController,
-                                'Monounsaturated (g)',
+                                'Monounsaturated (g per 100g)',
                                 context,
                                 keyboardType: TextInputType.number,
                                 inputFormatters: MealController
@@ -239,7 +255,7 @@ class IngredientDialogs {
                         const SizedBox(height: 16),
                         IngredientValidatedTextField(
                           controller.polyFatController,
-                          'Polyunsaturated (g)',
+                          'Polyunsaturated (g per 100g)',
                           context,
                           keyboardType: TextInputType.number,
                           inputFormatters: MealController
@@ -254,18 +270,48 @@ class IngredientDialogs {
                       title: 'Additional Information',
                       icon: Icons.more_horiz_rounded,
                       children: [
-                        IngredientValidatedTextField(
-                          controller.vitaminsController,
-                          'Vitamins (JSON format)',
-                          context,
-                          maxLines: 3,
+                        StatefulBuilder(
+                          builder: (context, setState) =>
+                              IngredientMultiSelectField(
+                                label: 'Vitamins (per 100g)',
+                                options: availableVitamins,
+                                selectedItems: selectedVitamins,
+                                onSelectionChanged: (selected) {
+                                  setState(() => selectedVitamins = selected);
+                                  // Update the controller with JSON format
+                                  final vitaminMap = <String, dynamic>{};
+                                  for (final vitamin in selected) {
+                                    vitaminMap[vitamin] =
+                                    0.0; // Default value, user can edit later
+                                  }
+                                  controller.vitaminsController.text =
+                                  vitaminMap.isEmpty ? '' : jsonEncode(
+                                      vitaminMap);
+                                },
+                                context: context,
+                              ),
                         ),
                         const SizedBox(height: 16),
-                        IngredientValidatedTextField(
-                          controller.mineralsController,
-                          'Minerals (JSON format)',
-                          context,
-                          maxLines: 3,
+                        StatefulBuilder(
+                          builder: (context, setState) =>
+                              IngredientMultiSelectField(
+                                label: 'Minerals (per 100g)',
+                                options: availableMinerals,
+                                selectedItems: selectedMinerals,
+                                onSelectionChanged: (selected) {
+                                  setState(() => selectedMinerals = selected);
+                                  // Update the controller with JSON format
+                                  final mineralMap = <String, dynamic>{};
+                                  for (final mineral in selected) {
+                                    mineralMap[mineral] =
+                                    0.0; // Default value, user can edit later
+                                  }
+                                  controller.mineralsController.text =
+                                  mineralMap.isEmpty ? '' : jsonEncode(
+                                      mineralMap);
+                                },
+                                context: context,
+                              ),
                         ),
                         const SizedBox(height: 16),
                         StatefulBuilder(
@@ -354,16 +400,18 @@ class IngredientDialogs {
                       const SizedBox(height: 24),
 
                       IngredientSectionTitle(
-                          context, 'Nutritional Information'),
+                          context, 'Nutritional Information (per 100g)'),
                       const SizedBox(height: 12),
                       Row(
                         children: [
                           Expanded(child: IngredientTextField(
-                              controller.caloriesController, 'Calories',
+                              controller.caloriesController,
+                              'Calories (per 100g)',
                               context, keyboardType: TextInputType.number)),
                           const SizedBox(width: 12),
                           Expanded(child: IngredientTextField(
-                              controller.proteinController, 'Protein (g)',
+                              controller.proteinController,
+                              'Protein (g per 100g)',
                               context, keyboardType: TextInputType.number)),
                         ],
                       ),
@@ -371,11 +419,13 @@ class IngredientDialogs {
                       Row(
                         children: [
                           Expanded(child: IngredientTextField(
-                              controller.carbsController, 'Carbs (g)', context,
+                              controller.carbsController, 'Carbs (g per 100g)',
+                              context,
                               keyboardType: TextInputType.number)),
                           const SizedBox(width: 12),
                           Expanded(child: IngredientTextField(
-                              controller.fatController, 'Fat (g)', context,
+                              controller.fatController, 'Fat (g per 100g)',
+                              context,
                               keyboardType: TextInputType.number)),
                         ],
                       ),
@@ -383,44 +433,88 @@ class IngredientDialogs {
                       Row(
                         children: [
                           Expanded(child: IngredientTextField(
-                              controller.fiberController, 'Fiber (g)', context,
+                              controller.fiberController, 'Fiber (g per 100g)',
+                              context,
                               keyboardType: TextInputType.number)),
                           const SizedBox(width: 12),
                           Expanded(child: IngredientTextField(
-                              controller.sugarController, 'Sugar (g)', context,
+                              controller.sugarController, 'Sugar (g per 100g)',
+                              context,
                               keyboardType: TextInputType.number)),
                         ],
                       ),
                       const SizedBox(height: 24),
 
-                      IngredientSectionTitle(context, 'Fat Breakdown'),
+                      IngredientSectionTitle(
+                          context, 'Fat Breakdown (per 100g)'),
                       const SizedBox(height: 12),
                       Row(
                         children: [
                           Expanded(child: IngredientTextField(
                               controller.saturatedFatController,
-                              'Saturated (g)', context,
+                              'Saturated (g per 100g)', context,
                               keyboardType: TextInputType.number)),
                           const SizedBox(width: 12),
                           Expanded(child: IngredientTextField(
                               controller.monoFatController,
-                              'Monounsaturated (g)', context,
+                              'Monounsaturated (g per 100g)', context,
                               keyboardType: TextInputType.number)),
                         ],
                       ),
                       const SizedBox(height: 12),
                       IngredientTextField(
-                          controller.polyFatController, 'Polyunsaturated (g)',
+                          controller.polyFatController,
+                          'Polyunsaturated (g per 100g)',
                           context, keyboardType: TextInputType.number),
                       const SizedBox(height: 24),
 
                       IngredientSectionTitle(context, 'Additional Information'),
                       const SizedBox(height: 12),
-                      IngredientTextField(controller.vitaminsController,
-                          'Vitamins (JSON format)', context, maxLines: 3),
+                      StatefulBuilder(
+                        builder: (context, setState) =>
+                            IngredientMultiSelectField(
+                              label: 'Vitamins (per 100g)',
+                              options: availableVitamins,
+                              selectedItems: _parseJsonKeys(
+                                  ingredient['vitamins']),
+                              onSelectionChanged: (selected) {
+                                setState(() {
+                                  final vitaminMap = <String, dynamic>{};
+                                  for (final vitamin in selected) {
+                                    vitaminMap[vitamin] =
+                                    0.0; // Default value, user can edit later
+                                  }
+                                  controller.vitaminsController.text =
+                                  vitaminMap.isEmpty ? '' : jsonEncode(
+                                      vitaminMap);
+                                });
+                              },
+                              context: context,
+                            ),
+                      ),
                       const SizedBox(height: 12),
-                      IngredientTextField(controller.mineralsController,
-                          'Minerals (JSON format)', context, maxLines: 3),
+                      StatefulBuilder(
+                        builder: (context, setState) =>
+                            IngredientMultiSelectField(
+                              label: 'Minerals (per 100g)',
+                              options: availableMinerals,
+                              selectedItems: _parseJsonKeys(
+                                  ingredient['minerals']),
+                              onSelectionChanged: (selected) {
+                                setState(() {
+                                  final mineralMap = <String, dynamic>{};
+                                  for (final mineral in selected) {
+                                    mineralMap[mineral] =
+                                    0.0; // Default value, user can edit later
+                                  }
+                                  controller.mineralsController.text =
+                                  mineralMap.isEmpty ? '' : jsonEncode(
+                                      mineralMap);
+                                });
+                              },
+                              context: context,
+                            ),
+                      ),
                       const SizedBox(height: 12),
                       IngredientDietaryDropdown(
                         context: context,
@@ -810,6 +904,22 @@ class IngredientDialogs {
       ),
     );
   }
+
+  // Helper method to parse JSON keys safely
+  static List<String> _parseJsonKeys(dynamic jsonData) {
+    try {
+      if (jsonData == null) return [];
+      final jsonString = jsonData.toString();
+      if (jsonString.isEmpty) return [];
+      final decoded = jsonDecode(jsonString);
+      if (decoded is Map<String, dynamic>) {
+        return decoded.keys.toList();
+      }
+    } catch (e) {
+      // Ignore JSON parsing errors
+    }
+    return [];
+  }
 }
 
 // Helper widgets
@@ -1037,6 +1147,217 @@ class IngredientTextField extends StatelessWidget {
           contentPadding: EdgeInsets.symmetric(
             horizontal: 16,
             vertical: maxLines > 1 ? 16 : 14,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class IngredientMultiSelectField extends StatelessWidget {
+  final String label;
+  final List<String> options;
+  final List<String> selectedItems;
+  final void Function(List<String>) onSelectionChanged;
+  final BuildContext context;
+
+  const IngredientMultiSelectField({
+    super.key,
+    required this.label,
+    required this.options,
+    required this.selectedItems,
+    required this.onSelectionChanged,
+    required this.context,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: context.theme.colorScheme.shadow.withValues(alpha: 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Label and Add Button
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: context.theme.colorScheme.surfaceContainerLowest,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: context.theme.colorScheme.outline.withValues(alpha: 0.3),
+                width: 1.5,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      label,
+                      style: TextStyle(
+                        color: context.theme.colorScheme.onSurface.withValues(
+                            alpha: 0.7),
+                        fontSize: 16,
+                      ),
+                    ),
+                    TextButton.icon(
+                      onPressed: () => _showSelectionDialog(context),
+                      icon: const Icon(Icons.add, size: 18),
+                      label: const Text('Add'),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                // Selected Items Display
+                if (selectedItems.isNotEmpty)
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: selectedItems.map((item) {
+                      return Chip(
+                        label: Text(
+                          item,
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        onDeleted: () {
+                          final newSelection = selectedItems
+                              .where((selectedItem) => selectedItem != item)
+                              .toList();
+                          onSelectionChanged(newSelection);
+                        },
+                        deleteIcon: const Icon(Icons.close, size: 16),
+                        backgroundColor: context.theme.colorScheme
+                            .primaryContainer,
+                        labelStyle: TextStyle(
+                          color: context.theme.colorScheme.onPrimaryContainer,
+                        ),
+                        deleteIconColor: context.theme.colorScheme
+                            .onPrimaryContainer,
+                      );
+                    }).toList(),
+                  )
+                else
+                  Text(
+                    'No items selected',
+                    style: TextStyle(
+                      color: context.theme.colorScheme.onSurface.withValues(
+                          alpha: 0.5),
+                      fontSize: 14,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSelectionDialog(BuildContext context) {
+    final availableItems = options.where((option) =>
+    !selectedItems.contains(option)).toList();
+
+    if (availableItems.isEmpty) {
+      Get.snackbar('Info', 'All items have been selected');
+      return;
+    }
+
+    Get.dialog<void>(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Container(
+          width: MediaQuery
+              .of(context)
+              .size
+              .width * 0.8,
+          constraints: const BoxConstraints(maxWidth: 500, maxHeight: 600),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Select $label',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: context.theme.colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Flexible(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: availableItems.length,
+                  itemBuilder: (context, index) {
+                    final item = availableItems[index];
+                    return CheckboxListTile(
+                      title: Text(
+                        item,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: context.theme.colorScheme.onSurface,
+                        ),
+                      ),
+                      value: false,
+                      // Always false since these are available items
+                      onChanged: (value) {
+                        if (value == true) {
+                          final newSelection = [...selectedItems, item];
+                          onSelectionChanged(newSelection);
+                          Get.back(); // Close dialog after selection
+                        }
+                      },
+                      controlAffinity: ListTileControlAffinity.leading,
+                      dense: true,
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Get.back(),
+                      child: const Text('Cancel'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: () {
+                        // Select all available items
+                        final newSelection = [
+                          ...selectedItems,
+                          ...availableItems
+                        ];
+                        onSelectionChanged(newSelection);
+                        Get.back();
+                      },
+                      child: const Text('Select All'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
