@@ -1,0 +1,1209 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import '../../meal_controller.dart';
+
+class IngredientDialogs {
+  static void showAddIngredientDialog(BuildContext context,
+      MealController controller) {
+    controller.clearIngredientForm();
+    int dietaryCategory = 0;
+
+    Get.dialog<void>(
+      Dialog.fullscreen(
+        backgroundColor: context.theme.colorScheme.surface,
+        child: Scaffold(
+          backgroundColor: context.theme.colorScheme.surface,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              onPressed: () => Get.back<void>(),
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: context.theme.colorScheme.surfaceContainer,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.close_rounded,
+                  size: 20,
+                  color: context.theme.colorScheme.onSurface,
+                ),
+              ),
+            ),
+            title: Text(
+              'Add New Ingredient',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+                color: context.theme.colorScheme.onSurface,
+              ),
+            ),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: FilledButton.icon(
+                  onPressed: () {
+                    if (controller.validateIngredientForm()) {
+                      final data = controller.createIngredientData(
+                          dietaryCategory);
+                      controller.createIngredient(data).then((success) {
+                        if (success) {
+                          Get.back<void>();
+                          Get.snackbar(
+                              'Success', 'Ingredient created successfully');
+                        }
+                      });
+                    }
+                  },
+                  icon: const Icon(Icons.save_rounded),
+                  label: const Text('Save'),
+                  style: FilledButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Obx(() =>
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    IngredientFormSection(
+                      title: 'Basic Information',
+                      icon: Icons.info_outline_rounded,
+                      children: [
+                        IngredientValidatedTextField(
+                          controller.nameController,
+                          'Ingredient Name',
+                          context,
+                          isRequired: true,
+                          errorText: controller.nameError.value,
+                          onChanged: controller.validateName,
+                        ),
+                        const SizedBox(height: 16),
+                        IngredientValidatedTextField(
+                          controller.descriptionController,
+                          'Description',
+                          context,
+                          maxLines: 3,
+                          errorText: controller.descriptionError.value,
+                          onChanged: controller.validateDescription,
+                        ),
+                        const SizedBox(height: 16),
+                        IngredientValidatedTextField(
+                          controller.categoryController,
+                          'Category',
+                          context,
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    IngredientFormSection(
+                      title: 'Nutritional Information',
+                      icon: Icons.analytics_outlined,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: IngredientValidatedTextField(
+                                controller.caloriesController,
+                                'Calories',
+                                context,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: MealController
+                                    .getIntegerInputFormatters(),
+                                errorText: controller.caloriesError.value,
+                                onChanged: controller.validateCalories,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: IngredientValidatedTextField(
+                                controller.proteinController,
+                                'Protein (g)',
+                                context,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: MealController
+                                    .getNumberInputFormatters(),
+                                errorText: controller.proteinError.value,
+                                onChanged: (value) =>
+                                    controller.validateNutrient(
+                                        value, controller.proteinError,
+                                        'Protein'),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: IngredientValidatedTextField(
+                                controller.carbsController,
+                                'Carbs (g)',
+                                context,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: MealController
+                                    .getNumberInputFormatters(),
+                                errorText: controller.carbsError.value,
+                                onChanged: (value) =>
+                                    controller.validateNutrient(
+                                        value, controller.carbsError, 'Carbs'),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: IngredientValidatedTextField(
+                                controller.fatController,
+                                'Fat (g)',
+                                context,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: MealController
+                                    .getNumberInputFormatters(),
+                                errorText: controller.fatError.value,
+                                onChanged: (value) =>
+                                    controller.validateNutrient(
+                                        value, controller.fatError, 'Fat'),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: IngredientValidatedTextField(
+                                controller.fiberController,
+                                'Fiber (g)',
+                                context,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: MealController
+                                    .getNumberInputFormatters(),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: IngredientValidatedTextField(
+                                controller.sugarController,
+                                'Sugar (g)',
+                                context,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: MealController
+                                    .getNumberInputFormatters(),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    IngredientFormSection(
+                      title: 'Fat Breakdown',
+                      icon: Icons.pie_chart_outline_rounded,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: IngredientValidatedTextField(
+                                controller.saturatedFatController,
+                                'Saturated (g)',
+                                context,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: MealController
+                                    .getNumberInputFormatters(),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: IngredientValidatedTextField(
+                                controller.monoFatController,
+                                'Monounsaturated (g)',
+                                context,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: MealController
+                                    .getNumberInputFormatters(),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        IngredientValidatedTextField(
+                          controller.polyFatController,
+                          'Polyunsaturated (g)',
+                          context,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: MealController
+                              .getNumberInputFormatters(),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    IngredientFormSection(
+                      title: 'Additional Information',
+                      icon: Icons.more_horiz_rounded,
+                      children: [
+                        IngredientValidatedTextField(
+                          controller.vitaminsController,
+                          'Vitamins (JSON format)',
+                          context,
+                          maxLines: 3,
+                        ),
+                        const SizedBox(height: 16),
+                        IngredientValidatedTextField(
+                          controller.mineralsController,
+                          'Minerals (JSON format)',
+                          context,
+                          maxLines: 3,
+                        ),
+                        const SizedBox(height: 16),
+                        StatefulBuilder(
+                          builder: (context, setState) =>
+                              IngredientDietaryDropdown(
+                                context: context,
+                                value: dietaryCategory,
+                                onChanged: (value) =>
+                                    setState(() =>
+                                dietaryCategory = value ?? 0),
+                              ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 100), // Bottom padding for scrolling
+                  ],
+                )),
+          ),
+        ),
+      ),
+    );
+  }
+
+  static void showEditIngredientDialog(BuildContext context,
+      MealController controller, dynamic ingredient) {
+    controller.setupIngredientForm(ingredient);
+    int dietaryCategory = (ingredient['dietaryCategory'] as int?) ?? 0;
+    bool isActive = (ingredient['isActive'] as bool?) ?? true;
+
+    Get.dialog<void>(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
+        child: Container(
+          width: MediaQuery
+              .of(context)
+              .size
+              .width * 0.8,
+          constraints: const BoxConstraints(maxWidth: 800),
+          padding: const EdgeInsets.all(24),
+          child: SingleChildScrollView(
+            child: StatefulBuilder(
+              builder: (context, setState) =>
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Edit Ingredient',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: context.theme.colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      IngredientSectionTitle(context, 'Basic Information'),
+                      const SizedBox(height: 12),
+                      IngredientTextField(
+                          controller.nameController, 'Ingredient Name',
+                          context),
+                      const SizedBox(height: 12),
+                      IngredientTextField(
+                          controller.descriptionController, 'Description',
+                          context, maxLines: 3),
+                      const SizedBox(height: 12),
+                      IngredientTextField(
+                          controller.categoryController, 'Category', context),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Text('Active Status',
+                              style: TextStyle(fontSize: 16, color: context
+                                  .theme.colorScheme.onSurface)),
+                          const SizedBox(width: 16),
+                          Switch(
+                            value: isActive,
+                            onChanged: (value) =>
+                                setState(() => isActive = value),
+                            activeColor: context.theme.colorScheme.primary,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+
+                      IngredientSectionTitle(
+                          context, 'Nutritional Information'),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(child: IngredientTextField(
+                              controller.caloriesController, 'Calories',
+                              context, keyboardType: TextInputType.number)),
+                          const SizedBox(width: 12),
+                          Expanded(child: IngredientTextField(
+                              controller.proteinController, 'Protein (g)',
+                              context, keyboardType: TextInputType.number)),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(child: IngredientTextField(
+                              controller.carbsController, 'Carbs (g)', context,
+                              keyboardType: TextInputType.number)),
+                          const SizedBox(width: 12),
+                          Expanded(child: IngredientTextField(
+                              controller.fatController, 'Fat (g)', context,
+                              keyboardType: TextInputType.number)),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(child: IngredientTextField(
+                              controller.fiberController, 'Fiber (g)', context,
+                              keyboardType: TextInputType.number)),
+                          const SizedBox(width: 12),
+                          Expanded(child: IngredientTextField(
+                              controller.sugarController, 'Sugar (g)', context,
+                              keyboardType: TextInputType.number)),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+
+                      IngredientSectionTitle(context, 'Fat Breakdown'),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(child: IngredientTextField(
+                              controller.saturatedFatController,
+                              'Saturated (g)', context,
+                              keyboardType: TextInputType.number)),
+                          const SizedBox(width: 12),
+                          Expanded(child: IngredientTextField(
+                              controller.monoFatController,
+                              'Monounsaturated (g)', context,
+                              keyboardType: TextInputType.number)),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      IngredientTextField(
+                          controller.polyFatController, 'Polyunsaturated (g)',
+                          context, keyboardType: TextInputType.number),
+                      const SizedBox(height: 24),
+
+                      IngredientSectionTitle(context, 'Additional Information'),
+                      const SizedBox(height: 12),
+                      IngredientTextField(controller.vitaminsController,
+                          'Vitamins (JSON format)', context, maxLines: 3),
+                      const SizedBox(height: 12),
+                      IngredientTextField(controller.mineralsController,
+                          'Minerals (JSON format)', context, maxLines: 3),
+                      const SizedBox(height: 12),
+                      IngredientDietaryDropdown(
+                        context: context,
+                        value: dietaryCategory,
+                        onChanged: (value) =>
+                            setState(() => dietaryCategory = value ?? 0),
+                      ),
+                      const SizedBox(height: 32),
+
+                      IngredientDialogActions(context, () {
+                        if (controller.nameController.text.isEmpty) {
+                          Get.snackbar('Error', 'Ingredient name is required');
+                          return;
+                        }
+
+                        final data = controller.createIngredientData(
+                            dietaryCategory);
+                        data['isActive'] = isActive;
+
+                        final ingredientId = (ingredient['ingredientId'] as String?) ??
+                            '';
+                        controller.updateIngredient(ingredientId, data).then((
+                            success) {
+                          if (success) {
+                            Get.back<void>();
+                            Get.snackbar(
+                                'Success', 'Ingredient updated successfully');
+                          }
+                        });
+                      }),
+                    ],
+                  ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  static void showDeleteConfirmation(BuildContext context, dynamic ingredient,
+      MealController controller) {
+    Get.dialog<void>(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        backgroundColor: context.theme.colorScheme.surface,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.delete_outline_rounded,
+                  size: 32,
+                  color: Colors.red,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Delete Ingredient',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  color: context.theme.colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Are you sure you want to delete "${(ingredient['name'] as String?) ??
+                    (ingredient['ingredientName'] as String?) ?? 'Unknown'}"?',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: context.theme.colorScheme.onSurface.withValues(
+                      alpha: 0.8),
+                  height: 1.4,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'This action cannot be undone.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: context.theme.colorScheme.onSurface.withValues(
+                      alpha: 0.6),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Get.back<void>(),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        side: BorderSide(
+                          color: context.theme.colorScheme.outline.withValues(
+                              alpha: 0.5),
+                        ),
+                      ),
+                      child: const Text('Cancel'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: () {
+                        final ingredientId = (ingredient['ingredientId'] as String?) ??
+                            '';
+                        controller.deleteIngredient(ingredientId).then((
+                            success) {
+                          if (success) {
+                            Get.back<void>();
+                            Get.snackbar(
+                                'Success', 'Ingredient deleted successfully');
+                          }
+                        });
+                      },
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: const Text('Delete'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  static void showDeleteAllConfirmation(BuildContext context,
+      MealController controller) {
+    Get.dialog<void>(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        backgroundColor: context.theme.colorScheme.surface,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.delete_sweep_rounded,
+                  size: 32,
+                  color: Colors.red,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Delete All Ingredients',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  color: context.theme.colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Are you sure you want to delete ALL ingredients? This action cannot be undone.',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: context.theme.colorScheme.onSurface.withValues(
+                      alpha: 0.8),
+                  height: 1.4,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Get.back<void>(),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        side: BorderSide(
+                          color: context.theme.colorScheme.outline.withValues(
+                              alpha: 0.5),
+                        ),
+                      ),
+                      child: const Text('Cancel'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: () async {
+                        Get.back<void>(); // Close dialog first
+
+                        if (controller.ingredients.isEmpty) return;
+
+                        final ingredientCount = controller.ingredients.length;
+                        bool allDeleted = true;
+
+                        // Show loading
+                        Get.dialog(
+                          Center(
+                            child: Container(
+                              padding: const EdgeInsets.all(24),
+                              decoration: BoxDecoration(
+                                color: context.theme.colorScheme.surface,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  CircularProgressIndicator(),
+                                  SizedBox(height: 16),
+                                  Text('Deleting ingredients...',
+                                      style: TextStyle(
+                                          color: context.theme.colorScheme
+                                              .onSurface)),
+                                ],
+                              ),
+                            ),
+                          ),
+                          barrierDismissible: false,
+                        );
+
+                        // Delete all ingredients
+                        final ingredientIds = controller.ingredients.map((
+                            ingredient) =>
+                        ingredient['ingredientId']?.toString() ?? '').toList();
+                        for (final ingredientId in ingredientIds) {
+                          if (ingredientId.isNotEmpty) {
+                            try {
+                              final success = await controller.deleteIngredient(
+                                  ingredientId);
+                              if (!success) {
+                                allDeleted = false;
+                                break;
+                              }
+                            } catch (e) {
+                              allDeleted = false;
+                              break;
+                            }
+                          }
+                        }
+
+                        Get.back<void>(); // Close loading dialog
+
+                        if (allDeleted) {
+                          Get.snackbar('Success',
+                              'All $ingredientCount ingredients deleted successfully');
+                        } else {
+                          Get.snackbar(
+                              'Error', 'Some ingredients could not be deleted');
+                        }
+                      },
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: const Text('Delete All'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  static void showIngredientDetails(BuildContext context, dynamic ingredient) {
+    Get.dialog<void>(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: context.theme.colorScheme.surface,
+        child: Container(
+          width: MediaQuery
+              .of(context)
+              .size
+              .width * 0.8,
+          padding: const EdgeInsets.all(24),
+          constraints: const BoxConstraints(maxWidth: 800),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  (ingredient['name'] as String?) ?? 'Unknown Ingredient',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: context.theme.colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  (ingredient['description'] as String?) ??
+                      'No description available',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: context.theme.colorScheme.onSurface.withValues(
+                        alpha: 0.8),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Nutritional Information (per 100g)',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: context.theme.colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                IngredientNutrientInfo(context, 'Calories',
+                    '${((ingredient['calories'] as num?) ?? 0).toInt()}'),
+                IngredientNutrientInfo(context, 'Protein',
+                    '${((ingredient['protein'] as num?) ?? 0).toInt()}g'),
+                IngredientNutrientInfo(context, 'Carbohydrates',
+                    '${((ingredient['carbohydrates'] as num?) ?? 0).toInt()}g'),
+                IngredientNutrientInfo(context, 'Fat',
+                    '${((ingredient['fat'] as num?) ?? 0).toInt()}g'),
+                IngredientNutrientInfo(context, 'Fiber',
+                    '${((ingredient['fiber'] as num?) ?? 0).toInt()}g'),
+                IngredientNutrientInfo(context, 'Sugar',
+                    '${((ingredient['sugar'] as num?) ?? 0).toInt()}g'),
+                const SizedBox(height: 24),
+                ...(() {
+                  Map<String, dynamic> fatBreakdown = {};
+                  try {
+                    final fatBreakdownStr = ingredient['fatBreakdown'] as String?;
+                    if (fatBreakdownStr != null && fatBreakdownStr.isNotEmpty) {
+                      final decoded = jsonDecode(fatBreakdownStr);
+                      if (decoded is Map<String, dynamic>) {
+                        fatBreakdown = decoded;
+                      }
+                    }
+                  } catch (e) {
+                    // Ignore JSON parsing errors
+                  }
+                  return [
+                    IngredientNutrientInfo(context, 'Saturated Fat',
+                        '${(fatBreakdown['Saturated'] as num?)?.toInt() ??
+                            0}g'),
+                    IngredientNutrientInfo(context, 'Monounsaturated Fat',
+                        '${(fatBreakdown['Monounsaturated'] as num?)?.toInt() ??
+                            0}g'),
+                    IngredientNutrientInfo(context, 'Polyunsaturated Fat',
+                        '${(fatBreakdown['Polyunsaturated'] as num?)?.toInt() ??
+                            0}g'),
+                  ];
+                })(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Helper widgets
+
+class IngredientFormSection extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final List<Widget> children;
+
+  const IngredientFormSection({
+    super.key,
+    required this.title,
+    required this.icon,
+    required this.children,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: context.theme.colorScheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: context.theme.colorScheme.outline.withValues(alpha: 0.1),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: context.theme.colorScheme.primary.withValues(
+                      alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  icon,
+                  size: 24,
+                  color: context.theme.colorScheme.primary,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: context.theme.colorScheme.onSurface,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          ...children,
+        ],
+      ),
+    );
+  }
+}
+
+class IngredientValidatedTextField extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+  final BuildContext context;
+  final int maxLines;
+  final TextInputType? keyboardType;
+  final List<TextInputFormatter>? inputFormatters;
+  final String? errorText;
+  final void Function(String)? onChanged;
+  final bool isRequired;
+
+  const IngredientValidatedTextField(this.controller,
+      this.label,
+      this.context, {
+        super.key,
+        this.maxLines = 1,
+        this.keyboardType,
+        this.inputFormatters,
+        this.errorText,
+        this.onChanged,
+        this.isRequired = false,
+      });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: context.theme.colorScheme.shadow.withValues(alpha: 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: controller,
+        maxLines: maxLines,
+        keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
+        style: TextStyle(
+          color: context.theme.colorScheme.onSurface,
+          fontSize: 16,
+        ),
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          labelText: isRequired ? '$label *' : label,
+          labelStyle: TextStyle(
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
+            fontSize: 16,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: context.theme.colorScheme.outline.withValues(alpha: 0.3),
+              width: 1.5,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: context.theme.colorScheme.primary,
+              width: 2,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Colors.red, width: 2),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Colors.red, width: 2),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          errorText: errorText != null && errorText!.isNotEmpty
+              ? errorText
+              : null,
+          errorStyle: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+          filled: true,
+          fillColor: context.theme.colorScheme.surfaceContainerLowest,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: maxLines > 1 ? 16 : 14,
+          ),
+          suffixIcon: isRequired
+              ? Icon(
+            Icons.star,
+            size: 12,
+            color: Colors.red.withValues(alpha: 0.6),
+          )
+              : null,
+        ),
+      ),
+    );
+  }
+}
+
+class IngredientTextField extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+  final BuildContext context;
+  final int maxLines;
+  final TextInputType? keyboardType;
+
+  const IngredientTextField(this.controller,
+      this.label,
+      this.context, {
+        super.key,
+        this.maxLines = 1,
+        this.keyboardType,
+      });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: context.theme.colorScheme.shadow.withValues(alpha: 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: controller,
+        maxLines: maxLines,
+        keyboardType: keyboardType,
+        style: TextStyle(
+          color: context.theme.colorScheme.onSurface,
+          fontSize: 16,
+        ),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
+            fontSize: 16,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: context.theme.colorScheme.outline.withValues(alpha: 0.3),
+              width: 1.5,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: context.theme.colorScheme.primary,
+              width: 2,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          filled: true,
+          fillColor: context.theme.colorScheme.surfaceContainerLowest,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: maxLines > 1 ? 16 : 14,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class IngredientDietaryDropdown extends StatelessWidget {
+  final BuildContext context;
+  final int value;
+  final void Function(int?) onChanged;
+
+  const IngredientDietaryDropdown({
+    super.key,
+    required this.context,
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: context.theme.colorScheme.shadow.withValues(alpha: 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: DropdownButtonFormField<int>(
+        value: value,
+        decoration: InputDecoration(
+          labelText: 'Dietary Category',
+          labelStyle: TextStyle(
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
+            fontSize: 16,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: context.theme.colorScheme.outline.withValues(alpha: 0.3),
+              width: 1.5,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: context.theme.colorScheme.primary,
+              width: 2,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          filled: true,
+          fillColor: context.theme.colorScheme.surfaceContainerLowest,
+          contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16, vertical: 14),
+        ),
+        style: TextStyle(
+          color: context.theme.colorScheme.onSurface,
+          fontSize: 16,
+        ),
+        dropdownColor: context.theme.colorScheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(16),
+        icon: Icon(
+          Icons.arrow_drop_down_rounded,
+          color: context.theme.colorScheme.onSurface.withValues(alpha: 0.8),
+        ),
+        items: const [
+          DropdownMenuItem(value: 0, child: Text('Regular')),
+          DropdownMenuItem(value: 1, child: Text('Vegetarian')),
+          DropdownMenuItem(value: 2, child: Text('Vegan')),
+          DropdownMenuItem(value: 3, child: Text('Gluten-Free')),
+          DropdownMenuItem(value: 4, child: Text('Dairy-Free')),
+          DropdownMenuItem(value: 5, child: Text('Keto')),
+          DropdownMenuItem(value: 6, child: Text('Paleo')),
+        ],
+        onChanged: onChanged,
+      ),
+    );
+  }
+}
+
+Widget IngredientSectionTitle(BuildContext context, String title) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 4),
+    child: Text(
+      title,
+      style: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+        color: context.theme.colorScheme.onSurface,
+        letterSpacing: -0.2,
+      ),
+    ),
+  );
+}
+
+Widget IngredientDialogActions(BuildContext context, VoidCallback onSave) {
+  return Container(
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: context.theme.colorScheme.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(
+        color: context.theme.colorScheme.outline.withValues(alpha: 0.1),
+      ),
+    ),
+    child: Row(
+      children: [
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: () => Get.back<void>(),
+            icon: const Icon(Icons.close_rounded),
+            label: const Text('Cancel'),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              side: BorderSide(
+                color: context.theme.colorScheme.outline.withValues(alpha: 0.5),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: FilledButton.icon(
+            onPressed: onSave,
+            icon: const Icon(Icons.save_rounded),
+            label: const Text('Save'),
+            style: FilledButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget IngredientNutrientInfo(BuildContext context, String label,
+    String value) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 8),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            color: context.theme.colorScheme.onSurface,
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: context.theme.colorScheme.onSurface,
+          ),
+        ),
+      ],
+    ),
+  );
+}
