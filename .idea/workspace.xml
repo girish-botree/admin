@@ -9,11 +9,11 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="Generating...">
+    <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="Dropdown issues">
       <change beforePath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/plan/widgets/meal_plan_form_dialog.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/widgets/meal_plan_form_dialog.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/widgets/searchable_dropdown.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/searchable_dropdown.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_dialog.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_dialog.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/shared/widgets/common_widgets.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/shared/widgets/common_widgets.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -177,7 +177,15 @@
       <option name="project" value="LOCAL" />
       <updated>1756012195067</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Dropdown issues">
+      <option name="closed" value="true" />
+      <created>1756017482068</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1756017482068</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -213,6 +221,7 @@
     <MESSAGE value="refactor: enhance ingredient and recipe dialogs with vitamin/mineral selection and JSON validation, improve recipe dropdown UI, and update related controllers for better data handling" />
     <MESSAGE value="bn" />
     <MESSAGE value="Generating..." />
-    <option name="LAST_COMMIT_MESSAGE" value="Generating..." />
+    <MESSAGE value="Dropdown issues" />
+    <option name="LAST_COMMIT_MESSAGE" value="Dropdown issues" />
   </component>
 </project>

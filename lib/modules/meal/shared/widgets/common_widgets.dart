@@ -435,7 +435,7 @@ class ModernSearchBar extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: context.theme.colorScheme.surface,
+        color: context.theme.colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: context.theme.colorScheme.outline.withValues(alpha: 0.2),
@@ -455,6 +455,9 @@ class ModernSearchBar extends StatelessWidget {
           return TextField(
             controller: controller,
             onChanged: onChanged,
+            style: TextStyle(
+              color: context.theme.colorScheme.onSurface,
+            ),
             decoration: InputDecoration(
               hintText: hintText,
               hintStyle: TextStyle(

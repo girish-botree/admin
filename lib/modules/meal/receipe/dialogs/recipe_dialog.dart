@@ -837,42 +837,72 @@ class RecipeIngredientsSection extends StatelessWidget {
               )
             else
               Column(
-                children: ingredients.map<Widget>((ingredient) {
+                children: ingredients
+                    .asMap()
+                    .entries
+                    .map<Widget>((entry) {
+                  final index = entry.key;
+                  final ingredient = entry.value;
+
                   return Card(
+                    key: ValueKey('ingredient_$index'),
                     margin: const EdgeInsets.only(bottom: 8),
+                    elevation: 1,
                     color: context.theme.colorScheme.surfaceContainerLowest,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(
+                        color: context.theme.colorScheme.onSurface.withValues(
+                            alpha: 0.1),
+                      ),
+                    ),
                     child: ListTile(
                       leading: CircleAvatar(
-                        backgroundColor: context.theme.colorScheme.onSurface
+                        backgroundColor: context.theme.colorScheme.primary
                             .withValues(alpha: 0.1),
                         child: Icon(
                           Icons.eco,
-                          color: context.theme.colorScheme.onSurface,
+                          color: context.theme.colorScheme.primary,
                           size: 20,
                         ),
                       ),
                       title: Text(
                         ingredient['ingredientName']?.toString() ??
                             ingredient['name']?.toString() ??
-                            'Ingredient',
+                            'Ingredient ${index + 1}',
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           color: context.theme.colorScheme.onSurface,
                         ),
                       ),
                       subtitle: Text(
-                        '${ingredient['quantity']}g',
+                        '${ingredient['quantity'] ?? 0}g',
                         style: TextStyle(
                             color: context.theme.colorScheme.onSurface
                                 .withValues(alpha: 0.7)),
                       ),
-                      trailing: IconButton(
-                        onPressed: () {
-                          ingredients.remove(ingredient);
-                          onIngredientsChanged();
-                        },
-                        icon: const Icon(Icons.delete_outline),
-                        color: context.theme.colorScheme.onSurface,
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '#${index + 1}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: context.theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.5),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton(
+                            onPressed: () {
+                              ingredients.removeAt(index);
+                              onIngredientsChanged();
+                            },
+                            icon: const Icon(Icons.delete_outline),
+                            color: context.theme.colorScheme.onSurface,
+                            tooltip: 'Remove ingredient',
+                          ),
+                        ],
                       ),
                     ),
                   );
@@ -977,18 +1007,29 @@ class RecipeIngredientsSection extends StatelessWidget {
                             return Card(
                               margin: const EdgeInsets.symmetric(
                                   horizontal: 8, vertical: 4),
+                              elevation: 0,
                               color: isSelected
-                                  ? dialogContext.theme.colorScheme.primary
-                                  .withValues(alpha: 0.1)
+                                  ? dialogContext.theme.colorScheme
+                                  .primaryContainer.withValues(alpha: 0.5)
                                   : dialogContext.theme.colorScheme.surface,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                side: BorderSide(
+                                  color: isSelected
+                                      ? dialogContext.theme.colorScheme.primary
+                                      : dialogContext.theme.colorScheme
+                                      .onSurface.withValues(alpha: 0.15),
+                                  width: 1,
+                                ),
+                              ),
                               child: ListTile(
+                                dense: true,
                                 leading: Checkbox(
                                   value: isSelected,
                                   onChanged: (bool? value) {
                                     setState(() {
                                       if (value == true) {
-                                        selectedIngredients[ingredient] =
-                                        100; // Default quantity
+                                        selectedIngredients[ingredient] = 100;
                                       } else {
                                         selectedIngredients.remove(ingredient);
                                       }
@@ -1002,36 +1043,46 @@ class RecipeIngredientsSection extends StatelessWidget {
                                       'Unknown Ingredient',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w500,
+                                    fontSize: 14,
                                     color: dialogContext.theme.colorScheme
                                         .onSurface,
                                   ),
                                 ),
                                 subtitle: Text(
-                                  '${ingredient['calories'] ??
-                                      0} cal/100g | ${ingredient['category'] ??
-                                      'No category'}',
+                                  '${ingredient['calories'] ?? 0} cal/100g',
                                   style: TextStyle(
+                                    fontSize: 12,
                                     color: dialogContext.theme.colorScheme
-                                        .onSurface.withValues(alpha: 0.7),
+                                        .onSurface.withValues(alpha: 0.6),
                                   ),
                                 ),
                                 trailing: isSelected
                                     ? SizedBox(
-                                  width: 80,
+                                  width: 70,
+                                  height: 32,
                                   child: TextField(
                                     keyboardType: TextInputType.number,
                                     inputFormatters: [
                                       FilteringTextInputFormatter.digitsOnly
                                     ],
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(fontSize: 12),
                                     decoration: InputDecoration(
-                                      labelText: 'g',
-                                      isDense: true,
+                                      suffixText: 'g',
+                                      suffixStyle: TextStyle(fontSize: 10,
+                                          color: dialogContext.theme.colorScheme
+                                              .onSurface.withValues(
+                                              alpha: 0.6)),
                                       contentPadding: const EdgeInsets
                                           .symmetric(
-                                          horizontal: 8, vertical: 8),
+                                          horizontal: 8, vertical: 4),
                                       border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8),
+                                        borderRadius: BorderRadius.circular(6),
+                                        borderSide: BorderSide(
+                                            color: dialogContext.theme
+                                                .colorScheme.primary),
                                       ),
+                                      isDense: true,
                                     ),
                                     controller: TextEditingController(
                                       text: selectedIngredients[ingredient]
@@ -1058,39 +1109,89 @@ class RecipeIngredientsSection extends StatelessWidget {
 
                   // Selected ingredients summary
                   if (selectedIngredients.isNotEmpty) ...[
-                    Text(
-                      'Selected (${selectedIngredients.length}):',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: dialogContext.theme.colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
                     Container(
-                      constraints: const BoxConstraints(maxHeight: 100),
-                      child: SingleChildScrollView(
-                        child: Wrap(
-                          spacing: 8,
-                          runSpacing: 4,
-                          children: selectedIngredients.entries.map((entry) {
-                            final ingredient = entry.key;
-                            final quantity = entry.value;
-                            final name = ingredient['name']?.toString() ??
-                                ingredient['ingredientName']?.toString() ??
-                                'Unknown';
-
-                            return Chip(
-                              label: Text('$name (${quantity}g)'),
-                              onDeleted: () {
-                                setState(() {
-                                  selectedIngredients.remove(ingredient);
-                                });
-                              },
-                              deleteIcon: const Icon(Icons.close, size: 18),
-                            );
-                          }).toList(),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: dialogContext.theme.colorScheme.primaryContainer
+                            .withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: dialogContext.theme.colorScheme.primary
+                              .withValues(alpha: 0.3),
                         ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Selected (${selectedIngredients.length})',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: dialogContext.theme.colorScheme.onSurface,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 4,
+                            children: selectedIngredients.entries.map((entry) {
+                              final ingredient = entry.key;
+                              final quantity = entry.value;
+                              final name = ingredient['name']?.toString() ??
+                                  ingredient['ingredientName']?.toString() ??
+                                  'Unknown';
+
+                              return Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: dialogContext.theme.colorScheme
+                                      .primary,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      name,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: dialogContext.theme.colorScheme
+                                            .onPrimary,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      '${quantity}g',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w500,
+                                        color: dialogContext.theme.colorScheme
+                                            .onPrimary.withValues(alpha: 0.8),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          selectedIngredients.remove(
+                                              ingredient);
+                                        });
+                                      },
+                                      child: Icon(
+                                        Icons.close,
+                                        size: 14,
+                                        color: dialogContext.theme.colorScheme
+                                            .onPrimary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -1113,17 +1214,51 @@ class RecipeIngredientsSection extends StatelessWidget {
                       ElevatedButton(
                         onPressed: selectedIngredients.isEmpty ? null : () {
                           // Add selected ingredients to the recipe
-                          selectedIngredients.forEach((ingredient, quantity) {
-                            ingredients.add({
-                              'ingredientId': ingredient['ingredientId'] ??
-                                  ingredient['id'],
-                              'ingredientName': ingredient['name'] ??
-                                  ingredient['ingredientName'],
-                              'quantity': quantity,
-                            });
-                          });
+                          for (final entry in selectedIngredients.entries) {
+                            final ingredient = entry.key;
+                            final quantity = entry.value;
+
+                            // Check if ingredient is already added to avoid duplicates
+                            final existingIndex = ingredients.indexWhere((
+                                existing) =>
+                            (existing['ingredientId']?.toString() ?? '') ==
+                                (ingredient['ingredientId']?.toString() ??
+                                    '') ||
+                                (existing['name']?.toString() ?? '') ==
+                                    (ingredient['name']?.toString() ?? ''));
+
+                            if (existingIndex >= 0) {
+                              // Update existing ingredient quantity
+                              ingredients[existingIndex]['quantity'] = quantity;
+                            } else {
+                              // Add new ingredient
+                              ingredients.add({
+                                'ingredientId': ingredient['ingredientId'] ??
+                                    ingredient['id'],
+                                'ingredientName': ingredient['name'] ??
+                                    ingredient['ingredientName'] ??
+                                    'Unknown Ingredient',
+                                'name': ingredient['name'] ??
+                                    ingredient['ingredientName'] ??
+                                    'Unknown Ingredient',
+                                'quantity': quantity,
+                              });
+                            }
+                          }
+
+                          // Force UI update
                           onIngredientsChanged();
+
                           Get.back<void>();
+
+                          // Show success message
+                          Get.snackbar(
+                            'Success',
+                            'Added ${selectedIngredients
+                                .length} ingredient${selectedIngredients
+                                .length == 1 ? '' : 's'}',
+                            duration: const Duration(seconds: 2),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: dialogContext.theme.colorScheme
