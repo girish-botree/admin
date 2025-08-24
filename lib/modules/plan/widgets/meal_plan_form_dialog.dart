@@ -17,6 +17,43 @@ class MealPlanFormDialog extends StatelessWidget {
     this.selectedDate,
   });
 
+  // Helper method to get recipe icon based on category or type
+  String _getRecipeIcon(dynamic recipe) {
+    if (recipe is Map<String, dynamic>) {
+      final category = recipe['category'];
+      final name = recipe['name']?.toString().toLowerCase() ?? '';
+
+      // Try to determine icon based on recipe name keywords
+      if (name.contains('breakfast') || name.contains('cereal') ||
+          name.contains('oats')) {
+        return '🥣';
+      } else if (name.contains('salad')) {
+        return '🥗';
+      } else if (name.contains('soup')) {
+        return '🍲';
+      } else if (name.contains('chicken') || name.contains('meat')) {
+        return '🍗';
+      } else if (name.contains('fish') || name.contains('salmon')) {
+        return '🐟';
+      } else if (name.contains('vegetable') || name.contains('veggie')) {
+        return '🥬';
+      } else if (name.contains('pasta') || name.contains('noodle')) {
+        return '🍝';
+      } else if (name.contains('rice')) {
+        return '🍚';
+      } else if (name.contains('dessert') || name.contains('cake') ||
+          name.contains('sweet')) {
+        return '🍰';
+      } else if (name.contains('drink') || name.contains('smoothie') ||
+          name.contains('juice')) {
+        return '🥤';
+      }
+    }
+
+    // Default icon
+    return '🍽️';
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<PlanController>();
@@ -615,7 +652,7 @@ class MealPlanFormDialog extends StatelessWidget {
             ),
           ),
 
-          // Recipe Selection
+          // Recipe Selection using custom searchable dropdown
           Padding(
             padding: const EdgeInsets.all(16),
             child: Obx(() {
@@ -623,40 +660,38 @@ class MealPlanFormDialog extends StatelessWidget {
               final selectedRecipeId = controller.getSelectedRecipeForPeriod(
                   period);
 
-              return DropdownButtonFormField<String>(
+              // Convert recipes to DropdownItem format for SearchableDropdown
+              final recipeItems = [
+                const DropdownItem(
+                  value: '',
+                  label: 'No meal planned',
+                  description: 'Skip this meal period',
+                  icon: '⏭️',
+                ),
+                ...filteredRecipes.map<DropdownItem>((recipe) {
+                  final recipeName = recipe['name']?.toString() ??
+                      'Unknown Recipe';
+                  final recipeDescription = recipe['description']?.toString() ??
+                      '';
+                  return DropdownItem(
+                    value: recipe['recipeId']?.toString() ?? '',
+                    label: recipeName,
+                    description: recipeDescription.length > 60
+                        ? '${recipeDescription.substring(0, 60)}...'
+                        : recipeDescription,
+                    icon: _getRecipeIcon(recipe),
+                  );
+                }),
+              ];
+
+              return SearchableDropdown<String>(
+                items: recipeItems,
                 value: selectedRecipeId.isNotEmpty ? selectedRecipeId : null,
-                hint: AppText.medium(
-                  'Select a recipe',
-                  color: theme.colorScheme.onSurface.withAlpha(140),
-                ),
-                style: TextStyle(color: theme.colorScheme.onSurface),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: theme.colorScheme.surface,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 16),
-                ),
-                dropdownColor: theme.colorScheme.surface,
-                isExpanded: true,
-                items: [
-                  const DropdownMenuItem<String>(
-                    value: '',
-                    child: Text('No meal planned'),
-                  ),
-                  ...filteredRecipes.map<DropdownMenuItem<String>>((recipe) {
-                    return DropdownMenuItem<String>(
-                      value: recipe['recipeId']?.toString(),
-                      child: AppText.medium(
-                        recipe['name']?.toString() ?? 'Unknown Recipe',
-                        color: theme.colorScheme.onSurface,
-                      ),
-                    );
-                  }),
-                ],
+                hint: 'Select a recipe',
+                label: 'Recipe',
+                showSearch: true,
+                showDescriptions: true,
+                showIcons: true,
                 onChanged: (value) =>
                     controller.setSelectedRecipeForPeriod(period, value ?? ''),
               );

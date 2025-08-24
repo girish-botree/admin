@@ -59,6 +59,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
   List<DropdownItem> _filteredItems = [];
   bool _isOpen = false;
   DropdownItem? _selectedItem;
+  ThemeData? _cachedTheme; // Cache theme for overlay usage
 
   @override
   void initState() {
@@ -93,10 +94,10 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
 
   @override
   void dispose() {
-    _animationController.dispose();
     _searchController.dispose();
     _searchFocusNode.dispose();
     _closeDropdown();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -119,6 +120,8 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
     final size = renderBox.size;
     final offset = renderBox.localToGlobal(Offset.zero);
 
+    _cachedTheme = Theme.of(context); // Cache theme when opening dropdown
+
     _overlayEntry = _createOverlayEntry(size, offset);
     Overlay.of(context).insert(_overlayEntry!);
 
@@ -136,13 +139,26 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
   void _closeDropdown() {
     if (!_isOpen) return;
 
-    _animationController.reverse().then((_) {
+    if (_animationController.isAnimating) {
+      _animationController.stop();
+    }
+
+    if (mounted) {
+      _animationController.reverse().then((_) {
+        _overlayEntry?.remove();
+        _overlayEntry = null;
+        _cachedTheme = null; // Clear cached theme
+        if (mounted) {
+          setState(() => _isOpen = false);
+        }
+      });
+    } else {
+      // If not mounted, just clean up immediately
       _overlayEntry?.remove();
       _overlayEntry = null;
-      if (mounted) {
-        setState(() => _isOpen = false);
-      }
-    });
+      _cachedTheme = null; // Clear cached theme
+      _isOpen = false;
+    }
   }
 
   OverlayEntry _createOverlayEntry(Size size, Offset offset) {
@@ -166,10 +182,12 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
                         alignment: Alignment.topCenter,
                         child: Opacity(
                           opacity: _fadeAnimation.value,
-                          child: child,
+                          child: StatefulBuilder(
+                            builder: (context, overlaySetState) =>
+                                _buildDropdownMenu(overlaySetState),
+                          ),
                         ),
                       ),
-                  child: _buildDropdownMenu(),
                 ),
               ),
             ),
@@ -177,8 +195,9 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
     );
   }
 
-  Widget _buildDropdownMenu() {
-    final theme = Theme.of(context);
+  Widget _buildDropdownMenu([StateSetter? overlaySetState]) {
+    final theme = _cachedTheme ??
+        Theme.of(context); // Use cached theme if available
 
     return Container(
       constraints: BoxConstraints(
@@ -201,7 +220,11 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (widget.showSearch) _buildSearchField(theme),
+          if (widget.showSearch)
+            _buildSearchField(
+              _cachedTheme ?? Theme.of(context),
+              overlaySetState,
+            ),
           Flexible(
             child: _buildItemsList(theme),
           ),
@@ -210,7 +233,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
     );
   }
 
-  Widget _buildSearchField(ThemeData theme) {
+  Widget _buildSearchField(ThemeData theme, [StateSetter? overlaySetState]) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -240,7 +263,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
               ? IconButton(
             onPressed: () {
               _searchController.clear();
-              _filterItems('');
+              _filterItems('', overlaySetState);
             },
             icon: Icon(
               Icons.clear,
@@ -259,7 +282,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
               horizontal: 16, vertical: 12),
           isDense: true,
         ),
-        onChanged: _filterItems,
+        onChanged: (query) => _filterItems(query, overlaySetState),
       ),
     );
   }
@@ -377,10 +400,17 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
     );
   }
 
-  void _filterItems(String query) {
+  void _filterItems(String query, [StateSetter? overlaySetState]) {
     setState(() {
-      _filteredItems = DropdownDataManager.searchItems(widget.items, query);
+      _filteredItems =
+          DropdownDataManager.searchItems(widget.items, query);
     });
+    if (overlaySetState != null) {
+      overlaySetState(() {
+        _filteredItems =
+            DropdownDataManager.searchItems(widget.items, query);
+      });
+    }
   }
 
   void _selectItem(DropdownItem item) {
