@@ -5,6 +5,7 @@ import 'package:admin/modules/admins/create_admins/create_admin_controller.dart'
 import 'package:admin/utils/responsive.dart';
 import 'package:admin/widgets/searchable_dropdown.dart';
 import 'package:admin/config/dropdown_data.dart';
+import 'package:admin/widgets/custom_displays.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -198,12 +199,32 @@ class AdminBottomSheets {
                                 decoration: _createInputDecoration(context, 'Email'),
                                 style: TextStyle(color: context.theme.colorScheme.onSurface),
                                 validator: (value) {
-                                  if (value == null || value.isEmpty || !GetUtils.isEmail(value)) {
-                                    return 'Please enter a valid email address';
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter an email address';
+                                  }
+                                  if (!GetUtils.isEmail(value)) {
+                                    return null; // Let inline message handle this
                                   }
                                   return null;
                                 },
+                                onChanged: (value) {
+                                  // Trigger validation state update for inline message
+                                  controller.emailController.text = value;
+                                },
                               ),
+
+                              // Inline validation message for email
+                              Obx(() {
+                                final email = controller.emailController.text;
+                                if (email.isNotEmpty &&
+                                    !GetUtils.isEmail(email)) {
+                                  return InlineMessage(
+                                    message: 'Please enter a valid email address',
+                                    type: MessageType.error,
+                                  );
+                                }
+                                return const SizedBox.shrink();
+                              }),
                               SizedBox(height: Responsive.responsiveValue(
                                 context, 
                                 mobile: 8.0, 
@@ -234,13 +255,33 @@ class AdminBottomSheets {
                                   decoration: _createInputDecoration(context, 'Email'),
                                   style: TextStyle(color: context.theme.colorScheme.onSurface),
                                   validator: (value) {
-                                    if (value == null || value.isEmpty || !GetUtils.isEmail(value)) {
-                                      return 'Please enter a valid email address';
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter an email address';
+                                    }
+                                    if (!GetUtils.isEmail(value)) {
+                                      return null; // Let inline message handle this
                                     }
                                     return null;
                                   },
+                                  onChanged: (value) {
+                                    // Trigger validation state update for inline message
+                                    controller.emailController.text = value;
+                                  },
                                 ),
                               ),
+
+                              // Inline validation message for email
+                              Obx(() {
+                                final email = controller.emailController.text;
+                                if (email.isNotEmpty &&
+                                    !GetUtils.isEmail(email)) {
+                                  return InlineMessage(
+                                    message: 'Please enter a valid email address',
+                                    type: MessageType.error,
+                                  );
+                                }
+                                return const SizedBox.shrink();
+                              }),
                               SizedBox(width: Responsive.responsiveValue(
                                 context, 
                                 mobile: 8.0, 
@@ -300,6 +341,24 @@ class AdminBottomSheets {
                       },
                       enabled: controller.isOtpSent.value,
                     )),
+
+                    // Inline message for OTP status
+                    Obx(() {
+                      if (!controller.isOtpSent.value && controller
+                          .emailController.text.isNotEmpty &&
+                          GetUtils.isEmail(controller.emailController.text)) {
+                        return InlineMessage(
+                          message: 'Click "Send OTP" to receive verification code',
+                          type: MessageType.info,
+                        );
+                      } else if (controller.isOtpSent.value) {
+                        return InlineMessage(
+                          message: 'OTP sent successfully! Check your email.',
+                          type: MessageType.success,
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    }),
                     SizedBox(height: Responsive.responsiveValue(
                       context, 
                       mobile: 16.0, 
@@ -312,28 +371,53 @@ class AdminBottomSheets {
                       decoration: _createInputDecoration(context, 'Password'),
                       style: TextStyle(color: context.theme.colorScheme.onSurface),
                       validator: (value) {
+                        // Basic validation
                         if (value == null || value.isEmpty) {
                           return 'Please enter a password';
                         }
-                        if (value.length < 8) {
-                          return 'Password must be at least 8 characters';
-                        }
-                        if (!RegExp(r'[A-Z]').hasMatch(value)) {
-                          return 'Password must contain at least one uppercase letter';
-                        }
-                        if (!RegExp(r'[a-z]').hasMatch(value)) {
-                          return 'Password must contain at least one lowercase letter';
-                        }
-                        if (!RegExp(r'[0-9]').hasMatch(value)) {
-                          return 'Password must contain at least one number';
-                        }
-                        if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(
-                            value)) {
-                          return 'Password must contain at least one special character';
-                        }
-                        return null;
+                        return null; // Let inline messages handle detailed validation
+                      },
+                      onChanged: (value) {
+                        // Trigger validation state update for inline messages
+                        controller.passwordController.text = value;
                       },
                     ),
+
+                    // Inline validation messages for password requirements
+                    Obx(() {
+                      final password = controller.passwordController.text;
+                      if (password.isEmpty) {
+                        return const SizedBox.shrink();
+                      }
+
+                      final requirements = <String, bool>{
+                        'At least 8 characters': password.length >= 8,
+                        'One uppercase letter': RegExp(r'[A-Z]').hasMatch(
+                            password),
+                        'One lowercase letter': RegExp(r'[a-z]').hasMatch(
+                            password),
+                        'One number': RegExp(r'[0-9]').hasMatch(password),
+                        'One special character': RegExp(
+                            r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password),
+                      };
+
+                      final unmetRequirements = requirements.entries
+                          .where((entry) => !entry.value)
+                          .map((entry) => entry.key)
+                          .toList();
+
+                      if (unmetRequirements.isEmpty) {
+                        return InlineMessage(
+                          message: 'Password meets all requirements',
+                          type: MessageType.success,
+                        );
+                      } else {
+                        return InlineMessage(
+                          message: 'Missing: ${unmetRequirements.join(', ')}',
+                          type: MessageType.warning,
+                        );
+                      }
+                    }),
                     SizedBox(height: Responsive.responsiveValue(
                       context, 
                       mobile: 16.0, 

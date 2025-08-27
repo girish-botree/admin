@@ -13,7 +13,7 @@ class AppLockSettingsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: AppText.semiBold(
-          'App Lock Settings',
+          'app_lock'.tr,
           size: 20,
           color: context.theme.colorScheme.onSurface,
         ),
@@ -28,14 +28,14 @@ class AppLockSettingsScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _buildSectionHeader('Security'),
+          _buildSectionHeader('security'.tr),
 
           // Master app lock toggle
           Obx(() =>
               _buildSettingsTile(
                 icon: Icons.security,
-                title: 'Enable App Lock',
-                subtitle: 'Secure your app with authentication',
+                title: 'app_lock'.tr,
+                subtitle: 'biometric_security'.tr,
                 trailing: Switch(
                   value: controller.isAppLockEnabled.value,
                   onChanged: (value) async {
@@ -53,10 +53,10 @@ class AppLockSettingsScreen extends StatelessWidget {
           controller.isAppLockEnabled.value
               ? _buildSettingsTile(
             icon: Icons.fingerprint,
-            title: 'Biometric Authentication',
+            title: 'biometric_authentication'.tr,
             subtitle: controller.isBiometricAvailable.value
                 ? controller.biometricTypeString
-                : 'Not available on this device',
+                : 'device_supported'.tr,
             trailing: Switch(
               value: controller.isBiometricEnabled.value &&
                   controller.isBiometricAvailable.value,
@@ -75,8 +75,8 @@ class AppLockSettingsScreen extends StatelessWidget {
           controller.isAppLockEnabled.value
               ? _buildSettingsTile(
             icon: Icons.password,
-            title: 'System Password',
-            subtitle: 'Use device PIN, pattern, or password',
+            title: 'system_password'.tr,
+            subtitle: 'system_password_backup'.tr,
             trailing: Switch(
               value: controller.isSystemPasswordEnabled.value,
               onChanged: (value) async {
@@ -94,11 +94,11 @@ class AppLockSettingsScreen extends StatelessWidget {
               ? Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSectionHeader('Lock Timing'),
+              _buildSectionHeader('customizable_lock_timing'.tr),
 
               _buildSettingsTile(
                 icon: Icons.timer,
-                title: 'Lock App After',
+                title: 'lock_app_after'.tr,
                 subtitle: controller.lockTimeDisplayText,
                 onTap: () => _showLockTimeDialog(context, controller),
               ),
@@ -109,20 +109,20 @@ class AppLockSettingsScreen extends StatelessWidget {
           const SizedBox(height: 16),
 
           // Information section
-          _buildSectionHeader('Information'),
+          _buildSectionHeader('information'.tr),
 
           _buildSettingsTile(
             icon: Icons.info_outline,
-            title: 'About App Lock',
-            subtitle: 'How app lock works',
+            title: 'about_app_lock'.tr,
+            subtitle: 'security_features'.tr,
             onTap: () => _showInfoDialog(context),
           ),
 
           // Troubleshooting section
           _buildSettingsTile(
             icon: Icons.build,
-            title: 'Troubleshoot Biometrics',
-            subtitle: 'Debug and refresh biometric settings',
+            title: 'troubleshoot_biometrics'.tr,
+            subtitle: 'biometrics_enabled'.tr,
             onTap: () => _showTroubleshootDialog(context, controller),
           ),
 
@@ -149,7 +149,7 @@ class AppLockSettingsScreen extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: AppText.regular(
-                    'This is a security app. Keep app lock enabled to protect sensitive admin data.',
+                    'security_warning'.tr,
                     size: 12,
                     color: context.theme.colorScheme.error,
                   ),
@@ -222,38 +222,38 @@ class AppLockSettingsScreen extends StatelessWidget {
   void _showLockTimeDialog(BuildContext context, AppLockController controller) {
     Get.dialog<void>(
       AlertDialog(
-        title: const Text('Lock App After'),
+        title: Text('lock_app_after'.tr),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Obx(() =>
                 _buildTimeOption(
-                  'Immediately',
-                  'Lock as soon as app goes to background',
+                  'immediately'.tr,
+                  'app_locks_background'.tr,
                   'immediately',
                   controller.lockTimeOption.value,
                   controller,
                 )),
             Obx(() =>
                 _buildTimeOption(
-                  'After 1 minute',
-                  'Lock after 1 minute in background',
+                  'after_1_minute'.tr,
+                  'lock_after_1_minute'.tr,
                   '1min',
                   controller.lockTimeOption.value,
                   controller,
                 )),
             Obx(() =>
                 _buildTimeOption(
-                  'After 5 minutes',
-                  'Lock after 5 minutes in background',
+                  'after_5_minutes'.tr,
+                  'lock_after_5_minutes'.tr,
                   '5min',
                   controller.lockTimeOption.value,
                   controller,
                 )),
             Obx(() =>
                 _buildTimeOption(
-                  'After 15 minutes',
-                  'Lock after 15 minutes in background',
+                  'after_15_minutes'.tr,
+                  'lock_after_15_minutes'.tr,
                   '15min',
                   controller.lockTimeOption.value,
                   controller,
@@ -263,7 +263,7 @@ class AppLockSettingsScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Get.back<void>(),
-            child: const Text('Close'),
+            child: Text('close'.tr),
           ),
         ],
       ),
@@ -291,38 +291,38 @@ class AppLockSettingsScreen extends StatelessWidget {
   void _showInfoDialog(BuildContext context) {
     Get.dialog<void>(
       AlertDialog(
-        title: const Text('About App Lock'),
-        content: const SingleChildScrollView(
+        title: Text('about_app_lock'.tr),
+        content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'App Lock Features:',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                'security_features'.tr,
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 8),
-              Text('• Biometric authentication (fingerprint, face, iris)'),
-              Text('• System password backup (PIN, pattern, password)'),
-              Text('• Customizable lock timing'),
-              Text('• Background detection'),
-              SizedBox(height: 16),
+              const SizedBox(height: 8),
+              Text('biometric_authentication'.tr),
+              Text('system_password_backup'.tr),
+              Text('customizable_lock_timing'.tr),
+              Text('background_detection'.tr),
+              const SizedBox(height: 16),
               Text(
-                'Security Notes:',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                'security_notes'.tr,
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 8),
-              Text('• App locks when moved to background'),
-              Text('• Settings are encrypted and stored securely'),
-              Text('• Multiple authentication methods for redundancy'),
-              Text('• Designed for admin app security requirements'),
+              const SizedBox(height: 8),
+              Text('app_locks_background'.tr),
+              Text('settings_encrypted'.tr),
+              Text('multiple_auth_methods'.tr),
+              Text('admin_security'.tr),
             ],
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back<void>(),
-            child: const Text('Close'),
+            child: Text('close'.tr),
           ),
         ],
       ),
@@ -333,43 +333,47 @@ class AppLockSettingsScreen extends StatelessWidget {
       AppLockController controller) {
     Get.dialog<void>(
       AlertDialog(
-        title: const Text('Troubleshoot Biometrics'),
+        title: Text('troubleshoot_biometrics'.tr),
         content: SingleChildScrollView(
           child: Obx(() =>
               Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Device Supported: ${controller.isBiometricAvailable
+                  Text('device_supported'.tr +
+                      ': ${controller.isBiometricAvailable
                       .value}'),
                   const SizedBox(height: 8),
-                  Text('Biometrics Enabled: ${controller.isBiometricEnabled
+                  Text('biometrics_enabled'.tr +
+                      ': ${controller.isBiometricEnabled
                       .value}'),
                   const SizedBox(height: 8),
-                  Text('Available Types: ${controller.availableBiometrics}'),
+                  Text('available_types'.tr +
+                      ': ${controller.availableBiometrics}'),
                   const SizedBox(height: 8),
-                  Text('System Password: ${controller.isSystemPasswordEnabled
+                  Text('system_password'.tr +
+                      ': ${controller.isSystemPasswordEnabled
                       .value}'),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () async {
                       try {
                         final success = await controller.authenticate(
-                          reason: 'Testing biometric authentication',
+                          reason: 'test_authentication'.tr,
                         );
                         Get.snackbar(
-                          success ? 'Success' : 'Failed',
+                          success ? 'success'.tr : 'error'.tr,
                           success
-                              ? 'Authentication successful'
-                              : 'Authentication failed',
+                              ? 'success'.tr
+                              : 'error'.tr,
                           backgroundColor: success ? Colors.green : Colors.red,
                           colorText: Colors.white,
                         );
                       } catch (e) {
-                        Get.snackbar('Error', 'Test failed: $e');
+                        Get.snackbar('error'.tr, 'error'.tr + ': $e');
                       }
                     },
-                    child: const Text('Test Authentication'),
+                    child: Text('test_authentication'.tr),
                   ),
                 ],
               )),
@@ -379,13 +383,13 @@ class AppLockSettingsScreen extends StatelessWidget {
             onPressed: () async {
               await controller.refreshBiometricAvailability();
               Get.back<void>();
-              Get.snackbar('Success', 'Biometric settings refreshed');
+              Get.snackbar('success'.tr, 'refresh'.tr);
             },
-            child: const Text('Refresh'),
+            child: Text('refresh'.tr),
           ),
           TextButton(
             onPressed: () => Get.back<void>(),
-            child: const Text('Close'),
+            child: Text('close'.tr),
           ),
         ],
       ),

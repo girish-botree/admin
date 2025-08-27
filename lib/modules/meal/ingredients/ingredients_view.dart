@@ -11,12 +11,10 @@ class IngredientsView extends GetView<MealController> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(MealController());
-
     return SafeArea(
       child: Scaffold(
         backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
-        appBar: _buildAppBar(context, controller),
+        appBar: _buildAppBar(context),
         body: Column(
           children: [
             // Search bar
@@ -75,7 +73,7 @@ class IngredientsView extends GetView<MealController> {
                 }
 
                 if (controller.error.value.isNotEmpty) {
-                  return _buildErrorState(context, controller);
+                  return _buildErrorState(context);
                 }
 
                 if (controller.ingredients.isEmpty) {
@@ -86,7 +84,7 @@ class IngredientsView extends GetView<MealController> {
                   return _buildNoResultsState(context);
                 }
 
-                return _buildIngredientGrid(context, controller);
+                return _buildIngredientGrid(context);
               }),
             ),
           ],
@@ -104,8 +102,7 @@ class IngredientsView extends GetView<MealController> {
         controller.proteinRange.value.end != 100;
   }
 
-  PreferredSizeWidget _buildAppBar(BuildContext context,
-      MealController controller) {
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
     return PreferredSize(
       preferredSize: const Size.fromHeight(kToolbarHeight),
       child: Obx(() =>
@@ -129,7 +126,7 @@ class IngredientsView extends GetView<MealController> {
     );
   }
 
-  Widget _buildErrorState(BuildContext context, MealController controller) {
+  Widget _buildErrorState(BuildContext context) {
     return ErrorStateWidget(
       title: 'Something went wrong',
       subtitle: 'Data not found, try restarting the app',
@@ -160,7 +157,7 @@ class IngredientsView extends GetView<MealController> {
     );
   }
 
-  Widget _buildIngredientGrid(BuildContext context, MealController controller) {
+  Widget _buildIngredientGrid(BuildContext context) {
     final ingredientCards = controller.filteredIngredients.map((ingredient) =>
         IngredientCard(
           ingredient: ingredient,

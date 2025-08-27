@@ -370,30 +370,6 @@ class RecipeDialogs {
               final recipeCount = controller.recipes.length;
               bool allDeleted = true;
 
-              // Show loading
-              Get.dialog(
-                Center(
-                  child: Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: context.theme.colorScheme.surface,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CircularProgressIndicator(),
-                        SizedBox(height: 16),
-                        Text('Deleting recipes...',
-                            style: TextStyle(color: context.theme.colorScheme
-                                .onSurface)),
-                      ],
-                    ),
-                  ),
-                ),
-                barrierDismissible: false,
-              );
-
               // Delete all recipes
               final recipeIds = controller.recipes.map((
                   recipe) => recipe['recipeId']?.toString() ?? '').toList();
@@ -406,8 +382,6 @@ class RecipeDialogs {
                   }
                 }
               }
-
-              Get.back<void>(); // Close loading dialog
 
               if (allDeleted) {
                 Get.snackbar(

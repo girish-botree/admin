@@ -10,10 +10,48 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="Dropdown issues">
+      <change afterPath="$PROJECT_DIR$/NOTIFICATION_SYSTEM_GUIDE.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/config/dietary_preferences.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/language/english.json" beforeDir="false" afterPath="$PROJECT_DIR$/assets/language/english.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/language/tamil.json" beforeDir="false" afterPath="$PROJECT_DIR$/assets/language/tamil.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/config/app_config.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config/app_config.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/config/app_translations.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config/app_translations.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/config/dropdown_data.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config/dropdown_data.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/language/language.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/language/language.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/language/language_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/language/language_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/admins/create_admins/create_admin_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/admins/create_admins/create_admin_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/components/mobile_dashboard.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/components/mobile_dashboard.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/components/tablet_dashboard.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/components/tablet_dashboard.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/components/web_dashboard.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/components/web_dashboard.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/home/home_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/home/home_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/login/login_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/login/login_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/ingredients/dialogs/ingredient_dialogs.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/ingredients/dialogs/ingredient_dialogs.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/ingredients/ingredients_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/ingredients/ingredients_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/meal_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/meal_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/meal_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/meal_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_details_dialog.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_details_dialog.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_dialog.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_dialog.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/meal/shared/widgets/common_widgets.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/shared/widgets/common_widgets.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/receipe/widgets/recipe_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/widgets/recipe_card.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/plan/meal_plan_assignment_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/meal_plan_assignment_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/plan/meal_plan_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/meal_plan_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/plan/plan_constants.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/plan_constants.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/plan/plan_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/plan_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/plan/plan_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/plan_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/plan/widgets/meal_plan_form_dialog.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/widgets/meal_plan_form_dialog.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/plan/widgets/meal_section.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/widgets/meal_section.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/plan/widgets/plan_statistics_widget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/widgets/plan_statistics_widget.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/screens/app_lock_settings_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/screens/app_lock_settings_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/screens/settings_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/screens/settings_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/network_service/api_client.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/api_client.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/network_service/api_helper.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/api_helper.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/network_service/dio_network_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/dio_network_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/widgets/custom_displays.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/custom_displays.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/widgets/profile_widget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/profile_widget.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -185,7 +223,15 @@
       <option name="project" value="LOCAL" />
       <updated>1756017482068</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Dropdown issues">
+      <option name="closed" value="true" />
+      <created>1756019843298</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1756019843298</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="ToolWindowManager">

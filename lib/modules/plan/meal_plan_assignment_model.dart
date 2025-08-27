@@ -78,8 +78,14 @@ class MealPlanAssignment {
           print('Backend returned 1, mapping to MealCategory.vegetarian');
           return MealCategory.vegetarian;
         case 2:
-          print('Backend returned 2, mapping to MealCategory.nonVegetarian');
+          print('Backend returned 2, mapping to MealCategory.eggitarian');
+          return MealCategory.eggitarian;
+        case 3:
+          print('Backend returned 3, mapping to MealCategory.nonVegetarian');
           return MealCategory.nonVegetarian;
+        case 4:
+          print('Backend returned 4, mapping to MealCategory.other');
+          return MealCategory.other;
         default:
           print(
               'Backend returned unknown int $value, defaulting to vegetarian');
@@ -141,7 +147,9 @@ enum MealPeriod {
 enum MealCategory {
   vegan, // 0
   vegetarian, // 1
-  nonVegetarian // 2
+  eggitarian, // 2
+  nonVegetarian, // 3
+  other, // 4
 }
 
 enum BmiCategory {

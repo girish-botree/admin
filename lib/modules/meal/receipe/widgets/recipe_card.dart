@@ -403,18 +403,16 @@ class DietaryBadge extends StatelessWidget {
 
   String _getDietaryLabel(int category) {
     switch (category) {
+      case 0:
+        return 'Vegan';
       case 1:
         return 'Vegetarian';
       case 2:
-        return 'Vegan';
+        return 'Eggitarian';
       case 3:
-        return 'Gluten-Free';
+        return 'Non-Veg';
       case 4:
-        return 'Dairy-Free';
-      case 5:
-        return 'Keto';
-      case 6:
-        return 'Paleo';
+        return 'Other';
       default:
         return 'Regular';
     }

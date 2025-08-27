@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:admin/widgets/custom_displays.dart';
+import '../widgets/custom_displays.dart';
 import 'api_client.dart';
 import 'app_url_config.dart';
 import 'network_module.dart';
@@ -45,12 +45,7 @@ class ApiHelper {
       }
       
       if (handleError) {
-        if (customErrorMessage != null) {
-          CustomDisplays.showSnackBar(message: customErrorMessage);
-        } else {
-          CustomDisplays.showSnackBar(message: dioError.message ?? 'API Error occurred');
-          debugPrint('API Error: ${dioError.message}');
-        }
+        _extractErrorMessage(dioError, customErrorMessage);
       }
       
       return null;
@@ -60,12 +55,71 @@ class ApiHelper {
       }
       
       if (handleError) {
-        final errorMessage = customErrorMessage ?? error.toString();
-        CustomDisplays.showSnackBar(message: errorMessage);
-        debugPrint('Unexpected error: $errorMessage');
+        final errorMessage = error.toString();
+        if (errorMessage.toLowerCase().contains('network') ||
+            errorMessage.toLowerCase().contains('internet') ||
+            errorMessage.toLowerCase().contains('connection')) {
+          CustomDisplays.showInfoBar(
+            message: errorMessage,
+            type: InfoBarType.networkError,
+            actionText: 'Retry',
+            onAction: () {
+              CustomDisplays.dismissInfoBar();
+            },
+          );
+        } else {
+          CustomDisplays.showToast(
+            message: errorMessage,
+            type: MessageType.error,
+          );
+        }
       }
       
       return null;
+    }
+  }
+
+  static void _extractErrorMessage(DioException dioError,
+      [String? customErrorMessage]) {
+    if (customErrorMessage != null) {
+      // Use InfoBar for network-related errors, Toast for others
+      if (customErrorMessage.toLowerCase().contains('network') ||
+          customErrorMessage.toLowerCase().contains('internet') ||
+          customErrorMessage.toLowerCase().contains('connection')) {
+        CustomDisplays.showInfoBar(
+          message: customErrorMessage,
+          type: InfoBarType.networkError,
+          actionText: 'Retry',
+          onAction: () {
+            // Dismiss the info bar when user taps retry
+            CustomDisplays.dismissInfoBar();
+          },
+        );
+      } else {
+        CustomDisplays.showToast(
+          message: customErrorMessage,
+          type: MessageType.error,
+        );
+      }
+    } else {
+      final errorMessage = dioError.message ?? 'API Error occurred';
+      if (dioError.type == DioExceptionType.connectionTimeout ||
+          dioError.type == DioExceptionType.connectionError ||
+          dioError.type == DioExceptionType.receiveTimeout) {
+        CustomDisplays.showInfoBar(
+          message: errorMessage,
+          type: InfoBarType.networkError,
+          actionText: 'Retry',
+          onAction: () {
+            CustomDisplays.dismissInfoBar();
+          },
+        );
+      } else {
+        CustomDisplays.showToast(
+          message: errorMessage,
+          type: MessageType.error,
+        );
+      }
     }
   }
 

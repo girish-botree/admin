@@ -534,8 +534,8 @@ class MealController extends GetxController {
     };
 
     // Helper function to validate and format JSON fields
-    String? formatJsonField(String controllerText) {
-      if (controllerText.isEmpty) return null;
+    String formatJsonField(String controllerText) {
+      if (controllerText.isEmpty) return '{}';
       try {
         // Validate JSON format
         final decoded = jsonDecode(controllerText);
@@ -543,39 +543,28 @@ class MealController extends GetxController {
         if (decoded is Map || decoded is List) {
           return controllerText;
         }
-        return null;
+        return '{}';
       } catch (e) {
         debugPrint('Invalid JSON format: $controllerText');
-        return null;
+        return '{}';
       }
     }
 
-    final data = {
+    return {
       'name': nameController.text.trim(),
       'description': descriptionController.text.trim(),
       'category': categoryController.text.trim(),
       'dietaryCategory': dietaryCategory,
-      'calories': int.tryParse(caloriesController.text) ?? 0,
+      'calories': double.tryParse(caloriesController.text) ?? 0.0,
       'protein': double.tryParse(proteinController.text) ?? 0.0,
       'carbohydrates': double.tryParse(carbsController.text) ?? 0.0,
       'fat': double.tryParse(fatController.text) ?? 0.0,
       'fiber': double.tryParse(fiberController.text) ?? 0.0,
       'sugar': double.tryParse(sugarController.text) ?? 0.0,
-      'fatBreakdown': jsonEncode(fatBreakdownData)
+      'vitamins': formatJsonField(vitaminsController.text),
+      'minerals': formatJsonField(mineralsController.text),
+      'fatBreakdown': jsonEncode(fatBreakdownData),
     };
-
-    // Only add vitamins and minerals if they have valid values
-    final vitaminsJson = formatJsonField(vitaminsController.text);
-    if (vitaminsJson != null) {
-      data['vitamins'] = vitaminsJson;
-    }
-
-    final mineralsJson = formatJsonField(mineralsController.text);
-    if (mineralsJson != null) {
-      data['minerals'] = mineralsJson;
-    }
-
-    return data;
   }
   
   // Create recipe data from form

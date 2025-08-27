@@ -73,8 +73,8 @@ class HomeController extends GetxController {
     
     // Show success message
     Get.snackbar(
-      'Success',
-      'Dashboard data refreshed',
+      'success'.tr,
+      'refresh'.tr,
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: Get.theme.colorScheme.primaryContainer,
       colorText: Get.theme.colorScheme.onPrimaryContainer,
@@ -145,17 +145,17 @@ class HomeController extends GetxController {
       // Show confirmation dialog
       final bool shouldLogout = await Get.dialog<bool>(
         AlertDialog(
-          title: const Text('Logout'),
-          content: const Text('Are you sure you want to logout?'),
-          actions: [
+              title: Text('logout'.tr),
+              content: Text('logout_confirmation'.tr),
+              actions: [
             TextButton(
               onPressed: () => Get.back(result: false),
-              child: const Text('Cancel'),
-            ),
+                  child: Text('cancel'.tr),
+                ),
             TextButton(
               onPressed: () => Get.back(result: true),
-              child: const Text('Logout'),
-            ),
+                  child: Text('logout'.tr),
+                ),
           ],
         ),
       ) ?? false;
@@ -173,8 +173,8 @@ class HomeController extends GetxController {
           
           // Show success message
           Get.snackbar(
-            'Success',
-            'Logged out successfully',
+            'success'.tr,
+            'sign_out'.tr,
             backgroundColor: Colors.green,
             colorText: Colors.white,
           );
@@ -185,8 +185,8 @@ class HomeController extends GetxController {
           Get.offAllNamed<void>(AppRoutes.login);
           
           Get.snackbar(
-            'Success',
-            'Logged out successfully',
+            'success'.tr,
+            'sign_out'.tr,
             backgroundColor: Colors.green,
             colorText: Colors.white,
           );
@@ -196,8 +196,8 @@ class HomeController extends GetxController {
       // Handle logout error
       debugPrint('Logout error: $e');
       Get.snackbar(
-        'Error',
-        'Failed to logout. Please try again.',
+        'error'.tr,
+        'try_again'.tr,
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );

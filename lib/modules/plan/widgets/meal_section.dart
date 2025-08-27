@@ -27,17 +27,25 @@ class MealSection extends StatelessWidget {
     Color iconColor;
 
     switch (foodType) {
+      case FoodType.vegan:
+        iconData = Icons.grass;
+        iconColor = Colors.green;
+        break;
       case FoodType.vegetarian:
         iconData = Icons.eco;
-        iconColor = Colors.green;
+        iconColor = Colors.lightGreen;
+        break;
+      case FoodType.eggitarian:
+        iconData = Icons.egg;
+        iconColor = Colors.orange;
         break;
       case FoodType.nonVegetarian:
         iconData = Icons.restaurant;
         iconColor = Colors.red;
         break;
-      case FoodType.vegan:
-        iconData = Icons.grass;
-        iconColor = Colors.lightGreen;
+      case FoodType.other:
+        iconData = Icons.more_horiz;
+        iconColor = Colors.grey;
         break;
     }
 

@@ -10,38 +10,26 @@ class DropdownDataManager {
     DropdownItem(
       value: 1,
       label: 'Vegetarian',
-      description: 'Plant-based with dairy and eggs',
+      description: 'Plant-based with dairy',
       icon: '🥗',
     ),
     DropdownItem(
       value: 2,
-      label: 'Vegan',
-      description: 'Completely plant-based',
-      icon: '🌱',
+      label: 'Eggitarian',
+      description: 'Plant-based with dairy and eggs',
+      icon: '🥚',
     ),
     DropdownItem(
       value: 3,
-      label: 'Gluten-Free',
-      description: 'No gluten-containing ingredients',
-      icon: '🌾',
+      label: 'Non-Vegetarian',
+      description: 'Includes meat, poultry, and seafood',
+      icon: '🍖',
     ),
     DropdownItem(
       value: 4,
-      label: 'Dairy-Free',
-      description: 'No dairy products',
-      icon: '🥛',
-    ),
-    DropdownItem(
-      value: 5,
-      label: 'Keto',
-      description: 'Low-carb, high-fat diet',
-      icon: '🥑',
-    ),
-    DropdownItem(
-      value: 6,
-      label: 'Paleo',
-      description: 'Stone-age inspired diet',
-      icon: '🍖',
+      label: 'Other',
+      description: 'Other dietary preferences',
+      icon: '🍽️',
     ),
   ];
 
@@ -76,22 +64,34 @@ class DropdownDataManager {
   // Meal Categories
   static const List<DropdownItem> mealCategories = [
     DropdownItem(
+      value: 'vegan',
+      label: 'Vegan',
+      description: 'Completely plant-based meals',
+      icon: '🌱',
+    ),
+    DropdownItem(
       value: 'vegetarian',
       label: 'Vegetarian',
       description: 'Plant-based with dairy and eggs',
       icon: '🥗',
     ),
     DropdownItem(
+      value: 'eggitarian',
+      label: 'Eggitarian',
+      description: 'Plant-based with dairy and eggs meals',
+      icon: '🥚',
+    ),
+    DropdownItem(
       value: 'nonVegetarian',
       label: 'Non-Vegetarian',
-      description: 'Includes meat, poultry, and seafood',
+      description: 'Includes meat, poultry, and seafood meals',
       icon: '🍖',
     ),
     DropdownItem(
-      value: 'vegan',
-      label: 'Vegan',
-      description: 'Completely plant-based meals',
-      icon: '🌱',
+      value: 'other',
+      label: 'Other',
+      description: 'Other meal preferences',
+      icon: '🍽️',
     ),
   ];
 

@@ -311,22 +311,26 @@ class ApiErrorHandler {
 
   /// Show error to user
   static void _showErrorToUser(String message) {
-    // You can customize this based on your UI preferences
-    CustomDisplays.showSnackBar(message: message);
-    
-    // Alternative: Show dialog
-    // Get.dialog(
-    //   AlertDialog(
-    //     title: Text('Error'),
-    //     content: Text(message),
-    //     actions: [
-    //       TextButton(
-    //         onPressed: () => Get.back(),
-    //         child: Text('OK'),
-    //       ),
-    //     ],
-    //   ),
-    // );
+    // Use InfoBar for network-related errors, Toast for others
+    if (message.toLowerCase().contains('network') ||
+        message.toLowerCase().contains('internet') ||
+        message.toLowerCase().contains('connection') ||
+        message == AppStringConfig.noInternetConnection ||
+        message == AppStringConfig.couldNotReachTheServer) {
+      CustomDisplays.showInfoBar(
+        message: message,
+        type: InfoBarType.networkError,
+        actionText: 'Retry',
+        onAction: () {
+          CustomDisplays.dismissInfoBar();
+        },
+      );
+    } else {
+      CustomDisplays.showToast(
+        message: message,
+        type: MessageType.error,
+      );
+    }
   }
 }
 
@@ -370,7 +374,7 @@ class ApiHelper {
       
       if (handleError) {
         if (customErrorMessage != null) {
-          CustomDisplays.showSnackBar(message: customErrorMessage);
+          ApiErrorHandler._showErrorToUser(customErrorMessage);
         } else {
           await ApiErrorHandler.handleError(dioError);
         }
@@ -384,7 +388,7 @@ class ApiHelper {
       
       if (handleError) {
         final errorMessage = customErrorMessage ?? error.toString();
-        CustomDisplays.showSnackBar(message: errorMessage);
+        ApiErrorHandler._showErrorToUser(errorMessage);
       }
       
       debugPrint('Unexpected error: $error');

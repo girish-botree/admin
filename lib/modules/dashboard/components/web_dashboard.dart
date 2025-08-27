@@ -85,7 +85,7 @@ class WebDashboard extends GetView<DashboardController> {
                       ),
                     ),
                     child: AppText(
-                      '✨ Analytics Dashboard',
+                      '✨ ' + 'dashboard'.tr,
                       color: Colors.white,
                       size: 14,
                       fontWeight: FontWeight.w500,
@@ -93,7 +93,7 @@ class WebDashboard extends GetView<DashboardController> {
                   ),
                   const SizedBox(height: 20),
                   AppText.semiBold(
-                    'Welcome back to your\nRecipe Analytics',
+                    'welcome_recipes'.tr,
                     color: Colors.white,
                     size: 48,
                     textAlign: TextAlign.center,
@@ -197,14 +197,14 @@ class WebDashboard extends GetView<DashboardController> {
             ),
             const SizedBox(height: 32),
             AppText.semiBold(
-              'Something went wrong',
+              'error'.tr,
               color: const Color(0xFF111827),
               size: 24,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
             AppText(
-              error ?? 'Unable to load dashboard data. Please try again.',
+              error ?? 'no_data'.tr,
               color: const Color(0xFF6B7280),
               size: 16,
               textAlign: TextAlign.center,
@@ -214,7 +214,7 @@ class WebDashboard extends GetView<DashboardController> {
             ElevatedButton.icon(
               onPressed: () => controller.refreshData(),
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Try again'),
+              label: Text('try_again'.tr),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2563EB),
                 foregroundColor: Colors.white,

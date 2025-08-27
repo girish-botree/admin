@@ -32,40 +32,20 @@ class MainLayoutController extends GetxController {
   /// Logout functionality
   Future<void> logout() async {
     try {
-      // Show confirmation dialog
-      final bool shouldLogout = await Get.dialog<bool>(
-        AlertDialog(
-          title: const Text('Logout'),
-          content: const Text('Are you sure you want to logout?'),
-          actions: [
-            TextButton(
-              onPressed: () => Get.back(result: false),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () => Get.back(result: true),
-              child: const Text('Logout'),
-            ),
-          ],
-        ),
-      ) ?? false;
+      // Clear user session data using AuthService
+      await _authService.logout();
+      await _sharedPreference.remove('userEmail');
 
-      if (shouldLogout) {
-        // Clear user session data using AuthService
-        await _authService.logout();
-        await _sharedPreference.remove('userEmail');
-        
-        // Navigate to login screen
-        Get.offAllNamed<void>(AppRoutes.login);
-        
-        // Show success message
-        Get.snackbar(
-          'Success',
-          'Logged out successfully',
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
-      }
+      // Navigate to login screen
+      Get.offAllNamed<void>(AppRoutes.login);
+
+      // Show success message
+      Get.snackbar(
+        'Success',
+        'Logged out successfully',
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
     } catch (e) {
       // Handle logout error
       Get.snackbar(

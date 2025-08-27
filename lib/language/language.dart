@@ -11,28 +11,35 @@ class Language extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Language'),
+        title: Text('language'.tr),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('english'),
+            Text('english'.tr),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 controller.setLanguage('english');
               },
-              child: const Text('english'),
+              child: Text('english'.tr),
             ),
-            const Text('Tamil'),
+            Text('tamil'.tr),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 controller.setLanguage('tamil');
-
               },
-              child: const Text('Tamil'),
+              child: Text('tamil'.tr),
+            ),
+            Text('hindi'.tr),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                controller.setLanguage('hindi');
+              },
+              child: Text('hindi'.tr),
             ),
           ],
         ),

@@ -24,7 +24,7 @@ class PlanController extends GetxController {
   final RxString selectedRecipeId = ''.obs;
   final Rx<DateTime> selectedMealDate = DateTime.now().obs;
   final Rx<MealPeriod> selectedPeriod = MealPeriod.breakfast.obs;
-  final Rx<MealCategory> selectedCategory = MealCategory.vegetarian.obs;
+  final Rx<MealCategory> selectedCategory = MealCategory.vegan.obs;
   final Rx<BmiCategory> selectedBmiCategory = BmiCategory.normal.obs;
   
   // Calendar functionality
@@ -87,8 +87,16 @@ class PlanController extends GetxController {
         }
       }
     } catch (e) {
-      CustomDisplays.showSnackBar(message: 'Failed to load recipes');
-      debugPrint('Error fetching recipes: $e');
+      debugPrint('Error loading recipes: $e');
+      CustomDisplays.showInfoBar(
+        message: 'Failed to load recipes. Please check your connection.',
+        type: InfoBarType.networkError,
+        actionText: 'Retry',
+        onAction: () {
+          CustomDisplays.dismissInfoBar();
+          getRecipes();
+        },
+      );
     }
   }
 
@@ -114,8 +122,16 @@ class PlanController extends GetxController {
                 .toList();
       }
     } catch (e) {
-      CustomDisplays.showSnackBar(message: 'Failed to load meal plans');
-      debugPrint('Error fetching meal plans: $e');
+      debugPrint('Error loading meal plans: $e');
+      CustomDisplays.showInfoBar(
+        message: 'Failed to load meal plans. Please check your connection.',
+        type: InfoBarType.networkError,
+        actionText: 'Retry',
+        onAction: () {
+          CustomDisplays.dismissInfoBar();
+          getMealPlans();
+        },
+      );
     } finally {
       isLoading.value = false;
     }
@@ -129,7 +145,10 @@ class PlanController extends GetxController {
 
     // Validate that a recipe is selected
     if (selectedRecipeId.value.isEmpty) {
-      CustomDisplays.showSnackBar(message: 'Please select a recipe');
+      CustomDisplays.showToast(
+        message: 'Please select a recipe',
+        type: MessageType.warning,
+      );
       return;
     }
 
@@ -150,14 +169,20 @@ class PlanController extends GetxController {
       // Check if the HTTP response was successful
       final httpStatus = response['httpResponse']?['status'] ?? 0;
       if (httpStatus == 200 || httpStatus == 201) {
-        CustomDisplays.showSnackBar(message: PlanConstants.mealPlanCreated);
+        CustomDisplays.showToast(
+          message: PlanConstants.mealPlanCreated,
+          type: MessageType.success,
+        );
         getMealPlansByDate();
         clearForm();
         getMealPlans();
         Get.back<void>();
       }
     } catch (e) {
-      CustomDisplays.showSnackBar(message: 'Failed to create meal plan');
+      CustomDisplays.showToast(
+        message: 'Failed to create meal plan',
+        type: MessageType.error,
+      );
       debugPrint('Error creating meal plan: $e');
     }
   }
@@ -165,7 +190,10 @@ class PlanController extends GetxController {
   // Create meal plan assignment
   Future<void> createMealPlanAssignment() async {
     if (selectedRecipeId.value.isEmpty) {
-      CustomDisplays.showSnackBar(message: 'Please select a recipe');
+      CustomDisplays.showToast(
+        message: 'Please select a recipe',
+        type: MessageType.warning,
+      );
       return;
     }
     
@@ -183,13 +211,19 @@ class PlanController extends GetxController {
       // Check if the HTTP response was successful
       final httpStatus = response['httpResponse']?['status'] ?? 0;
       if (httpStatus == 200 || httpStatus == 201) {
-        CustomDisplays.showSnackBar(message: 'Meal plan assignment created successfully');
+        CustomDisplays.showToast(
+          message: 'Meal plan assignment created successfully',
+          type: MessageType.success,
+        );
         clearAssignmentForm();
         Get.back<void>();
         getMealPlansByDate();
       }
     } catch (e) {
-      CustomDisplays.showSnackBar(message: 'Failed to create meal plan assignment');
+      CustomDisplays.showToast(
+        message: 'Failed to create meal plan assignment',
+        type: MessageType.error,
+      );
       debugPrint('Error creating meal plan assignment: $e');
     }
   }
@@ -197,7 +231,10 @@ class PlanController extends GetxController {
   // Update meal plan assignment
   Future<void> updateMealPlanAssignment() async {
     if (selectedRecipeId.value.isEmpty || currentAssignment?.id == null) {
-      CustomDisplays.showSnackBar(message: 'Please select a recipe');
+      CustomDisplays.showToast(
+        message: 'Please select a recipe',
+        type: MessageType.warning,
+      );
       return;
     }
     
@@ -215,14 +252,20 @@ class PlanController extends GetxController {
       // Check if the HTTP response was successful
       final httpStatus = response['httpResponse']?['status'] ?? 0;
       if (httpStatus == 200) {
-        CustomDisplays.showSnackBar(message: 'Meal plan updated successfully');
+        CustomDisplays.showToast(
+          message: 'Meal plan updated successfully',
+          type: MessageType.success,
+        );
         clearAssignmentForm();
         Get.back<void>();
         await getMealPlans();
         await getMealPlansByDate();
       }
     } catch (e) {
-      CustomDisplays.showSnackBar(message: 'Failed to update meal plan');
+      CustomDisplays.showToast(
+        message: 'Failed to update meal plan',
+        type: MessageType.error,
+      );
       debugPrint('Error updating meal plan assignment: $e');
     }
   }
@@ -238,12 +281,18 @@ class PlanController extends GetxController {
       // Check if the HTTP response was successful
       final httpStatus = response['httpResponse']?['status'] ?? 0;
       if (httpStatus == 200) {
-        CustomDisplays.showSnackBar(message: PlanConstants.mealPlanUpdated);
+        CustomDisplays.showToast(
+          message: PlanConstants.mealPlanUpdated,
+          type: MessageType.success,
+        );
         await getMealPlans();
         await getMealPlansByDate();
       }
     } catch (e) {
-      CustomDisplays.showSnackBar(message: 'Failed to update meal plan');
+      CustomDisplays.showToast(
+        message: 'Failed to update meal plan',
+        type: MessageType.error,
+      );
       debugPrint('Error updating meal plan: $e');
     }
   }
@@ -267,13 +316,19 @@ class PlanController extends GetxController {
       // Check if the HTTP response was successful
       final httpStatus = response['httpResponse']?['status'] ?? 0;
       if (httpStatus == 200) {
-        CustomDisplays.showSnackBar(message: PlanConstants.mealPlanUpdated);
+        CustomDisplays.showToast(
+          message: PlanConstants.mealPlanUpdated,
+          type: MessageType.success,
+        );
         clearForm();
         Get.back<void>();
         getMealPlans();
       }
     } catch (e) {
-      CustomDisplays.showSnackBar(message: 'Failed to update meal plan');
+      CustomDisplays.showToast(
+        message: 'Failed to update meal plan',
+        type: MessageType.error,
+      );
       debugPrint('Error updating meal plan from form: $e');
     }
   }
@@ -293,17 +348,26 @@ class PlanController extends GetxController {
 
       if (httpStatus == 200 || httpStatus == 204) {
         print('Delete successful, refreshing data...');
-        CustomDisplays.showSnackBar(message: PlanConstants.mealPlanDeleted);
+        CustomDisplays.showToast(
+          message: PlanConstants.mealPlanDeleted,
+          type: MessageType.success,
+        );
         await getMealPlans();
         await getMealPlansByDate();
         print('Data refresh completed');
       } else {
         print('Delete failed - unexpected status code: $httpStatus');
-        CustomDisplays.showSnackBar(message: 'Delete failed: HTTP $httpStatus');
+        CustomDisplays.showToast(
+          message: 'Delete failed: HTTP $httpStatus',
+          type: MessageType.error,
+        );
       }
     } catch (e) {
       print('Delete error: $e');
-      CustomDisplays.showSnackBar(message: 'Failed to delete meal plan: $e');
+      CustomDisplays.showToast(
+        message: 'Failed to delete meal plan: $e',
+        type: MessageType.error,
+      );
       debugPrint('Error deleting meal plan: $e');
     }
   }
@@ -356,7 +420,7 @@ class PlanController extends GetxController {
     selectedRecipeId.value = '';
     selectedMealDate.value = DateTime.now();
     selectedPeriod.value = MealPeriod.breakfast;
-    selectedCategory.value = MealCategory.vegetarian;
+    selectedCategory.value = MealCategory.vegan;
     selectedBmiCategory.value = BmiCategory.normal;
   }
 
@@ -420,7 +484,15 @@ class PlanController extends GetxController {
       }
 
     } catch (e) {
-      CustomDisplays.showSnackBar(message: 'Failed to load meal plans for selected date');
+      CustomDisplays.showInfoBar(
+        message: 'Failed to load meal plans for selected date. Please check your connection.',
+        type: InfoBarType.networkError,
+        actionText: 'Retry',
+        onAction: () {
+          CustomDisplays.dismissInfoBar();
+          getMealPlansByDate();
+        },
+      );
       debugPrint('Error fetching meal plans by date: $e');
     }
   }
@@ -497,13 +569,17 @@ class PlanController extends GetxController {
   // Get meal plan details by ID
   Future<void> getMealPlanDetails(String recipeId) async {
     if (recipeId.isEmpty) {
-      CustomDisplays.showSnackBar(message: 'No meal plan ID provided');
+      CustomDisplays.showToast(
+        message: 'No meal plan ID provided',
+        type: MessageType.warning,
+      );
       return;
     }
 
     try {
       print('Fetching meal plan details for ID: $recipeId');
-      final response = await DioNetworkService.getData('api/MealPlan/$recipeId', showLoader: true);
+      final response = await DioNetworkService.getData(
+          'api/MealPlan/$recipeId', showLoader: false);
 
       // Handle the enhanced response structure - the API response has success/data structure
       final responseData = response['data'] ?? response;
@@ -524,12 +600,15 @@ class PlanController extends GetxController {
       if (mealPlanData != null) {
         _showMealPlanDetails(mealPlanData);
       } else {
-        CustomDisplays.showSnackBar(message: 'No meal plan details found');
+        // Instead of showing snackbar for "no meal plan details found", let the UI handle empty state
+        // CustomDisplays.showSnackBar(message: 'No meal plan details found');
       }
     } catch (e) {
       print('Error fetching meal plan details: $e');
-      CustomDisplays.showSnackBar(
-          message: 'Failed to load meal plan details: ${e.toString()}');
+      CustomDisplays.showToast(
+        message: 'Failed to load meal plan details: ${e.toString()}',
+        type: MessageType.error,
+      );
     }
   }
 
@@ -565,7 +644,11 @@ class PlanController extends GetxController {
           case 1:
             return 'Vegetarian';
           case 2:
+            return 'Eggitarian';
+          case 3:
             return 'Non-Vegetarian';
+          case 4:
+            return 'Other';
           default:
             return 'Unknown';
         }
@@ -810,7 +893,7 @@ class PlanController extends GetxController {
   // Enhanced meal creation flow methods
   void proceedToMealSelection() {
     showDietTypeSelection.value = false;
-    selectedCategory.value = selectedDietType.value ?? MealCategory.vegetarian;
+    selectedCategory.value = selectedDietType.value ?? MealCategory.vegan;
     // Set selected date for meals to the calendar selected date
     selectedMealDate.value = selectedCalendarDate.value;
   }
@@ -849,7 +932,10 @@ class PlanController extends GetxController {
 
   Future<void> createMultipleMealPlans() async {
     if (selectedDietType.value == null || selectedMealRecipes.isEmpty) {
-      CustomDisplays.showSnackBar(message: 'Please select at least one meal');
+      CustomDisplays.showToast(
+        message: 'Please select at least one meal',
+        type: MessageType.warning,
+      );
       return;
     }
 
@@ -891,8 +977,10 @@ class PlanController extends GetxController {
         // Success feedback
         final mealCount = selectedMealRecipes.length;
         final mealText = mealCount == 1 ? 'meal plan' : 'meal plans';
-        CustomDisplays.showSnackBar(
-            message: '$mealCount $mealText created successfully!');
+        CustomDisplays.showToast(
+          message: '$mealCount $mealText created successfully!',
+          type: MessageType.success,
+        );
 
         // Refresh data
         await getMealPlansByDate();
@@ -918,19 +1006,25 @@ class PlanController extends GetxController {
         final totalCount = responses.length;
 
         if (successCount > 0) {
-          CustomDisplays.showSnackBar(
-              message: '$successCount of $totalCount meal plans created successfully');
+          CustomDisplays.showToast(
+            message: '$successCount of $totalCount meal plans created successfully',
+            type: MessageType.success,
+          );
           // Refresh data even with partial success
           await getMealPlansByDate();
           await getMealPlans();
         } else {
-          CustomDisplays.showSnackBar(
-              message: 'Failed to create any meal plans. Please try again.');
+          CustomDisplays.showToast(
+            message: 'Failed to create any meal plans. Please try again.',
+            type: MessageType.error,
+          );
         }
       }
     } catch (e) {
-      CustomDisplays.showSnackBar(
-          message: 'Failed to create meal plans: ${e.toString()}');
+      CustomDisplays.showToast(
+        message: 'Failed to create meal plans: ${e.toString()}',
+        type: MessageType.error,
+      );
       debugPrint('Error creating multiple meal plans: $e');
     } finally {
       // Always hide loading state
@@ -958,7 +1052,8 @@ class PlanController extends GetxController {
     ).toList();
 
     if (assignments.isEmpty) {
-      CustomDisplays.showSnackBar(message: 'No meals found for this date');
+      // Replace "No meals found for this date" with proper empty state handling in UI
+      // Don't show snackbar for empty data - let the UI handle this with EmptyStateWidget
       return;
     }
 
@@ -983,8 +1078,10 @@ class PlanController extends GetxController {
       });
 
       if (allSuccessful) {
-        CustomDisplays.showSnackBar(
-            message: 'All meals deleted for ${_formatDate(date)}');
+        CustomDisplays.showToast(
+          message: 'All meals deleted for ${_formatDate(date)}',
+          type: MessageType.success,
+        );
         await getMealPlans();
         await getMealPlansByDate();
       } else {
@@ -993,13 +1090,18 @@ class PlanController extends GetxController {
           return httpStatus == 200 || httpStatus == 204;
         }).length;
 
-        CustomDisplays.showSnackBar(
-            message: '$successCount of ${assignments.length} meals deleted');
+        CustomDisplays.showToast(
+          message: '$successCount of ${assignments.length} meals deleted',
+          type: MessageType.warning,
+        );
         await getMealPlans();
         await getMealPlansByDate();
       }
     } catch (e) {
-      CustomDisplays.showSnackBar(message: 'Failed to delete meals: $e');
+      CustomDisplays.showToast(
+        message: 'Failed to delete meals: $e',
+        type: MessageType.error,
+      );
       debugPrint('Error deleting all meal plans for date: $e');
     }
   }

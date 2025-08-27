@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-
-import '../config/common_utils.dart';
 import '../config/auth_service.dart';
+import '../config/common_utils.dart';
 import '../widgets/custom_displays.dart';
 import 'api_client.dart';
 import 'app_url_config.dart';
@@ -103,14 +103,30 @@ class DioNetworkService {
       }
 
       rethrow;
-    } catch (error) {
+    } catch (e) {
       if (showLoader) {
         ApiHelper.dismissLoader();
       }
 
       if (handleError) {
-        CommonUtils.debugLog(error.toString());
-        CustomDisplays.showSnackBar(message: error.toString());
+        CommonUtils.debugLog('Error in getData: $e');
+        if (e.toString().toLowerCase().contains('network') ||
+            e.toString().toLowerCase().contains('internet') ||
+            e.toString().toLowerCase().contains('connection')) {
+          CustomDisplays.showInfoBar(
+            message: e.toString(),
+            type: InfoBarType.networkError,
+            actionText: 'Retry',
+            onAction: () {
+              CustomDisplays.dismissInfoBar();
+            },
+          );
+        } else {
+          CustomDisplays.showToast(
+            message: e.toString(),
+            type: MessageType.error,
+          );
+        }
       }
 
       rethrow;
@@ -171,14 +187,30 @@ class DioNetworkService {
       }
 
       rethrow;
-    } catch (error) {
+    } catch (e) {
       if (showLoader) {
         ApiHelper.dismissLoader();
       }
 
       if (handleError) {
-        CommonUtils.debugLog(error.toString());
-        CustomDisplays.showSnackBar(message: error.toString());
+        CommonUtils.debugLog('Error in postData: $e');
+        if (e.toString().toLowerCase().contains('network') ||
+            e.toString().toLowerCase().contains('internet') ||
+            e.toString().toLowerCase().contains('connection')) {
+          CustomDisplays.showInfoBar(
+            message: e.toString(),
+            type: InfoBarType.networkError,
+            actionText: 'Retry',
+            onAction: () {
+              CustomDisplays.dismissInfoBar();
+            },
+          );
+        } else {
+          CustomDisplays.showToast(
+            message: e.toString(),
+            type: MessageType.error,
+          );
+        }
       }
 
       rethrow;
@@ -239,14 +271,30 @@ class DioNetworkService {
       }
 
       rethrow;
-    } catch (error) {
+    } catch (e) {
       if (showLoader) {
         ApiHelper.dismissLoader();
       }
 
       if (handleError) {
-        CommonUtils.debugLog(error.toString());
-        CustomDisplays.showSnackBar(message: error.toString());
+        CommonUtils.debugLog('Error in putDataWithBody: $e');
+        if (e.toString().toLowerCase().contains('network') ||
+            e.toString().toLowerCase().contains('internet') ||
+            e.toString().toLowerCase().contains('connection')) {
+          CustomDisplays.showInfoBar(
+            message: e.toString(),
+            type: InfoBarType.networkError,
+            actionText: 'Retry',
+            onAction: () {
+              CustomDisplays.dismissInfoBar();
+            },
+          );
+        } else {
+          CustomDisplays.showToast(
+            message: e.toString(),
+            type: MessageType.error,
+          );
+        }
       }
 
       rethrow;
@@ -303,14 +351,30 @@ class DioNetworkService {
       }
 
       rethrow;
-    } catch (error) {
+    } catch (e) {
       if (showLoader) {
         ApiHelper.dismissLoader();
       }
 
       if (handleError) {
-        CommonUtils.debugLog(error.toString());
-        CustomDisplays.showSnackBar(message: error.toString());
+        CommonUtils.debugLog('Error in putDataWithoutBody: $e');
+        if (e.toString().toLowerCase().contains('network') ||
+            e.toString().toLowerCase().contains('internet') ||
+            e.toString().toLowerCase().contains('connection')) {
+          CustomDisplays.showInfoBar(
+            message: e.toString(),
+            type: InfoBarType.networkError,
+            actionText: 'Retry',
+            onAction: () {
+              CustomDisplays.dismissInfoBar();
+            },
+          );
+        } else {
+          CustomDisplays.showToast(
+            message: e.toString(),
+            type: MessageType.error,
+          );
+        }
       }
 
       rethrow;
@@ -371,14 +435,30 @@ class DioNetworkService {
       }
 
       rethrow;
-    } catch (error) {
+    } catch (e) {
       if (showLoader) {
         ApiHelper.dismissLoader();
       }
 
       if (handleError) {
-        CommonUtils.debugLog(error.toString());
-        CustomDisplays.showSnackBar(message: error.toString());
+        CommonUtils.debugLog('Error in deleteData: $e');
+        if (e.toString().toLowerCase().contains('network') ||
+            e.toString().toLowerCase().contains('internet') ||
+            e.toString().toLowerCase().contains('connection')) {
+          CustomDisplays.showInfoBar(
+            message: e.toString(),
+            type: InfoBarType.networkError,
+            actionText: 'Retry',
+            onAction: () {
+              CustomDisplays.dismissInfoBar();
+            },
+          );
+        } else {
+          CustomDisplays.showToast(
+            message: e.toString(),
+            type: MessageType.error,
+          );
+        }
       }
 
       rethrow;
@@ -446,14 +526,30 @@ class DioNetworkService {
       }
 
       rethrow;
-    } catch (error) {
+    } catch (e) {
       if (showLoader) {
         ApiHelper.dismissLoader();
       }
 
       if (handleError) {
-        CommonUtils.debugLog(error.toString());
-        CustomDisplays.showSnackBar(message: error.toString());
+        CommonUtils.debugLog('Error in uploadFile: $e');
+        if (e.toString().toLowerCase().contains('network') ||
+            e.toString().toLowerCase().contains('internet') ||
+            e.toString().toLowerCase().contains('connection')) {
+          CustomDisplays.showInfoBar(
+            message: e.toString(),
+            type: InfoBarType.networkError,
+            actionText: 'Retry',
+            onAction: () {
+              CustomDisplays.dismissInfoBar();
+            },
+          );
+        } else {
+          CustomDisplays.showToast(
+            message: e.toString(),
+            type: MessageType.error,
+          );
+        }
       }
 
       rethrow;
@@ -510,8 +606,26 @@ class DioNetworkService {
       if (showLoader) {
         ApiHelper.dismissLoader();
       }
-      
-      CommonUtils.debugLog(error.toString());
+
+      CommonUtils.debugLog('Error in login: $error');
+      if (error.toString().toLowerCase().contains('network') ||
+          error.toString().toLowerCase().contains('internet') ||
+          error.toString().toLowerCase().contains('connection')) {
+        CustomDisplays.showInfoBar(
+          message: error.toString(),
+          type: InfoBarType.networkError,
+          actionText: 'Retry',
+          onAction: () {
+            CustomDisplays.dismissInfoBar();
+          },
+        );
+      } else {
+        CustomDisplays.showToast(
+          message: error.toString(),
+          type: MessageType.error,
+        );
+      }
+
       rethrow;
     }
   }
@@ -634,8 +748,26 @@ class DioNetworkService {
       if (showLoader) {
         ApiHelper.dismissLoader();
       }
-      
-      CommonUtils.debugLog(error.toString());
+
+      CommonUtils.debugLog('Error in sendOtp: $error');
+      if (error.toString().toLowerCase().contains('network') ||
+          error.toString().toLowerCase().contains('internet') ||
+          error.toString().toLowerCase().contains('connection')) {
+        CustomDisplays.showInfoBar(
+          message: error.toString(),
+          type: InfoBarType.networkError,
+          actionText: 'Retry',
+          onAction: () {
+            CustomDisplays.dismissInfoBar();
+          },
+        );
+      } else {
+        CustomDisplays.showToast(
+          message: error.toString(),
+          type: MessageType.error,
+        );
+      }
+
       rethrow;
     }
   }
@@ -672,8 +804,26 @@ class DioNetworkService {
       if (showLoader) {
         ApiHelper.dismissLoader();
       }
-      
-      CommonUtils.debugLog(error.toString());
+
+      CommonUtils.debugLog('Error in registerAdmin: $error');
+      if (error.toString().toLowerCase().contains('network') ||
+          error.toString().toLowerCase().contains('internet') ||
+          error.toString().toLowerCase().contains('connection')) {
+        CustomDisplays.showInfoBar(
+          message: error.toString(),
+          type: InfoBarType.networkError,
+          actionText: 'Retry',
+          onAction: () {
+            CustomDisplays.dismissInfoBar();
+          },
+        );
+      } else {
+        CustomDisplays.showToast(
+          message: error.toString(),
+          type: MessageType.error,
+        );
+      }
+
       rethrow;
     }
   }
@@ -728,8 +878,26 @@ class DioNetworkService {
       if (showLoader) {
         ApiHelper.dismissLoader();
       }
-      
-      CommonUtils.debugLog(error.toString());
+
+      CommonUtils.debugLog('Error in registerDeliveryPerson: $error');
+      if (error.toString().toLowerCase().contains('network') ||
+          error.toString().toLowerCase().contains('internet') ||
+          error.toString().toLowerCase().contains('connection')) {
+        CustomDisplays.showInfoBar(
+          message: error.toString(),
+          type: InfoBarType.networkError,
+          actionText: 'Retry',
+          onAction: () {
+            CustomDisplays.dismissInfoBar();
+          },
+        );
+      } else {
+        CustomDisplays.showToast(
+          message: error.toString(),
+          type: MessageType.error,
+        );
+      }
+
       rethrow;
     }
   }
@@ -742,7 +910,25 @@ class DioNetworkService {
       return response.data;
     } catch (error) {
       if (showLoader) ApiHelper.dismissLoader();
-      CommonUtils.debugLog(error.toString());
+      CommonUtils.debugLog('Error in getDeliveryPersons: $error');
+      if (error.toString().toLowerCase().contains('network') ||
+          error.toString().toLowerCase().contains('internet') ||
+          error.toString().toLowerCase().contains('connection')) {
+        CustomDisplays.showInfoBar(
+          message: error.toString(),
+          type: InfoBarType.networkError,
+          actionText: 'Retry',
+          onAction: () {
+            CustomDisplays.dismissInfoBar();
+          },
+        );
+      } else {
+        CustomDisplays.showToast(
+          message: error.toString(),
+          type: MessageType.error,
+        );
+      }
+
       rethrow;
     }
   }
@@ -756,7 +942,25 @@ class DioNetworkService {
       return response.data;
     } catch (error) {
       if (showLoader) ApiHelper.dismissLoader();
-      CommonUtils.debugLog(error.toString());
+      CommonUtils.debugLog('Error in updateDeliveryPerson: $error');
+      if (error.toString().toLowerCase().contains('network') ||
+          error.toString().toLowerCase().contains('internet') ||
+          error.toString().toLowerCase().contains('connection')) {
+        CustomDisplays.showInfoBar(
+          message: error.toString(),
+          type: InfoBarType.networkError,
+          actionText: 'Retry',
+          onAction: () {
+            CustomDisplays.dismissInfoBar();
+          },
+        );
+      } else {
+        CustomDisplays.showToast(
+          message: error.toString(),
+          type: MessageType.error,
+        );
+      }
+
       rethrow;
     }
   }
@@ -770,7 +974,25 @@ class DioNetworkService {
       return response.data;
     } catch (error) {
       if (showLoader) ApiHelper.dismissLoader();
-      CommonUtils.debugLog(error.toString());
+      CommonUtils.debugLog('Error in deleteDeliveryPerson: $error');
+      if (error.toString().toLowerCase().contains('network') ||
+          error.toString().toLowerCase().contains('internet') ||
+          error.toString().toLowerCase().contains('connection')) {
+        CustomDisplays.showInfoBar(
+          message: error.toString(),
+          type: InfoBarType.networkError,
+          actionText: 'Retry',
+          onAction: () {
+            CustomDisplays.dismissInfoBar();
+          },
+        );
+      } else {
+        CustomDisplays.showToast(
+          message: error.toString(),
+          type: MessageType.error,
+        );
+      }
+
       rethrow;
     }
   }
@@ -795,8 +1017,26 @@ class DioNetworkService {
       if (showLoader) {
         ApiHelper.dismissLoader();
       }
-      
-      CommonUtils.debugLog(error.toString());
+
+      CommonUtils.debugLog('Error in getRecipes: $error');
+      if (error.toString().toLowerCase().contains('network') ||
+          error.toString().toLowerCase().contains('internet') ||
+          error.toString().toLowerCase().contains('connection')) {
+        CustomDisplays.showInfoBar(
+          message: error.toString(),
+          type: InfoBarType.networkError,
+          actionText: 'Retry',
+          onAction: () {
+            CustomDisplays.dismissInfoBar();
+          },
+        );
+      } else {
+        CustomDisplays.showToast(
+          message: error.toString(),
+          type: MessageType.error,
+        );
+      }
+
       rethrow;
     }
   }
@@ -821,7 +1061,25 @@ class DioNetworkService {
         ApiHelper.dismissLoader();
       }
 
-      CommonUtils.debugLog(error.toString());
+      CommonUtils.debugLog('Error in getRecipeById: $error');
+      if (error.toString().toLowerCase().contains('network') ||
+          error.toString().toLowerCase().contains('internet') ||
+          error.toString().toLowerCase().contains('connection')) {
+        CustomDisplays.showInfoBar(
+          message: error.toString(),
+          type: InfoBarType.networkError,
+          actionText: 'Retry',
+          onAction: () {
+            CustomDisplays.dismissInfoBar();
+          },
+        );
+      } else {
+        CustomDisplays.showToast(
+          message: error.toString(),
+          type: MessageType.error,
+        );
+      }
+
       rethrow;
     }
   }
@@ -834,7 +1092,25 @@ class DioNetworkService {
       return response.data;
     } catch (error) {
       if (showLoader) ApiHelper.dismissLoader();
-      CommonUtils.debugLog(error.toString());
+      CommonUtils.debugLog('Error in createRecipe: $error');
+      if (error.toString().toLowerCase().contains('network') ||
+          error.toString().toLowerCase().contains('internet') ||
+          error.toString().toLowerCase().contains('connection')) {
+        CustomDisplays.showInfoBar(
+          message: error.toString(),
+          type: InfoBarType.networkError,
+          actionText: 'Retry',
+          onAction: () {
+            CustomDisplays.dismissInfoBar();
+          },
+        );
+      } else {
+        CustomDisplays.showToast(
+          message: error.toString(),
+          type: MessageType.error,
+        );
+      }
+
       rethrow;
     }
   }
@@ -847,7 +1123,25 @@ class DioNetworkService {
       return response.data;
     } catch (error) {
       if (showLoader) ApiHelper.dismissLoader();
-      CommonUtils.debugLog(error.toString());
+      CommonUtils.debugLog('Error in updateRecipe: $error');
+      if (error.toString().toLowerCase().contains('network') ||
+          error.toString().toLowerCase().contains('internet') ||
+          error.toString().toLowerCase().contains('connection')) {
+        CustomDisplays.showInfoBar(
+          message: error.toString(),
+          type: InfoBarType.networkError,
+          actionText: 'Retry',
+          onAction: () {
+            CustomDisplays.dismissInfoBar();
+          },
+        );
+      } else {
+        CustomDisplays.showToast(
+          message: error.toString(),
+          type: MessageType.error,
+        );
+      }
+
       rethrow;
     }
   }
@@ -860,7 +1154,25 @@ class DioNetworkService {
       return response.data;
     } catch (error) {
       if (showLoader) ApiHelper.dismissLoader();
-      CommonUtils.debugLog(error.toString());
+      CommonUtils.debugLog('Error in deleteRecipe: $error');
+      if (error.toString().toLowerCase().contains('network') ||
+          error.toString().toLowerCase().contains('internet') ||
+          error.toString().toLowerCase().contains('connection')) {
+        CustomDisplays.showInfoBar(
+          message: error.toString(),
+          type: InfoBarType.networkError,
+          actionText: 'Retry',
+          onAction: () {
+            CustomDisplays.dismissInfoBar();
+          },
+        );
+      } else {
+        CustomDisplays.showToast(
+          message: error.toString(),
+          type: MessageType.error,
+        );
+      }
+
       rethrow;
     }
   }
@@ -874,7 +1186,25 @@ class DioNetworkService {
       return response.data;
     } catch (error) {
       if (showLoader) ApiHelper.dismissLoader();
-      CommonUtils.debugLog(error.toString());
+      CommonUtils.debugLog('Error in getIngredients: $error');
+      if (error.toString().toLowerCase().contains('network') ||
+          error.toString().toLowerCase().contains('internet') ||
+          error.toString().toLowerCase().contains('connection')) {
+        CustomDisplays.showInfoBar(
+          message: error.toString(),
+          type: InfoBarType.networkError,
+          actionText: 'Retry',
+          onAction: () {
+            CustomDisplays.dismissInfoBar();
+          },
+        );
+      } else {
+        CustomDisplays.showToast(
+          message: error.toString(),
+          type: MessageType.error,
+        );
+      }
+
       rethrow;
     }
   }
@@ -888,7 +1218,25 @@ class DioNetworkService {
       return response.data;
     } catch (error) {
       if (showLoader) ApiHelper.dismissLoader();
-      CommonUtils.debugLog(error.toString());
+      CommonUtils.debugLog('Error in createIngredient: $error');
+      if (error.toString().toLowerCase().contains('network') ||
+          error.toString().toLowerCase().contains('internet') ||
+          error.toString().toLowerCase().contains('connection')) {
+        CustomDisplays.showInfoBar(
+          message: error.toString(),
+          type: InfoBarType.networkError,
+          actionText: 'Retry',
+          onAction: () {
+            CustomDisplays.dismissInfoBar();
+          },
+        );
+      } else {
+        CustomDisplays.showToast(
+          message: error.toString(),
+          type: MessageType.error,
+        );
+      }
+
       rethrow;
     }
   }
@@ -901,7 +1249,25 @@ class DioNetworkService {
       return response.data;
     } catch (error) {
       if (showLoader) ApiHelper.dismissLoader();
-      CommonUtils.debugLog(error.toString());
+      CommonUtils.debugLog('Error in updateIngredient: $error');
+      if (error.toString().toLowerCase().contains('network') ||
+          error.toString().toLowerCase().contains('internet') ||
+          error.toString().toLowerCase().contains('connection')) {
+        CustomDisplays.showInfoBar(
+          message: error.toString(),
+          type: InfoBarType.networkError,
+          actionText: 'Retry',
+          onAction: () {
+            CustomDisplays.dismissInfoBar();
+          },
+        );
+      } else {
+        CustomDisplays.showToast(
+          message: error.toString(),
+          type: MessageType.error,
+        );
+      }
+
       rethrow;
     }
   }
@@ -914,7 +1280,25 @@ class DioNetworkService {
       return response.data;
     } catch (error) {
       if (showLoader) ApiHelper.dismissLoader();
-      CommonUtils.debugLog(error.toString());
+      CommonUtils.debugLog('Error in deleteIngredient: $error');
+      if (error.toString().toLowerCase().contains('network') ||
+          error.toString().toLowerCase().contains('internet') ||
+          error.toString().toLowerCase().contains('connection')) {
+        CustomDisplays.showInfoBar(
+          message: error.toString(),
+          type: InfoBarType.networkError,
+          actionText: 'Retry',
+          onAction: () {
+            CustomDisplays.dismissInfoBar();
+          },
+        );
+      } else {
+        CustomDisplays.showToast(
+          message: error.toString(),
+          type: MessageType.error,
+        );
+      }
+
       rethrow;
     }
   }
@@ -1170,4 +1554,4 @@ class NetworkService {
   static void dismissLoader() {
     DioNetworkService.dismissLoader();
   }
-} 
+}

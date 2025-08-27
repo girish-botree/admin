@@ -11,9 +11,6 @@ class MealView extends GetView<MealController> {
 
   @override
   Widget build(BuildContext context) {
-    // Ensure controller is initialized when used as a nested component
-    Get.put(MealController(), permanent: false);
-
     return const Responsive(
       mobile: MobileMeal(),
       tablet: TabletMeal(),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dio/dio.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:admin/widgets/custom_displays.dart';
 import '../../routes/app_routes.dart';
 import '../../network_service/dio_network_service.dart';
 
@@ -70,8 +71,15 @@ class LoginController extends GetxController {
     final hasConnection =
         await InternetConnectionChecker.createInstance().hasConnection;
     if (!hasConnection) {
-      errorMessage.value = 'No internet connection. Please check your network.';
-      isLoading.value = false;
+      CustomDisplays.showInfoBar(
+        message: 'No internet connection. Please check your network.',
+        type: InfoBarType.networkError,
+        actionText: 'Retry',
+        onAction: () {
+          CustomDisplays.dismissInfoBar();
+          login();
+        },
+      );
       return;
     }
 
@@ -91,18 +99,18 @@ class LoginController extends GetxController {
         Get.offAllNamed(AppRoutes.mainLayout);
 
         // Show success message
-        Get.snackbar(
-          'Success',
-          'Login successful! Welcome to Admin Dashboard.',
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 2),
+        CustomDisplays.showToast(
+          message: 'Login successful! Welcome to Admin Dashboard.',
+          type: MessageType.success,
         );
       } else {
         // Response received but no token - treat as error
-        errorMessage.value =
-            (response?['message']?.toString()) ??
+        String errorMsg = (response?['message']?.toString()) ??
             'Login failed. Invalid response from server.';
+        CustomDisplays.showToast(
+          message: errorMsg,
+          type: MessageType.error,
+        );
       }
     } on DioException catch (dioError) {
       // Handle specific HTTP errors
@@ -143,10 +151,30 @@ class LoginController extends GetxController {
         errorMsg = 'Network error. Please check your internet connection.';
       }
 
-      errorMessage.value = errorMsg;
+      if (errorMsg.toLowerCase().contains('network') ||
+          errorMsg.toLowerCase().contains('internet') ||
+          errorMsg.toLowerCase().contains('connection')) {
+        CustomDisplays.showInfoBar(
+          message: errorMsg,
+          type: InfoBarType.networkError,
+          actionText: 'Retry',
+          onAction: () {
+            CustomDisplays.dismissInfoBar();
+            login();
+          },
+        );
+      } else {
+        CustomDisplays.showToast(
+          message: errorMsg,
+          type: MessageType.error,
+        );
+      }
     } catch (e) {
       // Handle other errors
-      errorMessage.value = 'An unexpected error occurred. Please try again.';
+      CustomDisplays.showToast(
+        message: 'An unexpected error occurred. Please try again.',
+        type: MessageType.error,
+      );
     } finally {
       isLoading.value = false;
     }
@@ -154,11 +182,9 @@ class LoginController extends GetxController {
 
   void navigateToForgotPassword() {
     // Navigate to forgot password screen if implemented
-    Get.snackbar(
-      'Info',
-      'Contact administrator to reset password',
-      backgroundColor: Colors.blue,
-      colorText: Colors.white,
+    CustomDisplays.showToast(
+      message: 'Contact administrator to reset password',
+      type: MessageType.info,
     );
   }
 }

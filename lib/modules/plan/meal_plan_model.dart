@@ -1,18 +1,24 @@
 enum FoodType {
-  vegetarian,
-  nonVegetarian,
-  vegan,
+  vegan, // 0
+  vegetarian, // 1
+  eggitarian, // 2
+  nonVegetarian, // 3
+  other, // 4
 }
 
 extension FoodTypeExtension on FoodType {
   String get displayName {
     switch (this) {
-      case FoodType.vegetarian:
-        return 'Vegetarian';
-      case FoodType.nonVegetarian:
-        return 'Non-Vegetarian';
       case FoodType.vegan:
         return 'Vegan';
+      case FoodType.vegetarian:
+        return 'Vegetarian';
+      case FoodType.eggitarian:
+        return 'Eggitarian';
+      case FoodType.nonVegetarian:
+        return 'Non-Vegetarian';
+      case FoodType.other:
+        return 'Other';
     }
   }
 }
@@ -46,16 +52,22 @@ class MealPlan {
     // First check for 'foodType' field directly
     if (json['foodType'] != null) {
       switch (json['foodType'].toString().toLowerCase()) {
+        case 'vegan':
+          foodType = FoodType.vegan;
+          break;
         case 'vegetarian':
           foodType = FoodType.vegetarian;
+          break;
+        case 'eggitarian':
+          foodType = FoodType.eggitarian;
           break;
         case 'nonvegetarian':
         case 'non_vegetarian':
         case 'non-vegetarian':
           foodType = FoodType.nonVegetarian;
           break;
-        case 'vegan':
-          foodType = FoodType.vegan;
+        case 'other':
+          foodType = FoodType.other;
           break;
       }
     }
@@ -65,13 +77,19 @@ class MealPlan {
       final category = json['category'] as int?;
       switch (category) {
         case 0:
-          foodType = FoodType.vegetarian;
-          break;
-        case 1:
           foodType = FoodType.vegan;
           break;
+        case 1:
+          foodType = FoodType.vegetarian;
+          break;
         case 2:
+          foodType = FoodType.eggitarian;
+          break;
+        case 3:
           foodType = FoodType.nonVegetarian;
+          break;
+        case 4:
+          foodType = FoodType.other;
           break;
         default:
         // Any other value defaults to vegetarian

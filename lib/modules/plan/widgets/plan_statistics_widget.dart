@@ -350,8 +350,12 @@ class _CategoryDistribution extends StatelessWidget {
         return Colors.green;
       case MealCategory.vegetarian:
         return Colors.lightGreen;
+      case MealCategory.eggitarian:
+        return Colors.orange;
       case MealCategory.nonVegetarian:
         return Colors.red;
+      case MealCategory.other:
+        return Colors.grey;
     }
   }
 
@@ -361,8 +365,12 @@ class _CategoryDistribution extends StatelessWidget {
         return 'Vegan';
       case MealCategory.vegetarian:
         return 'Vegetarian';
+      case MealCategory.eggitarian:
+        return 'Eggitarian';
       case MealCategory.nonVegetarian:
         return 'Non-Veg';
+      case MealCategory.other:
+        return 'Other';
     }
   }
 }

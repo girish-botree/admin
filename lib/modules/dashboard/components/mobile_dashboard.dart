@@ -101,8 +101,8 @@ class MobileDashboard extends GetView<DashboardController> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const AppText.h2(
-                    'Recipe Analytics',
+                  AppText.h2(
+                    'recipes'.tr,
                     color: Colors.white,
                   ),
                   const SizedBox(height: 6),
@@ -195,14 +195,14 @@ class MobileDashboard extends GetView<DashboardController> {
               ),
             ),
             const SizedBox(height: 24),
-            const AppText.h4(
-              'Something went wrong',
-              color: Color(0xFF111827),
+            AppText.h4(
+              'error'.tr,
+              color: const Color(0xFF111827),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             AppText(
-              error ?? 'Unable to load dashboard data. Please try again.',
+              error ?? 'no_data'.tr,
               color: const Color(0xFF6B7280),
               size: 14,
               textAlign: TextAlign.center,
@@ -212,7 +212,7 @@ class MobileDashboard extends GetView<DashboardController> {
             ElevatedButton.icon(
               onPressed: () => controller.refreshData(),
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Try again'),
+              label: Text('try_again'.tr),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2563EB),
                 foregroundColor: Colors.white,
@@ -253,15 +253,15 @@ class MobileDashboard extends GetView<DashboardController> {
               ),
             ),
             const SizedBox(height: 24),
-            const AppText.h4(
-              'No Data Available',
-              color: Color(0xFF111827),
+            AppText.h4(
+              'no_data'.tr,
+              color: const Color(0xFF111827),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
-            const AppText(
-              'Dashboard data will appear here when available',
-              color: Color(0xFF6B7280),
+            AppText(
+              'dashboard_data'.tr,
+              color: const Color(0xFF6B7280),
               size: 14,
               textAlign: TextAlign.center,
               height: 1.4,
@@ -270,7 +270,7 @@ class MobileDashboard extends GetView<DashboardController> {
             ElevatedButton.icon(
               onPressed: () => controller.refreshData(),
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Refresh'),
+              label: Text('refresh'.tr),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2563EB),
                 foregroundColor: Colors.white,

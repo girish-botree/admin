@@ -4,6 +4,7 @@ import 'package:table_calendar/table_calendar.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_text.dart';
 import '../../utils/responsive.dart';
+import '../../widgets/custom_displays.dart';
 import 'plan_controller.dart';
 import 'plan_constants.dart';
 import 'meal_plan_assignment_model.dart';
@@ -52,10 +53,6 @@ class PlanView extends GetView<PlanController> {
           return const MealPlanLoading();
         }
 
-        // // Add error handling
-        // if (controller.hasError.value) {
-        //   return _buildErrorState(context);
-        // }
 
         return RefreshIndicator(
           onRefresh: () async {
@@ -97,29 +94,43 @@ class PlanView extends GetView<PlanController> {
                 const SizedBox(height: _spacingMedium),
                 
                 // Check if any meals exist for the day
-                if (_hasNoMealsForDay())
-                  _buildEmptyState(context)
-                else ...[
-                  // Meal Sections
-                  MealSection(
-                    title: 'Breakfast',
-                    icon: Icons.wb_sunny,
-                    mealPlans: controller.getMealPlansForPeriod(MealPeriod.breakfast),
-                    borderColor: Colors.orange,
+                _hasNoMealsForDay()
+                    ? EmptyStateWidget(
+                  icon: Icons.restaurant_menu_outlined,
+                  title: 'No meal plans found',
+                  subtitle: 'Create your first meal plan for this date',
+                  action: ElevatedButton.icon(
+                    onPressed: () => _showCreateDialog,
+                    icon: const Icon(Icons.add),
+                    label: const Text('Create Meal Plan'),
                   ),
-                  MealSection(
-                    title: 'Lunch',
-                    icon: Icons.lunch_dining,
-                    mealPlans: controller.getMealPlansForPeriod(MealPeriod.lunch),
-                    borderColor: Colors.green,
-                  ),
-                  MealSection(
-                    title: 'Dinner',
-                    icon: Icons.dinner_dining,
-                    mealPlans: controller.getMealPlansForPeriod(MealPeriod.dinner),
-                    borderColor: Colors.blue,
-                  ),
-                ],
+                )
+                    : Column(
+                  children: [
+                    // Meal Sections
+                    MealSection(
+                      title: 'Breakfast',
+                      icon: Icons.wb_sunny,
+                      mealPlans: controller.getMealPlansForPeriod(
+                          MealPeriod.breakfast),
+                      borderColor: Colors.orange,
+                    ),
+                    MealSection(
+                      title: 'Lunch',
+                      icon: Icons.lunch_dining,
+                      mealPlans: controller.getMealPlansForPeriod(
+                          MealPeriod.lunch),
+                      borderColor: Colors.green,
+                    ),
+                    MealSection(
+                      title: 'Dinner',
+                      icon: Icons.dinner_dining,
+                      mealPlans: controller.getMealPlansForPeriod(
+                          MealPeriod.dinner),
+                      borderColor: Colors.blue,
+                    ),
+                  ],
+                ),
                 const SizedBox(height: _spacingLarge),
                 const PlanStatisticsWidget(),
               ],
@@ -171,58 +182,6 @@ class PlanView extends GetView<PlanController> {
             fontWeight: FontWeight.w600,
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildEmptyState(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(_defaultPadding),
-      margin: const EdgeInsets.symmetric(vertical: _spacingMedium),
-      decoration: BoxDecoration(
-        color: context.theme.colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(_cardBorderRadius),
-        border: Border.all(
-          color: context.theme.colorScheme.onSurface.withValues(alpha: 0.1),
-        ),
-      ),
-      child: Center(
-        child: Column(
-          children: [
-            Icon(
-              Icons.no_meals,
-              size: _emptyStateIconSize,
-              color: context.theme.colorScheme.onSurface.withValues(alpha: 0.5),
-            ),
-            const SizedBox(height: _spacingMedium),
-            AppText.semiBold(
-              'Nothing planned for this date',
-              color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
-              size: Responsive.getBodyTextSize(context),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildErrorState(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.error,
-            size: _emptyStateIconSize,
-            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.5),
-          ),
-          const SizedBox(height: _spacingMedium),
-          AppText.semiBold(
-            'An error occurred',
-            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
-            size: Responsive.getBodyTextSize(context),
-          ),
-        ],
       ),
     );
   }

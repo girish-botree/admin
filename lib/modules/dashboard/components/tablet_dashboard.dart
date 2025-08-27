@@ -98,12 +98,12 @@ class TabletDashboard extends GetView<DashboardController> {
                   ),
                   const SizedBox(height: 16),
                   AppText.h1(
-                    'Recipe Analytics Hub',
+                    'recipes'.tr,
                     color: Colors.white,
                   ),
                   const SizedBox(height: 8),
                   AppText(
-                    'Comprehensive insights into your culinary data and trends',
+                    'track_recipes'.tr,
                     color: Colors.white.withValues(alpha: 0.9),
                     size: 18,
                     fontWeight: FontWeight.w400,
@@ -208,13 +208,13 @@ class TabletDashboard extends GetView<DashboardController> {
             ),
             const SizedBox(height: 32),
             AppText.h3(
-              'Something went wrong',
+              'error'.tr,
               color: const Color(0xFF111827),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
             AppText(
-              error ?? 'Unable to load dashboard data. Please try again.',
+              error ?? 'no_data'.tr,
               color: const Color(0xFF6B7280),
               size: 16,
               textAlign: TextAlign.center,
@@ -224,7 +224,7 @@ class TabletDashboard extends GetView<DashboardController> {
             ElevatedButton.icon(
               onPressed: () => controller.refreshData(),
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Try again'),
+              label: Text('try_again'.tr),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2563EB),
                 foregroundColor: Colors.white,
@@ -267,13 +267,13 @@ class TabletDashboard extends GetView<DashboardController> {
             ),
             const SizedBox(height: 32),
             AppText.h3(
-              'No Data Available',
+              'no_data'.tr,
               color: const Color(0xFF111827),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
             AppText(
-              'Dashboard data will appear here when available',
+              'dashboard_data'.tr,
               color: const Color(0xFF6B7280),
               size: 16,
               textAlign: TextAlign.center,
@@ -283,7 +283,7 @@ class TabletDashboard extends GetView<DashboardController> {
             ElevatedButton.icon(
               onPressed: () => controller.refreshData(),
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Refresh'),
+              label: Text('refresh'.tr),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2563EB),
                 foregroundColor: Colors.white,

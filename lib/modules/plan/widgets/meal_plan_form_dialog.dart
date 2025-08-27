@@ -198,11 +198,33 @@ class MealPlanFormDialog extends StatelessWidget {
                   _buildDietTypeCard(
                     context,
                     theme,
+                    'Vegan',
+                    'Completely plant-based meals',
+                    Icons.spa,
+                    const Color(0xFF009688),
+                    MealCategory.vegan,
+                    controller,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildDietTypeCard(
+                    context,
+                    theme,
                     'Vegetarian',
-                    'Plant-based meals with dairy and eggs',
+                    'Plant-based meals with dairy',
                     Icons.eco,
                     const Color(0xFF4CAF50),
                     MealCategory.vegetarian,
+                    controller,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildDietTypeCard(
+                    context,
+                    theme,
+                    'Eggitarian',
+                    'Plant-based with dairy and eggs',
+                    Icons.egg,
+                    const Color(0xFFFFC107),
+                    MealCategory.eggitarian,
                     controller,
                   ),
                   const SizedBox(height: 12),
@@ -220,11 +242,11 @@ class MealPlanFormDialog extends StatelessWidget {
                   _buildDietTypeCard(
                     context,
                     theme,
-                    'Vegan',
-                    'Completely plant-based meals',
-                    Icons.spa,
-                    const Color(0xFF009688),
-                    MealCategory.vegan,
+                    'Other',
+                    'Other dietary preferences',
+                    Icons.more_horiz,
+                    const Color(0xFF9E9E9E),
+                    MealCategory.other,
                     controller,
                   ),
                 ],
@@ -263,14 +285,14 @@ class MealPlanFormDialog extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  icon: const Icon(Icons.arrow_forward, size: 20),
-                  label: AppText.medium(
-                    'Continue',
-                    color: theme.colorScheme.onPrimary,
-                  ),
-                )),
+                        ),
+                      ),
+                      icon: const Icon(Icons.arrow_forward, size: 20),
+                      label: AppText.medium(
+                        'Continue',
+                        color: theme.colorScheme.onPrimary,
+                      ),
+                    )),
               ),
             ],
           ),
@@ -452,28 +474,29 @@ class MealPlanFormDialog extends StatelessWidget {
                           color: _getDietColor(controller.selectedDietType
                               .value).withAlpha(25),
                           borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          _getDietIcon(controller.selectedDietType.value),
-                          color: _getDietColor(
-                              controller.selectedDietType.value),
-                          size: 16,
                         ),
-                        const SizedBox(width: 8),
-                        Flexible(
-                          child: AppText.caption(
-                            _getDietLabel(controller.selectedDietType.value),
-                            color: _getDietColor(
-                                controller.selectedDietType.value),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              _getDietIcon(controller.selectedDietType.value),
+                              color: _getDietColor(
+                                  controller.selectedDietType.value),
+                              size: 16,
+                            ),
+                            const SizedBox(width: 8),
+                            Flexible(
+                              child: AppText.caption(
+                                _getDietLabel(
+                                    controller.selectedDietType.value),
+                                color: _getDietColor(
+                                    controller.selectedDietType.value),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  )),
+                      )),
                 ),
               ],
             ),
@@ -718,6 +741,10 @@ class MealPlanFormDialog extends StatelessWidget {
         return 'Non-Vegetarian';
       case MealCategory.vegan:
         return 'Vegan';
+      case MealCategory.eggitarian:
+        return 'Eggitarian';
+      case MealCategory.other:
+        return 'Other';
       default:
         return 'Unknown';
     }
@@ -731,6 +758,10 @@ class MealPlanFormDialog extends StatelessWidget {
         return Icons.restaurant;
       case MealCategory.vegan:
         return Icons.spa;
+      case MealCategory.eggitarian:
+        return Icons.egg;
+      case MealCategory.other:
+        return Icons.more_horiz;
       default:
         return Icons.help;
     }
@@ -744,6 +775,10 @@ class MealPlanFormDialog extends StatelessWidget {
         return const Color(0xFFFF9800);
       case MealCategory.vegan:
         return const Color(0xFF009688);
+      case MealCategory.eggitarian:
+        return const Color(0xFFFFC107);
+      case MealCategory.other:
+        return const Color(0xFF9E9E9E);
       default:
         return Colors.grey;
     }

@@ -752,31 +752,6 @@ class IngredientDialogs {
                         final ingredientCount = controller.ingredients.length;
                         bool allDeleted = true;
 
-                        // Show loading
-                        Get.dialog(
-                          Center(
-                            child: Container(
-                              padding: const EdgeInsets.all(24),
-                              decoration: BoxDecoration(
-                                color: context.theme.colorScheme.surface,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  CircularProgressIndicator(),
-                                  SizedBox(height: 16),
-                                  Text('Deleting ingredients...',
-                                      style: TextStyle(
-                                          color: context.theme.colorScheme
-                                              .onSurface)),
-                                ],
-                              ),
-                            ),
-                          ),
-                          barrierDismissible: false,
-                        );
-
                         // Delete all ingredients
                         final ingredientIds = controller.ingredients.map((
                             ingredient) =>
@@ -796,8 +771,6 @@ class IngredientDialogs {
                             }
                           }
                         }
-
-                        Get.back<void>(); // Close loading dialog
 
                         if (allDeleted) {
                           Get.snackbar('Success',

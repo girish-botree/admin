@@ -108,5 +108,22 @@
   "ingredient": "Ingredient",
   "add_optional_parameters": "Add optional parameters",
   "pick": "PICK",
-  "this_image_not_supported": "This image type is not supported"
+  "this_image_not_supported": "This image type is not supported",
+  "information": "Information",
+  "enable_app_lock": "Enable App Lock",
+  "secure_app": "Secure your app with authentication",
+  "after_1_minute": "After 1 minute",
+  "after_5_minutes": "After 5 minutes",
+  "after_15_minutes": "After 15 minutes",
+  "immediately": "Immediately",
+  "lock_after_1_minute": "Lock after 1 minute in background",
+  "lock_after_5_minutes": "Lock after 5 minutes in background",
+  "lock_after_15_minutes": "Lock after 15 minutes in background",
+  "security_notes": "Security Notes:",
+  "security_warning": "This is a security app. Keep app lock enabled to protect sensitive admin data.",
+  "track_recipes": "Track your culinary journey",
+  "dashboard_data": "Dashboard data will appear here when available",
+  "welcome_recipes": "Welcome back to your\nRecipe Analytics",
+  "track_recipes_ingredients": "Track your recipes, ingredients, and meal plans with beautiful insights",
+  "system": "System"
 }

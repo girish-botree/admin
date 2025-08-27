@@ -10,432 +10,249 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
-
     return Scaffold(
-      backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
-      appBar: _buildModernAppBar(context),
-      body: _buildResponsiveLayout(screenWidth),
+      backgroundColor: context.theme.colorScheme.background,
+      body: CustomScrollView(
+        slivers: [
+          _buildSliverAppBar(context),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                children: [
+                  const SizedBox(height: 8),
+                  _buildSettingsSection(),
+                  const SizedBox(height: 32),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  PreferredSizeWidget _buildModernAppBar(BuildContext context) {
-    return AppBar(
+  Widget _buildSliverAppBar(BuildContext context) {
+    return SliverAppBar(
       elevation: 0,
-      backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
+      backgroundColor: context.theme.colorScheme.background,
       surfaceTintColor: Colors.transparent,
+      pinned: true,
       leading: IconButton(
         onPressed: () => Get.back<void>(),
-        icon: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: context.theme.colorScheme.surfaceContainer,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(
-            Icons.arrow_back_ios_new,
-            size: 18,
-            color: context.theme.colorScheme.onSurface,
-          ),
+        icon: Icon(
+          Icons.arrow_back_ios_new,
+          size: 20,
+          color: context.theme.colorScheme.onBackground,
         ),
       ),
       title: Text(
         'settings'.tr,
         style: TextStyle(
-          fontSize: 22,
+          fontSize: 18,
           fontWeight: FontWeight.w600,
-          color: context.theme.colorScheme.onSurface,
-          letterSpacing: -0.5,
+          color: context.theme.colorScheme.onBackground,
         ),
       ),
       centerTitle: false,
     );
   }
 
-  Widget _buildResponsiveLayout(double screenWidth) {
-    if (screenWidth < 600) {
-      return _buildMobileLayout();
-    } else if (screenWidth < 900) {
-      return _buildTabletLayout();
-    } else {
-      return _buildWebLayout();
-    }
-  }
+  Widget _buildSettingsSection() {
+    return Column(
+      children: [
+        _buildSettingsGroup([
+          Obx(() {
+            final themeController = Get.find<ThemeController>();
+            String currentTheme;
+            IconData themeIcon;
+            switch (themeController.themeMode.value) {
+              case ThemeMode.light:
+                currentTheme = 'light'.tr;
+                themeIcon = Icons.light_mode_outlined;
+                break;
+              case ThemeMode.dark:
+                currentTheme = 'dark'.tr;
+                themeIcon = Icons.dark_mode_outlined;
+                break;
+              case ThemeMode.system:
+                currentTheme = 'system'.tr;
+                themeIcon = Icons.phone_android_outlined;
+                break;
+            }
+            return _buildSettingsTile(
+              icon: themeIcon,
+              title: 'theme'.tr,
+              subtitle: currentTheme,
+              onTap: () => _showThemeDialog(),
+              isFirst: true,
+            );
+          }),
+          Obx(() {
+            final languageController = Get.find<LanguageController>();
+            final locale = languageController.locale.value.languageCode;
+            String currentLanguage;
+            if (locale == 'en') {
+              currentLanguage = 'english'.tr;
+            } else if (locale == 'ta') {
+              currentLanguage = 'tamil'.tr;
+            } else if (locale == 'hi') {
+              currentLanguage = 'hindi'.tr;
+            } else {
+              currentLanguage = 'english'.tr;
+            }
+            return _buildSettingsTile(
+              icon: Icons.language_outlined,
+              title: 'language'.tr,
+              subtitle: currentLanguage,
+              onTap: () => _showLanguageDialog(),
+              isLast: true,
+            );
+          }),
+        ]),
 
-  Widget _buildMobileLayout() {
-    return CustomScrollView(
-      slivers: [
-        SliverPadding(
-          padding: const EdgeInsets.all(20),
-          sliver: SliverList(
-            delegate: SliverChildListDelegate(_buildSettingsItems()),
+        const SizedBox(height: 32),
+
+        _buildSettingsGroup([
+          _buildSettingsTile(
+            icon: Icons.info_outlined,
+            title: 'about'.tr,
+            subtitle: 'version'.tr,
+            onTap: () => _showAboutDialog(),
+            isFirst: true,
+            isLast: true,
           ),
+        ]),
+
+        const SizedBox(height: 32),
+
+        ElevatedButton(
+          onPressed: () {
+            final languageController = Get.find<LanguageController>();
+            languageController.setLanguage('hindi');
+            Get.snackbar(
+              'Language Test',
+              'Changed to Hindi. Dashboard should be "डैशबोर्ड"',
+              duration: const Duration(seconds: 5),
+            );
+          },
+          child: const Text('Test Hindi Language'),
         ),
+
+        const SizedBox(height: 32),
+
+        _buildLogoutButton(),
       ],
     );
   }
 
-  Widget _buildTabletLayout() {
-    return Center(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 700),
-        child: CustomScrollView(
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.all(32),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate(_buildSettingsItems()),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildWebLayout() {
-    return Center(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 800),
-        child: CustomScrollView(
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.all(40),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  _buildWelcomeHeader(),
-                  const SizedBox(height: 40),
-                  ..._buildSettingsItems(),
-                ]),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildWelcomeHeader() {
+  Widget _buildSettingsGroup(List<Widget> children) {
     return Container(
-      padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Get.theme.colorScheme.primary.withValues(alpha: 0.1),
-            Get.theme.colorScheme.secondary.withValues(alpha: 0.05),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(24),
+        color: Get.context!.theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Get.theme.colorScheme.primary,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(
-                  Icons.settings_rounded,
-                  size: 28,
-                  color: Colors.white,
-                ),
+      child: Column(children: children),
+    );
+  }
+
+  Widget _buildSettingsTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+    bool isFirst = false,
+    bool isLast = false,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          decoration: BoxDecoration(
+            border: !isLast ? Border(
+              bottom: BorderSide(
+                color: Get.context!.theme.colorScheme.outline.withOpacity(0.1),
+                width: 0.5,
               ),
-              const SizedBox(width: 20),
+            ) : null,
+          ),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                size: 24,
+                color: Get.context!.theme.colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Settings & Preferences',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
-                        color: Get.theme.colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Customize your experience',
+                      title,
                       style: TextStyle(
                         fontSize: 16,
-                        color: Get.theme.colorScheme.onSurface.withValues(
-                            alpha: 0.7),
+                        fontWeight: FontWeight.w500,
+                        color: Get.context!.theme.colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Get.context!.theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
                 ),
               ),
+              Icon(
+                Icons.chevron_right,
+                size: 20,
+                color: Get.context!.theme.colorScheme.onSurfaceVariant
+                    .withOpacity(0.6),
+              ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
 
-  List<Widget> _buildSettingsItems() {
-    return [
-      _buildModernSectionHeader('appearance'.tr, Icons.palette_rounded),
-      const SizedBox(height: 16),
-      Obx(() {
-        final themeController = Get.find<ThemeController>();
-        String currentTheme;
-        IconData themeIcon;
-        switch (themeController.themeMode.value) {
-          case ThemeMode.light:
-            currentTheme = 'light_theme'.tr;
-            themeIcon = Icons.light_mode_rounded;
-            break;
-          case ThemeMode.dark:
-            currentTheme = 'dark_theme'.tr;
-            themeIcon = Icons.dark_mode_rounded;
-            break;
-          case ThemeMode.system:
-            currentTheme = 'System Theme'.tr;
-            themeIcon = Icons.settings_suggest_rounded;
-            break;
-        }
-        return _buildModernSettingsTile(
-          icon: themeIcon,
-          title: 'theme'.tr,
-          subtitle: currentTheme,
-          onTap: () => _showModernThemeDialog(Get.context!),
-          color: Colors.purple,
-        );
-      }),
-
-      const SizedBox(height: 32),
-      _buildModernSectionHeader('localization'.tr, Icons.language_rounded),
-      const SizedBox(height: 16),
-      Obx(() {
-        final languageController = Get.find<LanguageController>();
-        final isEnglish = languageController.locale.value.languageCode == 'en';
-        return _buildModernSettingsTile(
-          icon: Icons.translate_rounded,
-          title: 'language'.tr,
-          subtitle: isEnglish ? 'english'.tr : 'tamil'.tr,
-          onTap: () => _showModernLanguageDialog(Get.context!),
-          color: Colors.blue,
-        );
-      }),
-
-      const SizedBox(height: 32),
-      _buildModernSectionHeader('about'.tr, Icons.info_rounded),
-      const SizedBox(height: 16),
-      _buildModernSettingsTile(
-        icon: Icons.info_outline_rounded,
-        title: 'about'.tr,
-        subtitle: 'version_info'.tr,
-        onTap: () => _showModernAboutDialog(Get.context!),
-        color: Colors.green,
-      ),
-
-      const SizedBox(height: 40),
-      _buildModernLogoutTile(),
-      const SizedBox(height: 32),
-    ];
-  }
-
-  Widget _buildModernSectionHeader(String title, IconData icon) {
+  Widget _buildLogoutButton() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Get.theme.colorScheme.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(
-              icon,
-              size: 20,
-              color: Get.theme.colorScheme.primary,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Get.theme.colorScheme.onSurface,
-              letterSpacing: -0.2,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildModernSettingsTile({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-    required Color color,
-    bool isDestructive = false,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      width: double.infinity,
       decoration: BoxDecoration(
         color: Get.context!.theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Get.context!.theme.colorScheme.outline.withValues(alpha: 0.1),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Get.context!.theme.colorScheme.shadow.withValues(
-                alpha: 0.06),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(20),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: isDestructive
-                        ? Colors.red.withValues(alpha: 0.1)
-                        : color.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    icon,
-                    size: 24,
-                    color: isDestructive ? Colors.red : color,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: isDestructive
-                              ? Colors.red
-                              : Get.theme.colorScheme.onSurface,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        subtitle,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Get.theme.colorScheme.onSurface.withValues(
-                              alpha: 0.6),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Get.theme.colorScheme.surfaceContainer,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    Icons.chevron_right_rounded,
-                    size: 20,
-                    color: Get.theme.colorScheme.onSurface.withValues(
-                        alpha: 0.6),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildModernLogoutTile() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.red.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Colors.red.withValues(alpha: 0.2),
-        ),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _showLogoutConfirmation(),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(12),
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.red.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.logout_rounded,
-                    size: 24,
-                    color: Colors.red,
-                  ),
+                Icon(
+                  Icons.logout,
+                  size: 24,
+                  color: Colors.red,
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'logout'.tr,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.red,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'sign_out'.tr,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.red.withValues(alpha: 0.7),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.red.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    Icons.chevron_right_rounded,
-                    size: 20,
-                    color: Colors.red.withValues(alpha: 0.7),
+                  child: Text(
+                    'logout'.tr,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.red,
+                    ),
                   ),
                 ),
               ],
@@ -449,67 +266,49 @@ class SettingsScreen extends StatelessWidget {
   void _showLogoutConfirmation() {
     Get.dialog<void>(
       Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         backgroundColor: Get.theme.colorScheme.surface,
-        child: Container(
+        child: Padding(
           padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Get.theme.colorScheme.surface,
-            borderRadius: BorderRadius.circular(24),
-          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.logout_rounded,
-                  size: 32,
-                  color: Colors.red,
-                ),
-              ),
-              const SizedBox(height: 24),
               Text(
-                'Confirm Logout',
+                'logout'.tr,
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 20,
                   fontWeight: FontWeight.w600,
                   color: Get.theme.colorScheme.onSurface,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               Text(
-                'Are you sure you want to sign out of your account?',
+                'logout_confirmation'.tr,
                 style: TextStyle(
                   fontSize: 16,
-                  color: Get.theme.colorScheme.onSurface.withValues(alpha: 0.8),
-                  height: 1.4,
+                  color: Get.theme.colorScheme.onSurfaceVariant,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
               Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
+                    child: TextButton(
                       onPressed: () => Get.back<void>(),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        side: BorderSide(
-                          color: Get.theme.colorScheme.outline.withValues(
-                              alpha: 0.5),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      child: Text(
+                        'cancel'.tr,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Get.theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
-                      child: const Text('Cancel'),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: FilledButton(
                       onPressed: () {
@@ -519,12 +318,15 @@ class SettingsScreen extends StatelessWidget {
                       },
                       style: FilledButton.styleFrom(
                         backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
-                      child: const Text('Logout'),
+                      child: Text(
+                        'logout'.tr,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -536,68 +338,37 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  void _showModernThemeDialog(BuildContext context) {
+  void _showThemeDialog() {
     final themeController = Get.find<ThemeController>();
 
     Get.dialog<void>(
       Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         backgroundColor: Get.theme.colorScheme.surface,
-        child: Container(
+        child: Padding(
           padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Get.theme.colorScheme.surface,
-            borderRadius: BorderRadius.circular(24),
-          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Theme Settings',
+                'theme'.tr,
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 20,
                   fontWeight: FontWeight.w600,
                   color: Get.theme.colorScheme.onSurface,
                 ),
               ),
-              const SizedBox(height: 12),
-              Obx(() =>
-                  ListTile(
-                    title: Text('Light Theme'),
-                    leading: const Icon(Icons.light_mode_rounded),
-                    trailing: themeController.themeMode.value == ThemeMode.light
-                        ? const Icon(Icons.check, color: Colors.green)
-                        : null,
-                    onTap: () {
-                      themeController.changeThemeMode(ThemeMode.light);
-                      Get.back<void>();
-                    },
-                  )),
-              Obx(() =>
-                  ListTile(
-                    title: Text('Dark Theme'),
-                    leading: const Icon(Icons.dark_mode_rounded),
-                    trailing: themeController.themeMode.value == ThemeMode.dark
-                        ? const Icon(Icons.check, color: Colors.green)
-                        : null,
-                    onTap: () {
-                      themeController.changeThemeMode(ThemeMode.dark);
-                      Get.back<void>();
-                    },
-                  )),
-              Obx(() =>
-                  ListTile(
-                    title: Text('System Theme'),
-                    leading: const Icon(Icons.settings_suggest_rounded),
-                    trailing: themeController.themeMode.value ==
-                        ThemeMode.system
-                        ? const Icon(Icons.check, color: Colors.green)
-                        : null,
-                    onTap: () {
-                      themeController.changeThemeMode(ThemeMode.system);
-                      Get.back<void>();
-                    },
-                  )),
+              const SizedBox(height: 20),
+              _buildThemeOption(
+                  'light'.tr, Icons.light_mode_outlined, ThemeMode.light,
+                  themeController),
+              _buildThemeOption(
+                  'dark'.tr, Icons.dark_mode_outlined, ThemeMode.dark,
+                  themeController),
+              _buildThemeOption(
+                  'system'.tr, Icons.phone_android_outlined, ThemeMode.system,
+                  themeController),
             ],
           ),
         ),
@@ -605,57 +376,72 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  void _showModernLanguageDialog(BuildContext context) {
+  Widget _buildThemeOption(String title, IconData icon, ThemeMode mode,
+      ThemeController controller) {
+    return Obx(() =>
+        InkWell(
+          onTap: () {
+            controller.changeThemeMode(mode);
+            Get.back<void>();
+          },
+          borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Row(
+              children: [
+                Icon(
+                  icon,
+                  size: 24,
+                  color: Get.theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Get.theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ),
+                if (controller.themeMode.value == mode)
+                  Icon(
+                    Icons.check,
+                    size: 20,
+                    color: Get.theme.colorScheme.primary,
+                  ),
+              ],
+            ),
+          ),
+        ));
+  }
+
+  void _showLanguageDialog() {
     final languageController = Get.find<LanguageController>();
 
     Get.dialog<void>(
       Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         backgroundColor: Get.theme.colorScheme.surface,
-        child: Container(
+        child: Padding(
           padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Get.theme.colorScheme.surface,
-            borderRadius: BorderRadius.circular(24),
-          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Language Settings',
+                'language'.tr,
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 20,
                   fontWeight: FontWeight.w600,
                   color: Get.theme.colorScheme.onSurface,
                 ),
               ),
-              const SizedBox(height: 12),
-              Obx(() =>
-                  ListTile(
-                    title: Text('English'),
-                    trailing: languageController.locale.value.languageCode ==
-                        'en'
-                        ? const Icon(Icons.check, color: Colors.green)
-                        : null,
-                    onTap: () {
-                      languageController.changeLanguage(
-                          const Locale('en', 'US'));
-                      Get.back<void>();
-                    },
-                  )),
-              Obx(() =>
-                  ListTile(
-                    title: Text('Tamil'),
-                    trailing: languageController.locale.value.languageCode ==
-                        'ta'
-                        ? const Icon(Icons.check, color: Colors.green)
-                        : null,
-                    onTap: () {
-                      languageController.changeLanguage(
-                          const Locale('ta', 'IN'));
-                      Get.back<void>();
-                    },
-                  )),
+              const SizedBox(height: 20),
+              _buildLanguageOption('english'.tr, 'en', languageController),
+              _buildLanguageOption('tamil'.tr, 'ta', languageController),
+              _buildLanguageOption('hindi'.tr, 'hi', languageController),
             ],
           ),
         ),
@@ -663,61 +449,107 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  void _showModernAboutDialog(BuildContext context) {
+  Widget _buildLanguageOption(String title, String langCode,
+      LanguageController controller) {
+    return Obx(() =>
+        InkWell(
+          onTap: () {
+            // Map language codes to file names
+            String langFile;
+            if (langCode == 'en') {
+              langFile = 'english';
+            } else if (langCode == 'ta') {
+              langFile = 'tamil';
+            } else if (langCode == 'hi') {
+              langFile = 'hindi';
+            } else {
+              langFile = 'english';
+            }
+            // Set the language using the file name
+            controller.setLanguage(langFile);
+            Get.back<void>();
+          },
+          borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Get.theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ),
+                if (controller.locale.value.languageCode == langCode)
+                  Icon(
+                    Icons.check,
+                    size: 20,
+                    color: Get.theme.colorScheme.primary,
+                  ),
+              ],
+            ),
+          ),
+        ));
+  }
+
+  void _showAboutDialog() {
     Get.dialog<void>(
       Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         backgroundColor: Get.theme.colorScheme.surface,
-        child: Container(
+        child: Padding(
           padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Get.theme.colorScheme.surface,
-            borderRadius: BorderRadius.circular(24),
-          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'About',
+                'about'.tr,
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 20,
                   fontWeight: FontWeight.w600,
                   color: Get.theme.colorScheme.onSurface,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 20),
               Row(
                 children: [
-                  const Icon(Icons.info_outline, size: 20),
-                  const SizedBox(width: 8),
+                  Icon(
+                    Icons.info_outlined,
+                    size: 20,
+                    color: Get.theme.colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 12),
                   Text(
-                    'Version',
-                    style: const TextStyle(fontWeight: FontWeight.w500),
+                    'version'.tr,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Get.theme.colorScheme.onSurface,
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
               Row(
                 children: [
-                  const Icon(Icons.person, size: 20),
-                  const SizedBox(width: 8),
+                  Icon(
+                    Icons.person_outlined,
+                    size: 20,
+                    color: Get.theme.colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 12),
                   Text(
-                    'Developer Contact',
-                    style: const TextStyle(fontWeight: FontWeight.w500),
+                    'developer_contact'.tr,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Get.theme.colorScheme.onSurface,
+                    ),
                   ),
                 ],
-              ),
-              const SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.only(left: 28),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Email'),
-                    const SizedBox(height: 4),
-                    Text('Website'),
-                  ],
-                ),
               ),
             ],
           ),

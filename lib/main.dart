@@ -27,6 +27,14 @@ Future<void> main() async {
   Get.put(ThemeController());
   Get.put(AppLockController());
 
+  // Verify languages are properly loaded
+  final langController = Get.find<LanguageController>();
+  await langController.verifyLanguages();
+
+  // For testing Hindi support
+  langController.setLanguage('hindi');
+  print('Hindi language test: ${Get.translations['hi_IN']?['dashboard']}');
+
   // Initialize the AuthService
   Get.put(AuthService());
 

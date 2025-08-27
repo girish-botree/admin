@@ -48,7 +48,7 @@ class ProfileWidget extends StatelessWidget {
             children: [
               Icon(Icons.logout, size: 16),
               SizedBox(width: 8),
-              Text('Logout'),
+              Text('logout'.tr),
             ],
           ),
         ),
