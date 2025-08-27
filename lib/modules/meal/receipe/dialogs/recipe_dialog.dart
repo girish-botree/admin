@@ -208,13 +208,14 @@ class RecipeDialogs {
                               prefixIcon: Icons.people_outline,
                             ))),
                         const SizedBox(width: 16),
-                        Expanded(child: RecipeCuisineDropdown(
+                        Expanded(child: Obx(() =>
+                            RecipeCuisineDropdown(
                           dialogContext,
-                          controller.cuisineController.text,
+                          controller.selectedCuisine.value,
                               (String? value) {
                             controller.cuisineController.text = value ?? '';
                           },
-                        )),
+                        ))),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -626,13 +627,14 @@ class RecipeDetailsSection extends StatelessWidget {
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: RecipeCuisineDropdown(
+              child: Obx(() =>
+                  RecipeCuisineDropdown(
                 context,
-                controller.cuisineController.text,
+                controller.selectedCuisine.value,
                     (String? value) {
                   controller.cuisineController.text = value ?? '';
                 },
-              ),
+              )),
             ),
           ],
         ),
@@ -1660,7 +1662,7 @@ class RecipeCuisineDropdown extends StatelessWidget {
       value: value.isNotEmpty ? value : null,
       label: 'Cuisine',
       hint: 'Select cuisine type',
-      prefixIcon: Icon(Icons.public_outlined),
+      prefixIcon: const Icon(Icons.public_outlined),
       onChanged: onChanged,
     );
   }

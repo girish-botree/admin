@@ -882,6 +882,103 @@ class IngredientDialogs {
                             0}g'),
                   ];
                 })(),
+                // Add Vitamins Section
+                const SizedBox(height: 24),
+                ...(() {
+                  Map<String, dynamic> vitamins = {};
+                  try {
+                    final vitaminsStr = ingredient['vitamins'] as String?;
+                    if (vitaminsStr != null && vitaminsStr.isNotEmpty) {
+                      final decoded = jsonDecode(vitaminsStr);
+                      if (decoded is Map<String, dynamic>) {
+                        vitamins = decoded;
+                      }
+                    }
+                  } catch (e) {
+                    // Ignore JSON parsing errors
+                  }
+
+                  if (vitamins.isEmpty) {
+                    return [Container()];
+                  }
+
+                  return [
+                    Text(
+                      'Vitamins',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: context.theme.colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: vitamins.keys.map((key) =>
+                          Chip(
+                            label: Text(key),
+                            backgroundColor: context.theme.colorScheme
+                                .primaryContainer,
+                            labelStyle: TextStyle(
+                              color: context.theme.colorScheme
+                                  .onPrimaryContainer,
+                              fontSize: 12,
+                            ),
+                          )
+                      ).toList(),
+                    ),
+                  ];
+                })(),
+
+                // Add Minerals Section
+                const SizedBox(height: 24),
+                ...(() {
+                  Map<String, dynamic> minerals = {};
+                  try {
+                    final mineralsStr = ingredient['minerals'] as String?;
+                    if (mineralsStr != null && mineralsStr.isNotEmpty) {
+                      final decoded = jsonDecode(mineralsStr);
+                      if (decoded is Map<String, dynamic>) {
+                        minerals = decoded;
+                      }
+                    }
+                  } catch (e) {
+                    // Ignore JSON parsing errors
+                  }
+
+                  if (minerals.isEmpty) {
+                    return [Container()];
+                  }
+
+                  return [
+                    Text(
+                      'Minerals',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: context.theme.colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: minerals.keys.map((key) =>
+                          Chip(
+                            label: Text(key),
+                            backgroundColor: context.theme.colorScheme
+                                .secondaryContainer,
+                            labelStyle: TextStyle(
+                              color: context.theme.colorScheme
+                                  .onSecondaryContainer,
+                              fontSize: 12,
+                            ),
+                          )
+                      ).toList(),
+                    ),
+                  ];
+                })(),
               ],
             ),
           ),

@@ -11,8 +11,8 @@ class RecipeDetailsDialog {
     final RxBool isLoadingIngredients = true.obs;
     final Rx<Map<String, dynamic>?> nutritionData = Rx<Map<String, dynamic>?>(
         null);
-    final RxBool isIngredientsExpanded = false.obs;
-    final RxBool isNutritionExpanded = false.obs;
+    final RxBool isIngredientsExpanded = true.obs;
+    final RxBool isNutritionExpanded = true.obs;
 
     final controller = Get.find<MealController>();
 
@@ -132,6 +132,7 @@ class RecipeDetailsDialog {
                         RecipeNutritionDetails(
                           nutritionData: nutritionData,
                           isNutritionExpanded: isNutritionExpanded,
+                          recipeIngredients: recipeIngredients,
                         ),
                       ],
                     ),
@@ -763,11 +764,13 @@ class RecipeIngredientsDetails extends StatelessWidget {
 class RecipeNutritionDetails extends StatelessWidget {
   final Rx<Map<String, dynamic>?> nutritionData;
   final RxBool isNutritionExpanded;
+  final RxList<dynamic> recipeIngredients;
 
   const RecipeNutritionDetails({
     super.key,
     required this.nutritionData,
     required this.isNutritionExpanded,
+    required this.recipeIngredients,
   });
 
   @override
@@ -978,14 +981,27 @@ class RecipeNutritionDetails extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
-            'Add ingredients to this recipe to unlock detailed nutrition analysis',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.amber[600],
-            ),
-            textAlign: TextAlign.center,
-          ),
+          Obx(() {
+            if (recipeIngredients.isEmpty) {
+              return Text(
+                'Add ingredients to this recipe to unlock detailed nutrition analysis',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.amber[600],
+                ),
+                textAlign: TextAlign.center,
+              );
+            } else {
+              return Text(
+                'Nutrition data is being calculated based on ingredients',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.amber[600],
+                ),
+                textAlign: TextAlign.center,
+              );
+            }
+          }),
         ],
       ),
     );

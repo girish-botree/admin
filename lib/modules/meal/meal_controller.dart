@@ -53,6 +53,7 @@ class MealController extends GetxController {
   final descriptionController = TextEditingController();
   final servingsController = TextEditingController();
   final cuisineController = TextEditingController();
+  final selectedCuisine = RxString('');
   final categoryController = TextEditingController();
   final caloriesController = TextEditingController();
   final proteinController = TextEditingController();
@@ -76,6 +77,11 @@ class MealController extends GetxController {
     // Listen to search query changes
     searchController.addListener(() {
       searchQuery.value = searchController.text;
+    });
+
+    // Listen to cuisine controller changes
+    cuisineController.addListener(() {
+      selectedCuisine.value = cuisineController.text;
     });
 
     // Setup reactive listeners
@@ -402,6 +408,7 @@ class MealController extends GetxController {
     descriptionController.clear();
     servingsController.text = '1';
     cuisineController.clear();
+    selectedCuisine.value = '';
     resetFormErrors();
   }
   
@@ -434,6 +441,7 @@ class MealController extends GetxController {
     descriptionController.text = (recipe['description'] as String?) ?? '';
     servingsController.text = (recipe['servings']?.toString()) ?? '1';
     cuisineController.text = (recipe['cuisine'] as String?) ?? '';
+    selectedCuisine.value = cuisineController.text;
   }
   
   void setupIngredientForm(dynamic ingredient) {

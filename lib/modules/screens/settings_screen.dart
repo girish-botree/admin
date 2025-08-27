@@ -111,8 +111,6 @@ class SettingsScreen extends StatelessWidget {
           }),
         ]),
 
-        const SizedBox(height: 32),
-
         _buildSettingsGroup([
           _buildSettingsTile(
             icon: Icons.info_outlined,
@@ -124,22 +122,6 @@ class SettingsScreen extends StatelessWidget {
           ),
         ]),
 
-        const SizedBox(height: 32),
-
-        ElevatedButton(
-          onPressed: () {
-            final languageController = Get.find<LanguageController>();
-            languageController.setLanguage('hindi');
-            Get.snackbar(
-              'Language Test',
-              'Changed to Hindi. Dashboard should be "डैशबोर्ड"',
-              duration: const Duration(seconds: 5),
-            );
-          },
-          child: const Text('Test Hindi Language'),
-        ),
-
-        const SizedBox(height: 32),
 
         _buildLogoutButton(),
       ],

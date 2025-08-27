@@ -89,6 +89,17 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
     if (oldWidget.value != widget.value) {
       _selectedItem =
           DropdownDataManager.findItemByValue(widget.items, widget.value);
+
+      // Ensure we have a valid selectedItem by searching by value as string if needed
+      if (_selectedItem == null && widget.value != null) {
+        // Try finding by string comparison for cases where value types might not match exactly
+        final valueStr = widget.value.toString();
+        _selectedItem = widget.items.firstWhere(
+              (item) => item.value.toString() == valueStr,
+          orElse: () =>
+              DropdownDataManager.findItemByLabel(widget.items, valueStr),
+        );
+      }
     }
   }
 

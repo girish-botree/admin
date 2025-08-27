@@ -433,21 +433,14 @@ class ModernSearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: context.theme.colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(28),
         border: Border.all(
-          color: context.theme.colorScheme.outline.withValues(alpha: 0.2),
-          width: 1,
+          color: context.theme.colorScheme.onSurface.withOpacity(0.1),
+          width: 1.5,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: context.theme.colorScheme.shadow.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: ValueListenableBuilder<TextEditingValue>(
         valueListenable: controller,
@@ -457,32 +450,44 @@ class ModernSearchBar extends StatelessWidget {
             onChanged: onChanged,
             style: TextStyle(
               color: context.theme.colorScheme.onSurface,
+              fontSize: 16,
             ),
             decoration: InputDecoration(
               hintText: hintText,
               hintStyle: TextStyle(
-                color: context.theme.colorScheme.onSurface.withValues(
-                    alpha: 0.6),
+                color: context.theme.colorScheme.onSurface.withOpacity(0.5),
+                fontSize: 16,
               ),
-              prefixIcon: Icon(
-                Icons.search_rounded,
-                color: context.theme.colorScheme.onSurface.withValues(
-                    alpha: 0.6),
+              prefixIcon: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6),
+                child: Icon(
+                  Icons.search_rounded,
+                  color: context.theme.colorScheme.onSurface.withOpacity(0.7),
+                  size: 24,
+                ),
               ),
               suffixIcon: value.text.isNotEmpty
-                  ? IconButton(
-                onPressed: onClear,
-                icon: Icon(
-                  Icons.clear_rounded,
-                  color: context.theme.colorScheme.onSurface.withValues(
-                      alpha: 0.6),
+                  ? Padding(
+                padding: const EdgeInsets.only(right: 6),
+                child: IconButton(
+                  onPressed: onClear,
+                  icon: Icon(
+                    Icons.clear_rounded,
+                    color: context.theme.colorScheme.onSurface.withOpacity(0.7),
+                    size: 20,
+                  ),
                 ),
               )
                   : null,
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16, vertical: 14),
+                  horizontal: 16, vertical: 16),
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
             ),
+            cursorColor: context.theme.colorScheme.onSurface,
+            cursorWidth: 1.5,
+            cursorRadius: const Radius.circular(2),
           );
         },
       ),

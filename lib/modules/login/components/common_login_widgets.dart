@@ -228,8 +228,8 @@ Widget buildLoginButton({
           ? SizedBox(
               width: height * 0.5,
               height: height * 0.5,
-              child: const CircularProgressIndicator(
-                color: Colors.white,
+        child: CircularProgressIndicator(
+          color: Get.context!.theme.colorScheme.onSurface,
                 strokeWidth: 2,
               ),
             )

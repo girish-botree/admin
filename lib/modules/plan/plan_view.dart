@@ -95,15 +95,10 @@ class PlanView extends GetView<PlanController> {
                 
                 // Check if any meals exist for the day
                 _hasNoMealsForDay()
-                    ? EmptyStateWidget(
+                    ? const EmptyStateWidget(
                   icon: Icons.restaurant_menu_outlined,
                   title: 'No meal plans found',
                   subtitle: 'Create your first meal plan for this date',
-                  action: ElevatedButton.icon(
-                    onPressed: () => _showCreateDialog,
-                    icon: const Icon(Icons.add),
-                    label: const Text('Create Meal Plan'),
-                  ),
                 )
                     : Column(
                   children: [

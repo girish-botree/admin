@@ -414,6 +414,24 @@ class DropdownDataManager {
       return null;
     }
   }
+
+  // Get item by label
+  static DropdownItem findItemByLabel(List<DropdownItem> items, String label) {
+    try {
+      return items.firstWhere(
+            (item) => item.label.toLowerCase() == label.toLowerCase(),
+        orElse: () => items.first,
+      );
+    } catch (e) {
+      // If no items or other error, return a default item
+      return const DropdownItem(
+        value: '',
+        label: 'Unknown',
+        description: '',
+        icon: '❓',
+      );
+    }
+  }
 }
 
 // Data model for dropdown items
