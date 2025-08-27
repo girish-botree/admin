@@ -19,12 +19,18 @@ class IngredientsView extends GetView<MealController> {
           children: [
             // Search bar
             ModernSearchBar(
-              controller: controller.searchController,
+              controller: controller.ingredientSearchController,
               hintText: 'Search ingredients, categories...',
               onChanged: (value) {
-                // This will trigger the reactive update
+                // Explicitly update the search query
+                controller.ingredientSearchQuery.value = value;
+                controller.updateFilteredIngredients();
               },
-              onClear: () => controller.clearSearch(),
+              onClear: () {
+                controller.ingredientSearchController.clear();
+                controller.ingredientSearchQuery.value = '';
+                controller.updateFilteredIngredients();
+              },
             ),
 
             // Sort and filter bar
@@ -151,8 +157,10 @@ class IngredientsView extends GetView<MealController> {
       subtitle: 'Try adjusting your search or filters\nto find what you\'re looking for',
       icon: Icons.search_rounded,
       onReset: () {
-        controller.clearSearch();
+        controller.ingredientSearchController.clear();
+        controller.ingredientSearchQuery.value = '';
         controller.resetFilters();
+        controller.updateFilteredIngredients();
       },
     );
   }

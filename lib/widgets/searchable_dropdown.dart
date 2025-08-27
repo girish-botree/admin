@@ -105,9 +105,17 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
 
   @override
   void dispose() {
+    // Close dropdown before disposing anything else
+    if (_isOpen) {
+      // If open, remove overlay without animation
+      _overlayEntry?.remove();
+      _overlayEntry = null;
+      _isOpen = false;
+    }
+
+    // Dispose controllers and focus nodes safely
     _searchController.dispose();
     _searchFocusNode.dispose();
-    _closeDropdown();
     _animationController.dispose();
     super.dispose();
   }
@@ -150,6 +158,11 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
   void _closeDropdown() {
     if (!_isOpen) return;
 
+    // First remove focus from search field to avoid focus issues
+    if (_searchFocusNode.hasFocus) {
+      _searchFocusNode.unfocus();
+    }
+
     if (_animationController.isAnimating) {
       _animationController.stop();
     }
@@ -173,6 +186,36 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
   }
 
   OverlayEntry _createOverlayEntry(Size size, Offset offset) {
+    // Calculate available space below and above the dropdown
+    final screenHeight = MediaQuery
+        .of(context)
+        .size
+        .height;
+    final keyboardHeight = MediaQuery
+        .of(context)
+        .viewInsets
+        .bottom;
+    final availableSpaceBelow = screenHeight - offset.dy - size.height -
+        keyboardHeight - 8.0;
+    final availableSpaceAbove = offset.dy - MediaQuery
+        .of(context)
+        .padding
+        .top - 8.0;
+
+    // Default dropdown height (with some buffer for padding)
+    final estimatedDropdownHeight =
+        (widget.items.length * 50.0).clamp(0.0, widget.maxHeight ?? 300.0) +
+            (widget.showSearch ? 80.0 : 0.0);
+
+    // Determine if dropdown should appear above or below
+    final showAbove = availableSpaceBelow < estimatedDropdownHeight &&
+        availableSpaceAbove > availableSpaceBelow;
+
+    // Adjust max height based on available space
+    final adjustedMaxHeight = showAbove
+        ? availableSpaceAbove.clamp(100.0, widget.maxHeight ?? 300.0)
+        : availableSpaceBelow.clamp(100.0, widget.maxHeight ?? 300.0);
+
     return OverlayEntry(
       builder: (context) =>
           Positioned(
@@ -180,7 +223,8 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
             child: CompositedTransformFollower(
               link: _layerLink,
               showWhenUnlinked: false,
-              offset: Offset(0.0, size.height + 4.0),
+              offset: Offset(0.0,
+                  showAbove ? -adjustedMaxHeight - 8.0 : size.height + 4.0),
               child: Material(
                 elevation: 8,
                 borderRadius: BorderRadius.circular(16),
@@ -210,9 +254,42 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
     final theme = _cachedTheme ??
         Theme.of(context); // Use cached theme if available
 
+    // Calculate available space below and above the dropdown
+    final screenHeight = MediaQuery
+        .of(context)
+        .size
+        .height;
+    final renderBox = _dropdownKey.currentContext
+        ?.findRenderObject() as RenderBox?;
+    final offset = renderBox?.localToGlobal(Offset.zero);
+
+    // Default to widget.maxHeight if we can't determine constraints dynamically
+    double constrainedHeight = widget.maxHeight!;
+
+    if (renderBox != null && offset != null) {
+      final size = renderBox.size;
+      final keyboardHeight = MediaQuery
+          .of(context)
+          .viewInsets
+          .bottom;
+      final availableSpaceBelow = screenHeight - offset.dy - size.height -
+          keyboardHeight - 8.0;
+      final availableSpaceAbove = offset.dy - MediaQuery
+          .of(context)
+          .padding
+          .top - 8.0;
+
+      final showAbove = availableSpaceBelow < (widget.maxHeight ?? 300.0) &&
+          availableSpaceAbove > availableSpaceBelow;
+
+      constrainedHeight =
+          (showAbove ? availableSpaceAbove : availableSpaceBelow)
+              .clamp(100.0, widget.maxHeight ?? 300.0);
+    }
+
     return Container(
       constraints: BoxConstraints(
-        maxHeight: widget.maxHeight!,
+        maxHeight: constrainedHeight,
       ),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,

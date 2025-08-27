@@ -17,8 +17,10 @@ class MealController extends GetxController {
   final selectedIngredient = Rxn<dynamic>();
 
   // Search state
-  final searchController = TextEditingController();
-  final searchQuery = ''.obs;
+  final recipeSearchController = TextEditingController();
+  final ingredientSearchController = TextEditingController();
+  final recipeSearchQuery = ''.obs;
+  final ingredientSearchQuery = ''.obs;
 
   // Sort state
   final recipeSortBy = 'name'.obs; // name, servings, calories
@@ -75,8 +77,14 @@ class MealController extends GetxController {
     fetchIngredients();
 
     // Listen to search query changes
-    searchController.addListener(() {
-      searchQuery.value = searchController.text;
+    recipeSearchController.addListener(() {
+      recipeSearchQuery.value = recipeSearchController.text;
+      updateFilteredRecipes();
+    });
+
+    ingredientSearchController.addListener(() {
+      ingredientSearchQuery.value = ingredientSearchController.text;
+      updateFilteredIngredients();
     });
 
     // Listen to cuisine controller changes
@@ -85,11 +93,8 @@ class MealController extends GetxController {
     });
 
     // Setup reactive listeners
-    ever(searchQuery, (_) {
-      updateFilteredRecipes();
-      updateFilteredIngredients();
-    });
-
+    ever(recipeSearchQuery, (_) => updateFilteredRecipes());
+    ever(ingredientSearchQuery, (_) => updateFilteredIngredients());
     ever(recipeSortBy, (_) => updateFilteredRecipes());
     ever(ingredientSortBy, (_) => updateFilteredIngredients());
     ever(sortAscending, (_) {
@@ -595,13 +600,13 @@ class MealController extends GetxController {
     List<dynamic> filtered = recipes.value;
 
     // Apply search filter
-    if (searchQuery.value.isNotEmpty) {
+    if (recipeSearchQuery.value.isNotEmpty) {
       filtered = filtered.where((recipe) {
         final name = (recipe['name'] as String? ?? '').toLowerCase();
         final description = (recipe['description'] as String? ?? '')
             .toLowerCase();
         final cuisine = (recipe['cuisine'] as String? ?? '').toLowerCase();
-        final query = searchQuery.value.toLowerCase();
+        final query = recipeSearchQuery.value.toLowerCase();
 
         return name.contains(query) ||
             description.contains(query) ||
@@ -654,7 +659,7 @@ class MealController extends GetxController {
     List<dynamic> filtered = ingredients.value;
 
     // Apply search filter
-    if (searchQuery.value.isNotEmpty) {
+    if (ingredientSearchQuery.value.isNotEmpty) {
       filtered = filtered.where((ingredient) {
         final name = (ingredient['name'] as String? ??
             ingredient['ingredientName'] as String? ?? '').toLowerCase();
@@ -662,7 +667,7 @@ class MealController extends GetxController {
             .toLowerCase();
         final category = (ingredient['category'] as String? ?? '')
             .toLowerCase();
-        final query = searchQuery.value.toLowerCase();
+        final query = ingredientSearchQuery.value.toLowerCase();
 
         return name.contains(query) ||
             description.contains(query) ||
@@ -746,8 +751,12 @@ class MealController extends GetxController {
 
   // Search and filter control methods
   void clearSearch() {
-    searchController.clear();
-    searchQuery.value = '';
+    recipeSearchController.clear();
+    ingredientSearchController.clear();
+    recipeSearchQuery.value = '';
+    ingredientSearchQuery.value = '';
+    updateFilteredRecipes();
+    updateFilteredIngredients();
   }
 
   void resetFilters() {
@@ -781,7 +790,8 @@ class MealController extends GetxController {
     saturatedFatController.dispose();
     monoFatController.dispose();
     polyFatController.dispose();
-    searchController.dispose();
+    recipeSearchController.dispose();
+    ingredientSearchController.dispose();
     super.onClose();
   }
 }

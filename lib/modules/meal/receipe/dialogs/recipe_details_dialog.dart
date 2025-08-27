@@ -13,6 +13,7 @@ class RecipeDetailsDialog {
         null);
     final RxBool isIngredientsExpanded = true.obs;
     final RxBool isNutritionExpanded = true.obs;
+    final RxBool isStepsExpanded = true.obs;
 
     final controller = Get.find<MealController>();
 
@@ -41,6 +42,9 @@ class RecipeDetailsDialog {
         }
 
         if (recipeData != null) {
+          // Update the recipe with the full details
+          recipe = recipeData;
+
           if (recipeData['ingredients'] != null) {
             final ingredientsList = recipeData['ingredients'];
             if (ingredientsList is List) {
@@ -134,6 +138,19 @@ class RecipeDetailsDialog {
                           isNutritionExpanded: isNutritionExpanded,
                           recipeIngredients: recipeIngredients,
                         ),
+
+                        const SizedBox(height: 24),
+
+                        // Recipe Steps/Preparation Section
+                        if (recipe['description']
+                            ?.toString()
+                            .isNotEmpty == true) ...[
+                          RecipePreparationSteps(
+                            recipe: recipe,
+                            isStepsExpanded: isStepsExpanded,
+                          ),
+                          const SizedBox(height: 24),
+                        ],
                       ],
                     ),
                   ),
@@ -941,23 +958,314 @@ class RecipeNutritionDetails extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            context.theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
-            context.theme.colorScheme.primaryContainer.withValues(alpha: 0.2),
-          ],
-        ),
+        color: context.theme.colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+            color: context.theme.colorScheme.outline.withValues(alpha: 0.2)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      child: Text(
-        'Detailed nutrition information would be displayed here',
-        style: TextStyle(
-          fontSize: 16,
-          color: context.theme.colorScheme.onSurface.withValues(alpha: 0.8),
-        ),
-        textAlign: TextAlign.center,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Macronutrients
+          _buildNutritionSection(
+            context: context,
+            title: 'Macronutrients',
+            icon: Icons.pie_chart_rounded,
+            color: Colors.purple,
+            content: Column(
+              children: [
+                _buildNutritionItem(
+                  context: context,
+                  label: 'Calories',
+                  value: '${nutrition['calories']?.toStringAsFixed(0) ?? '0'}',
+                  unit: 'kcal',
+                  color: Colors.orange,
+                ),
+                _buildNutritionItem(
+                  context: context,
+                  label: 'Protein',
+                  value: '${nutrition['protein']?.toStringAsFixed(1) ?? '0'}',
+                  unit: 'g',
+                  color: Colors.red,
+                ),
+                _buildNutritionItem(
+                  context: context,
+                  label: 'Carbohydrates',
+                  value: '${nutrition['carbohydrates']?.toStringAsFixed(1) ??
+                      '0'}',
+                  unit: 'g',
+                  color: Colors.blue,
+                ),
+                _buildNutritionItem(
+                  context: context,
+                  label: 'Fat',
+                  value: '${nutrition['fat']?.toStringAsFixed(1) ?? '0'}',
+                  unit: 'g',
+                  color: Colors.green,
+                ),
+                _buildNutritionItem(
+                  context: context,
+                  label: 'Fiber',
+                  value: '${nutrition['fiber']?.toStringAsFixed(1) ?? '0'}',
+                  unit: 'g',
+                  color: Colors.brown,
+                ),
+                _buildNutritionItem(
+                  context: context,
+                  label: 'Sugar',
+                  value: '${nutrition['sugar']?.toStringAsFixed(1) ?? '0'}',
+                  unit: 'g',
+                  color: Colors.pink,
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Fat Breakdown
+          if (nutrition['fatBreakdown'] is Map &&
+              (nutrition['fatBreakdown'] as Map).isNotEmpty)
+            _buildNutritionSection(
+              context: context,
+              title: 'Fat Breakdown',
+              icon: Icons.opacity,
+              color: Colors.green,
+              content: Column(
+                children: [
+                  for (var entry in (nutrition['fatBreakdown'] as Map).entries)
+                    _buildNutritionItem(
+                      context: context,
+                      label: _formatFatLabel(entry.key.toString()),
+                      value: '${(entry.value as num?)?.toStringAsFixed(1) ??
+                          '0'}',
+                      unit: 'g',
+                      color: Colors.green.shade700,
+                    ),
+                ],
+              ),
+            ),
+
+          const SizedBox(height: 16),
+
+          // Vitamins
+          if (nutrition['vitamins'] is Map &&
+              (nutrition['vitamins'] as Map).isNotEmpty)
+            _buildNutritionSection(
+              context: context,
+              title: 'Vitamins',
+              icon: Icons.local_pharmacy_rounded,
+              color: Colors.orange,
+              content: Column(
+                children: [
+                  for (var entry in (nutrition['vitamins'] as Map).entries)
+                    _buildNutritionItem(
+                      context: context,
+                      label: _formatVitaminLabel(entry.key.toString()),
+                      value: '${(entry.value as num?)?.toStringAsFixed(1) ??
+                          '0'}',
+                      unit: 'mg',
+                      color: Colors.orange.shade700,
+                    ),
+                ],
+              ),
+            ),
+
+          const SizedBox(height: 16),
+
+          // Minerals
+          if (nutrition['minerals'] is Map &&
+              (nutrition['minerals'] as Map).isNotEmpty)
+            _buildNutritionSection(
+              context: context,
+              title: 'Minerals',
+              icon: Icons.bolt_rounded,
+              color: Colors.blue,
+              content: Column(
+                children: [
+                  for (var entry in (nutrition['minerals'] as Map).entries)
+                    _buildNutritionItem(
+                      context: context,
+                      label: _formatMineralLabel(entry.key.toString()),
+                      value: '${(entry.value as num?)?.toStringAsFixed(1) ??
+                          '0'}',
+                      unit: 'mg',
+                      color: Colors.blue.shade700,
+                    ),
+                ],
+              ),
+            ),
+        ],
       ),
     );
+  }
+
+  Widget _buildNutritionSection({
+    required BuildContext context,
+    required String title,
+    required IconData icon,
+    required Color color,
+    required Widget content,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, color: Colors.white, size: 16),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: context.theme.colorScheme.onSurface,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        content,
+      ],
+    );
+  }
+
+  Widget _buildNutritionItem({
+    required BuildContext context,
+    required String label,
+    required String value,
+    required String unit,
+    required Color color,
+  }) {
+    final numValue = double.tryParse(value) ?? 0.0;
+    if (numValue <= 0) return const SizedBox.shrink(); // Don't show zero values
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                color: context.theme.colorScheme.onSurface,
+              ),
+            ),
+          ),
+          Text(
+            '$value $unit',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: context.theme.colorScheme.onSurface,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatVitaminLabel(String key) {
+    switch (key.toLowerCase()) {
+      case 'a':
+        return 'Vitamin A';
+      case 'c':
+        return 'Vitamin C';
+      case 'd':
+        return 'Vitamin D';
+      case 'e':
+        return 'Vitamin E';
+      case 'k':
+        return 'Vitamin K';
+      case 'b1':
+        return 'Vitamin B1 (Thiamin)';
+      case 'b2':
+        return 'Vitamin B2 (Riboflavin)';
+      case 'b3':
+        return 'Vitamin B3 (Niacin)';
+      case 'b5':
+        return 'Vitamin B5 (Pantothenic Acid)';
+      case 'b6':
+        return 'Vitamin B6 (Pyridoxine)';
+      case 'b7':
+        return 'Vitamin B7 (Biotin)';
+      case 'b9':
+        return 'Vitamin B9 (Folate)';
+      case 'b12':
+        return 'Vitamin B12 (Cobalamin)';
+      default:
+        return 'Vitamin $key';
+    }
+  }
+
+  String _formatMineralLabel(String key) {
+    switch (key.toLowerCase()) {
+      case 'ca':
+        return 'Calcium';
+      case 'fe':
+        return 'Iron';
+      case 'mg':
+        return 'Magnesium';
+      case 'p':
+        return 'Phosphorus';
+      case 'k':
+        return 'Potassium';
+      case 'na':
+        return 'Sodium';
+      case 'zn':
+        return 'Zinc';
+      case 'cu':
+        return 'Copper';
+      case 'mn':
+        return 'Manganese';
+      case 'se':
+        return 'Selenium';
+      default:
+        return key;
+    }
+  }
+
+  String _formatFatLabel(String key) {
+    switch (key.toLowerCase()) {
+      case 'saturated':
+        return 'Saturated Fat';
+      case 'monounsaturated':
+        return 'Monounsaturated Fat';
+      case 'polyunsaturated':
+        return 'Polyunsaturated Fat';
+      case 'trans':
+        return 'Trans Fat';
+      case 'omega3':
+        return 'Omega-3 Fatty Acids';
+      case 'omega6':
+        return 'Omega-6 Fatty Acids';
+      default:
+        return key;
+    }
   }
 
   Widget _buildNutritionPlaceholder(BuildContext context) {
@@ -1005,5 +1313,229 @@ class RecipeNutritionDetails extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class RecipePreparationSteps extends StatelessWidget {
+  final dynamic recipe;
+  final RxBool isStepsExpanded;
+
+  const RecipePreparationSteps({
+    super.key,
+    required this.recipe,
+    required this.isStepsExpanded,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final String description = recipe['description']?.toString() ?? '';
+
+    final List<String> steps = _extractSteps(description);
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: context.theme.colorScheme.primary,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                  Icons.format_list_numbered_rounded,
+                  color: Colors.white,
+                  size: 20
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text(
+                'Preparation',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Obx(() =>
+                IconButton(
+                  onPressed: () => isStepsExpanded.toggle(),
+                  icon: AnimatedRotation(
+                    turns: isStepsExpanded.value ? 0.5 : 0.0,
+                    duration: const Duration(milliseconds: 300),
+                    child: Icon(
+                      Icons.keyboard_arrow_down,
+                      color: context.theme.colorScheme.primary,
+                    ),
+                  ),
+                )),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Obx(() =>
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 400),
+              curve: Curves.easeInOut,
+              child: isStepsExpanded.value
+                  ? _buildStepsContent(context, steps)
+                  : _buildStepsPreview(context, steps),
+            )),
+      ],
+    );
+  }
+
+  Widget _buildStepsContent(BuildContext context, List<String> steps) {
+    if (steps.isEmpty) {
+      return _buildEmptyCard(context);
+    }
+
+    return Column(
+      children: List.generate(
+        steps.length,
+            (index) =>
+            Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: context.theme.colorScheme.surfaceContainerLowest,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: context.theme.colorScheme.outline.withValues(
+                      alpha: 0.2),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: context.theme.colorScheme.primary,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        bottomLeft: Radius.circular(16),
+                      ),
+                    ),
+                    child: Text(
+                      '${index + 1}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        steps[index],
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: context.theme.colorScheme.onSurface,
+                          height: 1.6,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+      ),
+    );
+  }
+
+  Widget _buildStepsPreview(BuildContext context, List<String> steps) {
+    if (steps.isEmpty) {
+      return _buildEmptyCard(context);
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.theme.colorScheme.primaryContainer.withValues(
+            alpha: 0.3),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+            color: context.theme.colorScheme.primary.withValues(alpha: 0.2)
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Quick Preview',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            steps.isNotEmpty
+                ? '${steps.length} step${steps.length > 1
+                ? 's'
+                : ''} to prepare this recipe'
+                : 'No preparation steps available',
+            style: TextStyle(
+              fontSize: 16,
+              color: context.theme.colorScheme.onSurface,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Tap to view all steps',
+            style: TextStyle(
+              fontSize: 12,
+              color: context.theme.colorScheme.primary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyCard(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: Colors.amber.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.amber.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        children: [
+          Icon(Icons.format_list_numbered_outlined, size: 48,
+              color: Colors.amber[700]),
+          const SizedBox(height: 16),
+          Text(
+            'No preparation steps available',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.amber[700],
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<String> _extractSteps(String description) {
+    if (description.isEmpty) {
+      return [];
+    }
+
+    return description.split('\n');
   }
 }

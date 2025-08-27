@@ -21,29 +21,16 @@ class WebHome extends GetView<HomeController> {
   PreferredSizeWidget _buildWebAppBar(BuildContext context) {
     return AppBar(
       title: AppText.semiBold(
-        'Admin Dashboard',
+        'Dashboard',
         color: context.theme.colorScheme.onSurface,
-        size: 28,
+        size: 20,
       ),
       backgroundColor: Colors.transparent,
       elevation: 0,
       foregroundColor: context.theme.colorScheme.onSurface,
-      actions: [
-        TextButton.icon(
-          onPressed: () => controller.refreshDashboard(),
-          icon: Icon(
-            Icons.refresh,
-            color: context.theme.colorScheme.primary,
-          ),
-          label: AppText(
-            'Refresh',
-            color: context.theme.colorScheme.primary,
-            size: 14,
-          ),
-        ),
-        const SizedBox(width: 16),
+      actions: const [
         Padding(
-          padding: const EdgeInsets.only(right: 32.0),
+          padding: EdgeInsets.only(right: 16.0),
           child: SettingsWidget(),
         ),
       ],
@@ -51,104 +38,27 @@ class WebHome extends GetView<HomeController> {
   }
 
   Widget _buildWebBody(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 64.0, vertical: 32.0),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Welcome section
-          _buildWelcomeSection(context),
-          
-          const SizedBox(height: 32),
-          
-          // Main dashboard content
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Left panel - Main features
-              Expanded(
-                flex: 2,
-                child: _buildMainFeaturesPanel(context),
-              ),
-              
-              const SizedBox(width: 32),
-              
-              // Right panel - Quick actions & stats
-              Expanded(
-                flex: 1,
-                child: _buildSidePanel(context),
-              ),
-            ],
+          // Analytics Dashboard Card
+          _buildWebCard(
+            context: context,
+            onTap: () => Get.toNamed<void>(AppRoutes.dashboard),
+            icon: Icons.analytics_outlined,
+            title: 'Analytics',
+            subtitle: 'View insights and metrics',
+            isPrimary: true,
           ),
+
+          const SizedBox(height: 12),
+
+          // Admin Management Card with Add Button
+          _buildAdminManagementCard(context),
         ],
       ),
     );
-  }
-
-  Widget _buildWelcomeSection(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(32.0),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            context.theme.colorScheme.primaryContainer,
-            context.theme.colorScheme.primaryContainer.withValues(alpha: 0.7),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AppText.semiBold(
-            'Welcome to Admin Dashboard',
-            color: context.theme.colorScheme.onPrimaryContainer,
-            size: 24,
-          ),
-          const SizedBox(height: 8),
-          AppText(
-            'Manage your meal planning system efficiently',
-            color: context.theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
-            size: 16,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMainFeaturesPanel(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        AppText.semiBold(
-          'Main Features',
-          color: context.theme.colorScheme.onSurface,
-          size: 20,
-        ),
-        const SizedBox(height: 16),
-        
-        // Primary feature cards
-        _buildWebCard(
-          context: context,
-          onTap: () => Get.toNamed<void>(AppRoutes.dashboard),
-          icon: Icons.analytics_outlined,
-          title: 'Analytics Dashboard',
-          subtitle: 'Comprehensive insights, metrics, and data visualization for informed decision making',
-          isPrimary: true,
-        ),
-        
-        const SizedBox(height: 16),
-
-        _buildAdminManagementCard(context),
-      ],
-    );
-  }
-
-  Widget _buildSidePanel(BuildContext context) {
-    return Container();
   }
 
   Widget _buildWebCard({
@@ -159,48 +69,50 @@ class WebHome extends GetView<HomeController> {
     required String subtitle,
     bool isPrimary = false,
   }) {
-    return Container(width: double.infinity,
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(vertical: 4.0),
       child: Material(
         color: isPrimary
-            ? context.theme.colorScheme.primaryContainer
-            : context.theme.colorScheme.surfaceContainerLowest,borderRadius: BorderRadius.circular(16),
-        elevation: isPrimary ? 4 : 2,
+            ? context.theme.colorScheme.onSurface
+            : context.theme.colorScheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(12),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(16.0),
             child: Row(
               children: [
                 Container(
-                  width: 72,
-                  height: 72,
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
                     color: context.theme.colorScheme.surfaceContainerLowest,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     icon,
                     color: context.theme.colorScheme.onSurface,
-                    size: 36,
+                    size: 24,
                   ),
                 ),
-                const SizedBox(width: 24),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AppText.semiBold(
                         title,
-                        color: context.theme.colorScheme.onSurface,
-                        size: 18,
+                        color: context.theme.colorScheme.surfaceContainerLowest,
+                        size: 16,
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 4),
                       AppText(
                         subtitle,
-                        color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                        color: context.theme.colorScheme.surfaceContainerLowest
+                            .withValues(alpha: 0.7),
                         size: 14,
-                        maxLines: 2,
                       ),
                     ],
                   ),
@@ -208,7 +120,7 @@ class WebHome extends GetView<HomeController> {
                 Icon(
                   Icons.arrow_forward_ios,
                   color: context.theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                  size: 20,
+                  size: 16,
                 ),
               ],
             ),
@@ -221,32 +133,32 @@ class WebHome extends GetView<HomeController> {
   Widget _buildAdminManagementCard(BuildContext context) {
     return Container(
       width: double.infinity,
+      margin: const EdgeInsets.symmetric(vertical: 4.0),
       child: Material(
         color: context.theme.colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(16),
-        elevation: 2,
+        borderRadius: BorderRadius.circular(12),
         child: InkWell(
           onTap: () =>
-              AdminBottomSheets.showRegistrationBottomSheet(context, "admin"),
-          borderRadius: BorderRadius.circular(16),
+              AdminBottomSheets.showAdminOptionsBottomSheet(context),
+          borderRadius: BorderRadius.circular(12),
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(16.0),
             child: Row(
               children: [
                 Container(
-                  width: 72,
-                  height: 72,
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
                     color: context.theme.colorScheme.surfaceContainerLowest,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     Icons.admin_panel_settings_outlined,
                     color: context.theme.colorScheme.onSurface,
-                    size: 36,
+                    size: 24,
                   ),
                 ),
-                const SizedBox(width: 24),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -254,30 +166,28 @@ class WebHome extends GetView<HomeController> {
                       AppText.semiBold(
                         'Admin Management',
                         color: context.theme.colorScheme.onSurface,
-                        size: 18,
+                        size: 16,
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 4),
                       AppText(
-                        'Add new admin account',
-                        color: context.theme.colorScheme.onSurface.withValues(alpha: 
-                            0.7),
+                        'Add new admin or delivery person',
+                        color: context.theme.colorScheme.onSurface.withValues(
+                            alpha: 0.7),
                         size: 14,
-                        maxLines: 2,
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(width: 16),
                 Container(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
                     color: context.theme.colorScheme.onSurface,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
                     Icons.add,
                     color: context.theme.colorScheme.surfaceContainerLowest,
-                    size: 28,
+                    size: 20,
                   ),
                 ),
               ],

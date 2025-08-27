@@ -6,6 +6,7 @@ import '../meal_controller.dart';
 import '../ingredients/ingredients_view.dart';
 import '../receipe/receipes_view.dart';
 import 'meal_statistics_widget.dart';
+import 'mobile_meal.dart';
 
 class WebMeal extends GetView<MealController> {
   const WebMeal({super.key});
@@ -14,6 +15,7 @@ class WebMeal extends GetView<MealController> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: context.theme.colorScheme.surface,
         appBar: _buildWebAppBar(context),
         body: _buildWebBody(context),
       ),
@@ -23,346 +25,300 @@ class WebMeal extends GetView<MealController> {
   PreferredSizeWidget _buildWebAppBar(BuildContext context) {
     return AppBar(
       title: AppText.semiBold(
-        'Meal Management System',
+        'Meal Management Dashboard',
         color: context.theme.colorScheme.onSurface,
-        size: Responsive.getLargeHeadingTextSize(context),
+        size: 32,
       ),
       elevation: 0,
       backgroundColor: Colors.transparent,
       actions: [
-        TextButton.icon(
-          onPressed: () {
-            controller.fetchRecipes();
-            controller.fetchIngredients();
-          },
-          icon: Icon(Icons.refresh, color: context.theme.colorScheme.primary),
-          label: AppText(
-            'Refresh',
-            color: context.theme.colorScheme.primary,
-            size: Responsive.getButtonTextSize(context),
+        Container(
+          margin: const EdgeInsets.only(right: 24),
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.surfaceContainerLowest,
+            borderRadius: BorderRadius.circular(12),
           ),
+          child: Obx(() =>
+              IconButton(
+                onPressed: controller.isLoading.value ? null : _handleRefresh,
+                icon: controller.isLoading.value
+                    ? SizedBox(
+                  width: 26,
+                  height: 26,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 3,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      context.theme.colorScheme.primary,
+                    ),
+                  ),
+                )
+                    : Icon(
+                  Icons.refresh_rounded,
+                  color: context.theme.colorScheme.primary,
+                  size: 30,
+                ),
+                tooltip: 'Refresh',
+              )),
         ),
-        const SizedBox(width: 16),
-        TextButton.icon(
-          onPressed: () {
-            // TODO: Implement export functionality
-          },
-          icon: Icon(Icons.download, color: context.theme.colorScheme.primary),
-          label: AppText(
-            'Export',
-            color: context.theme.colorScheme.primary,
-            size: Responsive.getButtonTextSize(context),
-          ),
-        ),
-        const SizedBox(width: 32),
       ],
     );
   }
 
   Widget _buildWebBody(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(48.0),
+    return RefreshIndicator(
+      onRefresh: _handleRefresh,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 32,
+          vertical: 24,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionTitle(context, 'Quick Actions'),
+            const SizedBox(height: 24),
+            _buildActionCards(context),
+            const SizedBox(height: 40),
+            _buildStatisticsSection(context),
+            const SizedBox(height: 32),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(BuildContext context, String title) {
+    return AppText.semiBold(
+      title,
+      color: context.theme.colorScheme.onSurface,
+      size: 36,
+    );
+  }
+
+  Widget _buildActionCards(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildRecipeCard(context),
+        ),
+        const SizedBox(width: 24),
+        Expanded(
+          child: _buildIngredientCard(context),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRecipeCard(BuildContext context) {
+    return WebMealCard(
+      onTap: () => _navigateToRecipes(context),
+      iconData: Icons.restaurant_menu,
+      title: 'Recipes',
+      subtitle: 'Discover & manage your cooking recipes',
+      titleSize: 32,
+      subtitleSize: 22,
+      gradientColors: const [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+    );
+  }
+
+  Widget _buildIngredientCard(BuildContext context) {
+    return WebMealCard(
+      onTap: () => _navigateToIngredients(context),
+      iconData: Icons.inventory_2,
+      title: 'Ingredients',
+      subtitle: 'Track & organize your food ingredients',
+      titleSize: 32,
+      subtitleSize: 22,
+      gradientColors: const [Color(0xFF10B981), Color(0xFF059669)],
+    );
+  }
+
+  Widget _buildStatisticsSection(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(28),
+      decoration: BoxDecoration(
+        color: context.theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: context.theme.shadowColor.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(
+          color: context.theme.colorScheme.outline.withOpacity(0.1),
+          width: 1,
+        ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Hero Section
-          _buildHeroSection(context),
-          
-          const SizedBox(height: 48),
-          
-          // Main Content
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Left Panel - Main Cards
-              Expanded(
-                flex: 4,
-                child: _buildMainContent(context),
-              ),
-            ],
-          ),
+          _buildStatisticsHeader(context),
+          const SizedBox(height: 24),
+          const MealStatisticsWidget(),
         ],
       ),
     );
   }
 
-  Widget _buildHeroSection(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(48.0),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            context.theme.colorScheme.primaryContainer,
-            context.theme.colorScheme.primaryContainer.withValues(alpha: 0.7),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppText.semiBold(
-                  'Comprehensive Meal Management',
-                  color: context.theme.colorScheme.onPrimaryContainer,
-                  size: Responsive.responsiveTextSize(
-                      context, mobile: 28, tablet: 32, web: 42),
-                ),
-                const SizedBox(height: 16),
-                AppText(
-                  'Manage recipes, ingredients, and nutritional data with powerful tools designed for efficiency and scalability.',
-                  color: context.theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
-                  size: Responsive.responsiveTextSize(
-                      context, mobile: 16, tablet: 18, web: 22),
-                  maxLines: 3,
-                ),
-                const SizedBox(height: 24),
-                Obx(() => _buildHeroStats(context)),
-              ],
-            ),
-          ),
-          const SizedBox(width: 48),
-          Icon(
-            Icons.restaurant,
-            size: 120,
-            color: context.theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.3),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeroStats(BuildContext context) {
+  Widget _buildStatisticsHeader(BuildContext context) {
     return Row(
       children: [
-        _buildHeroStatItem(
-          context: context,
-          value: controller.recipes.length.toString(),
-          label: 'Recipes',
-          icon: Icons.restaurant_menu,
-        ),
-        const SizedBox(width: 32),
-        _buildHeroStatItem(
-          context: context,
-          value: controller.ingredients.length.toString(),
-          label: 'Ingredients',
-          icon: Icons.eco,
-        ),
-        const SizedBox(width: 32),
-        _buildHeroStatItem(
-          context: context,
-          value: '${(controller.recipes.length + controller.ingredients.length)}',
-          label: 'Total Items',
-          icon: Icons.inventory,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildHeroStatItem({
-    required BuildContext context,
-    required String value,
-    required String label,
-    required IconData icon,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: context.theme.colorScheme.onPrimaryContainer,
-            size: 24,
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.primary.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
           ),
-          const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AppText.semiBold(
-                value,
-                color: context.theme.colorScheme.onPrimaryContainer,
-                size: Responsive.responsiveTextSize(
-                    context, mobile: 18, tablet: 20, web: 24),
-              ),
-              AppText(
-                label,
-                color: context.theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
-                size: Responsive.getCaptionTextSize(context),
-              ),
-            ],
+          child: Icon(
+            Icons.analytics_rounded,
+            color: context.theme.colorScheme.primary,
+            size: 36,
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMainContent(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+        ),
+        const SizedBox(width: 16),
         AppText.semiBold(
-          'Management Areas',
+          'Analytics Dashboard',
           color: context.theme.colorScheme.onSurface,
-          size: Responsive.getHeadingTextSize(context),
+          size: 32,
         ),
-        const SizedBox(height: 24),
-
-        // Main Cards Row
-        Row(
-          children: [
-            // Recipes Card
-            Expanded(
-              child: _buildWebCard(
-                context: context,
-                onTap: () => _navigateToRecipes(context),
-                icon: Icons.restaurant_menu,
-                title: 'Recipe Management',
-                subtitle: 'Create, edit, and organize cooking recipes with detailed ingredients and instructions',
-                gradient: LinearGradient(
-                  colors: [Colors.blue.shade100, Colors.blue.shade200],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                stats: controller.recipes.length,
-                statsLabel: 'recipes',
-              ),
-            ),
-            
-            const SizedBox(width: 24),
-
-            // Ingredients Card
-            Expanded(
-              child: _buildWebCard(
-                context: context,
-                onTap: () => _navigateToIngredients(context),
-                icon: Icons.shopping_basket,
-                title: 'Ingredient Management',
-                subtitle: 'Manage food ingredients with comprehensive nutritional data and categorization',
-                gradient: LinearGradient(
-                  colors: [Colors.green.shade100, Colors.green.shade200],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                stats: controller.ingredients.length,
-                statsLabel: 'ingredients',
-              ),
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 32),
-
-        // Statistics Widget - recipes and ingredients only
-        const MealStatisticsWidget(),
       ],
     );
   }
 
-  Widget _buildWebCard({
-    required BuildContext context,
-    required VoidCallback onTap,
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required Gradient gradient,
-    required int stats,
-    required String statsLabel,
-  }) {
+  Future<void> _handleRefresh() async {
+    try {
+      await Future.wait([
+        controller.fetchRecipes(),
+        controller.fetchIngredients(),
+      ]);
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to refresh data. Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Get.theme.colorScheme.error,
+        colorText: Get.theme.colorScheme.onError,
+      );
+    }
+  }
+
+  void _navigateToRecipes(BuildContext context) async {
+    if (!controller.isLoading.value) {
+      controller.fetchRecipes();
+    }
+
+    await Get.to<void>(
+          () => const ReceipesView(),
+      transition: Transition.rightToLeftWithFade,
+    );
+  }
+
+  void _navigateToIngredients(BuildContext context) async {
+    if (!controller.isLoading.value) {
+      controller.fetchIngredients();
+    }
+
+    await Get.to<void>(
+          () => const IngredientsView(),
+      transition: Transition.rightToLeftWithFade,
+    );
+  }
+}
+
+class WebMealCard extends StatelessWidget {
+  final VoidCallback onTap;
+  final IconData iconData;
+  final String title;
+  final String subtitle;
+  final double titleSize;
+  final double subtitleSize;
+  final List<Color> gradientColors;
+
+  const WebMealCard({
+    super.key,
+    required this.onTap,
+    required this.iconData,
+    required this.title,
+    required this.subtitle,
+    this.titleSize = 28,
+    this.subtitleSize = 18,
+    required this.gradientColors,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      height: 320,
+      height: 180,
       child: Material(
-        borderRadius: BorderRadius.circular(20),
-        elevation: 4,
+        borderRadius: BorderRadius.circular(28),
+        elevation: 0,
+        color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(28),
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              gradient: gradient,
+              borderRadius: BorderRadius.circular(28),
+              gradient: LinearGradient(
+                colors: gradientColors,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: gradientColors[0].withOpacity(0.3),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
             ),
             child: Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              padding: const EdgeInsets.all(28.0),
+              child: Row(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Icon(
-                        icon,
-                        color: context.theme.colorScheme.primary,
-                        size: 48,
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.3),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: AppText(
-                          '$stats $statsLabel',
-                          color: context.theme.colorScheme.onSurface,
-                          size: Responsive.getCaptionTextSize(context),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                  
-                  const SizedBox(height: 24),
-                  
-                  AppText.semiBold(
-                    title,
-                    color: context.theme.colorScheme.primary,
-                    size: Responsive.getHeadingTextSize(context),
-                  ),
-                  
-                  const SizedBox(height: 12),
-                  
-                  AppText(
-                    subtitle,
-                    color: context.theme.colorScheme.onSurface,
-                    size: Responsive.getBodyTextSize(context),
-                    maxLines: 3,
-                  ),
-                  
-                  const Spacer(),
-                  
-                  // Action Button
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: context.theme.colorScheme.primary,
-                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.3),
+                        width: 1,
+                      ),
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                    child: Icon(
+                      iconData,
+                      color: Colors.white,
+                      size: 40,
+                    ),
+                  ),
+                  const SizedBox(width: 24),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        AppText(
-                          'Manage',
+                        AppText.semiBold(
+                          title,
                           color: Colors.white,
-                          size: Responsive.getButtonTextSize(context),
-                          fontWeight: FontWeight.w500,
+                          size: titleSize,
                         ),
-                        const SizedBox(width: 8),
-                        Icon(
-                          Icons.arrow_forward,
-                          color: Colors.white,
-                          size: 16,
+                        const SizedBox(height: 10),
+                        AppText(
+                          subtitle,
+                          color: Colors.white.withOpacity(0.9),
+                          size: subtitleSize,
                         ),
                       ],
                     ),
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    color: Colors.white.withOpacity(0.8),
+                    size: 28,
                   ),
                 ],
               ),
@@ -371,19 +327,5 @@ class WebMeal extends GetView<MealController> {
         ),
       ),
     );
-  }
-
-  void _navigateToRecipes(BuildContext context) {
-    if (!controller.isLoading.value) {
-      controller.fetchRecipes();
-    }
-    Get.to<void>(() => const ReceipesView(), transition: Transition.rightToLeftWithFade);
-  }
-
-  void _navigateToIngredients(BuildContext context) {
-    if (!controller.isLoading.value) {
-      controller.fetchIngredients();
-    }
-    Get.to<void>(() => const IngredientsView(), transition: Transition.rightToLeftWithFade);
   }
 }

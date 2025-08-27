@@ -23,14 +23,14 @@ class TabletHome extends GetView<HomeController> {
       title: AppText.semiBold(
         'Dashboard',
         color: context.theme.colorScheme.onSurface,
-        size: 24,
+        size: 20,
       ),
       backgroundColor: Colors.transparent,
       elevation: 0,
       foregroundColor: context.theme.colorScheme.onSurface,
-      actions: [
+      actions: const [
         Padding(
-          padding: const EdgeInsets.only(right: 24.0),
+          padding: EdgeInsets.only(right: 16.0),
           child: SettingsWidget(),
         ),
       ],
@@ -39,32 +39,23 @@ class TabletHome extends GetView<HomeController> {
 
   Widget _buildTabletBody(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Column(
         children: [
-          // Main content in a row layout for better tablet utilization
-          Row(
-            children: [
-              // Left column - Primary cards
-              Expanded(
-                flex: 2,
-                child: Column(
-                  children: [
-                    _buildTabletCard(
-                      context: context,
-                      onTap: () => Get.toNamed<void>(AppRoutes.dashboard),
-                      icon: Icons.analytics_outlined,
-                      title: 'Analytics Dashboard',
-                      subtitle: 'View comprehensive insights and metrics',
-                      isPrimary: true,
-                    ),
-                    const SizedBox(height: 16),
-                    _buildAdminManagementCard(context),
-                  ],
-                ),
-              ),
-            ],
+          // Analytics Dashboard Card
+          _buildTabletCard(
+            context: context,
+            onTap: () => Get.toNamed<void>(AppRoutes.dashboard),
+            icon: Icons.analytics_outlined,
+            title: 'Analytics',
+            subtitle: 'View insights and metrics',
+            isPrimary: true,
           ),
+
+          const SizedBox(height: 12),
+
+          // Admin Management Card with Add Button
+          _buildAdminManagementCard(context),
         ],
       ),
     );
@@ -80,48 +71,48 @@ class TabletHome extends GetView<HomeController> {
   }) {
     return Container(
       width: double.infinity,
+      margin: const EdgeInsets.symmetric(vertical: 4.0),
       child: Material(
-        color: isPrimary 
-          ? context.theme.colorScheme.primaryContainer
+        color: isPrimary
+            ? context.theme.colorScheme.onSurface
             : context.theme.colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(16),
-        elevation: isPrimary ? 2 : 1,
+        borderRadius: BorderRadius.circular(12),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(16.0),
             child: Row(
               children: [
                 Container(
-                  width: 64,
-                  height: 64,
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
                     color: context.theme.colorScheme.surfaceContainerLowest,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     icon,
                     color: context.theme.colorScheme.onSurface,
-                    size: 32,
+                    size: 24,
                   ),
                 ),
-                const SizedBox(width: 20),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AppText.semiBold(
                         title,
-                        color: context.theme.colorScheme.onSurface,
-                        size: 18,
+                        color: context.theme.colorScheme.surfaceContainerLowest,
+                        size: 16,
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 4),
                       AppText(
                         subtitle,
-                        color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                        color: context.theme.colorScheme.surfaceContainerLowest
+                            .withValues(alpha: 0.7),
                         size: 14,
-                        maxLines: 2,
                       ),
                     ],
                   ),
@@ -129,7 +120,7 @@ class TabletHome extends GetView<HomeController> {
                 Icon(
                   Icons.arrow_forward_ios,
                   color: context.theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                  size: 20,
+                  size: 16,
                 ),
               ],
             ),
@@ -142,32 +133,32 @@ class TabletHome extends GetView<HomeController> {
   Widget _buildAdminManagementCard(BuildContext context) {
     return Container(
       width: double.infinity,
+      margin: const EdgeInsets.symmetric(vertical: 4.0),
       child: Material(
         color: context.theme.colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(16),
-        elevation: 1,
+        borderRadius: BorderRadius.circular(12),
         child: InkWell(
           onTap: () =>
-              AdminBottomSheets.showRegistrationBottomSheet(context, "admin"),
-          borderRadius: BorderRadius.circular(16),
+              AdminBottomSheets.showAdminOptionsBottomSheet(context),
+          borderRadius: BorderRadius.circular(12),
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(16.0),
             child: Row(
               children: [
                 Container(
-                  width: 64,
-                  height: 64,
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
                     color: context.theme.colorScheme.surfaceContainerLowest,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     Icons.admin_panel_settings_outlined,
                     color: context.theme.colorScheme.onSurface,
-                    size: 32,
+                    size: 24,
                   ),
                 ),
-                const SizedBox(width: 20),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -175,29 +166,28 @@ class TabletHome extends GetView<HomeController> {
                       AppText.semiBold(
                         'Admin Management',
                         color: context.theme.colorScheme.onSurface,
-                        size: 18,
+                        size: 16,
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 4),
                       AppText(
-                        'Add new admin account',
+                        'Add new admin or delivery person',
                         color: context.theme.colorScheme.onSurface.withValues(alpha: 
                             0.7),
                         size: 14,
-                        maxLines: 2,
                       ),
                     ],
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.all(12.0),
+                  padding: const EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
                     color: context.theme.colorScheme.onSurface,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
                     Icons.add,
                     color: context.theme.colorScheme.surfaceContainerLowest,
-                    size: 24,
+                    size: 20,
                   ),
                 ),
               ],

@@ -47,21 +47,33 @@ class RecipeCard extends StatelessWidget {
                 Positioned.fill(
                   child: _buildPlaceholderImage(context, recipe),
                 ),
-                // Gradient overlay for better text readability
+                // Improved gradient overlay for better text visibility
                 Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.black.withOpacity(0.1),
-                          Colors.black.withOpacity(0.3),
-                          Colors.black.withOpacity(0.7),
-                        ],
-                        stops: const [0.0, 0.5, 1.0],
-                      ),
-                    ),
+                  child: Builder(
+                    builder: (context) {
+                      final imageUrl = recipe['imageUrl']?.toString();
+                      final hasImage = imageUrl != null && imageUrl.isNotEmpty;
+                      return Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: hasImage
+                                ? [
+                              Colors.transparent,
+                              Colors.black.withOpacity(0.4),
+                              Colors.black.withOpacity(0.7),
+                            ]
+                                : [
+                              Colors.black.withOpacity(0.12),
+                              Colors.black.withOpacity(0.18),
+                              Colors.black.withOpacity(0.26),
+                            ],
+                            stops: const [0.0, 0.6, 1.0],
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
                 // Popup menu top right
@@ -96,12 +108,19 @@ class RecipeCard extends StatelessWidget {
                           width: double.infinity,
                           child: Text(
                             recipe['name']?.toString() ?? 'Unnamed Recipe',
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Colors.white,
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                               letterSpacing: -0.2,
                               height: 1.2,
+                              shadows: const [
+                                Shadow(
+                                  offset: Offset(0, 1),
+                                  blurRadius: 3.0,
+                                  color: Colors.black54,
+                                ),
+                              ],
                             ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
@@ -157,7 +176,28 @@ class RecipeCard extends StatelessWidget {
     final imageUrl = recipe['imageUrl']?.toString();
 
     if (imageUrl != null && imageUrl.isNotEmpty) {
+      // Check if it's a file path (usually starting with file:// or /)  
+      if (imageUrl.startsWith('file://') || imageUrl.startsWith('/')) {
+        try {
+          final filePath = imageUrl.startsWith('file://')
+              ? imageUrl.substring(7)
+              : imageUrl;
+
+          return Image.file(
+            File(filePath),
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              debugPrint('Error loading file image: $error');
+              return _buildFallbackImage(context, color);
+            },
+          );
+        } catch (e) {
+          debugPrint('Exception loading file image: $e');
+          return _buildFallbackImage(context, color);
+        }
+      }
       // Check if it's base64 data
+      else
       if (imageUrl.startsWith('data:image/') || _isBase64String(imageUrl)) {
         try {
           // Handle data URL format (data:image/jpeg;base64,...)
@@ -171,18 +211,25 @@ class RecipeCard extends StatelessWidget {
             bytes,
             fit: BoxFit.cover,
             errorBuilder: (context, error, stackTrace) {
+              debugPrint('Error loading base64 image: $error');
               return _buildFallbackImage(context, color);
             },
           );
         } catch (e) {
+          debugPrint('Exception loading base64 image: $e');
           return _buildFallbackImage(context, color);
         }
-      } else {
-        // Handle regular network URL
+      }
+      // Handle regular network URL
+      else {
         return Image.network(
           imageUrl,
           fit: BoxFit.cover,
+          cacheWidth: 800,
+          // Add caching for better performance
+          cacheHeight: 800,
           errorBuilder: (context, error, stackTrace) {
+            debugPrint('Error loading network image: $error');
             return _buildFallbackImage(context, color);
           },
           loadingBuilder: (context, child, loadingProgress) {
@@ -209,12 +256,35 @@ class RecipeCard extends StatelessWidget {
 
   Widget _buildFallbackImage(BuildContext context, Color color) {
     return Container(
-      color: color.withValues(alpha: 0.7),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            color.withValues(alpha: 0.7),
+            color.withValues(alpha: 0.9),
+          ],
+        ),
+      ),
       child: Center(
-        child: Icon(
-          Icons.restaurant,
-          size: 80,
-          color: Colors.white.withValues(alpha: 0.8),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.restaurant,
+              size: 64,
+              color: Colors.white.withValues(alpha: 0.9),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '',
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.9),
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -393,6 +463,13 @@ class DietaryBadge extends StatelessWidget {
           color: context.theme.colorScheme.surfaceContainerLowest,
           fontSize: 9,
           fontWeight: FontWeight.w600,
+          shadows: const [
+            Shadow(
+              offset: Offset(0, 0.5),
+              blurRadius: 1.0,
+              color: Colors.black26,
+            ),
+          ],
         ),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
@@ -452,10 +529,17 @@ class RecipeInfoChip extends StatelessWidget {
           Flexible(
             child: Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.white,
                 fontSize: 10,
                 fontWeight: FontWeight.w500,
+                shadows: const [
+                  Shadow(
+                    offset: Offset(0, 1),
+                    blurRadius: 2.0,
+                    color: Colors.black45,
+                  ),
+                ],
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,

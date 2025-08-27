@@ -224,7 +224,7 @@ class ApiErrorHandler {
       case DioExceptionType.connectionError:
         return AppStringConfig.noInternetConnection;
       case DioExceptionType.unknown:
-        return error.message ?? 'An unexpected error occurred';
+        return AppStringConfig.somethingWentWrong;
     }
   }
 
@@ -233,35 +233,52 @@ class ApiErrorHandler {
     final statusCode = error.response?.statusCode;
     final responseData = error.response?.data;
 
+    // Extract server error message if available, but sanitize it to be user-friendly
+    String? serverMessage;
+    if (responseData != null && responseData is Map<String, dynamic>) {
+      serverMessage = responseData['message'] as String?;
+
+      // If server message contains technical details, don't use it
+      if (serverMessage != null &&
+          (serverMessage.contains('Exception') ||
+              serverMessage.contains('Error:') ||
+              serverMessage.contains('DioException') ||
+              serverMessage.contains('sql') ||
+              serverMessage.contains('null') ||
+              serverMessage.contains('undefined'))) {
+        serverMessage = null;
+      }
+    }
+
     switch (statusCode) {
       case statusCodeBadRequest:
-        return (responseData?['message'] as String?) ?? errorBadRequest;
+        return serverMessage ?? AppStringConfig.invalidRequest;
       case statusCodeUnauthorized:
-        return errorUnauthorized;
+        return AppStringConfig.sessionExpired;
       case statusCodeForbidden:
-        return errorForbidden;
+        return AppStringConfig.noPermission;
       case statusCodeNotFound:
-        return errorNotFound;
+        return AppStringConfig.resourceNotFound;
       case statusCodeMethodNotAllowed:
-        return 'Method not allowed';
+        return 'This action is not allowed';
       case statusCodeRequestTimeout:
-        return errorTimeout;
+        return AppStringConfig.requestTimeout;
       case statusCodeConflict:
-        return 'Conflict occurred';
+        return 'This operation could not be completed due to a conflict';
       case statusCodeUnprocessableEntity:
-        return (responseData?['message'] as String?) ?? 'Validation failed';
+        return serverMessage ?? AppStringConfig.validationFailed;
       case statusCodeTooManyRequests:
-        return errorTooManyRequests;
+        return AppStringConfig.tooManyRequests;
       case statusCodeInternalServerError:
-        return errorServerError;
+        return AppStringConfig.serverError;
       case statusCodeBadGateway:
-        return 'Bad gateway';
+        return AppStringConfig.serviceUnavailable;
       case statusCodeServiceUnavailable:
-        return 'Service unavailable';
+        return AppStringConfig.serviceUnavailable;
       case statusCodeGatewayTimeout:
-        return 'Gateway timeout';
+        return AppStringConfig.requestTimeout;
       default:
-        return (responseData?['message'] as String?) ?? errorUnknown;
+        return serverMessage ?? AppStringConfig.somethingWentWrong;
     }
   }
 

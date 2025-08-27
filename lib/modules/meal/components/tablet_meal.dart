@@ -5,6 +5,7 @@ import '../meal_controller.dart';
 import '../ingredients/ingredients_view.dart';
 import '../receipe/receipes_view.dart';
 import 'meal_statistics_widget.dart';
+import 'mobile_meal.dart';
 
 class TabletMeal extends GetView<MealController> {
   const TabletMeal({super.key});
@@ -13,6 +14,7 @@ class TabletMeal extends GetView<MealController> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: context.theme.colorScheme.surface,
         appBar: _buildTabletAppBar(context),
         body: _buildTabletBody(context),
       ),
@@ -24,155 +26,299 @@ class TabletMeal extends GetView<MealController> {
       title: AppText.semiBold(
         'Meal Management',
         color: context.theme.colorScheme.onSurface,
-        size: 22,
+        size: 28,
       ),
       elevation: 0,
       backgroundColor: Colors.transparent,
       actions: [
-        IconButton(
-          onPressed: () {
-            controller.fetchRecipes();
-            controller.fetchIngredients();
-          },
-          icon: Icon(Icons.refresh, color: context.theme.colorScheme.onSurface),
-          tooltip: 'Refresh',
+        Container(
+          margin: const EdgeInsets.only(right: 20),
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.surfaceContainerLowest,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Obx(() =>
+              IconButton(
+                onPressed: controller.isLoading.value ? null : _handleRefresh,
+                icon: controller.isLoading.value
+                    ? SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      context.theme.colorScheme.primary,
+                    ),
+                  ),
+                )
+                    : Icon(
+                  Icons.refresh_rounded,
+                  color: context.theme.colorScheme.primary,
+                  size: 28,
+                ),
+                tooltip: 'Refresh',
+              )),
         ),
-        const SizedBox(width: 8),
       ],
     );
   }
 
   Widget _buildTabletBody(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24.0),
+    return RefreshIndicator(
+      onRefresh: _handleRefresh,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 24,
+          vertical: 20,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionTitle(context, 'Quick Actions'),
+            const SizedBox(height: 20),
+            _buildActionCards(context),
+            const SizedBox(height: 36),
+            _buildStatisticsSection(context),
+            const SizedBox(height: 24),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(BuildContext context, String title) {
+    return AppText.semiBold(
+      title,
+      color: context.theme.colorScheme.onSurface,
+      size: 30,
+    );
+  }
+
+  Widget _buildActionCards(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildRecipeCard(context),
+        ),
+        const SizedBox(width: 20),
+        Expanded(
+          child: _buildIngredientCard(context),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRecipeCard(BuildContext context) {
+    return MealCard(
+      onTap: () => _navigateToRecipes(context),
+      iconData: Icons.restaurant_menu,
+      title: 'Recipes',
+      subtitle: 'Discover & manage your cooking recipes',
+      titleSize: 28,
+      subtitleSize: 20,
+      gradientColors: const [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+    );
+  }
+
+  Widget _buildIngredientCard(BuildContext context) {
+    return MealCard(
+      onTap: () => _navigateToIngredients(context),
+      iconData: Icons.inventory_2,
+      title: 'Ingredients',
+      subtitle: 'Track & organize your food ingredients',
+      titleSize: 28,
+      subtitleSize: 20,
+      gradientColors: const [Color(0xFF10B981), Color(0xFF059669)],
+    );
+  }
+
+  Widget _buildStatisticsSection(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: context.theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: context.theme.shadowColor.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(
+          color: context.theme.colorScheme.outline.withOpacity(0.1),
+          width: 1,
+        ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header Section
-          _buildTabletHeader(context),
-          
-          const SizedBox(height: 32),
-
-          // Main Content - Horizontal layout for tablet
-          SizedBox(
-            height: 400,
-            child: Row(
-              children: [
-                // Recipes Card
-                Expanded(
-                  child: _buildTabletCard(
-                    context: context,
-                    onTap: () => _navigateToRecipes(context),
-                    icon: Icons.restaurant_menu,
-                    title: 'Recipes',
-                    subtitle: 'Manage your cooking recipes and meal preparations',
-                    gradient: LinearGradient(
-                      colors: [Colors.blue.shade100, Colors.blue.shade200],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                ),
-                
-                const SizedBox(width: 24),
-
-                // Ingredients Card
-                Expanded(
-                  child: _buildTabletCard(
-                    context: context,
-                    onTap: () => _navigateToIngredients(context),
-                    icon: Icons.shopping_basket,
-                    title: 'Ingredients',
-                    subtitle: 'Manage your food ingredients and nutritional data',
-                    gradient: LinearGradient(
-                      colors: [Colors.green.shade100, Colors.green.shade200],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 32),
-
-          // Statistics Widget - recipes and ingredients only
+          _buildStatisticsHeader(context),
+          const SizedBox(height: 20),
           const MealStatisticsWidget(),
         ],
       ),
     );
   }
 
-  Widget _buildTabletHeader(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildStatisticsHeader(BuildContext context) {
+    return Row(
       children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.primary.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            Icons.analytics_rounded,
+            color: context.theme.colorScheme.primary,
+            size: 30,
+          ),
+        ),
+        const SizedBox(width: 15),
         AppText.semiBold(
-          'Meal Management System',
+          'Statistics',
           color: context.theme.colorScheme.onSurface,
           size: 28,
-        ),
-        const SizedBox(height: 8),
-        AppText(
-          'Manage your recipes and ingredients efficiently',
-          color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
-          size: 16,
         ),
       ],
     );
   }
 
-  Widget _buildTabletCard({
-    required BuildContext context,
-    required VoidCallback onTap,
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required Gradient gradient,
-  }) {
+  Future<void> _handleRefresh() async {
+    try {
+      await Future.wait([
+        controller.fetchRecipes(),
+        controller.fetchIngredients(),
+      ]);
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to refresh data. Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Get.theme.colorScheme.error,
+        colorText: Get.theme.colorScheme.onError,
+      );
+    }
+  }
+
+  void _navigateToRecipes(BuildContext context) async {
+    if (!controller.isLoading.value) {
+      controller.fetchRecipes();
+    }
+
+    await Get.to<void>(
+          () => const ReceipesView(),
+      transition: Transition.rightToLeftWithFade,
+    );
+  }
+
+  void _navigateToIngredients(BuildContext context) async {
+    if (!controller.isLoading.value) {
+      controller.fetchIngredients();
+    }
+
+    await Get.to<void>(
+          () => const IngredientsView(),
+      transition: Transition.rightToLeftWithFade,
+    );
+  }
+}
+
+class MealCard extends StatelessWidget {
+  final VoidCallback onTap;
+  final IconData iconData;
+  final String title;
+  final String subtitle;
+  final double titleSize;
+  final double subtitleSize;
+  final List<Color> gradientColors;
+
+  const MealCard({
+    super.key,
+    required this.onTap,
+    required this.iconData,
+    required this.title,
+    required this.subtitle,
+    this.titleSize = 24,
+    this.subtitleSize = 16,
+    required this.gradientColors,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      height: double.infinity,
+      height: 160,
       child: Material(
-        borderRadius: BorderRadius.circular(20),
-        elevation: 4,
+        borderRadius: BorderRadius.circular(24),
+        elevation: 0,
+        color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              gradient: gradient,
+              borderRadius: BorderRadius.circular(24),
+              gradient: LinearGradient(
+                colors: gradientColors,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: gradientColors[0].withOpacity(0.3),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
             ),
             child: Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+              padding: const EdgeInsets.all(24.0),
+              child: Row(
                 children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Icon(
+                      iconData,
+                      color: Colors.white,
+                      size: 32,
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        AppText.semiBold(
+                          title,
+                          color: Colors.white,
+                          size: titleSize,
+                        ),
+                        const SizedBox(height: 8),
+                        AppText(
+                          subtitle,
+                          color: Colors.white.withOpacity(0.9),
+                          size: subtitleSize,
+                        ),
+                      ],
+                    ),
+                  ),
                   Icon(
-                    icon,
-                    color: context.theme.colorScheme.primary,
-                    size: 80,
+                    Icons.arrow_forward_ios_rounded,
+                    color: Colors.white.withOpacity(0.8),
+                    size: 24,
                   ),
-                  const SizedBox(height: 24),
-                  AppText.semiBold(
-                    title,
-                    color: context.theme.colorScheme.primary,
-                    size: 32,
-                  ),
-                  const SizedBox(height: 12),
-                  AppText(
-                    subtitle,
-                    color: context.theme.colorScheme.onSurface,
-                    size: 16,
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                  ),
-                  
-                  const SizedBox(height: 24),
-                  
-                  // Quick stats
-                  Obx(() => _buildQuickStats(context, title)),
                 ],
               ),
             ),
@@ -180,50 +326,5 @@ class TabletMeal extends GetView<MealController> {
         ),
       ),
     );
-  }
-
-  Widget _buildQuickStats(BuildContext context, String type) {
-    final count = type == 'Recipes' 
-        ? controller.recipes.length 
-        : controller.ingredients.length;
-        
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            type == 'Recipes' ? Icons.restaurant_menu : Icons.eco,
-            color: context.theme.colorScheme.primary,
-            size: 16,
-          ),
-          const SizedBox(width: 8),
-          AppText(
-            '$count items',
-            color: context.theme.colorScheme.onSurface,
-            size: 14,
-            fontWeight: FontWeight.w500,
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _navigateToRecipes(BuildContext context) {
-    if (!controller.isLoading.value) {
-      controller.fetchRecipes();
-    }
-    Get.to<void>(() => const ReceipesView(), transition: Transition.rightToLeftWithFade);
-  }
-
-  void _navigateToIngredients(BuildContext context) {
-    if (!controller.isLoading.value) {
-      controller.fetchIngredients();
-    }
-    Get.to<void>(() => const IngredientsView(), transition: Transition.rightToLeftWithFade);
   }
 }

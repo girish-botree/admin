@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../config/app_config.dart';
 import '../../../gen/assets.gen.dart';
+import '../../../utils/responsive.dart';
 import '../meal_controller.dart';
 import '../ingredients/ingredients_view.dart';
 import '../receipe/receipes_view.dart';
@@ -36,7 +37,8 @@ class MobileMeal extends GetView<MealController> {
       title: AppText.semiBold(
         'Meal Management',
         color: context.theme.colorScheme.onSurface,
-        size: 20,
+        size: Responsive.responsiveTextSize(
+            context, mobile: 22, tablet: 24, web: 20),
       ),
       elevation: 0,
       backgroundColor: Colors.transparent,
@@ -100,7 +102,8 @@ class MobileMeal extends GetView<MealController> {
     return AppText.semiBold(
       title,
       color: context.theme.colorScheme.onSurface,
-      size: 20,
+      size: Responsive.responsiveTextSize(
+          context, mobile: 24, tablet: 26, web: 20),
     );
   }
 
@@ -167,14 +170,16 @@ class MobileMeal extends GetView<MealController> {
           child: Icon(
             Icons.analytics_rounded,
             color: context.theme.colorScheme.primary,
-            size: 20,
+            size: Responsive.responsiveValue(
+                context, mobile: 24.0, tablet: 26.0, web: 20.0),
           ),
         ),
         const SizedBox(width: 12),
         AppText.semiBold(
           'Statistics',
           color: context.theme.colorScheme.onSurface,
-          size: 18,
+          size: Responsive.responsiveTextSize(
+              context, mobile: 22, tablet: 24, web: 18),
         ),
       ],
     );
@@ -357,17 +362,23 @@ class _EnhancedCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          AppText.semiBold(
-            title,
-            color: Colors.white,
-            size: 22,
-          ),
+          Builder(builder: (context) {
+            return AppText.semiBold(
+              title,
+              color: Colors.white,
+              size: Responsive.responsiveTextSize(
+                  context, mobile: 24, tablet: 28, web: 22),
+            );
+          }),
           const SizedBox(height: 8),
-          AppText(
-            subtitle,
-            color: Colors.white.withOpacity(0.9),
-            size: 14,
-          ),
+          Builder(builder: (context) {
+            return AppText(
+              subtitle,
+              color: Colors.white.withOpacity(0.9),
+              size: Responsive.responsiveTextSize(
+                  context, mobile: 16, tablet: 18, web: 14),
+            );
+          }),
         ],
       ),
     );

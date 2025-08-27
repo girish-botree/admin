@@ -416,11 +416,13 @@ class NoResultsWidget extends StatelessWidget {
   }
 }
 
-class ModernSearchBar extends StatelessWidget {
+class ModernSearchBar extends StatefulWidget {
   final TextEditingController controller;
   final String hintText;
   final VoidCallback? onClear;
   final ValueChanged<String>? onChanged;
+  final Duration animationDuration;
+  final Color? accentColor;
 
   const ModernSearchBar({
     super.key,
@@ -428,68 +430,169 @@ class ModernSearchBar extends StatelessWidget {
     this.hintText = 'Search...',
     this.onClear,
     this.onChanged,
+    this.animationDuration = const Duration(milliseconds: 200),
+    this.accentColor,
   });
 
   @override
+  State<ModernSearchBar> createState() => _ModernSearchBarState();
+}
+
+class _ModernSearchBarState extends State<ModernSearchBar>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _focusAnimationController;
+  late Animation<double> _focusAnimation;
+  final FocusNode _focusNode = FocusNode();
+  bool _isFocused = false;
+
+  // Store the controller listener as a field so it can be properly removed
+  late final VoidCallback _controllerListener;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusAnimationController = AnimationController(
+      vsync: this,
+      duration: widget.animationDuration,
+    );
+    _focusAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+          parent: _focusAnimationController, curve: Curves.easeInOut),
+    );
+
+    _focusNode.addListener(_handleFocusChange);
+
+    // Define the listener as a named function
+    _controllerListener = () {
+      if (mounted) {
+        setState(() {});
+      }
+    };
+    widget.controller.addListener(_controllerListener);
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_handleFocusChange);
+    _focusNode.dispose();
+    _focusAnimationController.dispose();
+    widget.controller.removeListener(
+        _controllerListener); // Properly remove the named listener
+    super.dispose();
+  }
+
+  void _handleFocusChange() {
+    setState(() {
+      _isFocused = _focusNode.hasFocus;
+    });
+    if (_isFocused) {
+      _focusAnimationController.forward();
+    } else {
+      _focusAnimationController.reverse();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: context.theme.colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(
-          color: context.theme.colorScheme.onSurface.withOpacity(0.1),
-          width: 1.5,
-        ),
-      ),
-      child: ValueListenableBuilder<TextEditingValue>(
-        valueListenable: controller,
-        builder: (context, value, child) {
-          return TextField(
-            controller: controller,
-            onChanged: onChanged,
-            style: TextStyle(
-              color: context.theme.colorScheme.onSurface,
-              fontSize: 16,
+    final accentColor = widget.accentColor ?? context.theme.colorScheme.primary;
+
+    return AnimatedBuilder(
+      animation: _focusAnimation,
+      builder: (context, child) {
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(32),
+            border: Border.all(
+              color: Color.lerp(
+                context.theme.colorScheme.surfaceContainerLow,
+                accentColor,
+                _focusAnimation.value * 0.7,
+              )!,
+              width: 1.5 + (_focusAnimation.value * 0.5),
             ),
-            decoration: InputDecoration(
-              hintText: hintText,
-              hintStyle: TextStyle(
-                color: context.theme.colorScheme.onSurface.withOpacity(0.5),
-                fontSize: 16,
+            boxShadow: [
+              BoxShadow(
+                color: context.theme.colorScheme.shadow.withOpacity(0.08),
+                blurRadius: 8,
+                offset: const Offset(0, 3),
               ),
-              prefixIcon: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6),
-                child: Icon(
-                  Icons.search_rounded,
-                  color: context.theme.colorScheme.onSurface.withOpacity(0.7),
-                  size: 24,
-                ),
-              ),
-              suffixIcon: value.text.isNotEmpty
-                  ? Padding(
-                padding: const EdgeInsets.only(right: 6),
-                child: IconButton(
-                  onPressed: onClear,
-                  icon: Icon(
-                    Icons.clear_rounded,
-                    color: context.theme.colorScheme.onSurface.withOpacity(0.7),
-                    size: 20,
-                  ),
-                ),
-              )
-                  : null,
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16, vertical: 16),
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-            ),
-            cursorColor: context.theme.colorScheme.onSurface,
-            cursorWidth: 1.5,
-            cursorRadius: const Radius.circular(2),
-          );
+            ],
+          ),
+          child: child,
+        );
+      },
+      child: TextField(
+        controller: widget.controller,
+        focusNode: _focusNode,
+        onChanged: (value) {
+          if (widget.onChanged != null) {
+            widget.onChanged!(value);
+          }
         },
+        style: TextStyle(
+          color: context.theme.colorScheme.onSurface,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          letterSpacing: -0.2,
+        ),
+        decoration: InputDecoration(
+          hintText: widget.hintText,
+          hintStyle: TextStyle(
+            color: context.theme.colorScheme.onSurfaceVariant,
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+            letterSpacing: -0.2,
+          ),
+          prefixIcon: Container(
+            margin: const EdgeInsets.only(left: 16, right: 8),
+            child: Icon(
+              Icons.search_rounded,
+              color: _isFocused ? accentColor : context.theme.colorScheme
+                  .onSurfaceVariant,
+              size: 22,
+            ),
+          ),
+          suffixIcon: widget.controller.text.isNotEmpty
+              ? Container(
+            margin: const EdgeInsets.only(right: 12),
+            decoration: BoxDecoration(
+              color: context.theme.colorScheme.surfaceVariant.withOpacity(
+                  0.5),
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              onPressed: widget.onClear,
+              icon: Icon(
+                Icons.close_rounded,
+                color: context.theme.colorScheme.onSurfaceVariant,
+                size: 18,
+              ),
+              iconSize: 18,
+              constraints: const BoxConstraints(
+                minWidth: 32,
+                minHeight: 32,
+              ),
+              padding: EdgeInsets.zero,
+              style: IconButton.styleFrom(
+                foregroundColor: context.theme.colorScheme
+                    .onSurfaceVariant,
+                backgroundColor: Colors.transparent,
+              ),
+            ),
+          )
+              : null,
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16, vertical: 18),
+          filled: true,
+          fillColor: context.theme.colorScheme.surfaceContainerLow,
+        ),
+        cursorColor: accentColor,
+        cursorWidth: 2,
+        cursorRadius: const Radius.circular(4),
+        cursorHeight: 20,
       ),
     );
   }
@@ -539,6 +642,10 @@ class SortFilterBar extends StatelessWidget {
                 child: DropdownButton<String>(
                   value: sortBy,
                   isDense: true,
+                  isExpanded: true,
+                  menuMaxHeight: 300,
+                  // Flutter's default dropdown already adapts to available screen space
+                  dropdownColor: context.theme.colorScheme.surface,
                   icon: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
