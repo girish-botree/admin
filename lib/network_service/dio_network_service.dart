@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import '../config/auth_service.dart';
 import '../config/common_utils.dart';
@@ -1359,18 +1359,14 @@ class DioNetworkService {
     return data;
   }
 
-  /// Show loader
+  /// Show loader - Disabled (no overscreen loading)
   static void showLoader() {
-    if (!EasyLoading.isShow) {
-      EasyLoading.show();
-    }
+    // Overscreen loading removed
   }
 
-  /// Dismiss loader
+  /// Dismiss loader - Disabled (no overscreen loading)
   static void dismissLoader() {
-    if (EasyLoading.isShow) {
-      EasyLoading.dismiss();
-    }
+    // Overscreen loading removed
   }
 
   /// Check if user is authenticated

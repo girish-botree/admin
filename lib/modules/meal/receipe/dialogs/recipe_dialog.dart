@@ -406,7 +406,7 @@ class RecipeDialogs {
 
 class RecipeImageSection extends StatelessWidget {
   final File? image;
-  final Function(File?) onImageChanged;
+  final void Function(File?) onImageChanged;
 
   const RecipeImageSection({
     super.key,
@@ -528,7 +528,7 @@ class RecipeImageSection extends StatelessWidget {
     );
   }
 
-  Future<void> _pickImage(ImageSource source, Function(File?) callback) async {
+  Future<void> _pickImage(ImageSource source, void Function(File?) callback) async {
     final picker = ImagePicker();
     final XFile? photo = await picker.pickImage(source: source);
     if (photo != null) {
@@ -586,7 +586,7 @@ class RecipeBasicInfoSection extends StatelessWidget {
 class RecipeDetailsSection extends StatelessWidget {
   final MealController controller;
   final int dietaryCategory;
-  final Function(int?) onDietaryCategoryChanged;
+  final void Function(int?) onDietaryCategoryChanged;
 
   const RecipeDetailsSection({
     super.key,
@@ -895,7 +895,7 @@ class RecipeIngredientsSection extends StatelessWidget {
     // Selected ingredients with their quantities
     final Map<dynamic, int> selectedIngredients = {};
 
-    Get.dialog(
+    Get.dialog<void>(
       Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
@@ -1264,7 +1264,7 @@ class RecipeIngredientsSection extends StatelessWidget {
 class RecipeEditImageSection extends StatelessWidget {
   final dynamic recipe;
   final File? image;
-  final Function(File?) onImageChanged;
+  final void Function(File?) onImageChanged;
 
   const RecipeEditImageSection({
     super.key,
@@ -1476,7 +1476,7 @@ class RecipeEditImageSection extends StatelessWidget {
     }
   }
 
-  Future<void> _pickImage(ImageSource source, Function(File?) callback) async {
+  Future<void> _pickImage(ImageSource source, void Function(File?) callback) async {
     final picker = ImagePicker();
     final XFile? photo = await picker.pickImage(source: source);
     if (photo != null) {

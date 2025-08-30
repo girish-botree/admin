@@ -6,6 +6,7 @@ import '../../meal_controller.dart';
 import '../../../../widgets/searchable_dropdown.dart';
 import '../../../../widgets/multi_select_dropdown.dart';
 import '../../../../config/dropdown_data.dart';
+import '../../../../widgets/dropdown_utils.dart';
 
 class IngredientDialogs {
   static void showAddIngredientDialog(BuildContext context,
@@ -1008,21 +1009,7 @@ class IngredientDialogs {
     return [];
   }
 
-  // Helper method to parse JSON keys safely (for backward compatibility)
-  static List<String> _parseJsonKeys(dynamic jsonData) {
-    try {
-      if (jsonData == null) return [];
-      final jsonString = jsonData.toString();
-      if (jsonString.isEmpty) return [];
-      final decoded = jsonDecode(jsonString);
-      if (decoded is Map<String, dynamic>) {
-        return decoded.keys.toList();
-      }
-    } catch (e) {
-      // Ignore JSON parsing errors
-    }
-    return [];
-  }
+
 }
 
 // Helper widgets
@@ -1425,7 +1412,7 @@ class IngredientMultiSelectField extends StatelessWidget {
                         if (value == true) {
                           final newSelection = [...selectedItems, item];
                           onSelectionChanged(newSelection);
-                          Get.back(); // Close dialog after selection
+                          Get.back<void>(); // Close dialog after selection
                         }
                       },
                       controlAffinity: ListTileControlAffinity.leading,
@@ -1439,7 +1426,7 @@ class IngredientMultiSelectField extends StatelessWidget {
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: () => Get.back(),
+                      onPressed: () => Get.back<void>(),
                       child: const Text('Cancel'),
                     ),
                   ),
@@ -1453,7 +1440,7 @@ class IngredientMultiSelectField extends StatelessWidget {
                           ...availableItems
                         ];
                         onSelectionChanged(newSelection);
-                        Get.back();
+                        Get.back<void>();
                       },
                       child: const Text('Select All'),
                     ),
@@ -1530,19 +1517,25 @@ class IngredientDietaryDropdown extends StatelessWidget {
           Icons.arrow_drop_down_rounded,
           color: context.theme.colorScheme.onSurface.withValues(alpha: 0.8),
         ),
-        items: const [
-          DropdownMenuItem(value: 0, child: Text('Regular')),
-          DropdownMenuItem(value: 1, child: Text('Vegetarian')),
-          DropdownMenuItem(value: 2, child: Text('Vegan')),
-          DropdownMenuItem(value: 3, child: Text('Gluten-Free')),
-          DropdownMenuItem(value: 4, child: Text('Dairy-Free')),
-          DropdownMenuItem(value: 5, child: Text('Keto')),
-          DropdownMenuItem(value: 6, child: Text('Paleo')),
-        ],
+        items: DropdownUtils.buildDropdownMenuItems<int>(
+          context: context,
+          items: const {
+            0: 'Regular',
+            1: 'Vegetarian',
+            2: 'Vegan',
+            3: 'Gluten-Free',
+            4: 'Dairy-Free',
+            5: 'Keto',
+            6: 'Paleo',
+          },
+          selectedValue: value,
+        ),
         onChanged: onChanged,
       ),
     );
   }
+  
+  // Helper method removed - now using DropdownUtils
 }
 
 Widget IngredientSectionTitle(BuildContext context, String title) {

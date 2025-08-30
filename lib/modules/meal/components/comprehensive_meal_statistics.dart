@@ -68,7 +68,7 @@ class ComprehensiveMealStatistics extends StatelessWidget {
                 ),
                 const Spacer(),
                 TextButton(
-                  onPressed: () => Get.toNamed('/plan'),
+                  onPressed: () => Get.toNamed<void>('/plan'),
                   child: AppText.medium(
                     'View All',
                     color: context.theme.colorScheme.primary,

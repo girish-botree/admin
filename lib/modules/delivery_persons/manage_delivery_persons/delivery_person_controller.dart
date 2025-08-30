@@ -56,7 +56,7 @@ class DeliveryPersonController extends GetxController {
   Future<void> fetchDeliveryPersons() async {
     try {
       isLoading.value = true;
-      final response = await DioNetworkService.getDeliveryPersons();
+      final response = await DioNetworkService.getDeliveryPersons(showLoader: false);
 
       if (response != null && response is List) {
         deliveryPersons.value = response
@@ -154,7 +154,7 @@ class DeliveryPersonController extends GetxController {
             : editDocumentsUrlController.text.trim(),
       };
 
-      final response = await DioNetworkService.updateDeliveryPerson(id, data);
+      final response = await DioNetworkService.updateDeliveryPerson(id, data, showLoader: false);
 
       if (response != null) {
         // Refresh the list
@@ -177,7 +177,7 @@ class DeliveryPersonController extends GetxController {
     try {
       isDeleting.value = true;
 
-      final response = await DioNetworkService.deleteDeliveryPerson(id);
+      final response = await DioNetworkService.deleteDeliveryPerson(id, showLoader: false);
 
       if (response != null) {
         // Remove from local list

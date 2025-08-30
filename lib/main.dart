@@ -31,10 +31,6 @@ Future<void> main() async {
   final langController = Get.find<LanguageController>();
   await langController.verifyLanguages();
 
-  // For testing Hindi support
-  langController.setLanguage('hindi');
-  print('Hindi language test: ${Get.translations['hi_IN']?['dashboard']}');
-
   // Initialize the AuthService
   Get.put(AuthService());
 
@@ -68,7 +64,7 @@ class MyApp extends StatelessWidget {
         themeMode: themeController.themeMode.value,
         translations: AppTranslations(),
         builder: (context, child) {
-          child = EasyLoading.init()(context, child);
+          // EasyLoading.init() removed - no overscreen loading
           return AppLockWrapper(child: child);
         },
       );

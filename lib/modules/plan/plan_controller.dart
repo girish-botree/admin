@@ -11,6 +11,8 @@ class PlanController extends GetxController {
   final RxList<MealPlan> mealPlans = <MealPlan>[].obs;
   final RxList<MealPlanAssignment> mealPlanAssignments = <MealPlanAssignment>[].obs;
   final RxList<dynamic> recipes = <dynamic>[].obs;
+  final RxList<dynamic> _filteredRecipesCache = <dynamic>[].obs; // Cache filtered recipes
+  MealCategory? _lastFilteredCategory; // Track last filtered category
   final RxBool isLoading = false.obs;
   
   // Form controllers for meal plans
@@ -164,7 +166,7 @@ class PlanController extends GetxController {
     };
     
     try {
-      final response = await DioNetworkService.postData(mealPlanData, 'api/admin/AdminMealPlan');
+      final response = await DioNetworkService.postData(mealPlanData, 'api/admin/AdminMealPlan', showLoader: false);
       
       // Check if the HTTP response was successful
       final httpStatus = response['httpResponse']?['status'] ?? 0;
@@ -206,7 +208,7 @@ class PlanController extends GetxController {
     );
     
     try {
-      final response = await DioNetworkService.postData(assignment.toJson(), 'api/admin/meal-plan-assignments');
+      final response = await DioNetworkService.postData(assignment.toJson(), 'api/admin/meal-plan-assignments', showLoader: false);
       
       // Check if the HTTP response was successful
       final httpStatus = response['httpResponse']?['status'] ?? 0;
@@ -247,7 +249,7 @@ class PlanController extends GetxController {
     };
     
     try {
-      final response = await DioNetworkService.putDataWithBody(updatedData, 'api/admin/AdminMealPlan/${currentAssignment!.id!}');
+      final response = await DioNetworkService.putDataWithBody(updatedData, 'api/admin/AdminMealPlan/${currentAssignment!.id!}', showLoader: false);
       
       // Check if the HTTP response was successful
       final httpStatus = response['httpResponse']?['status'] ?? 0;
@@ -276,7 +278,7 @@ class PlanController extends GetxController {
   // Update meal plan
   Future<void> updateMealPlan(String id, Map<String, dynamic> data) async {
     try {
-      final response = await DioNetworkService.putDataWithBody(data, 'api/admin/AdminMealPlan/$id');
+      final response = await DioNetworkService.putDataWithBody(data, 'api/admin/AdminMealPlan/$id', showLoader: false);
       
       // Check if the HTTP response was successful
       final httpStatus = response['httpResponse']?['status'] ?? 0;
@@ -311,7 +313,7 @@ class PlanController extends GetxController {
     );
     
     try {
-      final response = await DioNetworkService.putDataWithBody(mealPlan.toJson(), 'api/admin/AdminMealPlan/${currentMealPlan!.id!}');
+      final response = await DioNetworkService.putDataWithBody(mealPlan.toJson(), 'api/admin/AdminMealPlan/${currentMealPlan!.id!}', showLoader: false);
       
       // Check if the HTTP response was successful
       final httpStatus = response['httpResponse']?['status'] ?? 0;
@@ -338,7 +340,7 @@ class PlanController extends GetxController {
     print('DELETE MEAL PLAN CALLED with ID: $id');
     try {
       print('Sending DELETE request to: api/admin/AdminMealPlan/$id');
-      final response = await DioNetworkService.deleteData('api/admin/AdminMealPlan/$id');
+      final response = await DioNetworkService.deleteData('api/admin/AdminMealPlan/$id', showLoader: false);
 
       print('Delete response: $response');
 
@@ -899,11 +901,19 @@ class PlanController extends GetxController {
   }
 
   List<dynamic> getFilteredRecipes() {
-    if (selectedDietType.value == null) return recipes;
+    // Performance optimization: Return cached results if category hasn't changed
+    if (selectedDietType.value == _lastFilteredCategory && _filteredRecipesCache.isNotEmpty) {
+      return _filteredRecipesCache;
+    }
+    
+    if (selectedDietType.value == null) {
+      _filteredRecipesCache.value = recipes;
+      _lastFilteredCategory = null;
+      return recipes;
+    }
 
     // Filter recipes based on selected diet type
-    // Note: This assumes recipes have a 'category' field that matches our MealCategory
-    return recipes.where((recipe) {
+    final filtered = recipes.where((recipe) {
       if (recipe is Map<String, dynamic>) {
         final recipeCategory = recipe['category'];
         if (recipeCategory is int) {
@@ -912,6 +922,12 @@ class PlanController extends GetxController {
       }
       return true; // Show all if filtering fails
     }).toList();
+    
+    // Cache the filtered results
+    _filteredRecipesCache.value = filtered;
+    _lastFilteredCategory = selectedDietType.value;
+    
+    return filtered;
   }
 
   String getSelectedRecipeForPeriod(MealPeriod period) {
@@ -1037,13 +1053,13 @@ class PlanController extends GetxController {
     selectedDietType.value = null;
     selectedMealRecipes.clear();
     selectedBmiCategory.value = BmiCategory.normal;
+    // Clear cache when resetting form
+    _filteredRecipesCache.clear();
+    _lastFilteredCategory = null;
   }
 
   // Delete all meal plans for a specific date
   Future<void> deleteAllMealPlansForDate(DateTime date) async {
-    final dateStr = '${date.year.toString().padLeft(4, '0')}-${date.month
-        .toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-
     // Get all meal plan assignments for the date
     final assignments = mealPlanAssignments.where((assignment) =>
     assignment.mealDate.year == date.year &&

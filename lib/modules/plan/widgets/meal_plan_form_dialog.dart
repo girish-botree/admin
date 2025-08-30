@@ -17,37 +17,56 @@ class MealPlanFormDialog extends StatelessWidget {
     this.selectedDate,
   });
 
+  // Cache for recipe icons to avoid recalculating
+  static final Map<String, String> _iconCache = <String, String>{};
+  
   // Helper method to get recipe icon based on category or type
   String _getRecipeIcon(dynamic recipe) {
     if (recipe is Map<String, dynamic>) {
-      final category = recipe['category'];
+      final recipeId = recipe['recipeId']?.toString() ?? '';
+      
+      // Check cache first for performance
+      if (_iconCache.containsKey(recipeId)) {
+        return _iconCache[recipeId]!;
+      }
+      
       final name = recipe['name']?.toString().toLowerCase() ?? '';
+      String icon;
 
       // Try to determine icon based on recipe name keywords
       if (name.contains('breakfast') || name.contains('cereal') ||
           name.contains('oats')) {
-        return '🥣';
+        icon = '🥣';
       } else if (name.contains('salad')) {
-        return '🥗';
+        icon = '🥗';
       } else if (name.contains('soup')) {
-        return '🍲';
+        icon = '🍲';
       } else if (name.contains('chicken') || name.contains('meat')) {
-        return '🍗';
+        icon = '🍗';
       } else if (name.contains('fish') || name.contains('salmon')) {
-        return '🐟';
+        icon = '🐟';
       } else if (name.contains('vegetable') || name.contains('veggie')) {
-        return '🥬';
+        icon = '🥬';
       } else if (name.contains('pasta') || name.contains('noodle')) {
-        return '🍝';
+        icon = '🍝';
       } else if (name.contains('rice')) {
-        return '🍚';
+        icon = '🍚';
       } else if (name.contains('dessert') || name.contains('cake') ||
           name.contains('sweet')) {
-        return '🍰';
+        icon = '🍰';
       } else if (name.contains('drink') || name.contains('smoothie') ||
           name.contains('juice')) {
-        return '🥤';
+        icon = '🥤';
+      } else {
+        icon = '🍽️'; // Default icon
       }
+      
+      // Cache the result
+      if (recipeId.isNotEmpty) {
+        _iconCache[recipeId] = icon;
+      }
+      
+      return icon;
     }
 
     // Default icon
@@ -678,47 +697,11 @@ class MealPlanFormDialog extends StatelessWidget {
           // Recipe Selection using custom searchable dropdown
           Padding(
             padding: const EdgeInsets.all(16),
-            child: Obx(() {
-              final filteredRecipes = controller.getFilteredRecipes();
-              final selectedRecipeId = controller.getSelectedRecipeForPeriod(
-                  period);
-
-              // Convert recipes to DropdownItem format for SearchableDropdown
-              final recipeItems = [
-                const DropdownItem(
-                  value: '',
-                  label: 'No meal planned',
-                  description: 'Skip this meal period',
-                  icon: '⏭️',
-                ),
-                ...filteredRecipes.map<DropdownItem>((recipe) {
-                  final recipeName = recipe['name']?.toString() ??
-                      'Unknown Recipe';
-                  final recipeDescription = recipe['description']?.toString() ??
-                      '';
-                  return DropdownItem(
-                    value: recipe['recipeId']?.toString() ?? '',
-                    label: recipeName,
-                    description: recipeDescription.length > 60
-                        ? '${recipeDescription.substring(0, 60)}...'
-                        : recipeDescription,
-                    icon: _getRecipeIcon(recipe),
-                  );
-                }),
-              ];
-
-              return SearchableDropdown<String>(
-                items: recipeItems,
-                value: selectedRecipeId.isNotEmpty ? selectedRecipeId : null,
-                hint: 'Select a recipe',
-                label: 'Recipe',
-                showSearch: true,
-                showDescriptions: true,
-                showIcons: true,
-                onChanged: (value) =>
-                    controller.setSelectedRecipeForPeriod(period, value ?? ''),
-              );
-            }),
+            child: _RecipeDropdownWidget(
+              period: period,
+              controller: controller,
+              getRecipeIcon: _getRecipeIcon,
+            ),
           ),
         ],
       ),
@@ -784,18 +767,7 @@ class MealPlanFormDialog extends StatelessWidget {
     }
   }
 
-  String _formatBmiCategory(BmiCategory category) {
-    switch (category) {
-      case BmiCategory.underweight:
-        return 'Underweight';
-      case BmiCategory.normal:
-        return 'Normal';
-      case BmiCategory.overweight:
-        return 'Overweight';
-      case BmiCategory.obese:
-        return 'Obese';
-    }
-  }
+  // Helper method removed as it's unused
 
   // Helper methods for BMI category conversion
   String? _bmiCategoryToString(BmiCategory? category) {
@@ -826,5 +798,61 @@ class MealPlanFormDialog extends StatelessWidget {
       default:
         return null;
     }
+  }
+}
+
+// Performance optimization: Extract recipe dropdown to separate widget to reduce rebuilds
+class _RecipeDropdownWidget extends StatelessWidget {
+  final MealPeriod period;
+  final dynamic controller; // PlanController
+  final String Function(dynamic) getRecipeIcon;
+  
+  const _RecipeDropdownWidget({
+    required this.period,
+    required this.controller,
+    required this.getRecipeIcon,
+  });
+  
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final filteredRecipes = controller.getFilteredRecipes() as List<dynamic>;
+      final selectedRecipeId = controller.getSelectedRecipeForPeriod(period) as String;
+
+      // Convert recipes to DropdownItem format for SearchableDropdown
+      final recipeItems = <DropdownItem>[
+        const DropdownItem(
+          value: '',
+          label: 'No meal planned',
+          description: 'Skip this meal period',
+          icon: '⏭️',
+        ),
+        ...filteredRecipes.map<DropdownItem>((dynamic recipe) {
+          final recipeName = recipe['name']?.toString() ?? 'Unknown Recipe';
+          final recipeDescription = recipe['description']?.toString() ?? '';
+          return DropdownItem(
+            value: recipe['recipeId']?.toString() ?? '',
+            label: recipeName,
+            description: recipeDescription.length > 60
+                ? '${recipeDescription.substring(0, 60)}...'
+                : recipeDescription,
+            icon: getRecipeIcon(recipe),
+          );
+        }),
+      ];
+
+      return SearchableDropdown<String>(
+        items: recipeItems,
+        value: selectedRecipeId.isNotEmpty ? selectedRecipeId : null,
+        hint: 'Select a recipe',
+        label: 'Recipe',
+        showSearch: true,
+        showDescriptions: true,
+        showIcons: true,
+        maxHeight: 300, // Limit height for better performance
+        onChanged: (value) =>
+            controller.setSelectedRecipeForPeriod(period, value ?? ''),
+      );
+    });
   }
 }

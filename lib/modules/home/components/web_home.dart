@@ -20,7 +20,7 @@ class WebHome extends GetView<HomeController> {
 
   PreferredSizeWidget _buildWebAppBar(BuildContext context) {
     return AppBar(
-      title: AppText.semiBold(
+      title: AppText.bold(
         'Dashboard',
         color: context.theme.colorScheme.onSurface,
         size: 20,
@@ -28,6 +28,7 @@ class WebHome extends GetView<HomeController> {
       backgroundColor: Colors.transparent,
       elevation: 0,
       foregroundColor: context.theme.colorScheme.onSurface,
+      centerTitle: false,
       actions: const [
         Padding(
           padding: EdgeInsets.only(right: 16.0),

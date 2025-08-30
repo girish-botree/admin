@@ -322,8 +322,7 @@ class _IngredientUsageRadarState extends State<IngredientUsageRadar>
                   .map((entry) {
                 final index = entry.key;
                 final category = entry.value;
-                final percentage = totalUsage > 0 ? (category.usage /
-                    totalUsage * 100) : 0;
+                // Usage percentage calculated but not used in this section
                 final isSelected = selectedIndex == index;
 
                 return Container(

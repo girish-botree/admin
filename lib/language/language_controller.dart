@@ -100,7 +100,15 @@ class LanguageController extends GetxController {
       final prefs = await SharedPreferences.getInstance();
       final lang = prefs.getString('lang') ?? 'english';
       print('Loading saved language preference: $lang');
-      setLanguage(lang);
+      
+      // Clear any stored Hindi preference from previous testing
+      if (lang == 'hindi') {
+        print('Clearing Hindi test language preference. Defaulting to English as primary language.');
+        await prefs.remove('lang'); // Clear the stored preference
+        setLanguage('english');
+      } else {
+        setLanguage(lang);
+      }
     } catch (e) {
       print('Error in _loadLanguage: $e');
       debugPrint(e.toString());

@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
+
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import '../widgets/custom_displays.dart';
 import 'api_client.dart';
@@ -123,17 +123,13 @@ class ApiHelper {
     }
   }
 
-  /// Show loader
+  /// Show loader - Disabled (no overscreen loading)
   static void showLoader() {
-    if (!EasyLoading.isShow) {
-      EasyLoading.show(status: 'Loading...');
-    }
+    // Overscreen loading removed
   }
 
-  /// Dismiss loader
+  /// Dismiss loader - Disabled (no overscreen loading)
   static void dismissLoader() {
-    if (EasyLoading.isShow) {
-      EasyLoading.dismiss();
-    }
+    // Overscreen loading removed
   }
 }

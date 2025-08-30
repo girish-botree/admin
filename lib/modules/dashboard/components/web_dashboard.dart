@@ -4,9 +4,7 @@ import '../../../config/app_text.dart';
 import '../../../widgets/shimmer_animation.dart';
 import '../dashboard_controller.dart';
 import '../models/dashboard_stats.dart';
-import '../widgets/dashboard_stat_card.dart';
-import '../widgets/dashboard_pie_chart.dart';
-import '../widgets/dashboard_bar_chart.dart';
+
 import '../widgets/recipe_trend_chart.dart';
 import '../widgets/ingredient_usage_radar.dart';
 

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../config/dropdown_data.dart';
@@ -59,23 +60,28 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown>
   final FocusNode _searchFocusNode = FocusNode();
 
   List<DropdownItem> _filteredItems = [];
+  String _lastQuery = ''; // Track search query
   bool _isOpen = false;
   List<DropdownItem> _selectedItems = [];
+  
+  // Performance optimization: Debounce search
+  Timer? _searchDebounce;
 
   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 250),
+      duration: const Duration(milliseconds: 200), // Faster animation
       vsync: this,
     );
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+    _scaleAnimation = Tween<double>(begin: 0.95, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeOutBack),
     );
 
+    // Cache items for performance
     _filteredItems = widget.items;
     _updateSelectedItems();
   }
@@ -99,6 +105,7 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown>
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
     _animationController.dispose();
     _searchController.dispose();
     _searchFocusNode.dispose();
@@ -131,10 +138,14 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown>
     setState(() => _isOpen = true);
     _animationController.forward();
 
-    // Auto-focus search if enabled
+    // Auto-focus search and show keyboard if enabled
     if (widget.showSearch) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _searchFocusNode.requestFocus();
+        // Explicitly show keyboard
+        Future.delayed(const Duration(milliseconds: 50), () {
+          SystemChannels.textInput.invokeMethod('TextInput.show');
+        });
       });
     }
   }
@@ -152,6 +163,37 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown>
   }
 
   OverlayEntry _createOverlayEntry(Size size, Offset offset) {
+    // Calculate available space below and above the dropdown
+    final screenHeight = MediaQuery
+        .of(context)
+        .size
+        .height;
+    final keyboardHeight = MediaQuery
+        .of(context)
+        .viewInsets
+        .bottom;
+    final availableSpaceBelow = screenHeight - offset.dy - size.height -
+        keyboardHeight - 8.0;
+    final availableSpaceAbove = offset.dy - MediaQuery
+        .of(context)
+        .padding
+        .top - 8.0;
+
+    // Default dropdown height (with some buffer for padding)
+    final estimatedDropdownHeight =
+        (widget.items.length * 50.0).clamp(0.0, widget.maxHeight ?? 400.0) +
+            (widget.showSearch ? 80.0 : 0.0) +
+            120.0; // Extra space for header and footer
+
+    // Determine if dropdown should appear above or below
+    final showAbove = availableSpaceBelow < estimatedDropdownHeight &&
+        availableSpaceAbove > availableSpaceBelow;
+
+    // Adjust max height based on available space
+    final adjustedMaxHeight = showAbove
+        ? availableSpaceAbove.clamp(100.0, widget.maxHeight ?? 400.0)
+        : availableSpaceBelow.clamp(100.0, widget.maxHeight ?? 400.0);
+
     return OverlayEntry(
       builder: (context) =>
           GestureDetector(
@@ -166,7 +208,9 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown>
                 // Actual dropdown
                 Positioned(
                   left: offset.dx,
-                  top: offset.dy + size.height + 4.0,
+                  top: showAbove
+                      ? offset.dy - adjustedMaxHeight - 4.0
+                      : offset.dy + size.height + 4.0,
                   width: size.width,
                   child: GestureDetector(
                     onTap: () {},
@@ -180,45 +224,67 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown>
                         builder: (context, child) =>
                             Transform.scale(
                               scale: _scaleAnimation.value,
-                              alignment: Alignment.topCenter,
+                              alignment: showAbove
+                                  ? Alignment.bottomCenter
+                                  : Alignment.topCenter,
                               child: Opacity(
                                 opacity: _fadeAnimation.value,
                                 child: child,
+                              ),
+                            ),
+                        child: Container(
+                          constraints: BoxConstraints(
+                            maxHeight: adjustedMaxHeight,
+                          ),
+                          child: _DropdownMenu(
+                            items: _filteredItems,
+                            selectedValues: widget.selectedValues,
+                            onItemToggle: _toggleItem,
+                            onClearAll: _clearAll,
+                            onClose: _closeDropdown,
+                            onSearch: _filterItems,
+                            searchController: _searchController,
+                            searchFocusNode: _searchFocusNode,
+                            showSearch: widget.showSearch,
+                            showDescriptions: widget.showDescriptions,
+                            showIcons: widget.showIcons,
+                            maxHeight: adjustedMaxHeight,
+                            maxSelections: widget.maxSelections,
+                            selectedItems: _selectedItems,
+                          ),
+                        ),
                       ),
-                    ),
-                    child: _DropdownMenu(
-                      items: _filteredItems,
-                      selectedValues: widget.selectedValues,
-                      onItemToggle: _toggleItem,
-                      onClearAll: _clearAll,
-                      onClose: _closeDropdown,
-                      onSearch: _filterItems,
-                      searchController: _searchController,
-                      searchFocusNode: _searchFocusNode,
-                      showSearch: widget.showSearch,
-                      showDescriptions: widget.showDescriptions,
-                      showIcons: widget.showIcons,
-                      maxHeight: widget.maxHeight!,
-                      maxSelections: widget.maxSelections,
-                      selectedItems: _selectedItems,
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
   void _filterItems(String query) {
-    final filtered = DropdownDataManager.searchItems(widget.items, query);
-    _filteredItems = filtered;
-    // Rebuild the overlay with filtered items
-    if (_isOpen) {
-      _overlayEntry?.markNeedsBuild();
-    }
+    // Performance optimization: Skip if query hasn't changed
+    if (query == _lastQuery) return;
+    
+    _lastQuery = query;
+    
+    // Debounce search for better performance
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 150), () {
+      if (!mounted) return;
+      
+      final filtered = DropdownDataManager.searchItems(widget.items, query);
+      
+      if (mounted) {
+        _filteredItems = filtered;
+        
+        // Rebuild the overlay with filtered items
+        if (_isOpen) {
+          _overlayEntry?.markNeedsBuild();
+        }
+      }
+    });
   }
 
   void _toggleItem(DropdownItem item) {
@@ -234,11 +300,26 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown>
       }
     }
 
+    // Update the local selected items state for immediate visual feedback
+    setState(() {
+      _selectedItems = widget.items
+          .where((item) => newSelectedValues.contains(item.value))
+          .toList();
+    });
+
+    // Notify parent about the selection change
     widget.onChanged?.call(newSelectedValues);
   }
 
   void _clearAll() {
     HapticFeedback.selectionClick();
+
+    // Update local state for immediate visual feedback
+    setState(() {
+      _selectedItems = [];
+    });
+
+    // Notify parent about the clear action
     widget.onChanged?.call([]);
   }
 
@@ -352,46 +433,65 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown>
                 ),
               ),
 
-              // Selected items chips
+              // Selected items chips - Optimized with ListView for better performance
               if (_selectedItems.isNotEmpty)
                 Container(
                   margin: const EdgeInsets.only(top: 8),
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: _selectedItems.map((item) =>
-                        Chip(
-                          label: Text(
-                            item.label,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onPrimaryContainer,
-                            ),
-                          ),
-                          avatar: widget.showIcons ? Text(
-                            item.icon,
-                            style: const TextStyle(fontSize: 14),
-                          ) : null,
-                          onDeleted: widget.enabled ? () {
-                            final newValues = List<dynamic>.from(
-                                widget.selectedValues);
-                            newValues.remove(item.value);
-                            widget.onChanged?.call(newValues);
-                          } : null,
-                          deleteIcon: Icon(
-                            Icons.close,
-                            size: 16,
-                            color: theme.colorScheme.onPrimaryContainer,
-                          ),
-                          backgroundColor: theme.colorScheme.primaryContainer,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        )).toList(),
-                  ),
+                  constraints: const BoxConstraints(maxHeight: 100), // Limit height
+                  child: _selectedItems.length > 6 
+                    ? SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: _selectedItems.take(6).map((item) => 
+                              _buildSelectedChip(item, theme)).toList() +
+                            [if (_selectedItems.length > 6)
+                              Chip(
+                                label: Text('+${_selectedItems.length - 6} more'),
+                                backgroundColor: theme.colorScheme.secondaryContainer,
+                              )
+                            ],
+                        ),
+                      )
+                    : Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: _selectedItems.map((item) => 
+                            _buildSelectedChip(item, theme)).toList(),
+                      ),
                 ),
             ],
           ),
         ),
+      ),
+    );
+  }
+  
+  // Performance optimization: Extract chip building to reduce rebuilds
+  Widget _buildSelectedChip(DropdownItem item, ThemeData theme) {
+    return Chip(
+      label: Text(
+        item.label,
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: theme.colorScheme.onPrimaryContainer,
+        ),
+      ),
+      avatar: widget.showIcons ? Text(
+        item.icon,
+        style: const TextStyle(fontSize: 14),
+      ) : null,
+      onDeleted: widget.enabled ? () {
+        final newValues = List<dynamic>.from(widget.selectedValues);
+        newValues.remove(item.value);
+        widget.onChanged?.call(newValues);
+      } : null,
+      deleteIcon: Icon(
+        Icons.close,
+        size: 16,
+        color: theme.colorScheme.onPrimaryContainer,
+      ),
+      backgroundColor: theme.colorScheme.primaryContainer,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
     );
   }
@@ -401,10 +501,10 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown>
 class _DropdownMenu extends StatefulWidget {
   final List<DropdownItem> items;
   final List<dynamic> selectedValues;
-  final Function(DropdownItem) onItemToggle;
+  final void Function(DropdownItem) onItemToggle;
   final VoidCallback onClearAll;
   final VoidCallback onClose;
-  final Function(String) onSearch;
+  final void Function(String) onSearch;
   final TextEditingController searchController;
   final FocusNode searchFocusNode;
   final bool showSearch;
@@ -436,14 +536,54 @@ class _DropdownMenu extends StatefulWidget {
 }
 
 class _DropdownMenuState extends State<_DropdownMenu> {
+  late List<dynamic> _selectedValues;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedValues = List<dynamic>.from(widget.selectedValues);
+  }
+
+  @override
+  void didUpdateWidget(_DropdownMenu oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Ensure local selection reflects parent changes
+    if (oldWidget.selectedValues != widget.selectedValues) {
+      setState(() {
+        _selectedValues = List<dynamic>.from(widget.selectedValues);
+      });
+    }
+  }
+
+  void _handleItemToggle(DropdownItem item) {
+    HapticFeedback.selectionClick();
+
+    setState(() {
+      if (_selectedValues.contains(item.value)) {
+        _selectedValues.remove(item.value);
+      } else {
+        if (widget.maxSelections == null ||
+            _selectedValues.length < widget.maxSelections!) {
+          _selectedValues.add(item.value);
+        }
+      }
+    });
+    // Call the parent's onChanged callback with the updated values
+    widget.onItemToggle(item);
+  }
+
+  void _handleClearAll() {
+    setState(() {
+      _selectedValues.clear();
+    });
+    widget.onClearAll();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Container(
-      constraints: BoxConstraints(
-        maxHeight: widget.maxHeight,
-      ),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
@@ -487,16 +627,16 @@ class _DropdownMenuState extends State<_DropdownMenu> {
         children: [
           Expanded(
             child: Text(
-              '${widget.selectedItems.length} selected',
+              '${_selectedValues.length} selected',
               style: theme.textTheme.titleSmall?.copyWith(
                 color: theme.colorScheme.primary,
                 fontWeight: FontWeight.w600,
               ),
             ),
           ),
-          if (widget.selectedItems.isNotEmpty)
+          if (_selectedValues.isNotEmpty)
             TextButton.icon(
-              onPressed: widget.onClearAll,
+              onPressed: _handleClearAll,
               icon: Icon(
                   Icons.clear_all, size: 16, color: theme.colorScheme.error),
               label: Text(
@@ -594,32 +734,34 @@ class _DropdownMenuState extends State<_DropdownMenu> {
       );
     }
 
+    // Performance optimization: Use ListView.builder with caching
     return ListView.builder(
       shrinkWrap: true,
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: widget.items.length,
-      itemBuilder: (context, index) =>
-          _buildDropdownItem(
-            widget.items[index],
-            theme,
-          ),
+      cacheExtent: 600, // Cache more items for smoother scrolling
+      physics: const BouncingScrollPhysics(), // Better scrolling feel
+      itemBuilder: (context, index) {
+        if (index >= widget.items.length) return const SizedBox.shrink();
+        return _buildDropdownItem(widget.items[index], theme);
+      },
     );
   }
 
   Widget _buildDropdownItem(DropdownItem item, ThemeData theme) {
-    final isSelected = widget.selectedValues.contains(item.value);
+    final isSelected = _selectedValues.contains(item.value);
     final canSelect = widget.maxSelections == null ||
-        widget.selectedItems.length < widget.maxSelections! ||
+        _selectedValues.length < widget.maxSelections! ||
         isSelected;
 
     return InkWell(
-      onTap: canSelect ? () => widget.onItemToggle(item) : null,
+      onTap: canSelect ? () => _handleItemToggle(item) : null,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: isSelected
-              ? theme.colorScheme.primaryContainer.withOpacity(0.3)
-              : Colors.transparent,
+              ? theme.colorScheme.primaryContainer.withOpacity(0.1)
+              : theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
           borderRadius: BorderRadius.circular(8),
         ),
         margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -630,7 +772,7 @@ class _DropdownMenuState extends State<_DropdownMenu> {
               height: 24,
               child: Checkbox(
                 value: isSelected,
-                onChanged: canSelect ? (_) => widget.onItemToggle(item) : null,
+                onChanged: canSelect ? (_) => _handleItemToggle(item) : null,
                 activeColor: theme.colorScheme.primary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4),
@@ -647,7 +789,8 @@ class _DropdownMenuState extends State<_DropdownMenu> {
                   color: isSelected
                       ? theme.colorScheme.primary.withOpacity(0.1)
                       : theme.colorScheme.surfaceContainerHighest.withOpacity(
-                      0.5),
+                          0.5,
+                        ),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
@@ -671,8 +814,9 @@ class _DropdownMenuState extends State<_DropdownMenu> {
                         color: isSelected
                             ? theme.colorScheme.primary
                             : theme.colorScheme.onSurface,
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight
-                            .w500,
+                        fontWeight: isSelected
+                            ? FontWeight.w600
+                            : FontWeight.w500,
                       ),
                     ),
                     if (widget.showDescriptions &&
@@ -704,6 +848,7 @@ class _DropdownMenuState extends State<_DropdownMenu> {
   }
 
   Widget _buildFooter(ThemeData theme) {
+    final selectedCount = _selectedValues.length;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -717,15 +862,14 @@ class _DropdownMenuState extends State<_DropdownMenu> {
         children: [
           if (widget.maxSelections != null)
             Text(
-              '${widget.selectedItems.length}/${widget
-                  .maxSelections} items selected',
+              '$selectedCount/${widget.maxSelections} items selected',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurface.withOpacity(0.7),
               ),
             )
           else
             Text(
-              '${widget.selectedItems.length} items selected',
+              '$selectedCount items selected',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurface.withOpacity(0.7),
               ),

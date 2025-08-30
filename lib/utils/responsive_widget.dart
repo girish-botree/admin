@@ -228,7 +228,7 @@ class ResponsiveLayout extends StatelessWidget {
       mobile: spacing ?? 16.0,
       tablet: spacing ?? 20.0,
       web: spacing ?? 24.0,
-    ) ?? 16.0;
+    );
 
     final paddingValue = padding ??
         Responsive.responsiveValue(
@@ -305,7 +305,7 @@ class ResponsiveRow extends StatelessWidget {
         mobile: spacing,
         tablet: spacing * 1.25,
         web: spacing * 1.5
-    ) ?? spacing;
+    );
 
     return Padding(
       padding: padding ?? EdgeInsets.zero,
@@ -415,16 +415,16 @@ class ResponsiveCard extends StatelessWidget {
           mobile: 12.0,
           tablet: 16.0,
           web: 20.0,
-        ) ?? 12.0;
+        );
 
     return Container(
-      constraints: BoxConstraints(maxWidth: maxWidth ?? double.infinity),
+      constraints: BoxConstraints(maxWidth: maxWidth),
       margin: margin,
       child: Card(
         color: color,
-        elevation: elevation ?? 1.0,
+        elevation: elevation,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(actualBorderRadius),
+          borderRadius: BorderRadius.circular(actualBorderRadius ?? 12.0),
         ),
         child: Padding(
           padding: actualPadding,

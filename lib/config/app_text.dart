@@ -1,6 +1,6 @@
 import 'package:admin/config/app_colors.dart';
 import 'package:admin/config/theme_controller.dart';
-import 'package:admin/language/language_controller.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

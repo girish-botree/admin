@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../utils/responsive.dart';
+import 'dropdown_utils.dart';
+import 'loading_widgets.dart';
 
 /// A responsive text field that maintains consistent UI across different screen sizes.
 class ResponsiveTextField extends StatelessWidget {
@@ -109,7 +111,7 @@ class ResponsiveTextField extends StatelessWidget {
 
     final responsiveBorderRadius = borderRadius ??
         Responsive.responsiveValue<double>(
-            context, mobile: 8.0, tablet: 10.0, web: 12.0) ?? 0.0;
+            context, mobile: 8.0, tablet: 10.0, web: 12.0);
 
     final responsiveTextStyle = textStyle ??
         TextStyle(
@@ -236,7 +238,7 @@ class ResponsiveDropdown<T> extends StatelessWidget {
 
     final responsiveBorderRadius = borderRadius ??
         Responsive.responsiveValue<double>(
-            context, mobile: 8.0, tablet: 10.0, web: 12.0) ?? 0.0;
+            context, mobile: 8.0, tablet: 10.0, web: 12.0);
 
     final responsiveTextStyle = textStyle ??
         TextStyle(
@@ -244,11 +246,14 @@ class ResponsiveDropdown<T> extends StatelessWidget {
               context, mobile: 14.0, tablet: 15.0, web: 16.0) ?? 14.0,
         );
 
-    // Create the dropdown with responsive properties
+    // Create the dropdown with responsive properties and checkmarks
     return DropdownButtonFormField<T>(
       value: value,
       onChanged: enabled ? onChanged : null,
-      items: items,
+      items: items.withCheckmarks(
+        context: context,
+        selectedValue: value,
+      ),
       validator: validator ?? (required ? _requiredValidator : null),
       autovalidateMode: autovalidate
           ? AutovalidateMode.onUserInteraction
@@ -349,7 +354,7 @@ class ResponsiveButton extends StatelessWidget {
     final responsiveHeight = height ?? _getButtonHeight(context);
     final responsivePadding = padding ?? _getButtonPadding(context);
     final responsiveBorderRadius = borderRadius ??
-        _getButtonBorderRadius(context) ?? 0.0;
+        _getButtonBorderRadius(context);
     final responsiveTextStyle = textStyle ?? _getButtonTextStyle(context);
 
     // Calculate button width based on buttonWidth enum
@@ -433,20 +438,10 @@ class ResponsiveButton extends StatelessWidget {
   }
 
   Widget _buildButtonContent(BuildContext context, TextStyle textStyle) {
-    // Show loading indicator if isLoading is true
+    // Show shimmer loading indicator if isLoading is true
     if (isLoading) {
-      return SizedBox(
-        height: 20,
-        width: 20,
-        child: CircularProgressIndicator(
-          strokeWidth: 2,
-          valueColor: AlwaysStoppedAnimation<Color>(
-            loadingColor ?? Theme
-                .of(context)
-                .colorScheme
-                .onPrimary,
-          ),
-        ),
+      return StandardLoadingWidget.circular(
+        size: 20,
       );
     }
 
@@ -515,7 +510,7 @@ class ResponsiveButton extends StatelessWidget {
 
   double _getButtonBorderRadius(BuildContext context) {
     final baseRadius = Responsive.responsiveValue(
-        context, mobile: 8.0, tablet: 10.0, web: 12.0) ?? 0.0;
+        context, mobile: 8.0, tablet: 10.0, web: 12.0);
 
     switch (buttonShape) {
       case ResponsiveButtonShape.rounded:

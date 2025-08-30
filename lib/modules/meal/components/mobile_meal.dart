@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../config/app_config.dart';
 import '../../../gen/assets.gen.dart';
 import '../../../utils/responsive.dart';
+import '../../../widgets/loading_widgets.dart';
 import '../meal_controller.dart';
 import '../ingredients/ingredients_view.dart';
 import '../receipe/receipes_view.dart';
@@ -34,14 +35,14 @@ class MobileMeal extends GetView<MealController> {
 
   PreferredSizeWidget _buildMobileAppBar(BuildContext context) {
     return AppBar(
-      title: AppText.semiBold(
+      title: AppText.bold(
         'Meal Management',
         color: context.theme.colorScheme.onSurface,
-        size: Responsive.responsiveTextSize(
-            context, mobile: 22, tablet: 24, web: 20),
+        size: 20,
       ),
       elevation: 0,
       backgroundColor: Colors.transparent,
+      centerTitle: false,
       actions: [
         Container(
           margin: const EdgeInsets.only(right: 16),
@@ -53,22 +54,15 @@ class MobileMeal extends GetView<MealController> {
               IconButton(
                 onPressed: controller.isLoading.value ? null : _handleRefresh,
                 icon: controller.isLoading.value
-                    ? SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      context.theme.colorScheme.primary,
-                    ),
-                  ),
-                )
+                    ? StandardLoadingWidget.circular(
+                        size: 20,
+                      )
                     : Icon(
-                  Icons.refresh_rounded,
-                  color: context.theme.colorScheme.primary,
-                ),
-            tooltip: 'Refresh',
-          )),
+                        Icons.refresh_rounded,
+                        color: context.theme.colorScheme.primary,
+                      ),
+                tooltip: 'Refresh',
+              )),
         ),
       ],
     );

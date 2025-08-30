@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../config/dropdown_data.dart';
@@ -57,24 +58,29 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
   final FocusNode _searchFocusNode = FocusNode();
 
   List<DropdownItem> _filteredItems = [];
+  String _lastQuery = ''; // Track last search query
   bool _isOpen = false;
   DropdownItem? _selectedItem;
   ThemeData? _cachedTheme; // Cache theme for overlay usage
+  
+  // Performance optimization: Debounce search
+  Timer? _searchDebounce;
 
   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 250),
+      duration: const Duration(milliseconds: 200), // Faster animation
       vsync: this,
     );
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+    _scaleAnimation = Tween<double>(begin: 0.95, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeOutBack),
     );
 
+    // Cache items for better performance
     _filteredItems = widget.items;
     _selectedItem =
         DropdownDataManager.findItemByValue(widget.items, widget.value);
@@ -105,6 +111,9 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
 
   @override
   void dispose() {
+    // Cancel any pending search debounce
+    _searchDebounce?.cancel();
+    
     // Close dropdown before disposing anything else
     if (_isOpen) {
       // If open, remove overlay without animation
@@ -147,10 +156,14 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
     setState(() => _isOpen = true);
     _animationController.forward();
 
-    // Auto-focus search if enabled
+    // Auto-focus search and show keyboard if enabled
     if (widget.showSearch) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _searchFocusNode.requestFocus();
+        // Explicitly show keyboard
+        Future.delayed(const Duration(milliseconds: 50), () {
+          SystemChannels.textInput.invokeMethod('TextInput.show');
+        });
       });
     }
   }
@@ -399,15 +412,20 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
       );
     }
 
+    // Performance optimization: Use ListView.builder with caching
     return ListView.builder(
       shrinkWrap: true,
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: _filteredItems.length,
-      itemBuilder: (context, index) =>
-          _buildDropdownItem(
-            _filteredItems[index],
-            theme,
-          ),
+      cacheExtent: 600, // Cache more items for smoother scrolling
+      physics: const BouncingScrollPhysics(), // Better scrolling feel
+      itemBuilder: (context, index) {
+        if (index >= _filteredItems.length) return const SizedBox.shrink();
+        return _buildDropdownItem(
+          _filteredItems[index],
+          theme,
+        );
+      },
     );
   }
 
@@ -489,16 +507,30 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
   }
 
   void _filterItems(String query, [StateSetter? overlaySetState]) {
-    setState(() {
-      _filteredItems =
-          DropdownDataManager.searchItems(widget.items, query);
+    // Performance optimization: Skip filtering if query hasn't changed
+    if (query == _lastQuery) return;
+    
+    _lastQuery = query;
+    
+    // Debounce search for better performance
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 150), () {
+      if (!mounted) return;
+      
+      final filtered = DropdownDataManager.searchItems(widget.items, query);
+      
+      if (mounted) {
+        setState(() {
+          _filteredItems = filtered;
+        });
+        
+        if (overlaySetState != null) {
+          overlaySetState(() {
+            _filteredItems = filtered;
+          });
+        }
+      }
     });
-    if (overlaySetState != null) {
-      overlaySetState(() {
-        _filteredItems =
-            DropdownDataManager.searchItems(widget.items, query);
-      });
-    }
   }
 
   void _selectItem(DropdownItem item) {

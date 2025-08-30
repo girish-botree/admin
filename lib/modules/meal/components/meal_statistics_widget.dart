@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../config/app_colors.dart';
+
 import '../../../config/app_text.dart';
 import '../meal_controller.dart';
 

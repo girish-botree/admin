@@ -117,7 +117,7 @@ class MealController extends GetxController {
     error.value = '';
     
     try {
-      final response = await DioNetworkService.getRecipes();
+      final response = await DioNetworkService.getRecipes(showLoader: false);
       if (response is Map<String, dynamic> && response['data'] != null) {
         recipes.value = (response['data'] as List<dynamic>? ?? []).cast<dynamic>();
         updateFilteredRecipes();
@@ -167,7 +167,7 @@ class MealController extends GetxController {
     error.value = '';
     
     try {
-      await DioNetworkService.createRecipe(data);
+      await DioNetworkService.createRecipe(data, showLoader: false);
       await fetchRecipes();
       return true;
     } catch (e) {
@@ -184,7 +184,7 @@ class MealController extends GetxController {
     error.value = '';
     
     try {
-      await DioNetworkService.updateRecipe(id, data);
+      await DioNetworkService.updateRecipe(id, data, showLoader: false);
       await fetchRecipes();
       return true;
     } catch (e) {
@@ -201,7 +201,7 @@ class MealController extends GetxController {
     error.value = '';
     
     try {
-      await DioNetworkService.deleteRecipe(id);
+      await DioNetworkService.deleteRecipe(id, showLoader: false);
       await fetchRecipes();
       return true;
     } catch (e) {
@@ -219,7 +219,7 @@ class MealController extends GetxController {
     error.value = '';
     
     try {
-      final response = await DioNetworkService.getIngredients();
+      final response = await DioNetworkService.getIngredients(showLoader: false);
       if (response is Map<String, dynamic> && response['data'] != null) {
         ingredients.value = (response['data'] as List<dynamic>? ?? []).cast<dynamic>();
         updateFilteredIngredients();
@@ -240,7 +240,7 @@ class MealController extends GetxController {
     error.value = '';
     
     try {
-      await DioNetworkService.createIngredient(data);
+      await DioNetworkService.createIngredient(data, showLoader: false);
       await fetchIngredients();
       return true;
     } catch (e) {
@@ -257,7 +257,7 @@ class MealController extends GetxController {
     error.value = '';
     
     try {
-      await DioNetworkService.updateIngredient(id, data);
+      await DioNetworkService.updateIngredient(id, data, showLoader: false);
       await fetchIngredients();
       return true;
     } catch (e) {
@@ -274,7 +274,7 @@ class MealController extends GetxController {
     error.value = '';
     
     try {
-      await DioNetworkService.deleteIngredient(id);
+      await DioNetworkService.deleteIngredient(id, showLoader: false);
       await fetchIngredients();
       return true;
     } catch (e) {
@@ -597,7 +597,7 @@ class MealController extends GetxController {
   }
 
   void updateFilteredRecipes() {
-    List<dynamic> filtered = recipes.value;
+    List<dynamic> filtered = recipes.toList();
 
     // Apply search filter
     if (recipeSearchQuery.value.isNotEmpty) {
@@ -656,7 +656,7 @@ class MealController extends GetxController {
   }
 
   void updateFilteredIngredients() {
-    List<dynamic> filtered = ingredients.value;
+    List<dynamic> filtered = ingredients.toList();
 
     // Apply search filter
     if (ingredientSearchQuery.value.isNotEmpty) {

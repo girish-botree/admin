@@ -443,9 +443,31 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
                 style: TextStyle(color: context.theme.colorScheme.onSurface),
                 dropdownColor: context.theme.colorScheme.surfaceContainerLowest,
                 items: controller.vehicleTypes.map((String vehicleType) {
+                  final isSelected = vehicleType == controller.editSelectedVehicleType.value;
                   return DropdownMenuItem<String>(
                     value: vehicleType,
-                    child: Text(vehicleType),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            vehicleType,
+                            style: TextStyle(
+                              color: isSelected 
+                                  ? context.theme.colorScheme.primary
+                                  : context.theme.colorScheme.onSurface,
+                              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                        if (isSelected)
+                          Icon(
+                            Icons.check_circle,
+                            color: context.theme.colorScheme.primary,
+                            size: 18,
+                          ),
+                      ],
+                    ),
                   );
                 }).toList(),
                 onChanged: (String? newValue) {

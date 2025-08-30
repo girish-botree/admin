@@ -328,7 +328,7 @@ class CreateAdminController extends GetxController {
         }
 
         // Small delay to ensure bottom sheet closes properly
-        await Future.delayed(Duration(milliseconds: 300));
+        await Future<void>.delayed(Duration(milliseconds: 300));
 
         // Navigate to home page
         Get.offAllNamed<void>(AppRoutes.home);

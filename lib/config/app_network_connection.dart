@@ -17,7 +17,7 @@ class AppNetworkConnection {
             break;
           case InternetConnectionStatus.disconnected:
             debugPrint('Offline');
-            EasyLoading.dismiss();
+            // EasyLoading.dismiss(); // Removed overscreen loading
             break;
           default:
             debugPrint('Unknown status: $status');

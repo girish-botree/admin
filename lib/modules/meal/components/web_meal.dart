@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../config/app_config.dart';
-import '../../../utils/responsive.dart';
+import '../../../widgets/loading_widgets.dart';
+
 import '../meal_controller.dart';
 import '../ingredients/ingredients_view.dart';
 import '../receipe/receipes_view.dart';
 import 'meal_statistics_widget.dart';
-import 'mobile_meal.dart';
+
 
 class WebMeal extends GetView<MealController> {
   const WebMeal({super.key});
@@ -24,13 +25,14 @@ class WebMeal extends GetView<MealController> {
 
   PreferredSizeWidget _buildWebAppBar(BuildContext context) {
     return AppBar(
-      title: AppText.semiBold(
+      title: AppText.bold(
         'Meal Management Dashboard',
         color: context.theme.colorScheme.onSurface,
-        size: 32,
+        size: 20,
       ),
       elevation: 0,
       backgroundColor: Colors.transparent,
+      centerTitle: false,
       actions: [
         Container(
           margin: const EdgeInsets.only(right: 24),
@@ -42,21 +44,14 @@ class WebMeal extends GetView<MealController> {
               IconButton(
                 onPressed: controller.isLoading.value ? null : _handleRefresh,
                 icon: controller.isLoading.value
-                    ? SizedBox(
-                  width: 26,
-                  height: 26,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 3,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      context.theme.colorScheme.primary,
-                    ),
-                  ),
-                )
+                    ? StandardLoadingWidget.circular(
+                        size: 26,
+                      )
                     : Icon(
-                  Icons.refresh_rounded,
-                  color: context.theme.colorScheme.primary,
-                  size: 30,
-                ),
+                        Icons.refresh_rounded,
+                        color: context.theme.colorScheme.primary,
+                        size: 30,
+                      ),
                 tooltip: 'Refresh',
               )),
         ),

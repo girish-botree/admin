@@ -5,7 +5,7 @@ import '../meal_controller.dart';
 import '../ingredients/ingredients_view.dart';
 import '../receipe/receipes_view.dart';
 import 'meal_statistics_widget.dart';
-import 'mobile_meal.dart';
+
 
 class TabletMeal extends GetView<MealController> {
   const TabletMeal({super.key});
@@ -23,13 +23,14 @@ class TabletMeal extends GetView<MealController> {
 
   PreferredSizeWidget _buildTabletAppBar(BuildContext context) {
     return AppBar(
-      title: AppText.semiBold(
+      title: AppText.bold(
         'Meal Management',
         color: context.theme.colorScheme.onSurface,
-        size: 28,
+        size: 20,
       ),
       elevation: 0,
       backgroundColor: Colors.transparent,
+      centerTitle: false,
       actions: [
         Container(
           margin: const EdgeInsets.only(right: 20),

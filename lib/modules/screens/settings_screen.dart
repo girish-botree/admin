@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../config/app_text.dart';
+
 import '../../config/theme_controller.dart';
 import '../../language/language_controller.dart';
 import '../main_layout/main_layout_controller.dart';

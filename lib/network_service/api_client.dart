@@ -413,17 +413,13 @@ class ApiHelper {
     }
   }
 
-  /// Show loader
+  /// Show loader - Disabled (no overscreen loading)
   static void showLoader() {
-    if (!EasyLoading.isShow) {
-      EasyLoading.show(status: 'Loading...');
-    }
+    // Overscreen loading removed
   }
 
-  /// Dismiss loader
+  /// Dismiss loader - Disabled (no overscreen loading)
   static void dismissLoader() {
-    if (EasyLoading.isShow) {
-      EasyLoading.dismiss();
-    }
+    // Overscreen loading removed
   }
 } 

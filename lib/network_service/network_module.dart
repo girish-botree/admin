@@ -1,11 +1,11 @@
-import 'dart:convert';
+
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:talker_dio_logger/talker_dio_logger.dart';
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+
 
 import '../config/appconstants.dart';
 import '../config/shared_preference.dart';

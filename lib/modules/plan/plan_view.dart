@@ -21,7 +21,7 @@ class PlanView extends GetView<PlanController> {
   static const double _cardBorderRadius = 12.0;
   static const double _spacingMedium = 16.0;
   static const double _spacingLarge = 24.0;
-  static const double _emptyStateIconSize = 48.0;
+
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +29,14 @@ class PlanView extends GetView<PlanController> {
     // Get.put(PlanController());
     return Scaffold(
       appBar: AppBar(
-        title: AppText.semiBold(
+        title: AppText.bold(
           PlanConstants.mealPlans,
           color: context.theme.colorScheme.onSurface,
-          size: Responsive.getTitleTextSize(context),
+          size: 20,
         ),
         backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
         elevation: 0,
+        centerTitle: false,
         actions: [
           IconButton(
             onPressed: () {
@@ -207,7 +208,7 @@ class PlanView extends GetView<PlanController> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Get.back(),
+                              onPressed: () => Get.back<void>(),
             child: Text(
               'Cancel',
               style: TextStyle(
@@ -218,7 +219,7 @@ class PlanView extends GetView<PlanController> {
           ),
           TextButton(
             onPressed: () async {
-              Get.back(); // Close dialog first
+              Get.back<void>(); // Close dialog first
               await controller.deleteAllMealPlansForDate(
                   controller.selectedCalendarDate.value);
             },
