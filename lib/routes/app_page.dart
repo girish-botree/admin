@@ -8,6 +8,7 @@ import 'package:admin/modules/main_layout/main_layout_binding.dart';
 import 'package:admin/modules/main_layout/main_layout_view.dart';
 import 'package:admin/modules/plan/plan_binding.dart';
 import 'package:admin/modules/plan/plan_view.dart';
+import 'package:admin/modules/plan/meal_plan_detail_view.dart';
 import 'package:admin/modules/dashboard/dashboard_binding.dart';
 import 'package:admin/modules/dashboard/dashboard_view.dart';
 import 'package:admin/modules/delivery_persons/manage_delivery_persons/delivery_person_binding.dart';
@@ -57,6 +58,11 @@ class AppPages {
     GetPage<void>(
         name: AppRoutes.plan,
         page:()=> const PlanView(),
+        binding: PlanBinding(),
+        middlewares: [AuthMiddleware()]),
+    GetPage<void>(
+        name: AppRoutes.mealPlanDetail,
+        page: () => MealPlanDetailView(selectedDate: Get.arguments as DateTime? ?? DateTime.now()),
         binding: PlanBinding(),
         middlewares: [AuthMiddleware()]),
     GetPage<void>(

@@ -6,6 +6,7 @@ class AppRoutes {
   static const meal = '/meal';
   static const mainLayout = '/main-layout';
   static const plan = '/plan';
+  static const mealPlanDetail = '/meal-plan-detail';
   static const dashboard = '/dashboard';
   static const deliveryPersons = '/delivery-persons';
 

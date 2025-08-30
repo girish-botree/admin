@@ -133,7 +133,7 @@ class TabLogin extends GetView<LoginController> {
           style: TextStyle(
             fontSize: 48,
             fontWeight: FontWeight.bold,
-            color: context.theme.colorScheme.surfaceContainerLowest,
+            color: context.theme.colorScheme.onSurface,
             letterSpacing: 1.0,
           ),
         ),
@@ -143,7 +143,7 @@ class TabLogin extends GetView<LoginController> {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: Theme.of(context).colorScheme.surfaceContainerLowest,
+            color: context.theme.colorScheme.onSurface,
             letterSpacing: 2.0,
           ),
           textAlign: TextAlign.center,
@@ -168,7 +168,7 @@ class TabLogin extends GetView<LoginController> {
           style: TextStyle(
             fontSize: 32,
             fontWeight: FontWeight.bold,
-            color: context.theme.colorScheme.surfaceContainerLowest,
+            color: context.theme.colorScheme.onSurface,
             letterSpacing: 1.0,
           ),
         ),
@@ -178,7 +178,7 @@ class TabLogin extends GetView<LoginController> {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w500,
-            color: Theme.of(context).colorScheme.surfaceContainerLowest,
+            color: context.theme.colorScheme.onSurface,
             letterSpacing: 2.0,
           ),
           textAlign: TextAlign.center,
@@ -194,7 +194,7 @@ class TabLogin extends GetView<LoginController> {
           'Or continue with',
           style: TextStyle(
             fontSize: 18,
-            color: Theme.of(context).colorScheme.surfaceContainerLowest,
+            color: context.theme.colorScheme.onSurface,
             fontWeight: FontWeight.w500,
           ),
         ),

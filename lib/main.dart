@@ -1,6 +1,6 @@
-import 'package:admin/config/app_theme_config.dart';
 import 'package:admin/config/app_translations.dart';
 import 'package:admin/config/theme_controller.dart';
+import 'package:admin/themes/enhanced_theme_config.dart';
 
 import 'package:admin/language/language_controller.dart';
 import 'package:admin/routes/app_page.dart';
@@ -58,9 +58,8 @@ class MyApp extends StatelessWidget {
         title: 'Admin App',
         initialRoute: AppPages.initial,
         getPages: AppPages.routes,
-        theme: ThemeUtil.getAppLightTheme(ThemeConfig.themeBlue),
-        darkTheme: kIsWeb ? null : ThemeUtil.getAppDarkTheme(
-            ThemeConfig.themeBlue),
+        theme: EnhancedThemeConfig.lightTheme,
+        darkTheme: kIsWeb ? null : EnhancedThemeConfig.darkTheme,
         themeMode: themeController.themeMode.value,
         translations: AppTranslations(),
         builder: (context, child) {

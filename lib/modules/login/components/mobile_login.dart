@@ -129,7 +129,7 @@ class MobileLogin extends GetView<LoginController> {
           style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w500,
-            color: Colors.white.withValues(alpha: 0.9),
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.9),
             letterSpacing: 2.0,
           ),
           textAlign: TextAlign.center,
@@ -149,12 +149,12 @@ class MobileLogin extends GetView<LoginController> {
           iconSize: 35,
         ),
         const SizedBox(height: 12),
-        const Text(
+        Text(
           'Elith Admin',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: context.theme.colorScheme.onSurface,
             letterSpacing: 0.8,
           ),
         ),
@@ -164,7 +164,7 @@ class MobileLogin extends GetView<LoginController> {
           style: TextStyle(
             fontSize: 9,
             fontWeight: FontWeight.w500,
-            color: Colors.white.withValues(alpha: 0.9),
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.9),
             letterSpacing: 1.5,
           ),
           textAlign: TextAlign.center,
@@ -179,8 +179,8 @@ class MobileLogin extends GetView<LoginController> {
       child: ElevatedButton(
         onPressed: () => _showMobileLoginBottomSheet(context),
         style: ElevatedButton.styleFrom(
-          backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
-          foregroundColor: context.theme.colorScheme.onSurface,
+          backgroundColor: context.theme.colorScheme.onSurface,
+          foregroundColor: context.theme.colorScheme.surfaceContainerLowest,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(25),
@@ -191,11 +191,15 @@ class MobileLogin extends GetView<LoginController> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.login_rounded, size: 22, color: context.theme.colorScheme.onSurface),
+            Icon(Icons.login_rounded, size: 22, color: context.theme.colorScheme.surfaceContainerLowest),
             const SizedBox(width: 10),
-            const Text(
+            Text(
               'Get Started',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontSize: 16, 
+                fontWeight: FontWeight.w600,
+                color: context.theme.colorScheme.surfaceContainerLowest,
+              ),
             ),
           ],
         ),
@@ -210,7 +214,7 @@ class MobileLogin extends GetView<LoginController> {
           'Or continue with',
           style: TextStyle(
             fontSize: 14,
-            color: Colors.white.withValues(alpha: 0.8),
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.8),
             fontWeight: FontWeight.w500,
           ),
         ),

@@ -92,24 +92,28 @@ class PlanController extends GetxController {
       final responseData = response['httpResponse']?['data'] ?? response['data'];
       
       if (responseData is List) {
-        recipes.value = responseData.cast<dynamic>();
-        if (responseData.isNotEmpty && selectedRecipeId.value.isEmpty) {
-          final firstRecipe = responseData.first;
-          if (firstRecipe is Map<String, dynamic>) {
-            selectedRecipeId.value =
-                firstRecipe['recipeId']?.toString() ?? '';
+        _safeStateUpdate(() {
+          recipes.value = responseData.cast<dynamic>();
+          if (responseData.isNotEmpty && selectedRecipeId.value.isEmpty) {
+            final firstRecipe = responseData.first;
+            if (firstRecipe is Map<String, dynamic>) {
+              selectedRecipeId.value =
+                  firstRecipe['recipeId']?.toString() ?? '';
+            }
           }
-        }
+        });
       } else if (responseData is Map && responseData['data'] is List) {
         final recipeList = (responseData['data'] as List).cast<dynamic>();
-        recipes.value = recipeList;
-        if (recipeList.isNotEmpty && selectedRecipeId.value.isEmpty) {
-          final firstRecipe = recipeList.first;
-          if (firstRecipe is Map<String, dynamic>) {
-            selectedRecipeId.value =
-                firstRecipe['recipeId']?.toString() ?? '';
+        _safeStateUpdate(() {
+          recipes.value = recipeList;
+          if (recipeList.isNotEmpty && selectedRecipeId.value.isEmpty) {
+            final firstRecipe = recipeList.first;
+            if (firstRecipe is Map<String, dynamic>) {
+              selectedRecipeId.value =
+                  firstRecipe['recipeId']?.toString() ?? '';
+            }
           }
-        }
+        });
       }
     } catch (e) {
       debugPrint('Error loading recipes: $e');
@@ -127,7 +131,9 @@ class PlanController extends GetxController {
 
   // Get all meal plans
   Future<void> getMealPlans() async {
-    isLoading.value = true;
+    _safeStateUpdate(() {
+      isLoading.value = true;
+    });
     try {
       final response = await DioNetworkService.getData('api/MealPlan', showLoader: false);
       
@@ -135,16 +141,20 @@ class PlanController extends GetxController {
       final responseData = response['httpResponse']?['data'] ?? response['data'];
       
       if (responseData is List) {
-        mealPlans.value = responseData.where((json) => json is Map<String, dynamic>)
-            .map((json) => MealPlan.fromJson(json as Map<String, dynamic>))
-            .toList();
+        _safeStateUpdate(() {
+          mealPlans.value = responseData.where((json) => json is Map<String, dynamic>)
+              .map((json) => MealPlan.fromJson(json as Map<String, dynamic>))
+              .toList();
+        });
       } else if (responseData is Map && responseData['data'] is List) {
         final dataList = responseData['data'] as List;
-        mealPlans.value =
-            dataList.where((json) => json is Map<String, dynamic>)
-                .map((json) =>
-                MealPlan.fromJson(json as Map<String, dynamic>))
-                .toList();
+        _safeStateUpdate(() {
+          mealPlans.value =
+              dataList.where((json) => json is Map<String, dynamic>)
+                  .map((json) =>
+                  MealPlan.fromJson(json as Map<String, dynamic>))
+                  .toList();
+        });
       }
     } catch (e) {
       debugPrint('Error loading meal plans: $e');
@@ -158,7 +168,9 @@ class PlanController extends GetxController {
         },
       );
     } finally {
-      isLoading.value = false;
+      _safeStateUpdate(() {
+        isLoading.value = false;
+      });
     }
   }
 
@@ -413,7 +425,9 @@ class PlanController extends GetxController {
     descriptionController.text = mealPlan.description;
     priceController.text = mealPlan.price?.toString() ?? '';
     imageUrlController.text = mealPlan.imageUrl ?? '';
-    isActive.value = mealPlan.isActive;
+    _safeStateUpdate(() {
+      isActive.value = mealPlan.isActive;
+    });
   }
 
   // Prepare assignment form for editing
@@ -431,11 +445,13 @@ class PlanController extends GetxController {
     );
     
     currentAssignment = assignment;
-    selectedRecipeId.value = assignment.recipeId;
-    selectedMealDate.value = assignment.mealDate;
-    selectedPeriod.value = assignment.period;
-    selectedCategory.value = assignment.category;
-    selectedBmiCategory.value = assignment.bmiCategory;
+    _safeStateUpdate(() {
+      selectedRecipeId.value = assignment.recipeId;
+      selectedMealDate.value = assignment.mealDate;
+      selectedPeriod.value = assignment.period;
+      selectedCategory.value = assignment.category;
+      selectedBmiCategory.value = assignment.bmiCategory;
+    });
   }
 
   void clearForm() {
@@ -444,18 +460,22 @@ class PlanController extends GetxController {
     descriptionController.clear();
     priceController.clear();
     imageUrlController.clear();
-    isActive.value = true;
+    _safeStateUpdate(() {
+      isActive.value = true;
+    });
     _resetEnhancedForm();
   }
 
   // Clear assignment form
   void clearAssignmentForm() {
     currentAssignment = null;
-    selectedRecipeId.value = '';
-    selectedMealDate.value = DateTime.now();
-    selectedPeriod.value = MealPeriod.breakfast;
-    selectedCategory.value = MealCategory.vegan;
-    selectedBmiCategory.value = BmiCategory.normal;
+    _safeStateUpdate(() {
+      selectedRecipeId.value = '';
+      selectedMealDate.value = DateTime.now();
+      selectedPeriod.value = MealPeriod.breakfast;
+      selectedCategory.value = MealCategory.vegan;
+      selectedBmiCategory.value = BmiCategory.normal;
+    });
   }
 
   // Validation for assignment form
@@ -495,7 +515,6 @@ class PlanController extends GetxController {
   Future<void> getMealPlansByDate() async {
     final dateStr = '${selectedCalendarDate.value.year.toString().padLeft(4, '0')}-${selectedCalendarDate.value.month.toString().padLeft(2, '0')}-${selectedCalendarDate.value.day.toString().padLeft(2, '0')}';
 
-
     try {
       final response = await DioNetworkService.getData('api/MealPlan/date/$dateStr', showLoader: false);
       
@@ -512,11 +531,13 @@ class PlanController extends GetxController {
           }
         }
         
-        mealPlanAssignments.value =
-            responseData.where((json) => json is Map<String, dynamic>)
-                .map((json) =>
-                MealPlanAssignment.fromJson(json as Map<String, dynamic>))
-                .toList();
+        _safeStateUpdate(() {
+          mealPlanAssignments.value =
+              responseData.where((json) => json is Map<String, dynamic>)
+                  .map((json) =>
+                  MealPlanAssignment.fromJson(json as Map<String, dynamic>))
+                  .toList();
+        });
                 
         // Debug logging for parsed assignments
         debugPrint('📋 Parsed meal plan assignments:');
@@ -525,11 +546,13 @@ class PlanController extends GetxController {
         }
       } else if (responseData is Map && responseData['data'] is List) {
         final dataList = responseData['data'] as List;
-        mealPlanAssignments.value =
-            dataList.where((json) => json is Map<String, dynamic>)
-                .map((json) =>
-                MealPlanAssignment.fromJson(json as Map<String, dynamic>))
-                .toList();
+        _safeStateUpdate(() {
+          mealPlanAssignments.value =
+              dataList.where((json) => json is Map<String, dynamic>)
+                  .map((json) =>
+                  MealPlanAssignment.fromJson(json as Map<String, dynamic>))
+                  .toList();
+        });
       }
 
     } catch (e) {
@@ -1026,10 +1049,19 @@ class PlanController extends GetxController {
     );
   }
 
-  // Update selected calendar date
+  // Helper method for safe state updates to prevent build-time errors
+  void _safeStateUpdate(VoidCallback updateCallback) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      updateCallback();
+    });
+  }
+
+  // Update selected date with safe state updates
   void updateSelectedDate(DateTime date) {
-    selectedCalendarDate.value = date;
-    focusedDay.value = date;
+    _safeStateUpdate(() {
+      selectedCalendarDate.value = date;
+      focusedDay.value = date;
+    });
   }
 
   // Enhanced meal creation flow methods
@@ -1054,8 +1086,11 @@ class PlanController extends GetxController {
     }
     
     if (selectedDietType.value == null) {
-      _filteredRecipesCache.value = recipes;
-      _lastFilteredCategory = null;
+      // Use safe state update to prevent build-time errors
+      _safeStateUpdate(() {
+        _filteredRecipesCache.value = recipes;
+        _lastFilteredCategory = null;
+      });
       return recipes;
     }
 
@@ -1070,9 +1105,11 @@ class PlanController extends GetxController {
       return true; // Show all if filtering fails
     }).toList();
     
-    // Cache the filtered results
-    _filteredRecipesCache.value = filtered;
-    _lastFilteredCategory = selectedDietType.value;
+    // Cache the filtered results using safe state update
+    _safeStateUpdate(() {
+      _filteredRecipesCache.value = filtered;
+      _lastFilteredCategory = selectedDietType.value;
+    });
     
     return filtered;
   }
@@ -1137,10 +1174,12 @@ class PlanController extends GetxController {
 
   // Multiple meal selection methods
   void toggleMultiSelection() {
-    showMultiSelection.value = !showMultiSelection.value;
-    if (!showMultiSelection.value) {
-      clearMultiSelection();
-    }
+    _safeStateUpdate(() {
+      showMultiSelection.value = !showMultiSelection.value;
+      if (!showMultiSelection.value) {
+        clearMultiSelection();
+      }
+    });
   }
 
   void toggleRecipeSelection(String recipeId) {
@@ -1149,7 +1188,9 @@ class PlanController extends GetxController {
     } else {
       selectedRecipeIds.add(recipeId);
     }
-    selectedMealCount.value = selectedRecipeIds.length;
+    _safeStateUpdate(() {
+      selectedMealCount.value = selectedRecipeIds.length;
+    });
   }
 
   bool isRecipeSelected(String recipeId) {
@@ -1158,7 +1199,9 @@ class PlanController extends GetxController {
 
   void clearMultiSelection() {
     selectedRecipeIds.clear();
-    selectedMealCount.value = 0;
+    _safeStateUpdate(() {
+      selectedMealCount.value = 0;
+    });
   }
 
   // Create multiple meal plans at once
@@ -1171,7 +1214,9 @@ class PlanController extends GetxController {
       return;
     }
 
-    isLoading.value = true;
+    _safeStateUpdate(() {
+      isLoading.value = true;
+    });
     int successCount = 0;
     int failureCount = 0;
 
@@ -1216,7 +1261,9 @@ class PlanController extends GetxController {
         getMealPlansByDate();
         getMealPlans();
         clearMultiSelection();
-        showMultiSelection.value = false;
+        _safeStateUpdate(() {
+          showMultiSelection.value = false;
+        });
         Get.back<void>();
       }
 
@@ -1226,9 +1273,17 @@ class PlanController extends GetxController {
           type: MessageType.error,
         );
       }
-
+    } catch (e) {
+      CustomDisplays.showToast(
+        message: 'Failed to create meal plans: ${e.toString()}',
+        type: MessageType.error,
+      );
+      debugPrint('Error creating multiple meal plans: $e');
     } finally {
-      isLoading.value = false;
+      // Always hide loading state
+      _safeStateUpdate(() {
+        isLoading.value = false;
+      });
     }
   }
 
@@ -1388,14 +1443,16 @@ class PlanController extends GetxController {
   }
 
   void _resetEnhancedForm() {
-    showDietTypeSelection.value = true;
-    selectedDietType.value = null;
-    selectedMealRecipes.clear();
-    selectedMealRecipeIds.clear();
-    selectedBmiCategory.value = BmiCategory.normal;
-    // Clear cache when resetting form
-    _filteredRecipesCache.clear();
-    _lastFilteredCategory = null;
+    _safeStateUpdate(() {
+      showDietTypeSelection.value = true;
+      selectedDietType.value = null;
+      selectedMealRecipes.clear();
+      selectedMealRecipeIds.clear();
+      selectedBmiCategory.value = BmiCategory.normal;
+      // Clear cache when resetting form
+      _filteredRecipesCache.clear();
+      _lastFilteredCategory = null;
+    });
   }
 
   // Delete all meal plans for a specific date

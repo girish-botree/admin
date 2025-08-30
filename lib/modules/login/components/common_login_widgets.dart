@@ -84,7 +84,7 @@ Widget buildWelcomeText({
       AppText.regular(
         'Sign in to continue to your dashboard',
         size: subtitleFontSize,
-        color: Get.context!.theme.colorScheme.outline,
+        color: Get.context!.theme.colorScheme.onSurface.withValues(alpha: 0.7),
       ),
     ],
   );
@@ -110,20 +110,20 @@ Widget buildEmailField({
     decoration: InputDecoration(
       labelText: 'Email',
       hintText: 'Enter your email',
-      labelStyle: TextStyle(color: Get.context!.theme.colorScheme.outline),
-      hintStyle: TextStyle(color: Get.context!.theme.colorScheme.outline),
+      labelStyle: TextStyle(color: Get.context!.theme.colorScheme.onSurface.withValues(alpha: 0.7)),
+      hintStyle: TextStyle(color: Get.context!.theme.colorScheme.onSurface.withValues(alpha: 0.5)),
       prefixIcon: Icon(
         Icons.email_outlined,
-        color: Get.context!.theme.colorScheme.outline,
+        color: Get.context!.theme.colorScheme.onSurface.withValues(alpha: 0.7),
         size: iconSize,
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(borderRadius),
-        borderSide: BorderSide(color: Get.context!.theme.colorScheme.outline),
+        borderSide: BorderSide(color: Get.context!.theme.colorScheme.onSurface.withValues(alpha: 0.3)),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(borderRadius),
-        borderSide: BorderSide(color: Get.context!.theme.colorScheme.outline),
+        borderSide: BorderSide(color: Get.context!.theme.colorScheme.onSurface),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(borderRadius),
@@ -162,11 +162,11 @@ Widget buildPasswordField({
     decoration: InputDecoration(
       labelText: 'Password',
       hintText: 'Enter your password',
-      labelStyle: TextStyle(color: Get.context!.theme.colorScheme.outline),
-      hintStyle: TextStyle(color: Get.context!.theme.colorScheme.outline),
+      labelStyle: TextStyle(color: Get.context!.theme.colorScheme.onSurface.withValues(alpha: 0.7)),
+      hintStyle: TextStyle(color: Get.context!.theme.colorScheme.onSurface.withValues(alpha: 0.5)),
       prefixIcon: Icon(
         Icons.lock_outline,
-        color: Get.context!.theme.colorScheme.outline,
+        color: Get.context!.theme.colorScheme.onSurface.withValues(alpha: 0.7),
         size: iconSize,
       ),
       suffixIcon: IconButton(
@@ -174,18 +174,18 @@ Widget buildPasswordField({
           isPasswordVisible.value
               ? Icons.visibility_outlined
               : Icons.visibility_off_outlined,
-          color: Get.context!.theme.colorScheme.outline,
+          color: Get.context!.theme.colorScheme.onSurface.withValues(alpha: 0.7),
           size: iconSize,
         ),
         onPressed: toggleVisibility,
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(borderRadius),
-        borderSide: BorderSide(color: Get.context!.theme.colorScheme.outline),
+        borderSide: BorderSide(color: Get.context!.theme.colorScheme.onSurface.withValues(alpha: 0.3)),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(borderRadius),
-        borderSide: BorderSide(color: Get.context!.theme.colorScheme.outline),
+        borderSide: BorderSide(color: Get.context!.theme.colorScheme.onSurface),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(borderRadius),
@@ -236,7 +236,7 @@ Widget buildLoginButton({
           : AppText.semiBold(
               'Login',
               size: fontSize,
-              color: AppColor.white,
+              color: Get.context!.theme.colorScheme.surfaceContainerLowest,
             ),
     ),
   ));

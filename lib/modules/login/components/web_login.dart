@@ -100,7 +100,7 @@ class WebLogin extends GetView<LoginController> {
           style: TextStyle(
             fontSize: 52,
             fontWeight: FontWeight.bold,
-            color: Get.context!.theme.colorScheme.surfaceContainerLowest,
+            color: Get.context!.theme.colorScheme.onSurface,
             letterSpacing: 1.0,
           ),
         ),
@@ -110,7 +110,7 @@ class WebLogin extends GetView<LoginController> {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w500,
-            color: Get.context!.theme.colorScheme.surfaceContainerLowest,
+            color: Get.context!.theme.colorScheme.onSurface,
             letterSpacing: 2.0,
           ),
           textAlign: TextAlign.center,
@@ -126,7 +126,7 @@ class WebLogin extends GetView<LoginController> {
           'Or continue with',
           style: TextStyle(
             fontSize: 20,
-            color: Get.context!.theme.colorScheme.surfaceContainerLowest,
+            color: Get.context!.theme.colorScheme.onSurface,
             fontWeight: FontWeight.w500,
           ),
         ),
