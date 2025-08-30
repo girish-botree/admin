@@ -12,9 +12,7 @@ import 'package:admin/modules/dashboard/dashboard_binding.dart';
 import 'package:admin/modules/dashboard/dashboard_view.dart';
 import 'package:admin/modules/delivery_persons/manage_delivery_persons/delivery_person_binding.dart';
 import 'package:admin/modules/delivery_persons/manage_delivery_persons/delivery_person_view.dart';
-import 'package:admin/modules/screens/app_lock_screen.dart';
-import 'package:admin/modules/screens/app_lock_settings_screen.dart';
-import 'package:admin/modules/screens/app_lock_binding.dart';
+
 import 'package:admin/config/auth_middleware.dart';
 import 'package:get/get.dart';
 import '../language/language.dart';
@@ -71,13 +69,6 @@ class AppPages {
         page: () => const DeliveryPersonView(),
         binding: DeliveryPersonBinding(),
         middlewares: [AuthMiddleware()]),
-    GetPage<void>(
-        name: AppRoutes.appLock,
-        page: () => const AppLockScreen(),
-        binding: AppLockBinding()),
-    GetPage<void>(
-        name: AppRoutes.appLockSettings,
-        page: () => const AppLockSettingsScreen(),
-        binding: AppLockSettingsBinding()),
+
   ];
 }

@@ -9,50 +9,46 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="bug fixes3">
-      <change afterPath="$PROJECT_DIR$/DROPDOWN_CHECKMARKS_SUMMARY.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ISSUES_FIXED_SUMMARY.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/PERFORMANCE_IMPROVEMENTS.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" afterDir="false" />
+    <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="refactor: optimize dropdowns with checkmarks and caching, enhance loading animations with shimmer effects, and improve performance in recipe and plan modules by caching filtered data and reducing rebuilds">
+      <change afterPath="$PROJECT_DIR$/lib/widgets/centered_dropdown.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/config/app_text.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config/app_text.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/language/language_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/language/language_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/language/english.json" beforeDir="false" afterPath="$PROJECT_DIR$/assets/language/english.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/language/hindi.json" beforeDir="false" afterPath="$PROJECT_DIR$/assets/language/hindi.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/language/tamil.json" beforeDir="false" afterPath="$PROJECT_DIR$/assets/language/tamil.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/config/app_config.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config/app_config.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/config/app_lock_controller.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/config/dropdown_data.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config/dropdown_data.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/admins/create_admins/create_admin_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/admins/create_admins/create_admin_controller.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/components/mobile_dashboard.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/components/mobile_dashboard.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/components/tablet_dashboard.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/components/tablet_dashboard.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/components/web_dashboard.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/components/web_dashboard.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/widgets/dashboard_stat_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/widgets/dashboard_stat_card.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/widgets/ingredient_usage_radar.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/widgets/ingredient_usage_radar.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/delivery_persons/manage_delivery_persons/delivery_person_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/delivery_persons/manage_delivery_persons/delivery_person_controller.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/delivery_persons/manage_delivery_persons/delivery_person_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/delivery_persons/manage_delivery_persons/delivery_person_view.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/home/components/mobile_home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/home/components/mobile_home.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/home/components/tablet_home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/home/components/tablet_home.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/home/components/web_home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/home/components/web_home.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/meal/components/comprehensive_meal_statistics.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/components/comprehensive_meal_statistics.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/meal/components/meal_statistics_widget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/components/meal_statistics_widget.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/meal/components/mobile_meal.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/components/mobile_meal.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/meal/components/tablet_meal.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/components/tablet_meal.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/meal/components/web_meal.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/components/web_meal.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/login/login_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/login/login_controller.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/meal/ingredients/dialogs/ingredient_dialogs.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/ingredients/dialogs/ingredient_dialogs.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/meal/meal_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/meal_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_details_dialog.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_details_dialog.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_dialog.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_dialog.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/meal/receipe/widgets/recipe_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/widgets/recipe_card.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/meal/shared/widgets/common_widgets.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/shared/widgets/common_widgets.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/plan/plan_constants.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/plan_constants.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/plan/plan_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/plan_controller.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/plan/plan_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/plan_view.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/plan/widgets/meal_plan_form_dialog.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/widgets/meal_plan_form_dialog.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/screens/settings_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/screens/settings_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/splash/splash_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/splash/splash_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/screens/app_lock_binding.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/screens/app_lock_screen.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/screens/app_lock_settings_screen.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/network_service/api_client.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/api_client.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/network_service/api_helper.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/api_helper.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/network_service/dio_network_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/dio_network_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/network_service/network_module.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/network_module.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/utils/error_message_handler.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/utils/error_message_handler.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/utils/responsive_widget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/utils/responsive_widget.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/widgets/loading_widgets.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/loading_widgets.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/routes/app_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/routes/app_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/routes/app_routes.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/routes/app_routes.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/themes/theme_data_extention.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/themes/theme_data_extention.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/widgets/app_lock_wrapper.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/widgets/custom_displays.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/custom_displays.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/widgets/dropdown_utils.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/dropdown_utils.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/widgets/multi_select_dropdown.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/multi_select_dropdown.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/widgets/responsive_form.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/responsive_form.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/widgets/searchable_dropdown.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/searchable_dropdown.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -256,7 +252,15 @@
       <option name="project" value="LOCAL" />
       <updated>1756275779796</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="refactor: optimize dropdowns with checkmarks and caching, enhance loading animations with shimmer effects, and improve performance in recipe and plan modules by caching filtered data and reducing rebuilds">
+      <option name="closed" value="true" />
+      <created>1756544113752</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1756544113752</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -296,6 +300,7 @@
     <MESSAGE value="bug fixes1" />
     <MESSAGE value="bug fixes2" />
     <MESSAGE value="bug fixes3" />
-    <option name="LAST_COMMIT_MESSAGE" value="bug fixes3" />
+    <MESSAGE value="refactor: optimize dropdowns with checkmarks and caching, enhance loading animations with shimmer effects, and improve performance in recipe and plan modules by caching filtered data and reducing rebuilds" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor: optimize dropdowns with checkmarks and caching, enhance loading animations with shimmer effects, and improve performance in recipe and plan modules by caching filtered data and reducing rebuilds" />
   </component>
 </project>

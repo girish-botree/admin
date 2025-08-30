@@ -17,7 +17,7 @@
   "tamil": "तमिल",
   "hindi": "हिन्दी",
   "security": "सुरक्षा",
-  "app_lock": "ऐप लॉक",
+
   "biometric_security": "बायोमेट्रिक और सिस्टम पासवर्ड सुरक्षा",
   "notifications": "सूचनाएं",
   "notification_settings": "पुश नोटिफिकेशन सेटिंग्स",
@@ -85,13 +85,13 @@
   "manage_delivery_persons": "डिलीवरी व्यक्तियों का प्रबंधन करें",
   "delete_delivery_person": "डिलीवरी व्यक्ति हटाएं",
   "lock_app_after": "इसके बाद ऐप लॉक करें",
-  "about_app_lock": "ऐप लॉक के बारे में",
+
   "biometric_authentication": "बायोमेट्रिक प्रमाणीकरण (फिंगरप्रिंट, चेहरा, आईरिस)",
   "system_password_backup": "सिस्टम पासवर्ड बैकअप (पिन, पैटर्न, पासवर्ड)",
   "customizable_lock_timing": "अनुकूलन योग्य लॉक टाइमिंग",
   "background_detection": "बैकग्राउंड डिटेक्शन",
   "security_features": "सुरक्षा विशेषताएं:",
-  "app_locks_background": "ऐप बैकग्राउंड में जाने पर लॉक हो जाता है",
+
   "settings_encrypted": "सेटिंग्स एन्क्रिप्ट की जाती हैं और सुरक्षित रूप से संग्रहीत की जाती हैं",
   "multiple_auth_methods": "अतिरिक्तता के लिए कई प्रमाणीकरण विधियां",
   "admin_security": "एडमिन ऐप सुरक्षा आवश्यकताओं के लिए डिज़ाइन किया गया",
@@ -111,7 +111,7 @@
   "pick": "चुनें",
   "this_image_not_supported": "यह छवि प्रकार समर्थित नहीं है",
   "information": "जानकारी",
-  "enable_app_lock": "ऐप लॉक को सक्षम करें",
+
   "secure_app": "अपने ऐप को सुरक्षित रखें",
   "after_1_minute": "1 मिनट के बाद",
   "after_5_minutes": "5 मिनट के बाद",

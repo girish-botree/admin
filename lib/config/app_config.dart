@@ -1,5 +1,5 @@
 export 'package:admin/config/app_colors.dart';
-export 'package:admin/config/app_lock_controller.dart';
+
 export 'package:admin/config/app_text.dart';
 export 'package:admin/config/dropdown_data.dart';
 export 'package:admin/config/shared_preference.dart';

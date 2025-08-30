@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+
 import '../config/auth_service.dart';
 import '../config/common_utils.dart';
 import '../widgets/custom_displays.dart';

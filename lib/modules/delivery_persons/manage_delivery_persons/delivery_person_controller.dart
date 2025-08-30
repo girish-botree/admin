@@ -1,5 +1,6 @@
 import 'package:admin/config/app_config.dart';
 import 'package:admin/network_service/dio_network_service.dart';
+import 'package:admin/utils/search_utils.dart';
 import 'package:admin/widgets/custom_displays.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -46,10 +47,31 @@ class DeliveryPersonController extends GetxController {
     super.onInit();
     fetchDeliveryPersons();
 
-    // Listen to search query changes
+    // Listen to search query changes with debouncing
     searchQuery.listen((query) {
-      filterDeliveryPersons(query);
+      SearchUtils.debounceSearch(query, filterDeliveryPersons);
     });
+  }
+
+  @override
+  void onClose() {
+    // Cancel any pending debounced searches
+    SearchUtils.cancelDebouncedSearch();
+    
+    // Dispose controllers
+    searchController.dispose();
+    editFirstNameController.dispose();
+    editLastNameController.dispose();
+    editEmailController.dispose();
+    editPhoneNumberController.dispose();
+    editAddressController.dispose();
+    editIdentificationNumberController.dispose();
+    editVehicleNumberController.dispose();
+    editEmergencyContactController.dispose();
+    editProfilePictureUrlController.dispose();
+    editDocumentsUrlController.dispose();
+    
+    super.onClose();
   }
 
   /// Fetch all delivery persons
@@ -74,17 +96,22 @@ class DeliveryPersonController extends GetxController {
     }
   }
 
-  /// Filter delivery persons based on search query
+  /// Filter delivery persons based on search query with optimized prefix search
   void filterDeliveryPersons(String query) {
     if (query.isEmpty) {
       filteredDeliveryPersons.value = deliveryPersons;
     } else {
-      filteredDeliveryPersons.value = deliveryPersons.where((person) =>
-      person.firstName.toLowerCase().contains(query.toLowerCase()) ||
-          person.lastName.toLowerCase().contains(query.toLowerCase()) ||
-          person.email.toLowerCase().contains(query.toLowerCase()) ||
-          person.phoneNumber.toLowerCase().contains(query.toLowerCase()))
-          .toList();
+      filteredDeliveryPersons.value = SearchUtils.filterAndSort(
+        deliveryPersons,
+        query,
+        (person) => [
+          person.firstName,
+          person.lastName,
+          person.email,
+          person.phoneNumber,
+        ],
+        fallbackToContains: true,
+      );
     }
   }
 
@@ -222,19 +249,5 @@ class DeliveryPersonController extends GetxController {
     );
   }
 
-  @override
-  void onClose() {
-    searchController.dispose();
-    editFirstNameController.dispose();
-    editLastNameController.dispose();
-    editEmailController.dispose();
-    editPhoneNumberController.dispose();
-    editAddressController.dispose();
-    editIdentificationNumberController.dispose();
-    editVehicleNumberController.dispose();
-    editEmergencyContactController.dispose();
-    editProfilePictureUrlController.dispose();
-    editDocumentsUrlController.dispose();
-    super.onClose();
-  }
+
 }

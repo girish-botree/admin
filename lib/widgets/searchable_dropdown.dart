@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../config/dropdown_data.dart';
+import '../utils/search_utils.dart';
 
 class SearchableDropdown<T> extends StatefulWidget {
   final List<DropdownItem> items;
@@ -32,13 +33,13 @@ class SearchableDropdown<T> extends StatefulWidget {
     this.enabled = true,
     this.onChanged,
     this.prefixIcon,
-    this.maxHeight = 300,
+    this.maxHeight = 450, // Increased default size for better usability
     this.contentPadding,
     this.border,
     this.fillColor,
     this.showSearch = true,
     this.showDescriptions = true,
-    this.showIcons = true,
+    this.showIcons = false,
   });
 
   @override
@@ -199,111 +200,69 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
   }
 
   OverlayEntry _createOverlayEntry(Size size, Offset offset) {
-    // Calculate available space below and above the dropdown
-    final screenHeight = MediaQuery
-        .of(context)
-        .size
-        .height;
-    final keyboardHeight = MediaQuery
-        .of(context)
-        .viewInsets
-        .bottom;
-    final availableSpaceBelow = screenHeight - offset.dy - size.height -
-        keyboardHeight - 8.0;
-    final availableSpaceAbove = offset.dy - MediaQuery
-        .of(context)
-        .padding
-        .top - 8.0;
-
-    // Default dropdown height (with some buffer for padding)
-    final estimatedDropdownHeight =
-        (widget.items.length * 50.0).clamp(0.0, widget.maxHeight ?? 300.0) +
-            (widget.showSearch ? 80.0 : 0.0);
-
-    // Determine if dropdown should appear above or below
-    final showAbove = availableSpaceBelow < estimatedDropdownHeight &&
-        availableSpaceAbove > availableSpaceBelow;
-
-    // Adjust max height based on available space
-    final adjustedMaxHeight = showAbove
-        ? availableSpaceAbove.clamp(100.0, widget.maxHeight ?? 300.0)
-        : availableSpaceBelow.clamp(100.0, widget.maxHeight ?? 300.0);
+    final screenSize = MediaQuery.of(context).size;
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+    final availableHeight = screenSize.height - keyboardHeight - 100; // Leave some margin
+    
+    // Calculate dropdown dimensions
+    final dropdownWidth = size.width.clamp(300.0, screenSize.width * 0.9);
+    final dropdownHeight = (widget.maxHeight ?? 450.0).clamp(200.0, availableHeight);
+    
+    // Center the dropdown on screen
+    final centerX = (screenSize.width - dropdownWidth) / 2;
+    final centerY = (screenSize.height - keyboardHeight - dropdownHeight) / 2;
 
     return OverlayEntry(
-      builder: (context) =>
+      builder: (context) => Stack(
+        children: [
+          // Background overlay to detect taps outside
+          Positioned.fill(
+            child: GestureDetector(
+              onTap: _closeDropdown,
+              child: Container(
+                color: Colors.black.withOpacity(0.3), // Semi-transparent background
+              ),
+            ),
+          ),
+          // Centered dropdown
           Positioned(
-            width: size.width,
-            child: CompositedTransformFollower(
-              link: _layerLink,
-              showWhenUnlinked: false,
-              offset: Offset(0.0,
-                  showAbove ? -adjustedMaxHeight - 8.0 : size.height + 4.0),
+            left: centerX,
+            top: centerY,
+            width: dropdownWidth,
+            height: dropdownHeight,
+            child: GestureDetector(
+              onTap: () {}, // Prevent closing when tapping inside dropdown
               child: Material(
-                elevation: 8,
+                elevation: 12,
                 borderRadius: BorderRadius.circular(16),
                 color: Colors.transparent,
                 child: AnimatedBuilder(
                   animation: _animationController,
-                  builder: (context, child) =>
-                      Transform.scale(
-                        scale: _scaleAnimation.value,
-                        alignment: Alignment.topCenter,
-                        child: Opacity(
-                          opacity: _fadeAnimation.value,
-                          child: StatefulBuilder(
-                            builder: (context, overlaySetState) =>
-                                _buildDropdownMenu(overlaySetState),
-                          ),
-                        ),
+                  builder: (context, child) => Transform.scale(
+                    scale: _scaleAnimation.value,
+                    alignment: Alignment.center,
+                    child: Opacity(
+                      opacity: _fadeAnimation.value,
+                      child: StatefulBuilder(
+                        builder: (context, overlaySetState) =>
+                            _buildDropdownMenu(overlaySetState),
                       ),
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
+        ],
+      ),
     );
   }
 
   Widget _buildDropdownMenu([StateSetter? overlaySetState]) {
-    final theme = _cachedTheme ??
-        Theme.of(context); // Use cached theme if available
-
-    // Calculate available space below and above the dropdown
-    final screenHeight = MediaQuery
-        .of(context)
-        .size
-        .height;
-    final renderBox = _dropdownKey.currentContext
-        ?.findRenderObject() as RenderBox?;
-    final offset = renderBox?.localToGlobal(Offset.zero);
-
-    // Default to widget.maxHeight if we can't determine constraints dynamically
-    double constrainedHeight = widget.maxHeight!;
-
-    if (renderBox != null && offset != null) {
-      final size = renderBox.size;
-      final keyboardHeight = MediaQuery
-          .of(context)
-          .viewInsets
-          .bottom;
-      final availableSpaceBelow = screenHeight - offset.dy - size.height -
-          keyboardHeight - 8.0;
-      final availableSpaceAbove = offset.dy - MediaQuery
-          .of(context)
-          .padding
-          .top - 8.0;
-
-      final showAbove = availableSpaceBelow < (widget.maxHeight ?? 300.0) &&
-          availableSpaceAbove > availableSpaceBelow;
-
-      constrainedHeight =
-          (showAbove ? availableSpaceAbove : availableSpaceBelow)
-              .clamp(100.0, widget.maxHeight ?? 300.0);
-    }
+    final theme = _cachedTheme ?? Theme.of(context);
 
     return Container(
-      constraints: BoxConstraints(
-        maxHeight: constrainedHeight,
-      ),
+      height: double.infinity, // Use full available height from positioned container
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
@@ -312,8 +271,8 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
         ),
         boxShadow: [
           BoxShadow(
-            color: theme.shadowColor.withOpacity(0.1),
-            blurRadius: 20,
+            color: theme.shadowColor.withOpacity(0.15),
+            blurRadius: 24,
             offset: const Offset(0, 8),
           ),
         ],
@@ -321,13 +280,54 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          _buildHeader(theme, overlaySetState),
           if (widget.showSearch)
             _buildSearchField(
               _cachedTheme ?? Theme.of(context),
               overlaySetState,
             ),
-          Flexible(
+          Expanded(
             child: _buildItemsList(theme),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(ThemeData theme, [StateSetter? overlaySetState]) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primaryContainer.withOpacity(0.1),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              widget.label ?? 'Select Item',
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: theme.colorScheme.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          IconButton(
+            onPressed: _closeDropdown,
+            icon: Icon(
+              Icons.close,
+              size: 20,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+            style: IconButton.styleFrom(
+              padding: const EdgeInsets.all(4),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
           ),
         ],
       ),
@@ -512,25 +512,28 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
     
     _lastQuery = query;
     
-    // Debounce search for better performance
-    _searchDebounce?.cancel();
-    _searchDebounce = Timer(const Duration(milliseconds: 150), () {
-      if (!mounted) return;
-      
-      final filtered = DropdownDataManager.searchItems(widget.items, query);
-      
-      if (mounted) {
-        setState(() {
-          _filteredItems = filtered;
-        });
+    // Use optimized debounced search
+    SearchUtils.debounceSearch(
+      query,
+      (debouncedQuery) {
+        if (!mounted) return;
         
-        if (overlaySetState != null) {
-          overlaySetState(() {
+        final filtered = DropdownDataManager.searchItems(widget.items, debouncedQuery);
+        
+        if (mounted) {
+          setState(() {
             _filteredItems = filtered;
           });
+          
+          if (overlaySetState != null) {
+            overlaySetState(() {
+              _filteredItems = filtered;
+            });
+          }
         }
-      }
-    });
+      },
+      delay: const Duration(milliseconds: 150),
+    );
   }
 
   void _selectItem(DropdownItem item) {
@@ -664,7 +667,7 @@ class TypedSearchableDropdown extends StatelessWidget {
     this.prefixIcon,
     this.showSearch = true,
     this.showDescriptions = true,
-    this.showIcons = true,
+    this.showIcons = false,
   });
 
   @override

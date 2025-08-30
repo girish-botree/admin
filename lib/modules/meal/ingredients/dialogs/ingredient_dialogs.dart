@@ -5,8 +5,10 @@ import 'package:get/get.dart';
 import '../../meal_controller.dart';
 import '../../../../widgets/searchable_dropdown.dart';
 import '../../../../widgets/multi_select_dropdown.dart';
+import '../../../../widgets/centered_dropdown.dart';
 import '../../../../config/dropdown_data.dart';
-import '../../../../widgets/dropdown_utils.dart';
+import '../../../../config/dietary_preferences.dart';
+
 
 class IngredientDialogs {
   static void showAddIngredientDialog(BuildContext context,
@@ -405,7 +407,6 @@ class IngredientDialogs {
                             value: isActive,
                             onChanged: (value) =>
                                 setState(() => isActive = value),
-                            activeColor: context.theme.colorScheme.primary,
                           ),
                         ],
                       ),
@@ -1480,62 +1481,29 @@ class IngredientDietaryDropdown extends StatelessWidget {
           ),
         ],
       ),
-      child: DropdownButtonFormField<int>(
+      child: CenteredDropdown<int>(
         value: value,
-        decoration: InputDecoration(
-          labelText: 'Dietary Category',
-          labelStyle: TextStyle(
-            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
-            fontSize: 16,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: context.theme.colorScheme.outline.withValues(alpha: 0.3),
-              width: 1.5,
-            ),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: context.theme.colorScheme.primary,
-              width: 2,
-            ),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          filled: true,
-          fillColor: context.theme.colorScheme.surfaceContainerLowest,
-          contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16, vertical: 14),
-        ),
-        style: TextStyle(
-          color: context.theme.colorScheme.onSurface,
-          fontSize: 16,
-        ),
-        dropdownColor: context.theme.colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(16),
-        icon: Icon(
-          Icons.arrow_drop_down_rounded,
-          color: context.theme.colorScheme.onSurface.withValues(alpha: 0.8),
-        ),
-        items: DropdownUtils.buildDropdownMenuItems<int>(
-          context: context,
-          items: const {
-            0: 'Regular',
-            1: 'Vegetarian',
-            2: 'Vegan',
-            3: 'Gluten-Free',
-            4: 'Dairy-Free',
-            5: 'Keto',
-            6: 'Paleo',
-          },
-          selectedValue: value,
-        ),
+        items: _buildSimpleDietaryCategoryItems(),
         onChanged: onChanged,
+        labelText: 'Dietary Category',
+        hintText: 'Select dietary category',
+        enabled: true,
       ),
     );
   }
-  
-  // Helper method removed - now using DropdownUtils
+
+
+
+  List<DropdownMenuItem<int>> _buildSimpleDietaryCategoryItems() {
+    final dietaryCategories = DietaryPreferences.getLabelMap();
+    
+    return dietaryCategories.entries.map((entry) {
+      return DropdownMenuItem<int>(
+        value: entry.key,
+        child: Text(entry.value),
+      );
+    }).toList();
+  }
 }
 
 Widget IngredientSectionTitle(BuildContext context, String title) {

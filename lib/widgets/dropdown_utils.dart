@@ -149,6 +149,81 @@ extension DropdownMenuItemListExtension<T> on List<DropdownMenuItem<T>> {
     }).toList();
   }
 
+  /// Creates enhanced dropdown menu items with clear option
+  static List<DropdownMenuItem<T?>> withClearOption<T>({
+    required BuildContext context,
+    required List<DropdownMenuItem<T>> items,
+    required T? selectedValue,
+    String clearLabel = 'Clear Selection',
+    double iconSize = 18,
+    IconData checkIcon = Icons.check_circle,
+    IconData clearIcon = Icons.clear,
+  }) {
+    final theme = Theme.of(context);
+    
+    List<DropdownMenuItem<T?>> enhancedItems = [];
+    
+    // Add clear option if there's a selection
+    if (selectedValue != null) {
+      enhancedItems.add(
+        DropdownMenuItem<T?>(
+          value: null,
+          child: Row(
+            children: [
+              Icon(
+                clearIcon,
+                color: theme.colorScheme.error,
+                size: iconSize,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                clearLabel,
+                style: TextStyle(
+                  color: theme.colorScheme.error,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+      
+      // Add divider
+      enhancedItems.add(
+        DropdownMenuItem<T?>(
+          enabled: false,
+          value: null,
+          child: const Divider(height: 1),
+        ),
+      );
+    }
+    
+    // Add regular items with checkmarks
+    enhancedItems.addAll(
+      items.map((item) {
+        final isSelected = item.value == selectedValue;
+        
+        return DropdownMenuItem<T?>(
+          value: item.value,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(child: item.child),
+              if (isSelected)
+                Icon(
+                  checkIcon,
+                  color: theme.colorScheme.primary,
+                  size: iconSize,
+                ),
+            ],
+          ),
+        );
+      }),
+    );
+    
+    return enhancedItems;
+  }
+
   // Enhanced dropdown performance utilities
   static const Duration debounceDelay = Duration(milliseconds: 150);
   static const int virtualizationThreshold = 100;

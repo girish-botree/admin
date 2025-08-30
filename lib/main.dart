@@ -1,7 +1,7 @@
 import 'package:admin/config/app_theme_config.dart';
 import 'package:admin/config/app_translations.dart';
 import 'package:admin/config/theme_controller.dart';
-import 'package:admin/config/app_lock_controller.dart';
+
 import 'package:admin/language/language_controller.dart';
 import 'package:admin/routes/app_page.dart';
 import 'package:admin/widgets/loading_widgets.dart';
@@ -10,11 +10,11 @@ import 'package:admin/config/auth_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:admin/widgets/app_lock_wrapper.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +25,7 @@ Future<void> main() async {
   await AppTranslations.load();
   Get.put(LanguageController());
   Get.put(ThemeController());
-  Get.put(AppLockController());
+
 
   // Verify languages are properly loaded
   final langController = Get.find<LanguageController>();
@@ -65,7 +65,7 @@ class MyApp extends StatelessWidget {
         translations: AppTranslations(),
         builder: (context, child) {
           // EasyLoading.init() removed - no overscreen loading
-          return AppLockWrapper(child: child);
+          return child ?? Container();
         },
       );
     });

@@ -246,29 +246,75 @@ class ResponsiveDropdown<T> extends StatelessWidget {
               context, mobile: 14.0, tablet: 15.0, web: 16.0) ?? 14.0,
         );
 
-    // Create the dropdown with responsive properties and checkmarks
-    return DropdownButtonFormField<T>(
-      value: value,
-      onChanged: enabled ? onChanged : null,
-      items: items.withCheckmarks(
-        context: context,
-        selectedValue: value,
+    // Create the enhanced dropdown with responsive properties and improved UX
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(responsiveBorderRadius),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).shadowColor.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      validator: validator ?? (required ? _requiredValidator : null),
-      autovalidateMode: autovalidate
-          ? AutovalidateMode.onUserInteraction
-          : AutovalidateMode.disabled,
-      icon: icon,
-      style: responsiveTextStyle,
-      isExpanded: true,
-      decoration: InputDecoration(
-        labelText: labelText,
-        hintText: hintText,
-        helperText: helperText,
-        errorText: errorText,
-        contentPadding: responsivePadding,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(responsiveBorderRadius),
+      child: DropdownButtonFormField<T>(
+        value: value,
+        onChanged: enabled ? onChanged : null,
+        items: items.withCheckmarks(
+          context: context,
+          selectedValue: value,
+        ),
+        validator: validator ?? (required ? _requiredValidator : null),
+        autovalidateMode: autovalidate
+            ? AutovalidateMode.onUserInteraction
+            : AutovalidateMode.disabled,
+        icon: icon,
+        style: responsiveTextStyle,
+        isExpanded: true,
+        menuMaxHeight: 400, // Enhanced: Larger menu size
+        decoration: InputDecoration(
+          labelText: labelText,
+          hintText: hintText,
+          helperText: helperText,
+          errorText: errorText,
+          contentPadding: responsivePadding,
+          filled: true,
+          fillColor: enabled
+              ? Theme.of(context).colorScheme.surfaceContainerLowest
+              : Theme.of(context).colorScheme.surfaceContainerLowest.withOpacity(0.5),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(responsiveBorderRadius),
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+              width: 1.5,
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(responsiveBorderRadius),
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+              width: 1.5,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(responsiveBorderRadius),
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.primary,
+              width: 2,
+            ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(responsiveBorderRadius),
+            borderSide: const BorderSide(color: Colors.red, width: 2),
+          ),
+          disabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(responsiveBorderRadius),
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.outline.withOpacity(0.12),
+              width: 1,
+            ),
+          ),
         ),
       ),
     );

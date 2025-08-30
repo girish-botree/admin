@@ -1,5 +1,6 @@
 import 'package:admin/config/app_config.dart';
 import 'package:admin/network_service/dio_network_service.dart';
+import 'package:admin/utils/search_utils.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -76,15 +77,25 @@ class MealController extends GetxController {
     fetchRecipes();
     fetchIngredients();
 
-    // Listen to search query changes
+    // Listen to search query changes with debouncing
     recipeSearchController.addListener(() {
-      recipeSearchQuery.value = recipeSearchController.text;
-      updateFilteredRecipes();
+      SearchUtils.debounceSearch(
+        recipeSearchController.text,
+        (query) {
+          recipeSearchQuery.value = query;
+          updateFilteredRecipes();
+        },
+      );
     });
 
     ingredientSearchController.addListener(() {
-      ingredientSearchQuery.value = ingredientSearchController.text;
-      updateFilteredIngredients();
+      SearchUtils.debounceSearch(
+        ingredientSearchController.text,
+        (query) {
+          ingredientSearchQuery.value = query;
+          updateFilteredIngredients();
+        },
+      );
     });
 
     // Listen to cuisine controller changes
@@ -599,19 +610,18 @@ class MealController extends GetxController {
   void updateFilteredRecipes() {
     List<dynamic> filtered = recipes.toList();
 
-    // Apply search filter
+    // Apply search filter with optimized prefix search
     if (recipeSearchQuery.value.isNotEmpty) {
-      filtered = filtered.where((recipe) {
-        final name = (recipe['name'] as String? ?? '').toLowerCase();
-        final description = (recipe['description'] as String? ?? '')
-            .toLowerCase();
-        final cuisine = (recipe['cuisine'] as String? ?? '').toLowerCase();
-        final query = recipeSearchQuery.value.toLowerCase();
-
-        return name.contains(query) ||
-            description.contains(query) ||
-            cuisine.contains(query);
-      }).toList();
+      filtered = SearchUtils.filterAndSort(
+        filtered,
+        recipeSearchQuery.value,
+        (recipe) => [
+          recipe['name'] as String? ?? '',
+          recipe['description'] as String? ?? '',
+          recipe['cuisine'] as String? ?? '',
+        ],
+        fallbackToContains: true,
+      );
     }
 
     // Apply cuisine filter
@@ -658,21 +668,19 @@ class MealController extends GetxController {
   void updateFilteredIngredients() {
     List<dynamic> filtered = ingredients.toList();
 
-    // Apply search filter
+    // Apply search filter with optimized prefix search
     if (ingredientSearchQuery.value.isNotEmpty) {
-      filtered = filtered.where((ingredient) {
-        final name = (ingredient['name'] as String? ??
-            ingredient['ingredientName'] as String? ?? '').toLowerCase();
-        final description = (ingredient['description'] as String? ?? '')
-            .toLowerCase();
-        final category = (ingredient['category'] as String? ?? '')
-            .toLowerCase();
-        final query = ingredientSearchQuery.value.toLowerCase();
-
-        return name.contains(query) ||
-            description.contains(query) ||
-            category.contains(query);
-      }).toList();
+      filtered = SearchUtils.filterAndSort(
+        filtered,
+        ingredientSearchQuery.value,
+        (ingredient) => [
+          ingredient['name'] as String? ?? 
+            ingredient['ingredientName'] as String? ?? '',
+          ingredient['description'] as String? ?? '',
+          ingredient['category'] as String? ?? '',
+        ],
+        fallbackToContains: true,
+      );
     }
 
     // Apply category filter
@@ -772,6 +780,9 @@ class MealController extends GetxController {
 
   @override
   void onClose() {
+    // Cancel any pending debounced searches
+    SearchUtils.cancelDebouncedSearch();
+    
     // Dispose controllers
     nameController.dispose();
     descriptionController.dispose();

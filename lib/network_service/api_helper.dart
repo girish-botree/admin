@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+
 import '../widgets/custom_displays.dart';
 import 'api_client.dart';
 import 'app_url_config.dart';

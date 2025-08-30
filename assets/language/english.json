@@ -16,7 +16,7 @@
   "english": "English",
   "tamil": "Tamil",
   "security": "Security",
-  "app_lock": "App Lock",
+
   "biometric_security": "Biometric & system password security",
   "notifications": "Notifications",
   "notification_settings": "Push notifications settings",
@@ -84,13 +84,13 @@
   "manage_delivery_persons": "Manage Delivery Persons",
   "delete_delivery_person": "Delete Delivery Person",
   "lock_app_after": "Lock App After",
-  "about_app_lock": "About App Lock",
+
   "biometric_authentication": "Biometric authentication (fingerprint, face, iris)",
   "system_password_backup": "System password backup (PIN, pattern, password)",
   "customizable_lock_timing": "Customizable lock timing",
   "background_detection": "Background detection",
   "security_features": "Security Features:",
-  "app_locks_background": "App locks when moved to background",
+
   "settings_encrypted": "Settings are encrypted and stored securely",
   "multiple_auth_methods": "Multiple authentication methods for redundancy",
   "admin_security": "Designed for admin app security requirements",
@@ -110,7 +110,7 @@
   "pick": "PICK",
   "this_image_not_supported": "This image type is not supported",
   "information": "Information",
-  "enable_app_lock": "Enable App Lock",
+
   "secure_app": "Secure your app with authentication",
   "after_1_minute": "After 1 minute",
   "after_5_minutes": "After 5 minutes",

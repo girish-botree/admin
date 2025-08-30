@@ -98,9 +98,19 @@ class ThemeDataExtension {
   );
 
   static CheckboxThemeData checkboxTheme(ColorScheme colorScheme) => CheckboxThemeData(
-    fillColor: WidgetStateProperty.all(colorScheme.primary),
-    side: const BorderSide(color: Colors.white, width: 2),
-    checkColor: WidgetStateProperty.all(colorScheme.primary),
+    fillColor: WidgetStateProperty.resolveWith((states) {
+      if (states.contains(WidgetState.selected)) {
+        return colorScheme.primary;
+      }
+      return Colors.transparent;
+    }),
+    side: WidgetStateBorderSide.resolveWith((states) {
+      if (states.contains(WidgetState.selected)) {
+        return BorderSide.none;
+      }
+      return BorderSide(color: colorScheme.outline, width: 2);
+    }),
+    checkColor: WidgetStateProperty.all(colorScheme.onPrimary),
     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
   );

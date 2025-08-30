@@ -39,18 +39,4 @@ class PlanConstants {
   // Status
   static const String active = 'Active';
   static const String inactive = 'Inactive';
-
-  // Dietary Preferences Constants
-  static const int vegan = 0;
-  static const int vegetarian = 1;
-  static const int eggitarian = 2;
-  static const int nonVegetarian = 3;
-  static const int other = 4;
-
-  // Dietary Preference Labels
-  static const String veganLabel = 'Vegan';
-  static const String vegetarianLabel = 'Vegetarian';
-  static const String eggitarianLabel = 'Eggitarian';
-  static const String nonVegetarianLabel = 'Non-Vegetarian';
-  static const String otherLabel = 'Other';
 }

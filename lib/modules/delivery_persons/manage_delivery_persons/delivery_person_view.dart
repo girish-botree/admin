@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'delivery_person_controller.dart';
+import '../../../widgets/centered_dropdown.dart';
 import 'delivery_person_model.dart';
 
 class DeliveryPersonView extends GetView<DeliveryPersonController> {
@@ -435,47 +436,19 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
           ),
           SizedBox(height: 16),
 
-          // Vehicle Type Dropdown
-          Obx(() =>
-              DropdownButtonFormField<String>(
-                value: controller.editSelectedVehicleType.value,
-                decoration: _createInputDecoration(context, 'Vehicle Type'),
-                style: TextStyle(color: context.theme.colorScheme.onSurface),
-                dropdownColor: context.theme.colorScheme.surfaceContainerLowest,
-                items: controller.vehicleTypes.map((String vehicleType) {
-                  final isSelected = vehicleType == controller.editSelectedVehicleType.value;
-                  return DropdownMenuItem<String>(
-                    value: vehicleType,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            vehicleType,
-                            style: TextStyle(
-                              color: isSelected 
-                                  ? context.theme.colorScheme.primary
-                                  : context.theme.colorScheme.onSurface,
-                              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                            ),
-                          ),
-                        ),
-                        if (isSelected)
-                          Icon(
-                            Icons.check_circle,
-                            color: context.theme.colorScheme.primary,
-                            size: 18,
-                          ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  if (newValue != null) {
-                    controller.editSelectedVehicleType.value = newValue;
-                  }
-                },
-              )),
+          // Vehicle Type Dropdown - Centered
+          Obx(() => CenteredDropdown<String>(
+            value: controller.editSelectedVehicleType.value.isEmpty 
+                ? null 
+                : controller.editSelectedVehicleType.value,
+            items: _buildSimpleVehicleTypeItems(),
+            onChanged: (String? newValue) {
+              controller.editSelectedVehicleType.value = newValue ?? '';
+            },
+            labelText: 'Vehicle Type',
+            hintText: 'Select vehicle type',
+            enabled: true,
+          )),
           SizedBox(height: 16),
 
           // Vehicle Number
@@ -602,5 +575,16 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
       fillColor: context.theme.colorScheme.surfaceContainerLowest,
       filled: true,
     );
+  }
+
+
+
+  List<DropdownMenuItem<String>> _buildSimpleVehicleTypeItems() {
+    return (controller.vehicleTypes as List<String>).map<DropdownMenuItem<String>>((String vehicleType) {
+      return DropdownMenuItem<String>(
+        value: vehicleType,
+        child: Text(vehicleType),
+      );
+    }).toList();
   }
 }

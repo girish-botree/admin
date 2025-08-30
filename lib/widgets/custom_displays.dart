@@ -12,29 +12,87 @@ class CustomDisplays {
     MessageType type = MessageType.info,
     Duration duration = const Duration(seconds: 3),
   }) {
-    final context = Get.context;
-    if (context == null) return;
-
-    final overlay = Overlay.of(context);
-    late OverlayEntry overlayEntry;
-
-    overlayEntry = OverlayEntry(
-      builder: (context) =>
-          _ToastWidget(
-            message: message,
-            type: type,
-            onDismiss: () => overlayEntry.remove(),
-          ),
-    );
-
-    overlay.insert(overlayEntry);
-
-    // Auto-dismiss after duration
-    Future.delayed(duration, () {
-      if (overlayEntry.mounted) {
-        overlayEntry.remove();
+    try {
+      final context = Get.context;
+      if (context == null) {
+        // Fallback to GetX snackbar if no context available
+        _showFallbackSnackbar(message, type, duration);
+        return;
       }
-    });
+
+      final overlay = Overlay.maybeOf(context);
+      if (overlay == null) {
+        // Fallback to GetX snackbar if no overlay available
+        _showFallbackSnackbar(message, type, duration);
+        return;
+      }
+
+      late OverlayEntry overlayEntry;
+
+      overlayEntry = OverlayEntry(
+        builder: (context) =>
+            _ToastWidget(
+              message: message,
+              type: type,
+              onDismiss: () => overlayEntry.remove(),
+            ),
+      );
+
+      overlay.insert(overlayEntry);
+
+      // Auto-dismiss after duration
+      Future.delayed(duration, () {
+        if (overlayEntry.mounted) {
+          overlayEntry.remove();
+        }
+      });
+    } catch (e) {
+      // Fallback to GetX snackbar on any error
+      _showFallbackSnackbar(message, type, duration);
+    }
+  }
+
+  // Fallback method using GetX snackbar
+  static void _showFallbackSnackbar(String message, MessageType type, Duration duration) {
+    Color backgroundColor;
+    Color textColor = Colors.white;
+    IconData icon;
+
+    switch (type) {
+      case MessageType.success:
+        backgroundColor = Colors.green.shade600;
+        icon = Icons.check_circle_outline;
+        break;
+      case MessageType.error:
+        backgroundColor = Colors.red.shade600;
+        icon = Icons.error_outline;
+        break;
+      case MessageType.warning:
+        backgroundColor = Colors.orange.shade600;
+        icon = Icons.warning_outlined;
+        break;
+      case MessageType.info:
+        backgroundColor = Colors.blue.shade600;
+        icon = Icons.info_outline;
+        break;
+    }
+
+    Get.showSnackbar(
+      GetSnackBar(
+        message: message,
+        backgroundColor: backgroundColor,
+        messageText: Text(
+          message,
+          style: TextStyle(color: textColor),
+        ),
+        icon: Icon(icon, color: textColor),
+        duration: duration,
+        snackPosition: SnackPosition.TOP,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 8,
+        isDismissible: true,
+      ),
+    );
   }
 
   // Show persistent info bar (for network issues, etc.)

@@ -658,7 +658,7 @@ class RecipeIngredientsDetails extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            '${ingredient['quantity'] ?? 0}g',
+                            '${ingredient['quantity'] ?? 0}${ingredient['unit'] ?? 'g'}',
                             style: TextStyle(
                               color: context.theme.colorScheme
                                   .onSecondaryContainer,

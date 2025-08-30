@@ -1333,7 +1333,7 @@ class SortFilterBar extends StatelessWidget {
                   value: sortBy,
                   isDense: true,
                   isExpanded: true,
-                  menuMaxHeight: 300,
+                  menuMaxHeight: 400, // Enhanced: Larger menu size
                   // Flutter's default dropdown already adapts to available screen space
                   dropdownColor: context.theme.colorScheme.surface,
                   icon: Row(

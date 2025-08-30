@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../config/app_text.dart';
 import '../../../widgets/searchable_dropdown.dart';
+import '../../../widgets/multi_select_dropdown.dart';
 import '../../../config/dropdown_data.dart';
 import '../plan_controller.dart';
 import '../meal_plan_assignment_model.dart'
@@ -611,9 +612,9 @@ class MealPlanFormDialog extends StatelessWidget {
                   flex: 2,
                   child: Obx(() =>
                       FilledButton.icon(
-                        onPressed: (controller.hasSelectedMeals() &&
+                        onPressed: ((controller.hasSelectedMeals() || controller.hasSelectedMultipleMeals()) &&
                             !controller.isLoading.value)
-                            ? () => controller.createMultipleMealPlans()
+                            ? () => controller.createEnhancedMealPlans()
                             : null,
                         style: FilledButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
@@ -694,10 +695,10 @@ class MealPlanFormDialog extends StatelessWidget {
             ),
           ),
 
-          // Recipe Selection using custom searchable dropdown
+          // Recipe Selection using multi-select dropdown
           Padding(
             padding: const EdgeInsets.all(16),
-            child: _RecipeDropdownWidget(
+            child: _MultiRecipeDropdownWidget(
               period: period,
               controller: controller,
               getRecipeIcon: _getRecipeIcon,
@@ -802,12 +803,12 @@ class MealPlanFormDialog extends StatelessWidget {
 }
 
 // Performance optimization: Extract recipe dropdown to separate widget to reduce rebuilds
-class _RecipeDropdownWidget extends StatelessWidget {
+class _MultiRecipeDropdownWidget extends StatelessWidget {
   final MealPeriod period;
   final dynamic controller; // PlanController
   final String Function(dynamic) getRecipeIcon;
   
-  const _RecipeDropdownWidget({
+  const _MultiRecipeDropdownWidget({
     required this.period,
     required this.controller,
     required this.getRecipeIcon,
@@ -817,42 +818,55 @@ class _RecipeDropdownWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       final filteredRecipes = controller.getFilteredRecipes() as List<dynamic>;
-      final selectedRecipeId = controller.getSelectedRecipeForPeriod(period) as String;
+      final selectedRecipeIds = controller.getSelectedRecipeIdsForPeriod(period) as List<String>;
 
-      // Convert recipes to DropdownItem format for SearchableDropdown
-      final recipeItems = <DropdownItem>[
-        const DropdownItem(
-          value: '',
-          label: 'No meal planned',
-          description: 'Skip this meal period',
-          icon: '⏭️',
-        ),
-        ...filteredRecipes.map<DropdownItem>((dynamic recipe) {
-          final recipeName = recipe['name']?.toString() ?? 'Unknown Recipe';
-          final recipeDescription = recipe['description']?.toString() ?? '';
-          return DropdownItem(
-            value: recipe['recipeId']?.toString() ?? '',
-            label: recipeName,
-            description: recipeDescription.length > 60
-                ? '${recipeDescription.substring(0, 60)}...'
-                : recipeDescription,
-            icon: getRecipeIcon(recipe),
-          );
-        }),
-      ];
+      // Convert recipes to DropdownItem format for MultiSelectDropdown
+      final recipeItems = filteredRecipes.map<DropdownItem>((dynamic recipe) {
+        final recipeName = recipe['name']?.toString() ?? 'Unknown Recipe';
+        final recipeDescription = recipe['description']?.toString() ?? '';
+        return DropdownItem(
+          value: recipe['recipeId']?.toString() ?? '',
+          label: recipeName,
+          description: recipeDescription.length > 60
+              ? '${recipeDescription.substring(0, 60)}...'
+              : recipeDescription,
+          icon: getRecipeIcon(recipe),
+        );
+      }).toList();
 
-      return SearchableDropdown<String>(
-        items: recipeItems,
-        value: selectedRecipeId.isNotEmpty ? selectedRecipeId : null,
-        hint: 'Select a recipe',
-        label: 'Recipe',
-        showSearch: true,
-        showDescriptions: true,
-        showIcons: true,
-        maxHeight: 300, // Limit height for better performance
-        onChanged: (value) =>
-            controller.setSelectedRecipeForPeriod(period, value ?? ''),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          MultiSelectDropdown(
+            items: recipeItems,
+            selectedValues: selectedRecipeIds,
+            hint: 'Select recipes for ${_getPeriodName(period)}',
+            label: 'Recipes',
+            showSearch: true,
+            showDescriptions: true,
+            showIcons: false,
+            maxHeight: 550, // Enhanced: Larger dropdown size
+            maxSelections: 5, // Allow up to 5 recipes per meal period
+            onChanged: (values) {
+              final stringValues = values.cast<String>();
+              controller.setSelectedRecipeIdsForPeriod(period, stringValues);
+            },
+          ),
+        ],
       );
     });
+  }
+  
+  String _getPeriodName(MealPeriod period) {
+    switch (period) {
+      case MealPeriod.breakfast:
+        return 'Breakfast';
+      case MealPeriod.lunch:
+        return 'Lunch';
+      case MealPeriod.dinner:
+        return 'Dinner';
+      case MealPeriod.snack:
+        return 'Snack';
+    }
   }
 }

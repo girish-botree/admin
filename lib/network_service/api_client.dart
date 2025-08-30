@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:retrofit/retrofit.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+
 
 import '../widgets/custom_displays.dart';
 import '../config/app_string_config.dart';

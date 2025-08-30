@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../config/dropdown_data.dart';
+import '../utils/search_utils.dart';
 
 class MultiSelectDropdown extends StatefulWidget {
   final List<DropdownItem> items;
@@ -33,13 +34,13 @@ class MultiSelectDropdown extends StatefulWidget {
     this.enabled = true,
     this.onChanged,
     this.prefixIcon,
-    this.maxHeight = 400,
+    this.maxHeight = 500, // Increased default size for better usability
     this.contentPadding,
     this.border,
     this.fillColor,
     this.showSearch = true,
     this.showDescriptions = true,
-    this.showIcons = true,
+    this.showIcons = false,
     this.maxSelections,
   });
 
@@ -106,10 +107,14 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown>
   @override
   void dispose() {
     _searchDebounce?.cancel();
+    SearchUtils.cancelDebouncedSearch(); // Cancel any pending searches
+    
+    // Close dropdown without setState to avoid lifecycle issues
+    _closeDropdownSilently();
+    
     _animationController.dispose();
     _searchController.dispose();
     _searchFocusNode.dispose();
-    _closeDropdown();
     super.dispose();
   }
 
@@ -135,7 +140,7 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown>
     _overlayEntry = _createOverlayEntry(size, offset);
     Overlay.of(context).insert(_overlayEntry!);
 
-    setState(() => _isOpen = true);
+    if (mounted) setState(() => _isOpen = true);
     _animationController.forward();
 
     // Auto-focus search and show keyboard if enabled
@@ -154,7 +159,13 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown>
     if (!_isOpen) return;
 
     _searchFocusNode.unfocus();
-    setState(() => _isOpen = false);
+    
+    // Check if widget is still mounted before calling setState
+    if (mounted) {
+      setState(() => _isOpen = false);
+    } else {
+      _isOpen = false;
+    }
 
     _animationController.reverse().then((_) {
       _overlayEntry?.remove();
@@ -162,104 +173,86 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown>
     });
   }
 
+  void _closeDropdownSilently() {
+    if (!_isOpen) return;
+
+    _searchFocusNode.unfocus();
+    _isOpen = false;
+
+    // Remove overlay without animation during disposal
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+  }
+
   OverlayEntry _createOverlayEntry(Size size, Offset offset) {
-    // Calculate available space below and above the dropdown
-    final screenHeight = MediaQuery
-        .of(context)
-        .size
-        .height;
-    final keyboardHeight = MediaQuery
-        .of(context)
-        .viewInsets
-        .bottom;
-    final availableSpaceBelow = screenHeight - offset.dy - size.height -
-        keyboardHeight - 8.0;
-    final availableSpaceAbove = offset.dy - MediaQuery
-        .of(context)
-        .padding
-        .top - 8.0;
-
-    // Default dropdown height (with some buffer for padding)
-    final estimatedDropdownHeight =
-        (widget.items.length * 50.0).clamp(0.0, widget.maxHeight ?? 400.0) +
-            (widget.showSearch ? 80.0 : 0.0) +
-            120.0; // Extra space for header and footer
-
-    // Determine if dropdown should appear above or below
-    final showAbove = availableSpaceBelow < estimatedDropdownHeight &&
-        availableSpaceAbove > availableSpaceBelow;
-
-    // Adjust max height based on available space
-    final adjustedMaxHeight = showAbove
-        ? availableSpaceAbove.clamp(100.0, widget.maxHeight ?? 400.0)
-        : availableSpaceBelow.clamp(100.0, widget.maxHeight ?? 400.0);
+    final screenSize = MediaQuery.of(context).size;
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+    final availableHeight = screenSize.height - keyboardHeight - 100; // Leave some margin
+    
+    // Calculate dropdown dimensions
+    final dropdownWidth = size.width.clamp(300.0, screenSize.width * 0.9);
+    final dropdownHeight = (widget.maxHeight ?? 500.0).clamp(300.0, availableHeight);
+    
+    // Center the dropdown on screen
+    final centerX = (screenSize.width - dropdownWidth) / 2;
+    final centerY = (screenSize.height - keyboardHeight - dropdownHeight) / 2;
 
     return OverlayEntry(
-      builder: (context) =>
-          GestureDetector(
-            onTap: _closeDropdown,
-            behavior: HitTestBehavior.translucent,
-            child: Stack(
-              children: [
-                // Invisible full-screen area to detect taps outside
-                Positioned.fill(
-                  child: Container(color: Colors.transparent),
-                ),
-                // Actual dropdown
-                Positioned(
-                  left: offset.dx,
-                  top: showAbove
-                      ? offset.dy - adjustedMaxHeight - 4.0
-                      : offset.dy + size.height + 4.0,
-                  width: size.width,
-                  child: GestureDetector(
-                    onTap: () {},
-                    // Prevent closing when tapping inside dropdown
-                    child: Material(
-                      elevation: 8,
-                      borderRadius: BorderRadius.circular(16),
-                      color: Colors.transparent,
-                      child: AnimatedBuilder(
-                        animation: _animationController,
-                        builder: (context, child) =>
-                            Transform.scale(
-                              scale: _scaleAnimation.value,
-                              alignment: showAbove
-                                  ? Alignment.bottomCenter
-                                  : Alignment.topCenter,
-                              child: Opacity(
-                                opacity: _fadeAnimation.value,
-                                child: child,
-                              ),
-                            ),
-                        child: Container(
-                          constraints: BoxConstraints(
-                            maxHeight: adjustedMaxHeight,
-                          ),
-                          child: _DropdownMenu(
-                            items: _filteredItems,
-                            selectedValues: widget.selectedValues,
-                            onItemToggle: _toggleItem,
-                            onClearAll: _clearAll,
-                            onClose: _closeDropdown,
-                            onSearch: _filterItems,
-                            searchController: _searchController,
-                            searchFocusNode: _searchFocusNode,
-                            showSearch: widget.showSearch,
-                            showDescriptions: widget.showDescriptions,
-                            showIcons: widget.showIcons,
-                            maxHeight: adjustedMaxHeight,
-                            maxSelections: widget.maxSelections,
-                            selectedItems: _selectedItems,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+      builder: (context) => Stack(
+        children: [
+          // Background overlay to detect taps outside
+          Positioned.fill(
+            child: GestureDetector(
+              onTap: _closeDropdown,
+              child: Container(
+                color: Colors.black.withOpacity(0.3), // Semi-transparent background
+              ),
             ),
           ),
+          // Centered dropdown
+          Positioned(
+            left: centerX,
+            top: centerY,
+            width: dropdownWidth,
+            height: dropdownHeight,
+            child: GestureDetector(
+              onTap: () {}, // Prevent closing when tapping inside dropdown
+              child: Material(
+                elevation: 12,
+                borderRadius: BorderRadius.circular(16),
+                color: Colors.transparent,
+                child: AnimatedBuilder(
+                  animation: _animationController,
+                  builder: (context, child) => Transform.scale(
+                    scale: _scaleAnimation.value,
+                    alignment: Alignment.center,
+                    child: Opacity(
+                      opacity: _fadeAnimation.value,
+                      child: child,
+                    ),
+                  ),
+                  child: _DropdownMenu(
+                    items: _filteredItems,
+                    selectedValues: widget.selectedValues,
+                    onItemToggle: _toggleItem,
+                    onClearAll: _clearAll,
+                    onClose: _closeDropdown,
+                    onSearch: _filterItems,
+                    searchController: _searchController,
+                    searchFocusNode: _searchFocusNode,
+                    showSearch: widget.showSearch,
+                    showDescriptions: widget.showDescriptions,
+                    showIcons: widget.showIcons,
+                    maxHeight: dropdownHeight,
+                    maxSelections: widget.maxSelections,
+                    selectedItems: _selectedItems,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -269,22 +262,25 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown>
     
     _lastQuery = query;
     
-    // Debounce search for better performance
-    _searchDebounce?.cancel();
-    _searchDebounce = Timer(const Duration(milliseconds: 150), () {
-      if (!mounted) return;
-      
-      final filtered = DropdownDataManager.searchItems(widget.items, query);
-      
-      if (mounted) {
-        _filteredItems = filtered;
+    // Use optimized debounced search
+    SearchUtils.debounceSearch(
+      query,
+      (debouncedQuery) {
+        if (!mounted) return;
         
-        // Rebuild the overlay with filtered items
-        if (_isOpen) {
-          _overlayEntry?.markNeedsBuild();
+        final filtered = DropdownDataManager.searchItems(widget.items, debouncedQuery);
+        
+        if (mounted) {
+          _filteredItems = filtered;
+          
+          // Rebuild the overlay with filtered items
+          if (_isOpen) {
+            _overlayEntry?.markNeedsBuild();
+          }
         }
-      }
-    });
+      },
+      delay: const Duration(milliseconds: 150),
+    );
   }
 
   void _toggleItem(DropdownItem item) {
@@ -301,11 +297,13 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown>
     }
 
     // Update the local selected items state for immediate visual feedback
-    setState(() {
-      _selectedItems = widget.items
-          .where((item) => newSelectedValues.contains(item.value))
-          .toList();
-    });
+    if (mounted) {
+      setState(() {
+        _selectedItems = widget.items
+            .where((item) => newSelectedValues.contains(item.value))
+            .toList();
+      });
+    }
 
     // Notify parent about the selection change
     widget.onChanged?.call(newSelectedValues);
@@ -315,9 +313,11 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown>
     HapticFeedback.selectionClick();
 
     // Update local state for immediate visual feedback
-    setState(() {
-      _selectedItems = [];
-    });
+    if (mounted) {
+      setState(() {
+        _selectedItems = [];
+      });
+    }
 
     // Notify parent about the clear action
     widget.onChanged?.call([]);
@@ -549,33 +549,39 @@ class _DropdownMenuState extends State<_DropdownMenu> {
     super.didUpdateWidget(oldWidget);
     // Ensure local selection reflects parent changes
     if (oldWidget.selectedValues != widget.selectedValues) {
-      setState(() {
-        _selectedValues = List<dynamic>.from(widget.selectedValues);
-      });
+      if (mounted) {
+        setState(() {
+          _selectedValues = List<dynamic>.from(widget.selectedValues);
+        });
+      }
     }
   }
 
   void _handleItemToggle(DropdownItem item) {
     HapticFeedback.selectionClick();
 
-    setState(() {
-      if (_selectedValues.contains(item.value)) {
-        _selectedValues.remove(item.value);
-      } else {
-        if (widget.maxSelections == null ||
-            _selectedValues.length < widget.maxSelections!) {
-          _selectedValues.add(item.value);
+    if (mounted) {
+      setState(() {
+        if (_selectedValues.contains(item.value)) {
+          _selectedValues.remove(item.value);
+        } else {
+          if (widget.maxSelections == null ||
+              _selectedValues.length < widget.maxSelections!) {
+            _selectedValues.add(item.value);
+          }
         }
-      }
-    });
+      });
+    }
     // Call the parent's onChanged callback with the updated values
     widget.onItemToggle(item);
   }
 
   void _handleClearAll() {
-    setState(() {
-      _selectedValues.clear();
-    });
+    if (mounted) {
+      setState(() {
+        _selectedValues.clear();
+      });
+    }
     widget.onClearAll();
   }
 
@@ -584,6 +590,7 @@ class _DropdownMenuState extends State<_DropdownMenu> {
     final theme = Theme.of(context);
 
     return Container(
+      height: double.infinity, // Use full available height from positioned container
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
@@ -592,18 +599,17 @@ class _DropdownMenuState extends State<_DropdownMenu> {
         ),
         boxShadow: [
           BoxShadow(
-            color: theme.shadowColor.withOpacity(0.1),
-            blurRadius: 20,
+            color: theme.shadowColor.withOpacity(0.15),
+            blurRadius: 24,
             offset: const Offset(0, 8),
           ),
         ],
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         children: [
           _buildHeader(theme),
           if (widget.showSearch) _buildSearchField(theme),
-          Flexible(
+          Expanded(
             child: _buildItemsList(theme),
           ),
           _buildFooter(theme),
@@ -634,22 +640,41 @@ class _DropdownMenuState extends State<_DropdownMenu> {
               ),
             ),
           ),
-          if (_selectedValues.isNotEmpty)
-            TextButton.icon(
-              onPressed: _handleClearAll,
-              icon: Icon(
-                  Icons.clear_all, size: 16, color: theme.colorScheme.error),
-              label: Text(
-                'Clear All',
-                style: TextStyle(color: theme.colorScheme.error),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (_selectedValues.isNotEmpty)
+                TextButton.icon(
+                  onPressed: _handleClearAll,
+                  icon: Icon(
+                      Icons.clear_all, size: 16, color: theme.colorScheme.error),
+                  label: Text(
+                    'Clear All',
+                    style: TextStyle(color: theme.colorScheme.error),
+                  ),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 4),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                ),
+              if (_selectedValues.isNotEmpty) const SizedBox(width: 8),
+              IconButton(
+                onPressed: widget.onClose,
+                icon: Icon(
+                  Icons.close,
+                  size: 20,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                style: IconButton.styleFrom(
+                  padding: const EdgeInsets.all(4),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
               ),
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 12, vertical: 6),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-            ),
+            ],
+          ),
         ],
       ),
     );
@@ -773,7 +798,6 @@ class _DropdownMenuState extends State<_DropdownMenu> {
               child: Checkbox(
                 value: isSelected,
                 onChanged: canSelect ? (_) => _handleItemToggle(item) : null,
-                activeColor: theme.colorScheme.primary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4),
                 ),
@@ -862,7 +886,7 @@ class _DropdownMenuState extends State<_DropdownMenu> {
         children: [
           if (widget.maxSelections != null)
             Text(
-              '$selectedCount/${widget.maxSelections} items selected',
+              '$selectedCount items selected',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurface.withOpacity(0.7),
               ),
@@ -922,7 +946,7 @@ class TypedMultiSelectDropdown extends StatelessWidget {
     this.prefixIcon,
     this.showSearch = true,
     this.showDescriptions = true,
-    this.showIcons = true,
+    this.showIcons = false,
     this.maxSelections,
   });
 

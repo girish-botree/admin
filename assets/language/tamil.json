@@ -16,7 +16,7 @@
   "english": "ஆங்கிலம்",
   "tamil": "தமிழ்",
   "security": "பாதுகாப்பு",
-  "app_lock": "பயன்பாடு பூட்டு",
+
   "biometric_security": "பயோமெட்ரிக் மற்றும் கணினி கடவுச்சொல் பாதுகாப்பு",
   "notifications": "அறிவிப்புகள்",
   "notification_settings": "புஷ் அறிவிப்பு அமைப்புகள்",
@@ -84,13 +84,13 @@
   "manage_delivery_persons": "விநியோக நபர்களை நிர்வகி",
   "delete_delivery_person": "விநியோக நபரை நீக்கு",
   "lock_app_after": "பயன்பாட்டை பூட்டு",
-  "about_app_lock": "பயன்பாடு பூட்டு பற்றி",
+
   "biometric_authentication": "பயோமெட்ரிக் அங்கீகாரம் (கைரேகை, முகம், கண்)",
   "system_password_backup": "கணினி கடவுச்சொல் காப்பு (பின், வடிவம், கடவுச்சொல்)",
   "customizable_lock_timing": "தனிப்பயன் பூட்டு நேரம்",
   "background_detection": "பின்புல கண்டறிதல்",
   "security_features": "பாதுகாப்பு அம்சங்கள்:",
-  "app_locks_background": "பயன்பாடு பின்புலத்திற்கு நகர்த்தும் போது பூட்டப்படும்",
+
   "settings_encrypted": "அமைப்புகள் குறியாக்கம் செய்யப்பட்டு பாதுகாப்பாக சேமிக்கப்படும்",
   "multiple_auth_methods": "பல அங்கீகார முறைகள் இருப்பு",
   "admin_security": "நிர்வாக பயன்பாட்டு பாதுகாப்பு தேவைகளுக்காக வடிவமைக்கப்பட்டது",
@@ -110,7 +110,7 @@
   "pick": "தேர்ந்தெடு",
   "this_image_not_supported": "இந்த படம் ஆதரிக்கப்படவில்லை",
   "information": "தகவல்",
-  "enable_app_lock": "பயன்பாடு பூட்டு இயக்கு",
+
   "secure_app": "உங்கள் பயன்பாட்டை அங்கீகாரத்துடன் பாதுகாக்கவும்",
   "after_1_minute": "1 நிமிடம் கழித்து",
   "after_5_minutes": "5 நிமிடங்கள் கழித்து",

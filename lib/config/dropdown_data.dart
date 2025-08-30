@@ -3,9 +3,9 @@ class DropdownDataManager {
   static const List<DropdownItem> dietaryCategories = [
     DropdownItem(
       value: 0,
-      label: 'Regular',
-      description: 'Standard dietary preference',
-      icon: '🍽️',
+      label: 'Vegan',
+      description: 'Completely plant-based',
+      icon: '🌱',
     ),
     DropdownItem(
       value: 1,
@@ -399,10 +399,30 @@ class DropdownDataManager {
     if (query.isEmpty) return items;
 
     final lowercaseQuery = query.toLowerCase();
-    return items.where((item) {
-      return item.label.toLowerCase().contains(lowercaseQuery) ||
-          item.description.toLowerCase().contains(lowercaseQuery);
+    
+    // Phase 1: Find prefix matches (priority)
+    final prefixMatches = items.where((item) {
+      return item.label.toLowerCase().startsWith(lowercaseQuery) ||
+          item.description.toLowerCase().startsWith(lowercaseQuery);
     }).toList();
+    
+    // Phase 2: Find contains matches (excluding prefix matches)
+    final containsMatches = items.where((item) {
+      final labelLower = item.label.toLowerCase();
+      final descLower = item.description.toLowerCase();
+      
+      // Skip if already in prefix matches
+      if (labelLower.startsWith(lowercaseQuery) || 
+          descLower.startsWith(lowercaseQuery)) {
+        return false;
+      }
+      
+      return labelLower.contains(lowercaseQuery) ||
+          descLower.contains(lowercaseQuery);
+    }).toList();
+    
+    // Return prefix matches first, then contains matches
+    return [...prefixMatches, ...containsMatches];
   }
 
   // Get item by value

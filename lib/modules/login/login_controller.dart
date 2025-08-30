@@ -96,7 +96,7 @@ class LoginController extends GetxController {
         await DioNetworkService.storeAuthTokens(tokenData);
 
         // Navigate to main layout
-        Get.offAllNamed(AppRoutes.mainLayout);
+        Get.offAllNamed<void>(AppRoutes.mainLayout);
 
         // Show success message
         CustomDisplays.showToast(
@@ -105,7 +105,7 @@ class LoginController extends GetxController {
         );
       } else {
         // Response received but no token - treat as error
-        String errorMsg = (response?['message']?.toString()) ??
+        String errorMsg = (response['message']?.toString()) ??
             'Login failed. Invalid response from server.';
         CustomDisplays.showToast(
           message: errorMsg,
