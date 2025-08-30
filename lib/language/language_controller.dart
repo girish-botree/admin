@@ -67,7 +67,7 @@ class LanguageController extends GetxController {
           .countryCode}');
     } catch (e) {
       print('Error in setLanguage: $e');
-      return debugPrint(e.toString());
+      return;
     }
   }
 
@@ -91,7 +91,6 @@ class LanguageController extends GetxController {
       }
     } catch (e) {
       print('Error in changeLanguage: $e');
-      debugPrint(e.toString());
     }
   }
 
@@ -111,7 +110,6 @@ class LanguageController extends GetxController {
       }
     } catch (e) {
       print('Error in _loadLanguage: $e');
-      debugPrint(e.toString());
       // Default to English on error
       setLanguage('english');
     }

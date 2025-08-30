@@ -53,8 +53,6 @@ class NetworkModule {
     if (kIsWeb) {
       // For web builds, we need to rely on the browser's CORS handling
       // The server must have proper CORS headers configured
-      debugPrint('Dio configured for web platform with base URL: ${AppUrl
-          .getBaseUrl()}');
     }
 
     // Add interceptors
@@ -142,7 +140,6 @@ class NetworkModule {
               return;
             } catch (retryError) {
               // Retry failed, proceed with logout
-              debugPrint('Retry after token refresh failed: $retryError');
             }
           }
           
@@ -158,11 +155,6 @@ class NetworkModule {
   static InterceptorsWrapper _createErrorInterceptor() {
     return InterceptorsWrapper(
       onError: (error, handler) {
-        // Log error details
-        debugPrint('API Error: ${error.message}');
-        debugPrint('Status Code: ${error.response?.statusCode}');
-        debugPrint('Response Data: ${error.response?.data}');
-
         // Transform error into user-friendly format
         final transformedError = _transformError(error);
         handler.next(transformedError);
@@ -216,17 +208,14 @@ class NetworkModule {
         // Remove any headers that might trigger CORS preflight
         options.headers.remove('X-Requested-With');
 
-        debugPrint('Web CORS request: ${options.method} ${options.uri}');
         handler.next(options);
       },
       onResponse: (response, handler) {
-        debugPrint('Web CORS response: ${response.statusCode}');
         handler.next(response);
       },
       onError: (error, handler) {
         // Handle CORS-related errors
         if (error.message?.contains('XMLHttpRequest') == true) {
-          debugPrint('CORS Error detected: ${error.message}');
           final corsError = DioException(
             requestOptions: error.requestOptions,
             response: error.response,
@@ -335,8 +324,6 @@ class NetworkModule {
     
     // Navigate to login screen
     // You can customize this based on your app's navigation structure
-    debugPrint('Admin session expired. Please login again.');
-    
     // If using GetX for navigation:
     Get.offAllNamed<void>('/login');
   }
@@ -347,7 +334,6 @@ class NetworkModule {
       final refreshToken = await _sharedPreference.getSecure(
           AppConstants.refreshToken);
       if (refreshToken == null || refreshToken.isEmpty) {
-        debugPrint('No refresh token available');
         return null;
       }
 
@@ -387,16 +373,13 @@ class NetworkModule {
                   AppConstants.refreshToken, refreshToken);
             }
 
-            debugPrint('Admin token refreshed successfully');
             return data;
           }
         }
       }
       
-      debugPrint('Admin token refresh failed: Invalid response');
       return null;
     } catch (error) {
-      debugPrint('Admin token refresh error: $error');
       return null;
     }
   }

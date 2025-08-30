@@ -189,10 +189,6 @@ class ApiErrorHandler {
   static Future<bool> handleError(DioException error) async {
     ApiHelper.dismissLoader();
     
-    debugPrint('API Error: ${error.message}');
-    debugPrint('Status Code: ${error.response?.statusCode}');
-    debugPrint('Response Data: ${error.response?.data}');
-
     String errorMessage = _getErrorMessage(error);
     
     // Show error to user
@@ -310,20 +306,16 @@ class ApiErrorHandler {
     // if (Get.currentRoute != '/login') {
     //   Get.offAllNamed('/login');
     // }
-    
-    debugPrint('User unauthorized. Redirecting to login...');
   }
 
   /// Handle forbidden error
   static Future<void> _handleForbiddenError() async {
     // User doesn't have permission
-    debugPrint('User does not have permission for this action');
   }
 
   /// Handle too many requests error
   static Future<void> _handleTooManyRequestsError() async {
     // Rate limiting
-    debugPrint('Too many requests. Please try again later');
   }
 
   /// Show error to user
@@ -408,7 +400,6 @@ class ApiHelper {
         ApiErrorHandler._showErrorToUser(errorMessage);
       }
       
-      debugPrint('Unexpected error: $error');
       return null;
     }
   }

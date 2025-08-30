@@ -235,13 +235,7 @@ extension DropdownMenuItemListExtension<T> on List<DropdownMenuItem<T>> {
     required Duration renderTime,
     String? searchQuery,
   }) {
-    debugPrint('Dropdown Performance [$dropdownId]:');
-    debugPrint('  Items: $itemCount');
-    debugPrint('  Search Time: ${searchTime.inMicroseconds}μs');
-    debugPrint('  Render Time: ${renderTime.inMicroseconds}μs');
-    if (searchQuery != null) {
-      debugPrint('  Query: "$searchQuery"');
-    }
+    // Performance logging disabled to reduce console noise
   }
   
   /// Check if virtualization should be enabled for performance

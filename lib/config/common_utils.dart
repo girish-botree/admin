@@ -5,8 +5,6 @@ class CommonUtils {
   CommonUtils._();
 
   static void debugLog(String log) {
-    if (kDebugMode) {
-      debugPrint(log);
-    }
+    // Debug logging disabled to reduce console noise
   }
 }

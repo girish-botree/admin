@@ -64,7 +64,7 @@ class _PerformanceMonitorState extends State<PerformanceMonitor> {
                   .reduce((a, b) => a + b) ~/ _buildDurations.length
             );
             
-        debugPrint('${widget.debugLabel}: Build #$_buildCount took ${buildDuration.inMicroseconds}μs (avg: ${avgDuration.inMicroseconds}μs)');
+        // Performance logging disabled to reduce console noise
       }
     });
     

@@ -138,7 +138,6 @@ class MealController extends GetxController {
       }
     } catch (e) {
       error.value = e.toString();
-      debugPrint('Error fetching recipes: $e');
     } finally {
       isLoading.value = false;
     }
@@ -158,7 +157,6 @@ class MealController extends GetxController {
 
       return [];
     } catch (e) {
-      debugPrint('Error fetching recipe ingredients: $e');
       throw Exception('Failed to fetch recipe ingredients: $e');
     }
   }
@@ -168,7 +166,6 @@ class MealController extends GetxController {
       final response = await DioNetworkService.getRecipeById(recipeId);
       return response;
     } catch (e) {
-      debugPrint('Error fetching recipe by ID: $e');
       throw Exception('Failed to fetch recipe: $e');
     }
   }
@@ -183,7 +180,6 @@ class MealController extends GetxController {
       return true;
     } catch (e) {
       error.value = e.toString();
-      debugPrint('Error creating recipe: $e');
       return false;
     } finally {
       isLoading.value = false;
@@ -200,7 +196,6 @@ class MealController extends GetxController {
       return true;
     } catch (e) {
       error.value = e.toString();
-      debugPrint('Error updating recipe: $e');
       return false;
     } finally {
       isLoading.value = false;
@@ -217,7 +212,6 @@ class MealController extends GetxController {
       return true;
     } catch (e) {
       error.value = e.toString();
-      debugPrint('Error deleting recipe: $e');
       return false;
     } finally {
       isLoading.value = false;
@@ -240,7 +234,6 @@ class MealController extends GetxController {
       }
     } catch (e) {
       error.value = e.toString();
-      debugPrint('Error fetching ingredients: $e');
     } finally {
       isLoading.value = false;
     }
@@ -256,7 +249,6 @@ class MealController extends GetxController {
       return true;
     } catch (e) {
       error.value = e.toString();
-      debugPrint('Error creating ingredient: $e');
       return false;
     } finally {
       isLoading.value = false;
@@ -273,7 +265,6 @@ class MealController extends GetxController {
       return true;
     } catch (e) {
       error.value = e.toString();
-      debugPrint('Error updating ingredient: $e');
       return false;
     } finally {
       isLoading.value = false;
@@ -290,7 +281,6 @@ class MealController extends GetxController {
       return true;
     } catch (e) {
       error.value = e.toString();
-      debugPrint('Error deleting ingredient: $e');
       return false;
     } finally {
       isLoading.value = false;
@@ -491,7 +481,7 @@ class MealController extends GetxController {
         }
       }
     } catch (e) {
-      debugPrint('Error parsing JSON: $e');
+      // Error parsing JSON
     }
     
     saturatedFatController.text = '${fatBreakdown['Saturated'] ?? 0}';
@@ -569,7 +559,7 @@ class MealController extends GetxController {
         }
         return '{}';
       } catch (e) {
-        debugPrint('Invalid JSON format: $controllerText');
+        // Invalid JSON format
         return '{}';
       }
     }

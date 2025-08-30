@@ -44,8 +44,7 @@ class ErrorMessageHandler {
     String? errorCode,
     String? context,
   }) {
-    // Always log the original error for debugging purposes
-    debugPrint('Error in $operation: $error');
+    // Error logging disabled to reduce console noise
 
     // Check for specific error codes first
     if (errorCode != null) {

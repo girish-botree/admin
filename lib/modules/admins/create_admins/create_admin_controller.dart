@@ -177,7 +177,7 @@ class CreateAdminController extends GetxController {
         CustomDisplays.showSnackBar(message: message?.toString() ?? 'Failed to send OTP. Please try again.');
       }
     } on DioException catch (dioError) {
-      debugPrint('DioException sending OTP: ${dioError.toString()}');
+      // DioException sending OTP
 
       String errorMessage = 'Failed to send OTP. Please try again.';
 
@@ -185,8 +185,7 @@ class CreateAdminController extends GetxController {
         final statusCode = dioError.response!.statusCode;
         final responseData = dioError.response!.data;
 
-        debugPrint('Status Code: $statusCode');
-        debugPrint('Response Data: $responseData');
+        // Status Code and Response Data logging removed
 
         if (statusCode == 400) {
           if (responseData is String &&
@@ -208,7 +207,7 @@ class CreateAdminController extends GetxController {
 
       CustomDisplays.showSnackBar(message: errorMessage);
     } catch (e) {
-      debugPrint('Error sending OTP: $e');
+      // Error sending OTP
       CustomDisplays.showSnackBar(
           message: 'An unexpected error occurred. Please try again.');
     } finally {

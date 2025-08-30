@@ -57,7 +57,6 @@ class PlanStateController extends GetxController {
   void _onDateChanged(DateTime date) {
     // This method will be called after the build is complete
     // You can trigger data loading here if needed
-    debugPrint('Date changed to: $date');
   }
 
   // Safe state update methods
@@ -285,7 +284,7 @@ class PlanStateController extends GetxController {
             recipeImageUrl = recipe['imageUrl']?.toString();
           }
         } catch (e) {
-          debugPrint('Error finding recipe details: $e');
+          // Error finding recipe details
         }
       }
 

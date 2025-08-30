@@ -44,7 +44,6 @@ class IngredientsController extends GetxController {
       ingredients.value = uniqueIngredients.values.toList();
     } catch (e) {
       error.value = e.toString();
-      debugPrint('Error fetching ingredients: $e');
     } finally {
       isLoading.value = false;
     }

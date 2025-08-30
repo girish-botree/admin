@@ -214,26 +214,17 @@ class AdminBottomSheets {
                               ),
 
                               // Inline validation message for email
-                              Obx(() {
-                                final email = controller.emailController.text;
-                                if (email.isNotEmpty &&
-                                    !GetUtils.isEmail(email)) {
-                                  return InlineMessage(
-                                    message: 'Please enter a valid email address',
-                                    type: MessageType.error,
-                                  );
-                                }
-                                return const SizedBox.shrink();
-                              }),
+                              // Note: Email validation is handled in the form validator
+                              // Real-time validation can be added later if needed
                               SizedBox(height: Responsive.responsiveValue(
                                 context, 
                                 mobile: 8.0, 
                                 tablet: 12.0, 
                                 web: 16.0,
                               )),
-                              Obx(() => SizedBox(
+                              SizedBox(
                                 width: double.infinity,
-                                child: ElevatedButton(
+                                child: Obx(() => ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                     foregroundColor: context.theme.colorScheme.onSurface,
                                     backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
@@ -243,8 +234,8 @@ class AdminBottomSheets {
                                       ? null
                                       : () => controller.sendOtp(controller.emailController.text, userType),
                                   child: Text('Send OTP'),
-                                ),
-                              )),
+                                )),
+                              ),
                             ],
                           )
                         : Row(
@@ -271,17 +262,8 @@ class AdminBottomSheets {
                               ),
 
                               // Inline validation message for email
-                              Obx(() {
-                                final email = controller.emailController.text;
-                                if (email.isNotEmpty &&
-                                    !GetUtils.isEmail(email)) {
-                                  return InlineMessage(
-                                    message: 'Please enter a valid email address',
-                                    type: MessageType.error,
-                                  );
-                                }
-                                return const SizedBox.shrink();
-                              }),
+                              // Note: Email validation is handled in the form validator
+                              // Real-time validation can be added later if needed
                               SizedBox(width: Responsive.responsiveValue(
                                 context, 
                                 mobile: 8.0, 
@@ -344,14 +326,7 @@ class AdminBottomSheets {
 
                     // Inline message for OTP status
                     Obx(() {
-                      if (!controller.isOtpSent.value && controller
-                          .emailController.text.isNotEmpty &&
-                          GetUtils.isEmail(controller.emailController.text)) {
-                        return InlineMessage(
-                          message: 'Click "Send OTP" to receive verification code',
-                          type: MessageType.info,
-                        );
-                      } else if (controller.isOtpSent.value) {
+                      if (controller.isOtpSent.value) {
                         return InlineMessage(
                           message: 'OTP sent successfully! Check your email.',
                           type: MessageType.success,
@@ -384,40 +359,8 @@ class AdminBottomSheets {
                     ),
 
                     // Inline validation messages for password requirements
-                    Obx(() {
-                      final password = controller.passwordController.text;
-                      if (password.isEmpty) {
-                        return const SizedBox.shrink();
-                      }
-
-                      final requirements = <String, bool>{
-                        'At least 8 characters': password.length >= 8,
-                        'One uppercase letter': RegExp(r'[A-Z]').hasMatch(
-                            password),
-                        'One lowercase letter': RegExp(r'[a-z]').hasMatch(
-                            password),
-                        'One number': RegExp(r'[0-9]').hasMatch(password),
-                        'One special character': RegExp(
-                            r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password),
-                      };
-
-                      final unmetRequirements = requirements.entries
-                          .where((entry) => !entry.value)
-                          .map((entry) => entry.key)
-                          .toList();
-
-                      if (unmetRequirements.isEmpty) {
-                        return InlineMessage(
-                          message: 'Password meets all requirements',
-                          type: MessageType.success,
-                        );
-                      } else {
-                        return InlineMessage(
-                          message: 'Missing: ${unmetRequirements.join(', ')}',
-                          type: MessageType.warning,
-                        );
-                      }
-                    }),
+                    // Note: Password validation is handled in the form validator
+                    // Real-time validation can be added later if needed
                     SizedBox(height: Responsive.responsiveValue(
                       context, 
                       mobile: 16.0, 

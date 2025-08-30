@@ -45,7 +45,6 @@ class HomeController extends GetxController {
       await _loadDashboardStats();
     } catch (e) {
       _error.value = e.toString();
-      debugPrint('Error loading initial data: $e');
     } finally {
       _isLoading.value = false;
     }
@@ -63,7 +62,7 @@ class HomeController extends GetxController {
         'lastActivity': DateTime.now().toIso8601String(),
       };
     } catch (e) {
-      debugPrint('Error loading dashboard stats: $e');
+      // Error loading dashboard stats
     }
   }
 
@@ -118,7 +117,7 @@ class HomeController extends GetxController {
       Get.toNamed<void>(AppRoutes.plan);
       // Additional logic for creating meal plan can be added here
     } catch (e) {
-      debugPrint('Error navigating to meal plan: $e');
+      // Error navigating to meal plan
     }
   }
 
@@ -127,7 +126,7 @@ class HomeController extends GetxController {
       Get.toNamed<void>(AppRoutes.meal);
       // Additional logic for creating recipe can be added here
     } catch (e) {
-      debugPrint('Error navigating to meals: $e');
+      // Error navigating to meals
     }
   }
 
@@ -135,7 +134,7 @@ class HomeController extends GetxController {
     try {
       Get.toNamed<void>(AppRoutes.createAdmin);
     } catch (e) {
-      debugPrint('Error navigating to create admin: $e');
+      // Error navigating to create admin
     }
   }
 
@@ -180,7 +179,6 @@ class HomeController extends GetxController {
           );
         } catch (logoutError) {
           // Even if API logout fails, clear local tokens and proceed
-          debugPrint('Logout API error: $logoutError');
           await DioNetworkService.clearAllTokens();
           Get.offAllNamed<void>(AppRoutes.login);
           
@@ -194,7 +192,6 @@ class HomeController extends GetxController {
       }
     } catch (e) {
       // Handle logout error
-      debugPrint('Logout error: $e');
       Get.snackbar(
         'error'.tr,
         'try_again'.tr,

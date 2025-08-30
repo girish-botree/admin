@@ -89,7 +89,6 @@ class DeliveryPersonController extends GetxController {
         filteredDeliveryPersons.value = deliveryPersons;
       }
     } catch (e) {
-      debugPrint('Error fetching delivery persons: $e');
       CustomDisplays.showSnackBar(message: 'Failed to load delivery persons');
     } finally {
       isLoading.value = false;
@@ -192,7 +191,6 @@ class DeliveryPersonController extends GetxController {
             message: 'Delivery person updated successfully');
       }
     } catch (e) {
-      debugPrint('Error updating delivery person: $e');
       CustomDisplays.showSnackBar(message: 'Failed to update delivery person');
     } finally {
       isUpdating.value = false;
@@ -215,7 +213,6 @@ class DeliveryPersonController extends GetxController {
             message: 'Delivery person deleted successfully');
       }
     } catch (e) {
-      debugPrint('Error deleting delivery person: $e');
       CustomDisplays.showSnackBar(message: 'Failed to delete delivery person');
     } finally {
       isDeleting.value = false;

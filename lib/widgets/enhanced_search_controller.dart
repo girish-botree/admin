@@ -140,7 +140,6 @@ class EnhancedSearchController<T> extends GetxController {
       
     } catch (e) {
       error.value = 'Search failed: ${e.toString()}';
-      debugPrint('Search error: $e');
     } finally {
       isLoading.value = false;
     }

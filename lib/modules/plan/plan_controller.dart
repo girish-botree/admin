@@ -70,12 +70,7 @@ class PlanController extends GetxController {
   
   // Debug method to verify enum values
   void _debugEnumValues() {
-    debugPrint('🧪 Debugging MealCategory enum values:');
-    debugPrint('  MealCategory.vegan.index = ${MealCategory.vegan.index}');
-    debugPrint('  MealCategory.vegetarian.index = ${MealCategory.vegetarian.index}');
-    debugPrint('  MealCategory.eggitarian.index = ${MealCategory.eggitarian.index}');
-    debugPrint('  MealCategory.nonVegetarian.index = ${MealCategory.nonVegetarian.index}');
-    debugPrint('  MealCategory.other.index = ${MealCategory.other.index}');
+    // Debug method removed to reduce console noise
   }
 
   @override
@@ -116,7 +111,6 @@ class PlanController extends GetxController {
         });
       }
     } catch (e) {
-      debugPrint('Error loading recipes: $e');
       CustomDisplays.showInfoBar(
         message: 'Failed to load recipes. Please check your connection.',
         type: InfoBarType.networkError,
@@ -157,7 +151,6 @@ class PlanController extends GetxController {
         });
       }
     } catch (e) {
-      debugPrint('Error loading meal plans: $e');
       CustomDisplays.showInfoBar(
         message: 'Failed to load meal plans. Please check your connection.',
         type: InfoBarType.networkError,
@@ -200,17 +193,8 @@ class PlanController extends GetxController {
       // Send as integer (0, 1, 2, 3)
     };
     
-    // Debug logging for meal plan creation
-    debugPrint('🍽️ Creating single meal plan:');
-    debugPrint('  selectedCategory.value: ${selectedCategory.value}');
-    debugPrint('  selectedCategory.value.index: ${selectedCategory.value.index}');
-    debugPrint('  mealPlanData: $mealPlanData');
-    
     try {
       final response = await DioNetworkService.postData(mealPlanData, 'api/admin/AdminMealPlan', showLoader: false);
-      
-      // Debug logging for response
-      debugPrint('📨 Server response: $response');
       
       // Check if the HTTP response was successful
       final httpStatus = response['httpResponse']?['status'] ?? 0;
@@ -229,7 +213,6 @@ class PlanController extends GetxController {
         message: 'Failed to create meal plan',
         type: MessageType.error,
       );
-      debugPrint('Error creating meal plan: $e');
     }
   }
 
@@ -270,7 +253,6 @@ class PlanController extends GetxController {
         message: 'Failed to create meal plan assignment',
         type: MessageType.error,
       );
-      debugPrint('Error creating meal plan assignment: $e');
     }
   }
 
@@ -312,7 +294,6 @@ class PlanController extends GetxController {
         message: 'Failed to update meal plan',
         type: MessageType.error,
       );
-      debugPrint('Error updating meal plan assignment: $e');
     }
   }
 
@@ -339,7 +320,6 @@ class PlanController extends GetxController {
         message: 'Failed to update meal plan',
         type: MessageType.error,
       );
-      debugPrint('Error updating meal plan: $e');
     }
   }
 
@@ -375,7 +355,6 @@ class PlanController extends GetxController {
         message: 'Failed to update meal plan',
         type: MessageType.error,
       );
-      debugPrint('Error updating meal plan from form: $e');
     }
   }
 
@@ -414,7 +393,6 @@ class PlanController extends GetxController {
         message: 'Failed to delete meal plan: $e',
         type: MessageType.error,
       );
-      debugPrint('Error deleting meal plan: $e');
     }
   }
 

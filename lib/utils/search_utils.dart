@@ -384,7 +384,7 @@ class SearchUtils {
                   .reduce((a, b) => a + b) ~/ _searchTimes.length
             );
       
-      debugPrint('Search Performance: Query="$query" | Items=$totalItems | Results=$resultCount | Time=${searchTime.inMicroseconds}μs | Avg=${avgTime.inMicroseconds}μs');
+      // Search performance logging disabled to reduce console noise
     }
   }
   
