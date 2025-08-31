@@ -131,8 +131,20 @@ class MealPlanAssignment {
       'recipeId': recipeId,
       'mealDate': mealDate.toIso8601String(),
       'period': period.index, // Send as integer
-      'category': category.index, // Send as integer
+      // category is now optional and used only for local filtering
       'bmiCategory': bmiCategory.index, // Send as integer
+    };
+  }
+
+  // Method to create API request data without category field
+  Map<String, dynamic> toApiJson() {
+    return {
+      if (id != null) 'id': id,
+      'recipeId': recipeId,
+      'mealDate': mealDate.toIso8601String(),
+      'period': period.index, // Send as integer
+      'bmiCategory': bmiCategory.index, // Send as integer
+      // category field is intentionally omitted for API requests
     };
   }
 }

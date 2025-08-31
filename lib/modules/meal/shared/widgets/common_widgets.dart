@@ -1235,6 +1235,12 @@ class _ModernSearchBarState extends State<ModernSearchBar>
             fontWeight: FontWeight.w400,
             letterSpacing: -0.2,
           ),
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          errorBorder: InputBorder.none,
+          focusedErrorBorder: InputBorder.none,
+          disabledBorder: InputBorder.none,
           prefixIcon: Container(
             margin: const EdgeInsets.only(left: 16, right: 8),
             child: Icon(
@@ -1273,11 +1279,9 @@ class _ModernSearchBarState extends State<ModernSearchBar>
             ),
           )
               : null,
-          border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
               horizontal: 16, vertical: 18),
-          filled: true,
-          fillColor: context.theme.colorScheme.surfaceContainerLow,
+          filled: false,
         ),
         cursorColor: accentColor,
         cursorWidth: 2,

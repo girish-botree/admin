@@ -246,15 +246,7 @@ class ErrorMessageHandler {
       context: context,
     );
     
-    if (_isNetworkError(originalError)) {
-      CustomDisplays.showInfoBar(
-        message: message,
-        type: InfoBarType.networkError,
-        actionText: 'Retry',
-        persistent: persistent,
-        onAction: () => CustomDisplays.dismissInfoBar(),
-      );
-    } else if (_isAuthError(originalError)) {
+    if (_isAuthError(originalError)) {
       CustomDisplays.showToast(
         message: message,
         type: MessageType.warning,

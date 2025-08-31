@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../network_service/dio_network_service.dart';
 import '../../widgets/custom_displays.dart';
+import '../../services/error_handling_service.dart';
 import 'meal_plan_model.dart';
 import 'meal_plan_assignment_model.dart';
 import 'widgets/meal_plan_form_dialog.dart';
@@ -86,6 +87,8 @@ class PlanController extends GetxController {
       // Handle the enhanced response structure
       final responseData = response['httpResponse']?['data'] ?? response['data'];
       
+
+      
       if (responseData is List) {
         _safeStateUpdate(() {
           recipes.value = responseData.cast<dynamic>();
@@ -111,17 +114,15 @@ class PlanController extends GetxController {
         });
       }
     } catch (e) {
-      CustomDisplays.showInfoBar(
-        message: 'Failed to load recipes. Please check your connection.',
-        type: InfoBarType.networkError,
-        actionText: 'Retry',
-        onAction: () {
-          CustomDisplays.dismissInfoBar();
-          getRecipes();
-        },
-      );
+      ErrorHandlingService.handleApiError(e, customMessage: 'Failed to load recipes.');
     }
+    
+
   }
+
+
+
+
 
   // Get all meal plans
   Future<void> getMealPlans() async {
@@ -151,15 +152,7 @@ class PlanController extends GetxController {
         });
       }
     } catch (e) {
-      CustomDisplays.showInfoBar(
-        message: 'Failed to load meal plans. Please check your connection.',
-        type: InfoBarType.networkError,
-        actionText: 'Retry',
-        onAction: () {
-          CustomDisplays.dismissInfoBar();
-          getMealPlans();
-        },
-      );
+      ErrorHandlingService.handleApiError(e, customMessage: 'Failed to load meal plans.');
     } finally {
       _safeStateUpdate(() {
         isLoading.value = false;
@@ -175,10 +168,7 @@ class PlanController extends GetxController {
 
     // Validate that a recipe is selected
     if (selectedRecipeId.value.isEmpty) {
-      CustomDisplays.showToast(
-        message: 'Please select a recipe',
-        type: MessageType.warning,
-      );
+      ErrorHandlingService.showWarningMessage('Please select a recipe');
       return;
     }
 
@@ -186,9 +176,7 @@ class PlanController extends GetxController {
       'recipeId': selectedRecipeId.value,
       'mealDate': selectedMealDate.value.toIso8601String(),
       'period': selectedPeriod.value.index,
-      // Send as integer (0, 1, 2, 3)
-      'category': selectedCategory.value.index,
-      // Send as integer (0, 1, 2)
+      // dietaryCategory is now optional and used only for filtering
       'bmiCategory': selectedBmiCategory.value.index,
       // Send as integer (0, 1, 2, 3)
     };
@@ -199,30 +187,21 @@ class PlanController extends GetxController {
       // Check if the HTTP response was successful
       final httpStatus = response['httpResponse']?['status'] ?? 0;
       if (httpStatus == 200 || httpStatus == 201) {
-        CustomDisplays.showToast(
-          message: PlanConstants.mealPlanCreated,
-          type: MessageType.success,
-        );
+        ErrorHandlingService.showSuccessMessage(PlanConstants.mealPlanCreated);
         getMealPlansByDate();
         clearForm();
         getMealPlans();
         Get.back<void>();
       }
     } catch (e) {
-      CustomDisplays.showToast(
-        message: 'Failed to create meal plan',
-        type: MessageType.error,
-      );
+      ErrorHandlingService.handleApiError(e, customMessage: 'Failed to create meal plan');
     }
   }
 
   // Create meal plan assignment
   Future<void> createMealPlanAssignment() async {
     if (selectedRecipeId.value.isEmpty) {
-      CustomDisplays.showToast(
-        message: 'Please select a recipe',
-        type: MessageType.warning,
-      );
+      ErrorHandlingService.showWarningMessage('Please select a recipe');
       return;
     }
     
@@ -230,39 +209,31 @@ class PlanController extends GetxController {
       recipeId: selectedRecipeId.value,
       mealDate: selectedMealDate.value,
       period: selectedPeriod.value,
-      category: selectedCategory.value,
+      category: selectedCategory.value, // Keep for local filtering
       bmiCategory: selectedBmiCategory.value,
     );
     
     try {
-      final response = await DioNetworkService.postData(assignment.toJson(), 'api/admin/meal-plan-assignments', showLoader: false);
+      // Use the new toApiJson method that excludes category field
+      final response = await DioNetworkService.postData(assignment.toApiJson(), 'api/admin/meal-plan-assignments', showLoader: false);
       
       // Check if the HTTP response was successful
       final httpStatus = response['httpResponse']?['status'] ?? 0;
       if (httpStatus == 200 || httpStatus == 201) {
-        CustomDisplays.showToast(
-          message: 'Meal plan assignment created successfully',
-          type: MessageType.success,
-        );
+        ErrorHandlingService.showSuccessMessage('Meal plan assignment created successfully');
         clearAssignmentForm();
         Get.back<void>();
         getMealPlansByDate();
       }
     } catch (e) {
-      CustomDisplays.showToast(
-        message: 'Failed to create meal plan assignment',
-        type: MessageType.error,
-      );
+      ErrorHandlingService.handleApiError(e, customMessage: 'Failed to create meal plan assignment');
     }
   }
 
   // Update meal plan assignment
   Future<void> updateMealPlanAssignment() async {
     if (selectedRecipeId.value.isEmpty || currentAssignment?.id == null) {
-      CustomDisplays.showToast(
-        message: 'Please select a recipe',
-        type: MessageType.warning,
-      );
+      ErrorHandlingService.showWarningMessage('Please select a recipe');
       return;
     }
     
@@ -270,7 +241,7 @@ class PlanController extends GetxController {
       'recipeId': selectedRecipeId.value,
       'mealDate': selectedMealDate.value.toIso8601String(),
       'period': selectedPeriod.value.index,
-      'category': selectedCategory.value.index,
+      // category is removed from API request - used only for local filtering
       'bmiCategory': selectedBmiCategory.value.index,
     };
     
@@ -360,35 +331,26 @@ class PlanController extends GetxController {
 
   // Delete meal plan
   Future<void> deleteMealPlan(String id) async {
-    print('DELETE MEAL PLAN CALLED with ID: $id');
     try {
-      print('Sending DELETE request to: api/admin/AdminMealPlan/$id');
       final response = await DioNetworkService.deleteData('api/admin/AdminMealPlan/$id', showLoader: false);
-
-      print('Delete response: $response');
 
       // Check if the HTTP response was successful
       final httpStatus = response['httpResponse']?['status'] ?? 0;
-      print('HTTP Status: $httpStatus');
 
       if (httpStatus == 200 || httpStatus == 204) {
-        print('Delete successful, refreshing data...');
         CustomDisplays.showToast(
           message: PlanConstants.mealPlanDeleted,
           type: MessageType.success,
         );
         await getMealPlans();
         await getMealPlansByDate();
-        print('Data refresh completed');
       } else {
-        print('Delete failed - unexpected status code: $httpStatus');
         CustomDisplays.showToast(
           message: 'Delete failed: HTTP $httpStatus',
           type: MessageType.error,
         );
       }
     } catch (e) {
-      print('Delete error: $e');
       CustomDisplays.showToast(
         message: 'Failed to delete meal plan: $e',
         type: MessageType.error,
@@ -500,14 +462,6 @@ class PlanController extends GetxController {
       final responseData = response['httpResponse']?['data'] ?? response['data'];
       
       if (responseData is List) {
-        // Debug logging for retrieved data
-        debugPrint('📅 Retrieved meal plans for date $dateStr:');
-        for (var json in responseData.take(3)) { // Show first 3 items
-          if (json is Map<String, dynamic>) {
-            debugPrint('  Raw data: $json');
-            debugPrint('  Category value: ${json['category']} (type: ${json['category'].runtimeType})');
-          }
-        }
         
         _safeStateUpdate(() {
           mealPlanAssignments.value =
@@ -517,11 +471,7 @@ class PlanController extends GetxController {
                   .toList();
         });
                 
-        // Debug logging for parsed assignments
-        debugPrint('📋 Parsed meal plan assignments:');
-        for (var assignment in mealPlanAssignments.take(3)) { // Show first 3 items
-          debugPrint('  Assignment category: ${assignment.category} (index: ${assignment.category.index})');
-        }
+
       } else if (responseData is Map && responseData['data'] is List) {
         final dataList = responseData['data'] as List;
         _safeStateUpdate(() {
@@ -534,16 +484,7 @@ class PlanController extends GetxController {
       }
 
     } catch (e) {
-      CustomDisplays.showInfoBar(
-        message: 'Failed to load meal plans for selected date. Please check your connection.',
-        type: InfoBarType.networkError,
-        actionText: 'Retry',
-        onAction: () {
-          CustomDisplays.dismissInfoBar();
-          getMealPlansByDate();
-        },
-      );
-      debugPrint('Error fetching meal plans by date: $e');
+      // Error handling for meal plans by date
     }
   }
 
@@ -562,7 +503,6 @@ class PlanController extends GetxController {
     for (final assignment in mealPlanAssignments) {
       // Skip if this assignment ID is already added to prevent duplicates
       if (assignment.id != null && addedIds[assignment.category]!.contains(assignment.id!)) {
-        debugPrint('Skipping duplicate assignment ID: ${assignment.id} in category: ${assignment.category}');
         continue;
       }
       
@@ -583,7 +523,7 @@ class PlanController extends GetxController {
             recipeImageUrl = recipe['imageUrl']?.toString();
           }
         } catch (e) {
-          debugPrint('Error finding recipe details: $e');
+          // Error finding recipe details
         }
       }
 
@@ -632,28 +572,21 @@ class PlanController extends GetxController {
   // Get meal plans for specific period and selected date
   List<MealPlan> getMealPlansForPeriod(MealPeriod period) {
 
-    for (var assignment in mealPlanAssignments) {
-      debugPrint('Assignment - ID: ${assignment.id}, RecipeID: ${assignment
-          .recipeId}, Period: ${assignment.period}, Date: ${assignment
-          .mealDate}');
-    }
+
 
     final assignments = mealPlanAssignments.where((assignment) {
       return assignment.period == period;
     }).toList();
 
-    debugPrint('Filtered assignments for $period: ${assignments.length}');
+
 
     // Create MealPlan objects directly from assignments since the new API response includes recipe details
     List<MealPlan> result = [];
     final addedIds = <String>{};  // Track added assignment IDs to prevent duplicates
     
     for (var assignment in assignments) {
-      print('Processing assignment with recipe: ${assignment.recipeName}');
-      
       // Skip if this assignment ID is already added to prevent duplicates
       if (assignment.id != null && addedIds.contains(assignment.id!)) {
-        print('Skipping duplicate assignment ID: ${assignment.id}');
         continue;
       }
 
@@ -677,7 +610,7 @@ class PlanController extends GetxController {
             recipeImageUrl = recipe['imageUrl']?.toString();
           }
         } catch (e) {
-          print('Error finding recipe details: $e');
+          // Error finding recipe details
         }
       }
 
@@ -701,11 +634,8 @@ class PlanController extends GetxController {
       if (assignment.id != null) {
         addedIds.add(assignment.id!);
       }
-      print('Added meal plan: ${mealPlan.name}');
     }
 
-    print('Final result count: ${result.length}');
-    print('=== END DEBUG ===');
     return result;
   }
 
@@ -720,13 +650,11 @@ class PlanController extends GetxController {
     }
 
     try {
-      print('Fetching meal plan details for ID: $recipeId');
       final response = await DioNetworkService.getData(
           'api/MealPlan/$recipeId', showLoader: false);
 
       // Handle the enhanced response structure - the API response has success/data structure
       final responseData = response['data'] ?? response;
-      print('Response data: $responseData');
 
       // Extract the actual meal plan data from the nested structure
       dynamic mealPlanData;
@@ -747,7 +675,6 @@ class PlanController extends GetxController {
         // CustomDisplays.showSnackBar(message: 'No meal plan details found');
       }
     } catch (e) {
-      print('Error fetching meal plan details: $e');
       CustomDisplays.showToast(
         message: 'Failed to load meal plan details: ${e.toString()}',
         type: MessageType.error,
@@ -1049,12 +976,7 @@ class PlanController extends GetxController {
     // Set selected date for meals to the calendar selected date
     selectedMealDate.value = selectedCalendarDate.value;
     
-    // Debug logging
-    debugPrint('📍 proceedToMealSelection:');
-    debugPrint('  selectedDietType.value: ${selectedDietType.value}');
-    debugPrint('  selectedDietType.value?.index: ${selectedDietType.value?.index}');
-    debugPrint('  selectedCategory.value: ${selectedCategory.value}');
-    debugPrint('  selectedCategory.value.index: ${selectedCategory.value.index}');
+
   }
 
   List<dynamic> getFilteredRecipes() {
@@ -1072,16 +994,55 @@ class PlanController extends GetxController {
       return recipes;
     }
 
-    // Filter recipes based on selected diet type
+    // Enhanced filtering based on selected diet type
+    
     final filtered = recipes.where((recipe) {
       if (recipe is Map<String, dynamic>) {
-        final recipeCategory = recipe['category'];
+        final recipeCategory = recipe['dietaryCategory'] ?? recipe['category']; // Try dietaryCategory first, fallback to category
+        final recipeFoodType = recipe['foodType'];
+        // First try to match by dietaryCategory (integer) - this is the primary method
         if (recipeCategory is int) {
-          return MealCategory.values[recipeCategory] == selectedDietType.value;
+          // Ensure the category index is within valid range
+          if (recipeCategory >= 0 && recipeCategory < MealCategory.values.length) {
+            final expectedCategory = MealCategory.values[recipeCategory];
+            final matches = expectedCategory == selectedDietType.value;
+            return matches;
+          }
+        }
+        
+        // Then try to match by foodType (string) as fallback
+        if (recipeFoodType is String) {
+          final foodTypeString = recipeFoodType.toLowerCase();
+          bool matches = false;
+          
+          switch (selectedDietType.value) {
+            case MealCategory.vegan:
+              matches = foodTypeString == 'vegan';
+              break;
+            case MealCategory.vegetarian:
+              matches = foodTypeString == 'vegetarian';
+              break;
+            case MealCategory.eggitarian:
+              matches = foodTypeString == 'eggitarian';
+              break;
+            case MealCategory.nonVegetarian:
+              matches = foodTypeString == 'nonvegetarian' || foodTypeString == 'non-vegetarian';
+              break;
+            case MealCategory.other:
+              matches = foodTypeString == 'other';
+              break;
+            default:
+              matches = true;
+              break;
+          }
+          
+          return matches;
         }
       }
-      return true; // Show all if filtering fails
+      return false; // Hide recipes that don't match the selected category
     }).toList();
+    
+
     
     // Cache the filtered results using safe state update
     _safeStateUpdate(() {
@@ -1204,7 +1165,7 @@ class PlanController extends GetxController {
           'recipeId': recipeId,
           'mealDate': selectedMealDate.value.toIso8601String(),
           'period': selectedPeriod.value.index,
-          'category': selectedCategory.value.index,
+          // dietaryCategory is now optional and used only for filtering
           'bmiCategory': selectedBmiCategory.value.index,
         };
 
@@ -1223,7 +1184,6 @@ class PlanController extends GetxController {
           }
         } catch (e) {
           failureCount++;
-          debugPrint('Error creating meal plan for recipe $recipeId: $e');
         }
       }
 
@@ -1256,7 +1216,6 @@ class PlanController extends GetxController {
         message: 'Failed to create meal plans: ${e.toString()}',
         type: MessageType.error,
       );
-      debugPrint('Error creating multiple meal plans: $e');
     } finally {
       // Always hide loading state
       _safeStateUpdate(() {
@@ -1276,22 +1235,37 @@ class PlanController extends GetxController {
     }).where((recipe) => recipe.isNotEmpty).toList();
   }
   
-  // Debug method to check current category selection state
-  void debugCurrentState() {
-    debugPrint('🔍 Current Category Selection State:');
-    debugPrint('  selectedDietType.value: ${selectedDietType.value}');
-    debugPrint('  selectedDietType.value?.index: ${selectedDietType.value?.index}');
-    debugPrint('  selectedCategory.value: ${selectedCategory.value}');
-    debugPrint('  selectedCategory.value.index: ${selectedCategory.value.index}');
-    debugPrint('  showDietTypeSelection.value: ${showDietTypeSelection.value}');
-  }
+
+
+
+
+
   
   // Clear all caches to ensure fresh data
   void clearCaches() {
     _filteredRecipesCache.clear();
     _lastFilteredCategory = null;
-    debugPrint('🧹 Caches cleared for fresh data refresh');
   }
+
+  // Helper method to get category name for debugging
+  String _getCategoryName(int category) {
+    switch (category) {
+      case 0:
+        return 'Vegan';
+      case 1:
+        return 'Vegetarian';
+      case 2:
+        return 'Eggitarian';
+      case 3:
+        return 'Non-Vegetarian';
+      case 4:
+        return 'Other';
+      default:
+        return 'Unknown';
+    }
+  }
+  
+
 
   Future<void> createEnhancedMealPlans() async {
     // Check if we have multi-selections or single selections
@@ -1324,7 +1298,7 @@ class PlanController extends GetxController {
               'recipeId': recipeId,
               'mealDate': selectedMealDate.value.toIso8601String(),
               'period': period.index,
-              'category': selectedDietType.value!.index,
+              // dietaryCategory is now optional and used only for filtering
               'bmiCategory': selectedBmiCategory.value.index,
             };
 
@@ -1342,7 +1316,7 @@ class PlanController extends GetxController {
             'recipeId': entry.value,
             'mealDate': selectedMealDate.value.toIso8601String(),
             'period': entry.key.index,
-            'category': selectedDietType.value!.index,
+            // dietaryCategory is now optional and used only for filtering
             'bmiCategory': selectedBmiCategory.value.index,
           };
 
@@ -1353,9 +1327,7 @@ class PlanController extends GetxController {
         }
       }
 
-      // Debug logging
-      debugPrint('🍽️ Creating $totalMealCount meal plans');
-      debugPrint('Selected diet type: ${selectedDietType.value} (index: ${selectedDietType.value!.index})');
+
 
       // Execute all requests
       final responses = await Future.wait(createRequests);
@@ -1375,11 +1347,9 @@ class PlanController extends GetxController {
         await getMealPlans();
         await getMealPlansByDate();
 
-        // Reset form and close current dialog
+        // Reset form and ensure complete dialog closure
         _resetEnhancedForm();
-        if (Get.isDialogOpen ?? false) {
-          Get.back<void>();
-        }
+        closeAllDialogs();
 
         // Show success confirmation dialog with Continue/Exit options
         final mealText = totalMealCount == 1 ? 'meal' : 'meals';
@@ -1413,7 +1383,6 @@ class PlanController extends GetxController {
         message: 'Failed to create meal plans: ${e.toString()}',
         type: MessageType.error,
       );
-      debugPrint('Error creating multiple meal plans: $e');
     } finally {
       // Always hide loading state
       isLoading.value = false;
@@ -1431,6 +1400,13 @@ class PlanController extends GetxController {
       _filteredRecipesCache.clear();
       _lastFilteredCategory = null;
     });
+  }
+
+  // Helper method to ensure complete dialog closure
+  void closeAllDialogs() {
+    while (Get.isDialogOpen ?? false) {
+      Get.back<void>();
+    }
   }
 
   // Delete all meal plans for a specific date
@@ -1493,7 +1469,6 @@ class PlanController extends GetxController {
         message: 'Failed to delete meals: $e',
         type: MessageType.error,
       );
-      debugPrint('Error deleting all meal plans for date: $e');
     }
   }
 
@@ -1590,7 +1565,8 @@ class PlanController extends GetxController {
                           Expanded(
                             child: OutlinedButton.icon(
                               onPressed: () {
-                                Get.back<void>(); // Close confirmation dialog
+                                // Close all dialogs to ensure complete closure
+                                closeAllDialogs();
                                 // Auto-switch to category view to show the newly added meals
                                 viewByCategory.value = true;
                               },
@@ -1614,7 +1590,8 @@ class PlanController extends GetxController {
                           Expanded(
                             child: FilledButton.icon(
                               onPressed: () {
-                                Get.back<void>(); // Close confirmation dialog
+                                // Close all dialogs to ensure complete closure
+                                closeAllDialogs();
                                 clearForm(); // Clear the form
                                 Get.dialog<void>(const MealPlanFormDialog()); // Open new meal plan dialog
                               },

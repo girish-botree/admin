@@ -145,7 +145,10 @@ class MealPlanFormDialog extends StatelessWidget {
                 ),
               ),
               IconButton(
-                onPressed: () => Get.back<void>(),
+                onPressed: () {
+                  // Ensure complete dialog closure
+                  controller.closeAllDialogs();
+                },
                 icon: Icon(
                   Icons.close,
                   color: theme.colorScheme.onSurfaceVariant,
@@ -280,7 +283,10 @@ class MealPlanFormDialog extends StatelessWidget {
             children: [
               Expanded(
                 child: TextButton(
-                  onPressed: () => Get.back<void>(),
+                  onPressed: () {
+                    // Ensure complete dialog closure
+                    controller.closeAllDialogs();
+                  },
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
@@ -438,7 +444,10 @@ class MealPlanFormDialog extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  onPressed: () => Get.back<void>(),
+                  onPressed: () {
+                    // Ensure complete dialog closure
+                    controller.closeAllDialogs();
+                  },
                   icon: Icon(
                     Icons.close,
                     color: theme.colorScheme.onSurfaceVariant,
@@ -594,7 +603,10 @@ class MealPlanFormDialog extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextButton(
-                    onPressed: () => Get.back<void>(),
+                    onPressed: () {
+                      // Ensure complete dialog closure
+                      controller.closeAllDialogs();
+                    },
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
@@ -820,16 +832,63 @@ class _MultiRecipeDropdownWidget extends StatelessWidget {
       final filteredRecipes = controller.getFilteredRecipes() as List<dynamic>;
       final selectedRecipeIds = controller.getSelectedRecipeIdsForPeriod(period) as List<String>;
 
+      // Show message if no recipes available for selected category
+      if (filteredRecipes.isEmpty && controller.selectedDietType.value != null) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.outline.withAlpha(50),
+            ),
+          ),
+          child: Column(
+            children: [
+              Icon(
+                Icons.restaurant_menu_outlined,
+                color: Theme.of(context).colorScheme.onSurface.withAlpha(100),
+                size: 48,
+              ),
+              const SizedBox(height: 12),
+              AppText.medium(
+                'No recipes available',
+                color: Theme.of(context).colorScheme.onSurface.withAlpha(100),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 4),
+              AppText.caption(
+                'No ${_getDietLabel(controller.selectedDietType.value as MealCategory?).toLowerCase()} recipes found for ${_getPeriodName(period).toLowerCase()}',
+                color: Theme.of(context).colorScheme.onSurface.withAlpha(80),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        );
+      }
+
       // Convert recipes to DropdownItem format for MultiSelectDropdown
       final recipeItems = filteredRecipes.map<DropdownItem>((dynamic recipe) {
         final recipeName = recipe['name']?.toString() ?? 'Unknown Recipe';
         final recipeDescription = recipe['description']?.toString() ?? '';
+        final recipeCategory = recipe['dietaryCategory'] ?? recipe['category']; // Try dietaryCategory first, fallback to category
+        
+        // Get category label based on the category value
+        String categoryLabel = _getCategoryLabelFromValue(recipeCategory);
+        
+        // Enhanced description with category information
+        String enhancedDescription = recipeDescription;
+        if (enhancedDescription.isNotEmpty) {
+          enhancedDescription += ' • ';
+        }
+        enhancedDescription += categoryLabel;
+        
         return DropdownItem(
           value: recipe['recipeId']?.toString() ?? '',
           label: recipeName,
-          description: recipeDescription.length > 60
-              ? '${recipeDescription.substring(0, 60)}...'
-              : recipeDescription,
+          description: enhancedDescription.length > 60
+              ? '${enhancedDescription.substring(0, 60)}...'
+              : enhancedDescription,
           icon: getRecipeIcon(recipe),
         );
       }).toList();
@@ -868,5 +927,66 @@ class _MultiRecipeDropdownWidget extends StatelessWidget {
       case MealPeriod.snack:
         return 'Snack';
     }
+  }
+
+  String _getDietLabel(MealCategory? category) {
+    switch (category) {
+      case MealCategory.vegetarian:
+        return 'Vegetarian';
+      case MealCategory.nonVegetarian:
+        return 'Non-Vegetarian';
+      case MealCategory.vegan:
+        return 'Vegan';
+      case MealCategory.eggitarian:
+        return 'Eggitarian';
+      case MealCategory.other:
+        return 'Other';
+      default:
+        return 'Unknown';
+    }
+  }
+  
+  // Helper method to get category label from API response value
+  String _getCategoryLabelFromValue(dynamic categoryValue) {
+    if (categoryValue is int) {
+      switch (categoryValue) {
+        case 0:
+          return 'VEGAN';
+        case 1:
+          return 'VEGETARIAN';
+        case 2:
+          return 'EGGITARIAN';
+        case 3:
+          return 'NON_VEGETARIAN';
+        case 4:
+          return 'OTHER';
+        default:
+          return 'UNKNOWN';
+      }
+    } else if (categoryValue is String) {
+      // Handle string values if they exist
+      final categoryString = categoryValue.toString().toUpperCase();
+      switch (categoryString) {
+        case 'VEGAN':
+        case '0':
+          return 'VEGAN';
+        case 'VEGETARIAN':
+        case '1':
+          return 'VEGETARIAN';
+        case 'EGGITARIAN':
+        case '2':
+          return 'EGGITARIAN';
+        case 'NON_VEGETARIAN':
+        case 'NON-VEGETARIAN':
+        case '3':
+          return 'NON_VEGETARIAN';
+        case 'OTHER':
+        case '4':
+          return 'OTHER';
+        default:
+          return 'UNKNOWN';
+      }
+    }
+    return 'UNKNOWN';
   }
 }

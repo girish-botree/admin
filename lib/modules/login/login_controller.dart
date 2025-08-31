@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dio/dio.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
+
 import 'package:admin/widgets/custom_displays.dart';
 import '../../routes/app_routes.dart';
 import '../../network_service/dio_network_service.dart';
@@ -68,20 +68,7 @@ class LoginController extends GetxController {
     clearError();
     isLoading.value = true;
 
-    final hasConnection =
-        await InternetConnectionChecker.createInstance().hasConnection;
-    if (!hasConnection) {
-      CustomDisplays.showInfoBar(
-        message: 'No internet connection. Please check your network.',
-        type: InfoBarType.networkError,
-        actionText: 'Retry',
-        onAction: () {
-          CustomDisplays.dismissInfoBar();
-          login();
-        },
-      );
-      return;
-    }
+    // Removed internet connection check to eliminate network popups
 
     try {
       final response = await DioNetworkService.login(
@@ -151,24 +138,11 @@ class LoginController extends GetxController {
         errorMsg = 'Network error. Please check your internet connection.';
       }
 
-      if (errorMsg.toLowerCase().contains('network') ||
-          errorMsg.toLowerCase().contains('internet') ||
-          errorMsg.toLowerCase().contains('connection')) {
-        CustomDisplays.showInfoBar(
-          message: errorMsg,
-          type: InfoBarType.networkError,
-          actionText: 'Retry',
-          onAction: () {
-            CustomDisplays.dismissInfoBar();
-            login();
-          },
-        );
-      } else {
-        CustomDisplays.showToast(
-          message: errorMsg,
-          type: MessageType.error,
-        );
-      }
+      CustomDisplays.showToast(
+        message: errorMsg,
+        type: MessageType.error,
+        allowDuplicate: false,
+      );
     } catch (e) {
       // Handle other errors
       CustomDisplays.showToast(

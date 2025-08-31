@@ -6,12 +6,36 @@ enum MessageType { success, error, info, warning }
 enum InfoBarType { networkError, generalError, warning, info }
 
 class CustomDisplays {
+  // Static variables for deduplication
+  static String? _lastToastMessage;
+  static String? _lastInfoBarMessage;
+  static DateTime? _lastToastTime;
+  static DateTime? _lastInfoBarTime;
+  static const Duration _deduplicationWindow = Duration(seconds: 2);
+  static bool _isShowingToast = false;
+  static bool _isShowingInfoBar = false;
+
   // Toast for quick notifications (replaces most Snackbar usage)
   static void showToast({
     required String message,
     MessageType type = MessageType.info,
     Duration duration = const Duration(seconds: 3),
+    bool allowDuplicate = false,
   }) {
+    // Deduplication logic
+    if (!allowDuplicate && _shouldDeduplicateToast(message)) {
+      return;
+    }
+
+    // Prevent multiple toasts from showing simultaneously
+    if (_isShowingToast) {
+      return;
+    }
+
+    _isShowingToast = true;
+    _lastToastMessage = message;
+    _lastToastTime = DateTime.now();
+
     try {
       final context = Get.context;
       if (context == null) {
@@ -34,7 +58,10 @@ class CustomDisplays {
             _ToastWidget(
               message: message,
               type: type,
-              onDismiss: () => overlayEntry.remove(),
+              onDismiss: () {
+                overlayEntry.remove();
+                _isShowingToast = false;
+              },
             ),
       );
 
@@ -45,15 +72,31 @@ class CustomDisplays {
         if (overlayEntry.mounted) {
           overlayEntry.remove();
         }
+        _isShowingToast = false;
       });
     } catch (e) {
       // Fallback to GetX snackbar on any error
       _showFallbackSnackbar(message, type, duration);
+      _isShowingToast = false;
     }
+  }
+
+  // Check if toast should be deduplicated
+  static bool _shouldDeduplicateToast(String message) {
+    if (_lastToastMessage == message && _lastToastTime != null) {
+      final timeSinceLastToast = DateTime.now().difference(_lastToastTime!);
+      return timeSinceLastToast < _deduplicationWindow;
+    }
+    return false;
   }
 
   // Fallback method using GetX snackbar
   static void _showFallbackSnackbar(String message, MessageType type, Duration duration) {
+    // Close any existing snackbars first
+    if (Get.isSnackbarOpen) {
+      Get.closeCurrentSnackbar();
+    }
+
     Color backgroundColor;
     Color textColor = Colors.white;
     IconData icon;
@@ -102,25 +145,56 @@ class CustomDisplays {
     String? actionText,
     VoidCallback? onAction,
     bool persistent = true,
+    bool allowDuplicate = false,
   }) {
+    // Deduplication logic
+    if (!allowDuplicate && _shouldDeduplicateInfoBar(message)) {
+      return;
+    }
+
+    // Prevent multiple info bars from showing simultaneously
+    if (_isShowingInfoBar) {
+      return;
+    }
+
+    _isShowingInfoBar = true;
+    _lastInfoBarMessage = message;
+    _lastInfoBarTime = DateTime.now();
+
+    // Close any existing snackbars first
+    if (Get.isSnackbarOpen) {
+      Get.closeCurrentSnackbar();
+    }
+
     Get.showSnackbar(
       GetSnackBar(
         messageText: _InfoBarWidget(
           message: message,
           type: type,
           actionText: actionText,
-          onAction: onAction,
+          onAction: () {
+            _isShowingInfoBar = false;
+            onAction?.call();
+          },
         ),
         backgroundColor: Colors.transparent,
         snackPosition: SnackPosition.TOP,
         margin: const EdgeInsets.all(16),
         borderRadius: 8,
-        duration: persistent ? const Duration(days: 1) : const Duration(
-            seconds: 5),
+        duration: persistent ? const Duration(days: 1) : const Duration(seconds: 5),
         isDismissible: !persistent,
         showProgressIndicator: false,
       ),
     );
+  }
+
+  // Check if info bar should be deduplicated
+  static bool _shouldDeduplicateInfoBar(String message) {
+    if (_lastInfoBarMessage == message && _lastInfoBarTime != null) {
+      final timeSinceLastInfoBar = DateTime.now().difference(_lastInfoBarTime!);
+      return timeSinceLastInfoBar < _deduplicationWindow;
+    }
+    return false;
   }
 
   // Dismiss persistent info bar
@@ -128,6 +202,43 @@ class CustomDisplays {
     if (Get.isSnackbarOpen) {
       Get.closeCurrentSnackbar();
     }
+    _isShowingInfoBar = false;
+  }
+
+  // Clear all notifications and reset state
+  static void clearAllNotifications() {
+    if (Get.isSnackbarOpen) {
+      Get.closeCurrentSnackbar();
+    }
+    _isShowingToast = false;
+    _isShowingInfoBar = false;
+    _lastToastMessage = null;
+    _lastInfoBarMessage = null;
+    _lastToastTime = null;
+    _lastInfoBarTime = null;
+  }
+
+  // Show session expired message (deduplicated)
+  static void showSessionExpiredMessage() {
+    showToast(
+      message: 'Your session has expired. Please log in again.',
+      type: MessageType.error,
+      duration: const Duration(seconds: 4),
+      allowDuplicate: false,
+    );
+  }
+
+  // Show network error message (deduplicated)
+  static void showNetworkErrorMessage() {
+    showInfoBar(
+      message: 'Network connection issue. Please check your internet.',
+      type: InfoBarType.networkError,
+      actionText: 'Retry',
+      onAction: () {
+        dismissInfoBar();
+      },
+      allowDuplicate: false,
+    );
   }
 
   // Legacy method for backward compatibility - now uses toast

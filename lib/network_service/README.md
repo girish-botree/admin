@@ -1196,7 +1196,7 @@ flutter packages pub run build_runner build --delete-conflicting-outputs
 **Problem**: Connection timeout or no internet
 ```dart
 // Check network connectivity
-import 'package:internet_connection_checker/internet_connection_checker.dart';
+
 
 final hasInternet = await InternetConnectionChecker().hasConnection;
 if (!hasInternet) {
@@ -1298,7 +1298,7 @@ dependencies:
   dio_certificate_pinning: ^6.0.0
   
   # Connectivity
-  internet_connection_checker: ^3.0.1
+  
   
   # Testing
   mockito: ^5.4.2

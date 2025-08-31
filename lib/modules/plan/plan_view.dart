@@ -5,6 +5,7 @@ import '../../config/app_colors.dart';
 import '../../config/app_text.dart';
 import '../../utils/responsive.dart';
 import '../../widgets/custom_displays.dart';
+import '../../routes/app_routes.dart';
 import 'plan_controller.dart';
 import 'plan_constants.dart';
 import 'meal_plan_model.dart';
@@ -48,7 +49,6 @@ class PlanView extends GetView<PlanController> {
             icon: Icon(Icons.refresh, color: context.theme.colorScheme.onSurface),
             tooltip: 'Refresh',
           ),
-          // SettingsWidget(),
         ],
       ),
       body: Obx(() {
@@ -198,8 +198,7 @@ class PlanView extends GetView<PlanController> {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            // Navigate to meal plan detail page
-            Get.toNamed('/meal-plan-detail', arguments: controller.selectedCalendarDate.value);
+            Get.toNamed(AppRoutes.mealPlanDetail, arguments: controller.selectedCalendarDate.value);
           },
           borderRadius: BorderRadius.circular(_cardBorderRadius),
           child: Padding(

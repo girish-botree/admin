@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:talker_dio_logger/talker_dio_logger.dart';
 
-
 import '../config/appconstants.dart';
 import '../config/shared_preference.dart';
+import '../widgets/custom_displays.dart';
 import 'api_constants.dart';
 import 'app_url_config.dart';
 
@@ -321,6 +321,9 @@ class NetworkModule {
     // Clear stored tokens - use removeSecure to match storage method
     await _sharedPreference.removeSecure(AppConstants.bearerToken);
     await _sharedPreference.removeSecure(AppConstants.refreshToken);
+    
+    // Show session expired message (deduplicated)
+    CustomDisplays.showSessionExpiredMessage();
     
     // Navigate to login screen
     // You can customize this based on your app's navigation structure

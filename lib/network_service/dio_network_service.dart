@@ -110,23 +110,10 @@ class DioNetworkService {
 
       if (handleError) {
         CommonUtils.debugLog('Error in getData: $e');
-        if (e.toString().toLowerCase().contains('network') ||
-            e.toString().toLowerCase().contains('internet') ||
-            e.toString().toLowerCase().contains('connection')) {
-          CustomDisplays.showInfoBar(
-            message: 'Network connection issue, please check your internet',
-            type: InfoBarType.networkError,
-            actionText: 'Retry',
-            onAction: () {
-              CustomDisplays.dismissInfoBar();
-            },
-          );
-        } else {
-          CustomDisplays.showToast(
-            message: 'Something went wrong, please try again later',
-            type: MessageType.error,
-          );
-        }
+        CustomDisplays.showToast(
+          message: 'Something went wrong, please try again later',
+          type: MessageType.error,
+        );
       }
 
       rethrow;
@@ -194,23 +181,10 @@ class DioNetworkService {
 
       if (handleError) {
         CommonUtils.debugLog('Error in postData: $e');
-        if (e.toString().toLowerCase().contains('network') ||
-            e.toString().toLowerCase().contains('internet') ||
-            e.toString().toLowerCase().contains('connection')) {
-          CustomDisplays.showInfoBar(
-            message: 'Network connection issue, please check your internet',
-            type: InfoBarType.networkError,
-            actionText: 'Retry',
-            onAction: () {
-              CustomDisplays.dismissInfoBar();
-            },
-          );
-        } else {
-          CustomDisplays.showToast(
-            message: 'Something went wrong, please try again later',
-            type: MessageType.error,
-          );
-        }
+        CustomDisplays.showToast(
+          message: 'Something went wrong, please try again later',
+          type: MessageType.error,
+        );
       }
 
       rethrow;
@@ -278,23 +252,10 @@ class DioNetworkService {
 
       if (handleError) {
         CommonUtils.debugLog('Error in putDataWithBody: $e');
-        if (e.toString().toLowerCase().contains('network') ||
-            e.toString().toLowerCase().contains('internet') ||
-            e.toString().toLowerCase().contains('connection')) {
-          CustomDisplays.showInfoBar(
-            message: 'Network connection issue, please check your internet',
-            type: InfoBarType.networkError,
-            actionText: 'Retry',
-            onAction: () {
-              CustomDisplays.dismissInfoBar();
-            },
-          );
-        } else {
-          CustomDisplays.showToast(
-            message: 'Something went wrong, please try again later',
-            type: MessageType.error,
-          );
-        }
+        CustomDisplays.showToast(
+          message: 'Something went wrong, please try again later',
+          type: MessageType.error,
+        );
       }
 
       rethrow;
@@ -358,23 +319,10 @@ class DioNetworkService {
 
       if (handleError) {
         CommonUtils.debugLog('Error in putDataWithoutBody: $e');
-        if (e.toString().toLowerCase().contains('network') ||
-            e.toString().toLowerCase().contains('internet') ||
-            e.toString().toLowerCase().contains('connection')) {
-          CustomDisplays.showInfoBar(
-            message: 'Network connection issue, please check your internet',
-            type: InfoBarType.networkError,
-            actionText: 'Retry',
-            onAction: () {
-              CustomDisplays.dismissInfoBar();
-            },
-          );
-        } else {
-          CustomDisplays.showToast(
-            message: 'Something went wrong, please try again later',
-            type: MessageType.error,
-          );
-        }
+        CustomDisplays.showToast(
+          message: 'Something went wrong, please try again later',
+          type: MessageType.error,
+        );
       }
 
       rethrow;
@@ -608,23 +556,11 @@ class DioNetworkService {
       }
 
       CommonUtils.debugLog('Error in login: $error');
-      if (error.toString().toLowerCase().contains('network') ||
-          error.toString().toLowerCase().contains('internet') ||
-          error.toString().toLowerCase().contains('connection')) {
-        CustomDisplays.showInfoBar(
-          message: 'Network connection issue, please check your internet',
-          type: InfoBarType.networkError,
-          actionText: 'Retry',
-          onAction: () {
-            CustomDisplays.dismissInfoBar();
-          },
-        );
-      } else {
-        CustomDisplays.showToast(
-          message: 'Login failed. Please check your credentials and try again',
-          type: MessageType.error,
-        );
-      }
+      CustomDisplays.showToast(
+        message: 'Login failed. Please check your credentials and try again',
+        type: MessageType.error,
+        allowDuplicate: false,
+      );
 
       rethrow;
     }

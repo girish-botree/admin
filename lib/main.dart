@@ -7,6 +7,7 @@ import 'package:admin/routes/app_page.dart';
 import 'package:admin/widgets/loading_widgets.dart';
 import 'package:admin/network_service/dio_network_service.dart';
 import 'package:admin/config/auth_service.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -36,6 +37,8 @@ Future<void> main() async {
 
   // Initialize the network service
   NetworkService.initialize();
+  
+
   
   runApp(const MyApp());
   configLoading();

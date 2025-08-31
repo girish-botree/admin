@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import '../../config/app_network_connection.dart';
+
 import '../../routes/app_routes.dart';
 import '../../config/auth_service.dart';
 
@@ -13,9 +13,6 @@ class SplashController extends GetxController {
   }
 
   Future<void> _initializeApp() async {
-    // Check internet connection
-    AppNetworkConnection.checkInternetConnection();
-
     // Wait for minimum splash duration for better UX
     await Future<void>.delayed(const Duration(seconds: 2));
 

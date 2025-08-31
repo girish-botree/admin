@@ -320,24 +320,13 @@ class ApiErrorHandler {
 
   /// Show error to user
   static void _showErrorToUser(String message) {
-    // Use InfoBar for network-related errors, Toast for others
-    if (message.toLowerCase().contains('network') ||
-        message.toLowerCase().contains('internet') ||
-        message.toLowerCase().contains('connection') ||
-        message == AppStringConfig.noInternetConnection ||
-        message == AppStringConfig.couldNotReachTheServer) {
-      CustomDisplays.showInfoBar(
-        message: message,
-        type: InfoBarType.networkError,
-        actionText: 'Retry',
-        onAction: () {
-          CustomDisplays.dismissInfoBar();
-        },
-      );
+    if (message == AppStringConfig.sessionExpired) {
+      CustomDisplays.showSessionExpiredMessage();
     } else {
       CustomDisplays.showToast(
         message: message,
         type: MessageType.error,
+        allowDuplicate: false,
       );
     }
   }

@@ -9,7 +9,31 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="refactor: enhance search utils with fuzzy matching caching and performance monitoring" />
+    <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="refactor: improve search utils with fuzzy matching caching and performance monitoring">
+      <change afterPath="$PROJECT_DIR$/lib/services/error_handling_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/config/app_config.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config/app_config.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/config/app_network_connection.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/home/home_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/home/home_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/login/login_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/login/login_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/shared/widgets/common_widgets.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/shared/widgets/common_widgets.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/plan/meal_plan_assignment_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/meal_plan_assignment_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/plan/plan_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/plan_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/plan/plan_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/plan_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/plan/widgets/meal_plan_form_dialog.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/widgets/meal_plan_form_dialog.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/splash/splash_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/splash/splash_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/network_service/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/network_service/api_client.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/api_client.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/network_service/api_helper.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/api_helper.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/network_service/dio_network_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/dio_network_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/network_service/network_module.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/network_module.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/routes/app_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/routes/app_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/routes/app_routes.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/routes/app_routes.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/utils/error_message_handler.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/utils/error_message_handler.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/widgets/custom_displays.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/custom_displays.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -236,7 +260,15 @@
       <option name="project" value="LOCAL" />
       <updated>1756578759842</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="refactor: improve search utils with fuzzy matching caching and performance monitoring">
+      <option name="closed" value="true" />
+      <created>1756579992160</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1756579992160</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -279,6 +311,7 @@
     <MESSAGE value="refactor: optimize dropdowns with checkmarks and caching, enhance loading animations with shimmer effects, and improve performance in recipe and plan modules by caching filtered data and reducing rebuilds" />
     <MESSAGE value="refactor: enhance dropdowns with checkmarks and caching, improve loading animations with shimmer effects, and optimize recipe and plan modules with better search and data handling" />
     <MESSAGE value="refactor: enhance search utils with fuzzy matching caching and performance monitoring" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor: enhance search utils with fuzzy matching caching and performance monitoring" />
+    <MESSAGE value="refactor: improve search utils with fuzzy matching caching and performance monitoring" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor: improve search utils with fuzzy matching caching and performance monitoring" />
   </component>
 </project>

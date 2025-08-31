@@ -11,4 +11,5 @@ class AppRoutes {
   static const deliveryPersons = '/delivery-persons';
 
   static const createAdmin = '/create-admin';
+  static const networkTest = '/network-test';
 }
