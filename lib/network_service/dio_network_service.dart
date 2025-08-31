@@ -109,7 +109,7 @@ class DioNetworkService {
       }
 
       if (handleError) {
-        CommonUtils.debugLog('Error in getData: $e');
+
         CustomDisplays.showToast(
           message: 'Something went wrong, please try again later',
           type: MessageType.error,
@@ -180,7 +180,7 @@ class DioNetworkService {
       }
 
       if (handleError) {
-        CommonUtils.debugLog('Error in postData: $e');
+
         CustomDisplays.showToast(
           message: 'Something went wrong, please try again later',
           type: MessageType.error,
@@ -251,7 +251,7 @@ class DioNetworkService {
       }
 
       if (handleError) {
-        CommonUtils.debugLog('Error in putDataWithBody: $e');
+
         CustomDisplays.showToast(
           message: 'Something went wrong, please try again later',
           type: MessageType.error,
@@ -318,7 +318,7 @@ class DioNetworkService {
       }
 
       if (handleError) {
-        CommonUtils.debugLog('Error in putDataWithoutBody: $e');
+
         CustomDisplays.showToast(
           message: 'Something went wrong, please try again later',
           type: MessageType.error,
@@ -389,24 +389,11 @@ class DioNetworkService {
       }
 
       if (handleError) {
-        CommonUtils.debugLog('Error in deleteData: $e');
-        if (e.toString().toLowerCase().contains('network') ||
-            e.toString().toLowerCase().contains('internet') ||
-            e.toString().toLowerCase().contains('connection')) {
-          CustomDisplays.showInfoBar(
-            message: 'Network connection issue, please check your internet',
-            type: InfoBarType.networkError,
-            actionText: 'Retry',
-            onAction: () {
-              CustomDisplays.dismissInfoBar();
-            },
-          );
-        } else {
-          CustomDisplays.showToast(
-            message: 'Something went wrong, please try again later',
-            type: MessageType.error,
-          );
-        }
+
+        CustomDisplays.showToast(
+          message: 'Something went wrong, please try again later',
+          type: MessageType.error,
+        );
       }
 
       rethrow;
@@ -480,24 +467,11 @@ class DioNetworkService {
       }
 
       if (handleError) {
-        CommonUtils.debugLog('Error in uploadFile: $e');
-        if (e.toString().toLowerCase().contains('network') ||
-            e.toString().toLowerCase().contains('internet') ||
-            e.toString().toLowerCase().contains('connection')) {
-          CustomDisplays.showInfoBar(
-            message: 'Network connection issue, please check your internet',
-            type: InfoBarType.networkError,
-            actionText: 'Retry',
-            onAction: () {
-              CustomDisplays.dismissInfoBar();
-            },
-          );
-        } else {
-          CustomDisplays.showToast(
-            message: 'Failed to upload file. Please try again later',
-            type: MessageType.error,
-          );
-        }
+
+        CustomDisplays.showToast(
+          message: 'Failed to upload file. Please try again later',
+          type: MessageType.error,
+        );
       }
 
       rethrow;
@@ -555,7 +529,7 @@ class DioNetworkService {
         ApiHelper.dismissLoader();
       }
 
-      CommonUtils.debugLog('Error in login: $error');
+
       CustomDisplays.showToast(
         message: 'Login failed. Please check your credentials and try again',
         type: MessageType.error,
@@ -576,14 +550,7 @@ class DioNetworkService {
     final data = httpResponse['data'];
     final headers = httpResponse['headers'];
 
-    // Create the formatted log message with clean formatting
-    CommonUtils.debugLog('┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────');
-    CommonUtils.debugLog('│ [http-response] [$method] $url');
-    CommonUtils.debugLog('│ Status: $status');
-    CommonUtils.debugLog('│ Message: $statusMessage');
-    CommonUtils.debugLog('│ Data: ${_formatJsonForDisplay(data)}');
-    CommonUtils.debugLog('│ Headers: ${_formatJsonForDisplay(headers)}');
-    CommonUtils.debugLog('└──────────────────────────────────────────────────────────────────────────────────────────────────────────────');
+
   }
 
   /// Format JSON for display with proper indentation
@@ -685,24 +652,11 @@ class DioNetworkService {
         ApiHelper.dismissLoader();
       }
 
-      CommonUtils.debugLog('Error in sendOtp: $error');
-      if (error.toString().toLowerCase().contains('network') ||
-          error.toString().toLowerCase().contains('internet') ||
-          error.toString().toLowerCase().contains('connection')) {
-        CustomDisplays.showInfoBar(
-          message: 'Network connection issue, please check your internet',
-          type: InfoBarType.networkError,
-          actionText: 'Retry',
-          onAction: () {
-            CustomDisplays.dismissInfoBar();
-          },
-        );
-      } else {
-        CustomDisplays.showToast(
-          message: 'Failed to send OTP. Please try again later',
-          type: MessageType.error,
-        );
-      }
+
+      CustomDisplays.showToast(
+        message: 'Failed to send OTP. Please try again later',
+        type: MessageType.error,
+      );
 
       rethrow;
     }
@@ -741,24 +695,11 @@ class DioNetworkService {
         ApiHelper.dismissLoader();
       }
 
-      CommonUtils.debugLog('Error in registerAdmin: $error');
-      if (error.toString().toLowerCase().contains('network') ||
-          error.toString().toLowerCase().contains('internet') ||
-          error.toString().toLowerCase().contains('connection')) {
-        CustomDisplays.showInfoBar(
-          message: 'Network connection issue, please check your internet',
-          type: InfoBarType.networkError,
-          actionText: 'Retry',
-          onAction: () {
-            CustomDisplays.dismissInfoBar();
-          },
-        );
-      } else {
-        CustomDisplays.showToast(
-          message: 'Registration failed. Please try again later',
-          type: MessageType.error,
-        );
-      }
+
+      CustomDisplays.showToast(
+        message: 'Registration failed. Please try again later',
+        type: MessageType.error,
+      );
 
       rethrow;
     }
@@ -815,24 +756,11 @@ class DioNetworkService {
         ApiHelper.dismissLoader();
       }
 
-      CommonUtils.debugLog('Error in registerDeliveryPerson: $error');
-      if (error.toString().toLowerCase().contains('network') ||
-          error.toString().toLowerCase().contains('internet') ||
-          error.toString().toLowerCase().contains('connection')) {
-        CustomDisplays.showInfoBar(
-          message: 'Network connection issue, please check your internet',
-          type: InfoBarType.networkError,
-          actionText: 'Retry',
-          onAction: () {
-            CustomDisplays.dismissInfoBar();
-          },
-        );
-      } else {
-        CustomDisplays.showToast(
-          message: 'Registration failed. Please try again later',
-          type: MessageType.error,
-        );
-      }
+
+      CustomDisplays.showToast(
+        message: 'Registration failed. Please try again later',
+        type: MessageType.error,
+      );
 
       rethrow;
     }
@@ -846,24 +774,11 @@ class DioNetworkService {
       return response.data;
     } catch (error) {
       if (showLoader) ApiHelper.dismissLoader();
-      CommonUtils.debugLog('Error in getDeliveryPersons: $error');
-      if (error.toString().toLowerCase().contains('network') ||
-          error.toString().toLowerCase().contains('internet') ||
-          error.toString().toLowerCase().contains('connection')) {
-        CustomDisplays.showInfoBar(
-          message: 'Network connection issue, please check your internet',
-          type: InfoBarType.networkError,
-          actionText: 'Retry',
-          onAction: () {
-            CustomDisplays.dismissInfoBar();
-          },
-        );
-      } else {
-        CustomDisplays.showToast(
-          message: 'Failed to load delivery persons. Please try again later',
-          type: MessageType.error,
-        );
-      }
+
+      CustomDisplays.showToast(
+        message: 'Failed to load delivery persons. Please try again later',
+        type: MessageType.error,
+      );
 
       rethrow;
     }
@@ -878,24 +793,11 @@ class DioNetworkService {
       return response.data;
     } catch (error) {
       if (showLoader) ApiHelper.dismissLoader();
-      CommonUtils.debugLog('Error in updateDeliveryPerson: $error');
-      if (error.toString().toLowerCase().contains('network') ||
-          error.toString().toLowerCase().contains('internet') ||
-          error.toString().toLowerCase().contains('connection')) {
-        CustomDisplays.showInfoBar(
-          message: 'Network connection issue, please check your internet',
-          type: InfoBarType.networkError,
-          actionText: 'Retry',
-          onAction: () {
-            CustomDisplays.dismissInfoBar();
-          },
-        );
-      } else {
-        CustomDisplays.showToast(
-          message: 'Failed to update delivery person. Please try again later',
-          type: MessageType.error,
-        );
-      }
+
+      CustomDisplays.showToast(
+        message: 'Failed to update delivery person. Please try again later',
+        type: MessageType.error,
+      );
 
       rethrow;
     }
@@ -910,24 +812,11 @@ class DioNetworkService {
       return response.data;
     } catch (error) {
       if (showLoader) ApiHelper.dismissLoader();
-      CommonUtils.debugLog('Error in deleteDeliveryPerson: $error');
-      if (error.toString().toLowerCase().contains('network') ||
-          error.toString().toLowerCase().contains('internet') ||
-          error.toString().toLowerCase().contains('connection')) {
-        CustomDisplays.showInfoBar(
-          message: 'Network connection issue, please check your internet',
-          type: InfoBarType.networkError,
-          actionText: 'Retry',
-          onAction: () {
-            CustomDisplays.dismissInfoBar();
-          },
-        );
-      } else {
-        CustomDisplays.showToast(
-          message: 'Failed to delete delivery person. Please try again later',
-          type: MessageType.error,
-        );
-      }
+
+      CustomDisplays.showToast(
+        message: 'Failed to delete delivery person. Please try again later',
+        type: MessageType.error,
+      );
 
       rethrow;
     }
@@ -954,24 +843,11 @@ class DioNetworkService {
         ApiHelper.dismissLoader();
       }
 
-      CommonUtils.debugLog('Error in getRecipes: $error');
-      if (error.toString().toLowerCase().contains('network') ||
-          error.toString().toLowerCase().contains('internet') ||
-          error.toString().toLowerCase().contains('connection')) {
-        CustomDisplays.showInfoBar(
-          message: 'Network connection issue, please check your internet',
-          type: InfoBarType.networkError,
-          actionText: 'Retry',
-          onAction: () {
-            CustomDisplays.dismissInfoBar();
-          },
-        );
-      } else {
-        CustomDisplays.showToast(
-          message: 'Failed to load recipes. Please try again later',
-          type: MessageType.error,
-        );
-      }
+
+      CustomDisplays.showToast(
+        message: 'Failed to load recipes. Please try again later',
+        type: MessageType.error,
+      );
 
       rethrow;
     }
@@ -997,24 +873,11 @@ class DioNetworkService {
         ApiHelper.dismissLoader();
       }
 
-      CommonUtils.debugLog('Error in getRecipeById: $error');
-      if (error.toString().toLowerCase().contains('network') ||
-          error.toString().toLowerCase().contains('internet') ||
-          error.toString().toLowerCase().contains('connection')) {
-        CustomDisplays.showInfoBar(
-          message: 'Network connection issue, please check your internet',
-          type: InfoBarType.networkError,
-          actionText: 'Retry',
-          onAction: () {
-            CustomDisplays.dismissInfoBar();
-          },
-        );
-      } else {
-        CustomDisplays.showToast(
-          message: 'Failed to load recipe. Please try again later',
-          type: MessageType.error,
-        );
-      }
+
+      CustomDisplays.showToast(
+        message: 'Failed to load recipe. Please try again later',
+        type: MessageType.error,
+      );
 
       rethrow;
     }
@@ -1028,24 +891,11 @@ class DioNetworkService {
       return response.data;
     } catch (error) {
       if (showLoader) ApiHelper.dismissLoader();
-      CommonUtils.debugLog('Error in createRecipe: $error');
-      if (error.toString().toLowerCase().contains('network') ||
-          error.toString().toLowerCase().contains('internet') ||
-          error.toString().toLowerCase().contains('connection')) {
-        CustomDisplays.showInfoBar(
-          message: 'Network connection issue, please check your internet',
-          type: InfoBarType.networkError,
-          actionText: 'Retry',
-          onAction: () {
-            CustomDisplays.dismissInfoBar();
-          },
-        );
-      } else {
-        CustomDisplays.showToast(
-          message: 'Failed to create recipe. Please try again later',
-          type: MessageType.error,
-        );
-      }
+
+      CustomDisplays.showToast(
+        message: 'Failed to create recipe. Please try again later',
+        type: MessageType.error,
+      );
 
       rethrow;
     }
@@ -1059,24 +909,11 @@ class DioNetworkService {
       return response.data;
     } catch (error) {
       if (showLoader) ApiHelper.dismissLoader();
-      CommonUtils.debugLog('Error in updateRecipe: $error');
-      if (error.toString().toLowerCase().contains('network') ||
-          error.toString().toLowerCase().contains('internet') ||
-          error.toString().toLowerCase().contains('connection')) {
-        CustomDisplays.showInfoBar(
-          message: 'Network connection issue, please check your internet',
-          type: InfoBarType.networkError,
-          actionText: 'Retry',
-          onAction: () {
-            CustomDisplays.dismissInfoBar();
-          },
-        );
-      } else {
-        CustomDisplays.showToast(
-          message: 'Failed to update recipe. Please try again later',
-          type: MessageType.error,
-        );
-      }
+
+      CustomDisplays.showToast(
+        message: 'Failed to update recipe. Please try again later',
+        type: MessageType.error,
+      );
 
       rethrow;
     }
@@ -1090,24 +927,11 @@ class DioNetworkService {
       return response.data;
     } catch (error) {
       if (showLoader) ApiHelper.dismissLoader();
-      CommonUtils.debugLog('Error in deleteRecipe: $error');
-      if (error.toString().toLowerCase().contains('network') ||
-          error.toString().toLowerCase().contains('internet') ||
-          error.toString().toLowerCase().contains('connection')) {
-        CustomDisplays.showInfoBar(
-          message: 'Network connection issue, please check your internet',
-          type: InfoBarType.networkError,
-          actionText: 'Retry',
-          onAction: () {
-            CustomDisplays.dismissInfoBar();
-          },
-        );
-      } else {
-        CustomDisplays.showToast(
-          message: 'Failed to delete recipe. Please try again later',
-          type: MessageType.error,
-        );
-      }
+
+      CustomDisplays.showToast(
+        message: 'Failed to delete recipe. Please try again later',
+        type: MessageType.error,
+      );
 
       rethrow;
     }
@@ -1122,24 +946,11 @@ class DioNetworkService {
       return response.data;
     } catch (error) {
       if (showLoader) ApiHelper.dismissLoader();
-      CommonUtils.debugLog('Error in getIngredients: $error');
-      if (error.toString().toLowerCase().contains('network') ||
-          error.toString().toLowerCase().contains('internet') ||
-          error.toString().toLowerCase().contains('connection')) {
-        CustomDisplays.showInfoBar(
-          message: 'Network connection issue, please check your internet',
-          type: InfoBarType.networkError,
-          actionText: 'Retry',
-          onAction: () {
-            CustomDisplays.dismissInfoBar();
-          },
-        );
-      } else {
-        CustomDisplays.showToast(
-          message: 'Failed to load ingredients. Please try again later',
-          type: MessageType.error,
-        );
-      }
+
+      CustomDisplays.showToast(
+        message: 'Failed to load ingredients. Please try again later',
+        type: MessageType.error,
+      );
 
       rethrow;
     }
@@ -1154,24 +965,11 @@ class DioNetworkService {
       return response.data;
     } catch (error) {
       if (showLoader) ApiHelper.dismissLoader();
-      CommonUtils.debugLog('Error in createIngredient: $error');
-      if (error.toString().toLowerCase().contains('network') ||
-          error.toString().toLowerCase().contains('internet') ||
-          error.toString().toLowerCase().contains('connection')) {
-        CustomDisplays.showInfoBar(
-          message: 'Network connection issue, please check your internet',
-          type: InfoBarType.networkError,
-          actionText: 'Retry',
-          onAction: () {
-            CustomDisplays.dismissInfoBar();
-          },
-        );
-      } else {
-        CustomDisplays.showToast(
-          message: 'Failed to create ingredient. Please try again later',
-          type: MessageType.error,
-        );
-      }
+
+      CustomDisplays.showToast(
+        message: 'Failed to create ingredient. Please try again later',
+        type: MessageType.error,
+      );
 
       rethrow;
     }
@@ -1185,24 +983,11 @@ class DioNetworkService {
       return response.data;
     } catch (error) {
       if (showLoader) ApiHelper.dismissLoader();
-      CommonUtils.debugLog('Error in updateIngredient: $error');
-      if (error.toString().toLowerCase().contains('network') ||
-          error.toString().toLowerCase().contains('internet') ||
-          error.toString().toLowerCase().contains('connection')) {
-        CustomDisplays.showInfoBar(
-          message: 'Network connection issue, please check your internet',
-          type: InfoBarType.networkError,
-          actionText: 'Retry',
-          onAction: () {
-            CustomDisplays.dismissInfoBar();
-          },
-        );
-      } else {
-        CustomDisplays.showToast(
-          message: 'Failed to update ingredient. Please try again later',
-          type: MessageType.error,
-        );
-      }
+
+      CustomDisplays.showToast(
+        message: 'Failed to update ingredient. Please try again later',
+        type: MessageType.error,
+      );
 
       rethrow;
     }
@@ -1216,24 +1001,11 @@ class DioNetworkService {
       return response.data;
     } catch (error) {
       if (showLoader) ApiHelper.dismissLoader();
-      CommonUtils.debugLog('Error in deleteIngredient: $error');
-      if (error.toString().toLowerCase().contains('network') ||
-          error.toString().toLowerCase().contains('internet') ||
-          error.toString().toLowerCase().contains('connection')) {
-        CustomDisplays.showInfoBar(
-          message: 'Network connection issue, please check your internet',
-          type: InfoBarType.networkError,
-          actionText: 'Retry',
-          onAction: () {
-            CustomDisplays.dismissInfoBar();
-          },
-        );
-      } else {
-        CustomDisplays.showToast(
-          message: 'Failed to delete ingredient. Please try again later',
-          type: MessageType.error,
-        );
-      }
+
+      CustomDisplays.showToast(
+        message: 'Failed to delete ingredient. Please try again later',
+        type: MessageType.error,
+      );
 
       rethrow;
     }
@@ -1392,7 +1164,7 @@ class DioNetworkService {
       
       return null;
     } catch (error) {
-      CommonUtils.debugLog('Token refresh failed: $error');
+
       return null;
     }
   }

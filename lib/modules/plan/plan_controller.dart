@@ -62,17 +62,14 @@ class PlanController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _debugEnumValues(); // Debug enum values on init
+
     getMealPlans();
     getRecipes();
     getMealPlansByDate();
     selectedCalendarDate.listen((_) => getMealPlansByDate());
   }
   
-  // Debug method to verify enum values
-  void _debugEnumValues() {
-    // Debug method removed to reduce console noise
-  }
+
 
   @override
   void onClose() {

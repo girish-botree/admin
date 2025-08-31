@@ -13,7 +13,6 @@ import 'package:admin/modules/dashboard/dashboard_binding.dart';
 import 'package:admin/modules/dashboard/dashboard_view.dart';
 import 'package:admin/modules/delivery_persons/manage_delivery_persons/delivery_person_binding.dart';
 import 'package:admin/modules/delivery_persons/manage_delivery_persons/delivery_person_view.dart';
-import 'package:admin/widgets/network_test_widget.dart';
 
 import 'package:admin/config/auth_middleware.dart';
 import 'package:get/get.dart';
@@ -75,10 +74,6 @@ class AppPages {
         name: AppRoutes.deliveryPersons,
         page: () => const DeliveryPersonView(),
         binding: DeliveryPersonBinding(),
-        middlewares: [AuthMiddleware()]),
-    GetPage<void>(
-        name: AppRoutes.networkTest,
-        page: () => const NetworkTestWidget(),
         middlewares: [AuthMiddleware()]),
 
   ];

@@ -72,7 +72,7 @@ class AppUrl {
 class NetworkConfig {
   static const bool enableLogging = true;
   static const bool enableEncryption = false; // Set to true if you need encryption
-  static const bool enableDebugMode = true; // Should be false in production
+  static const bool enableDebugMode = false; // Disabled for production
   
   // Timeout configurations
   static const int connectTimeoutSeconds = 30;

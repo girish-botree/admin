@@ -644,7 +644,7 @@ class ErrorStateWidget extends StatelessWidget {
     return ErrorStateWidget(
       key: key,
       title: title ?? 'Connection Error',
-      subtitle: subtitle ?? 'Please check your internet connection and try again.',
+      subtitle: subtitle ?? 'Please try again.',
       onRetry: onRetry,
       icon: Icons.wifi_off_rounded,
     );

@@ -470,7 +470,7 @@ class MealPlanFormDialog extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.primaryContainer,
+                      color: theme.colorScheme.surfaceContainerLowest,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -482,7 +482,7 @@ class MealPlanFormDialog extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         Flexible(
-                          child: AppText.caption(
+                          child: AppText.bold(
                             _formatDate(selectedDate ??
                                 controller.selectedCalendarDate.value),
                             color: theme.colorScheme.primary,

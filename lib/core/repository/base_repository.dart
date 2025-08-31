@@ -115,7 +115,7 @@ abstract class BaseRepository<T> {
 
   /// Handle errors consistently
   void _handleError(String message, dynamic error) {
-    print('Repository Error: $message - $error');
+    
     // TODO: Implement proper error logging and user notification
   }
 }

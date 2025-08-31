@@ -226,7 +226,7 @@ class PlanStateController extends GetxController {
             recipeImageUrl = recipe['imageUrl']?.toString();
           }
         } catch (e) {
-          debugPrint('Error finding recipe details: $e');
+    
         }
       }
 

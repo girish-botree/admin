@@ -202,7 +202,7 @@ class CreateAdminController extends GetxController {
           errorMessage = 'Server error. Please try again later.';
         }
       } else {
-        errorMessage = 'Network error. Please check your internet connection.';
+        errorMessage = 'Network error. Please try again.';
       }
 
       CustomDisplays.showSnackBar(message: errorMessage);
@@ -378,7 +378,7 @@ class CreateAdminController extends GetxController {
         }
       } else {
         // Network error
-        errorMsg = 'Network error. Please check your internet connection.';
+        errorMsg = 'Network error. Please try again.';
       }
       
       otpErrorMessage.value = errorMsg;

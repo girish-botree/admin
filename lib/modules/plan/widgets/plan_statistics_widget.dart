@@ -16,24 +16,7 @@ class PlanStatisticsWidget extends GetView<PlanController> {
         return const _StatisticsLoadingWidget();
       }
 
-      // Debug information
-      print('PlanStatisticsWidget - Total assignments: ${controller
-          .mealPlanAssignments.length}');
-      print('PlanStatisticsWidget - Total meal plans: ${controller.mealPlans
-          .length}');
-
       final selectedDateCount = _getSelectedDatePlanCount();
-      print(
-          'PlanStatisticsWidget - Selected date plan count: $selectedDateCount');
-
-      // Debug: Print selected date and assignment details
-      print('PlanStatisticsWidget - Selected date: ${controller
-          .selectedCalendarDate.value}');
-      print('PlanStatisticsWidget - Assignment dates:');
-      for (var assignment in controller.mealPlanAssignments) {
-        print('  - Assignment ID: ${assignment.id}, Date: ${assignment
-            .mealDate}, Period: ${assignment.period}');
-      }
 
       return Card(
         elevation: 2,

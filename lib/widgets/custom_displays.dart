@@ -230,13 +230,9 @@ class CustomDisplays {
 
   // Show network error message (deduplicated)
   static void showNetworkErrorMessage() {
-    showInfoBar(
-      message: 'Network connection issue. Please check your internet.',
-      type: InfoBarType.networkError,
-      actionText: 'Retry',
-      onAction: () {
-        dismissInfoBar();
-      },
+    showToast(
+      message: 'Network error. Please try again.',
+      type: MessageType.error,
       allowDuplicate: false,
     );
   }

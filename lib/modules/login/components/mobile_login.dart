@@ -225,7 +225,7 @@ class MobileLogin extends GetView<LoginController> {
             buildSocialButton(
               icon: Icons.facebook,
               color: const Color(0xFF1877F2),
-              onTap: () => print('Facebook login tapped'),
+                              onTap: () {},
               containerWidth: 56,
               containerHeight: 56,
               borderRadius: 16,
@@ -236,7 +236,7 @@ class MobileLogin extends GetView<LoginController> {
             buildSocialButton(
               icon: Icons.g_mobiledata_outlined,
               color: const Color(0xFF4285F4),
-              onTap: () => print('Google login tapped'),
+                              onTap: () {},
               containerWidth: 56,
               containerHeight: 56,
               borderRadius: 16,
@@ -247,7 +247,7 @@ class MobileLogin extends GetView<LoginController> {
             buildSocialButton(
               icon: Icons.apple,
               color: Colors.black,
-              onTap: () => print('Apple login tapped'),
+                              onTap: () {},
               containerWidth: 56,
               containerHeight: 56,
               borderRadius: 16,

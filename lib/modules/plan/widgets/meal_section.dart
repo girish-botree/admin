@@ -321,15 +321,9 @@ class MealSection extends StatelessWidget {
                       onPressed: () async {
                         if (plan.id != null && plan.id!.isNotEmpty) {
                           try {
-                            print(
-                                'Attempting to delete meal plan with ID: ${plan
-                                    .id}');
-                            print('Meal plan name: ${plan.name}');
                             Get.back<void>(); // Close dialog first
                             await controller.deleteMealPlan(plan.id!);
-                            print('Delete operation completed');
                           } catch (e) {
-                            print('Delete operation failed: $e');
                             Get.snackbar(
                               'Error',
                               'Failed to delete meal plan: ${e.toString()}',
@@ -339,9 +333,6 @@ class MealSection extends StatelessWidget {
                             );
                           }
                         } else {
-                          print(
-                              'Cannot delete meal plan - ID is null or empty: ${plan
-                                  .id}');
                           Get.back<void>();
                           Get.snackbar(
                             'Error',

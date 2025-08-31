@@ -135,7 +135,7 @@ class LoginController extends GetxController {
         }
       } else {
         // Network error
-        errorMsg = 'Network error. Please check your internet connection.';
+        errorMsg = 'Network error. Please try again.';
       }
 
       CustomDisplays.showToast(

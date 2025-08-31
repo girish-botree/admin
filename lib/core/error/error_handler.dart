@@ -24,9 +24,7 @@ class ErrorHandler {
     String message = 'Network error occurred';
     
     if (error.toString().contains('timeout')) {
-      message = 'Request timeout. Please check your connection.';
-    } else if (error.toString().contains('connection')) {
-      message = 'No internet connection. Please check your network.';
+      message = 'Request timeout. Please try again.';
     }
     
     _showErrorSnackBar(message);

@@ -187,12 +187,10 @@ class RecipeCard extends StatelessWidget {
             File(filePath),
             fit: BoxFit.cover,
             errorBuilder: (context, error, stackTrace) {
-              debugPrint('Error loading file image: $error');
               return _buildFallbackImage(context, color);
             },
           );
         } catch (e) {
-          debugPrint('Exception loading file image: $e');
           return _buildFallbackImage(context, color);
         }
       }
@@ -211,12 +209,10 @@ class RecipeCard extends StatelessWidget {
             bytes,
             fit: BoxFit.cover,
             errorBuilder: (context, error, stackTrace) {
-              debugPrint('Error loading base64 image: $error');
               return _buildFallbackImage(context, color);
             },
           );
         } catch (e) {
-          debugPrint('Exception loading base64 image: $e');
           return _buildFallbackImage(context, color);
         }
       }
@@ -229,7 +225,6 @@ class RecipeCard extends StatelessWidget {
           // Add caching for better performance
           cacheHeight: 800,
           errorBuilder: (context, error, stackTrace) {
-            debugPrint('Error loading network image: $error');
             return _buildFallbackImage(context, color);
           },
           loadingBuilder: (context, child, loadingProgress) {

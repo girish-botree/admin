@@ -157,13 +157,13 @@ class ErrorMessageHandler {
     final errorStr = error.toString().toLowerCase();
     
     if (errorStr.contains('timeout')) {
-      return 'Connection timed out. Please check your internet and try again';
+      return 'Connection timed out. Please try again';
     } else if (errorStr.contains('unreachable') || errorStr.contains('host')) {
       return 'Server is unreachable. Please try again later';
     } else if (errorStr.contains('dns')) {
-      return 'Network connection error. Please check your internet';
+      return 'Network connection error. Please try again';
     } else {
-      return AppStringConfig.networkConnectionIssue;
+      return 'Network error. Please try again';
     }
   }
   

@@ -6,8 +6,6 @@ class AppStringConfig {
   static const String congratsSuccessfullySubmittedReview = "Congrats! You have successfully submitted your review";
 
   // Network error messages
-  static const String networkConnectionIssue =
-      "Network connection issue, please check your internet";
   static const String somethingWentWrong =
       "Something went wrong, please try again later";
   static const String loginFailed =
