@@ -572,6 +572,11 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
             decoration: InputDecoration(
               labelText: widget.isRequired ? '${widget.label} *' : widget.label,
               hintText: widget.hint,
+              hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                color: widget.enabled
+                    ? theme.colorScheme.onSurface.withOpacity(0.6)
+                    : theme.colorScheme.onSurface.withOpacity(0.38),
+              ),
               errorText: widget.errorText,
               prefixIcon: widget.prefixIcon,
               suffixIcon: AnimatedRotation(

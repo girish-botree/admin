@@ -17,122 +17,315 @@ class RecipeDialogs {
     File? image;
     bool isDialogActive = true;
 
+    // State variables for section expansion
+    bool isBasicExpanded = false;
+    bool isDetailsExpanded = false;
+    bool isIngredientsExpanded = false;
+    bool isImageExpanded = false;
+
     Get.dialog<void>(
       Dialog.fullscreen(
         child: Material(
           child: Container(
-            color: context.theme.colorScheme.surfaceContainerLowest,
+            color: context.theme.colorScheme.surface,
             child: StatefulBuilder(
-              builder: (dialogContext, setState) {
+              builder: (dialogContext, setDialogState) {
                 if (!isDialogActive) return Container();
 
                 return Scaffold(
-                  backgroundColor: dialogContext.theme.colorScheme
-                      .surfaceContainerLowest,
+                  backgroundColor: dialogContext.theme.colorScheme.surface,
                   appBar: AppBar(
                     backgroundColor: dialogContext.theme.colorScheme
-                        .surfaceContainerLowest,
+                        .surfaceContainer,
                     elevation: 0,
                     leading: IconButton(
                       onPressed: () {
                         isDialogActive = false;
                         Get.back<void>();
                       },
-                      icon: Icon(
-                        Icons.close,
-                        color: dialogContext.theme.colorScheme.onSurface,
-                      ),
-                    ),
-                    title: Text(
-                      'Create Recipe',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w600,
-                        color: dialogContext.theme.colorScheme.onSurface,
-                      ),
-                    ),
-                    actions: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 16),
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            if (controller.validateRecipeForm()) {
-                              final data = controller.createRecipeData(
-                                  dietaryCategory, ingredients);
-                              if (image != null) {
-                                try {
-                                  final bytes = await image!.readAsBytes();
-                                  final base64String = base64Encode(bytes);
-                                  data['imageUrl'] = base64String;
-                                } catch (e) {
-                                  Get.snackbar(
-                                      'Error', 'Failed to process image');
-                                  return;
-                                }
-                              }
-                              controller.createRecipe(data).then((success) {
-                                if (success) {
-                                  isDialogActive = false;
-                                  Get.back<void>();
-                                  Get.snackbar(
-                                      'Success', 'Recipe created successfully');
-                                }
-                              });
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: dialogContext.theme.colorScheme
-                                .onSurface,
-                            foregroundColor: dialogContext.theme.colorScheme
-                                .surfaceContainerLowest,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 24, vertical: 12),
+                      icon: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: dialogContext.theme.colorScheme
+                              .surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: dialogContext.theme.colorScheme.outline
+                                .withValues(
+                                alpha: 0.2),
                           ),
-                          child: const Text('Save Recipe'),
+                        ),
+                        child: Icon(
+                          Icons.close_rounded,
+                          size: 22,
+                          color: dialogContext.theme.colorScheme.onSurface,
                         ),
                       ),
-                    ],
-                  ),
-                  body: SingleChildScrollView(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    ),
+                    title: Row(
                       children: [
-                        // Hero Image Section
-                        RecipeImageSection(
-                          image: image,
-                          onImageChanged: (File? newImage) =>
-                              setState(() => image = newImage),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: dialogContext.theme.colorScheme
+                                .primaryContainer
+                                .withValues(alpha: 0.8),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Icon(
+                            Icons.restaurant_menu_rounded,
+                            size: 24,
+                            color: dialogContext.theme.colorScheme
+                                .onPrimaryContainer,
+                          ),
                         ),
-
-                        const SizedBox(height: 32),
-
-                        // Basic Information Section
-                        RecipeBasicInfoSection(controller: controller),
-
-                        const SizedBox(height: 24),
-
-                        // Recipe Details Section
-                        RecipeDetailsSection(
-                          controller: controller,
-                          dietaryCategory: dietaryCategory,
-                          onDietaryCategoryChanged: (value) =>
-                              setState(() => dietaryCategory = value ?? 0),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Create New Recipe',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w700,
+                                  color: dialogContext.theme.colorScheme
+                                      .onSurface,
+                                  letterSpacing: -0.5,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                              Text(
+                                'Tap sections to expand and fill details',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: dialogContext.theme.colorScheme
+                                      .onSurface
+                                      .withValues(alpha: 0.7),
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ],
+                          ),
                         ),
-
-                        const SizedBox(height: 24),
-
-                        // Ingredients Section
-                        RecipeIngredientsSection(
-                          ingredients: ingredients,
-                          controller: controller,
-                          onIngredientsChanged: () => setState(() {}),
-                        ),
-
-                        const SizedBox(height: 32),
                       ],
                     ),
+                    toolbarHeight: 80,
                   ),
+                  body: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          dialogContext.theme.colorScheme.surfaceContainer,
+                          dialogContext.theme.colorScheme.surface,
+                        ],
+                        stops: const [0.0, 0.3],
+                      ),
+                    ),
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Basic Information Section
+                          _buildCollapsibleRecipeSection(
+                            context: dialogContext,
+                            title: 'Basic Information',
+                            subtitle: 'Recipe name and description',
+                            icon: Icons.info_outline_rounded,
+                            iconColor: dialogContext.theme.colorScheme.primary,
+                            isExpanded: isBasicExpanded,
+                            isRequired: true,
+                            onToggle: () =>
+                                setDialogState(() =>
+                                isBasicExpanded = !isBasicExpanded),
+                            children: [
+                              _buildRequiredFieldIndicator(dialogContext),
+                              const SizedBox(height: 20),
+                              Obx(() =>
+                                  RecipeValidatedTextField(
+                                    controller.nameController,
+                                    'Recipe Name',
+                                    dialogContext,
+                                    isRequired: true,
+                                    errorText: controller.nameError.value,
+                                    onChanged: controller.validateName,
+                                    prefixIcon: Icons.restaurant_menu,
+                                  )),
+                              const SizedBox(height: 20),
+                              Obx(() =>
+                                  RecipeValidatedTextField(
+                                    controller.descriptionController,
+                                    'Description',
+                                    dialogContext,
+                                    maxLines: 3,
+                                    errorText: controller.descriptionError
+                                        .value,
+                                    onChanged: controller.validateDescription,
+                                    prefixIcon: Icons.description_outlined,
+                                  )),
+                            ],
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // Recipe Details Section
+                          _buildCollapsibleRecipeSection(
+                            context: dialogContext,
+                            title: 'Recipe Details',
+                            subtitle: 'Servings, cuisine, and dietary information',
+                            icon: Icons.tune_rounded,
+                            iconColor: Colors.green,
+                            isExpanded: isDetailsExpanded,
+                            onToggle: () =>
+                                setDialogState(() =>
+                                isDetailsExpanded = !isDetailsExpanded),
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Obx(() =>
+                                        RecipeValidatedTextField(
+                                          controller.servingsController,
+                                          'Servings',
+                                          dialogContext,
+                                          keyboardType: TextInputType.number,
+                                          inputFormatters: MealController
+                                              .getIntegerInputFormatters(),
+                                          isRequired: true,
+                                          errorText: controller.servingsError
+                                              .value,
+                                          onChanged: controller
+                                              .validateServings,
+                                          prefixIcon: Icons.people_outline,
+                                        )),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Obx(() =>
+                                        RecipeCuisineDropdown(
+                                          dialogContext,
+                                          controller.selectedCuisine.value,
+                                              (String? value) {
+                                            controller.cuisineController.text =
+                                                value ?? '';
+                                          },
+                                        )),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 20),
+                              RecipeDietaryDropdown(
+                                  dialogContext,
+                                  dietaryCategory,
+                                      (value) =>
+                                      setDialogState(() =>
+                                      dietaryCategory = value ?? 0)
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // Ingredients Section
+                          _buildCollapsibleRecipeSection(
+                            context: dialogContext,
+                            title: 'Ingredients',
+                            subtitle: 'Add ingredients to your recipe',
+                            icon: Icons.inventory_2_outlined,
+                            iconColor: Colors.orange,
+                            isExpanded: isIngredientsExpanded,
+                            onToggle: () =>
+                                setDialogState(() =>
+                                isIngredientsExpanded = !isIngredientsExpanded),
+                            children: [
+                              RecipeIngredientsSection(
+                                ingredients: ingredients,
+                                controller: controller,
+                                onIngredientsChanged: () =>
+                                    setDialogState(() {}),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // Image Section
+                          _buildCollapsibleRecipeSection(
+                            context: dialogContext,
+                            title: 'Recipe Image',
+                            subtitle: 'Add an appealing photo (optional)',
+                            icon: Icons.image_outlined,
+                            iconColor: Colors.purple,
+                            isExpanded: isImageExpanded,
+                            onToggle: () =>
+                                setDialogState(() =>
+                                isImageExpanded = !isImageExpanded),
+                            children: [
+                              RecipeImageSection(
+                                image: image,
+                                onImageChanged: (File? newImage) =>
+                                    setDialogState(() => image = newImage),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  floatingActionButton: Container(
+                    margin: const EdgeInsets.only(bottom: 20),
+                    child: FloatingActionButton.extended(
+                      onPressed: () async {
+                        if (controller.validateRecipeForm()) {
+                          final data = controller.createRecipeData(
+                              dietaryCategory, ingredients);
+                          if (image != null) {
+                            try {
+                              final bytes = await image!.readAsBytes();
+                              final base64String = base64Encode(bytes);
+                              data['imageUrl'] = base64String;
+                            } catch (e) {
+                              Get.snackbar(
+                                  'Error', 'Failed to process image');
+                              return;
+                            }
+                          }
+                          controller.createRecipe(data).then((success) {
+                            if (success) {
+                              isDialogActive = false;
+                              Get.back<void>();
+                              Get.snackbar(
+                                  'Success', 'Recipe created successfully');
+                            }
+                          });
+                        }
+                      },
+                      backgroundColor: dialogContext.theme.colorScheme.primary,
+                      foregroundColor: dialogContext.theme.colorScheme
+                          .onPrimary,
+                      elevation: 6,
+                      icon: const Icon(Icons.check_rounded, size: 22),
+                      label: const Text(
+                        'Save Recipe',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                  ),
+                  floatingActionButtonLocation: FloatingActionButtonLocation
+                      .centerFloat,
                 );
               },
             ),
@@ -142,6 +335,204 @@ class RecipeDialogs {
     ).whenComplete(() {
       isDialogActive = false;
     });
+  }
+
+  // Helper method to build collapsible recipe form sections
+  static Widget _buildCollapsibleRecipeSection({
+    required BuildContext context,
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color iconColor,
+    required bool isExpanded,
+    required VoidCallback onToggle,
+    required List<Widget> children,
+    bool isRequired = false,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: context.theme.colorScheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isExpanded
+              ? iconColor.withValues(alpha: 0.3)
+              : context.theme.colorScheme.outline.withValues(alpha: 0.08),
+          width: isExpanded ? 2 : 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isExpanded
+                ? iconColor.withValues(alpha: 0.1)
+                : context.theme.colorScheme.shadow.withValues(alpha: 0.04),
+            blurRadius: isExpanded ? 16 : 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onToggle,
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: iconColor.withValues(
+                            alpha: isExpanded ? 0.2 : 0.12),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: iconColor.withValues(alpha: isExpanded
+                              ? 0.4
+                              : 0.2),
+                          width: 1,
+                        ),
+                      ),
+                      child: Icon(
+                        icon,
+                        size: 28,
+                        color: iconColor,
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  title,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w700,
+                                    color: context.theme.colorScheme.onSurface,
+                                    letterSpacing: -0.3,
+                                  ),
+                                ),
+                              ),
+                              if (isRequired)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: Colors.red.withValues(alpha: 0.3),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'Required',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.red.shade700,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            subtitle,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: context.theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.65),
+                              letterSpacing: 0,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    AnimatedRotation(
+                      turns: isExpanded ? 0.5 : 0.0,
+                      duration: const Duration(milliseconds: 300),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: context.theme.colorScheme.surfaceContainer,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          Icons.expand_more_rounded,
+                          size: 24,
+                          color: context.theme.colorScheme.onSurface.withValues(
+                              alpha: 0.7),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 400),
+                  curve: Curves.easeInOut,
+                  child: isExpanded
+                      ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 24),
+                      Divider(
+                        color: iconColor.withValues(alpha: 0.2),
+                        thickness: 1,
+                      ),
+                      const SizedBox(height: 24),
+                      ...children,
+                    ],
+                  )
+                      : const SizedBox.shrink(),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Helper method to build required field indicator
+  static Widget _buildRequiredFieldIndicator(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.red.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.red.withValues(alpha: 0.2),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.star_rounded,
+            size: 16,
+            color: Colors.red.shade600,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'Fields marked with * are required',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: Colors.red.shade700,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   static void showEditRecipeDialog(BuildContext context,

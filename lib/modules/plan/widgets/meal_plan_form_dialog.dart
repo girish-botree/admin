@@ -169,7 +169,7 @@ class MealPlanFormDialog extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: theme.colorScheme.primaryContainer.withAlpha(140),
+              color: theme.colorScheme.primaryContainer,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: theme.colorScheme.primary.withAlpha(50),
@@ -189,8 +189,7 @@ class MealPlanFormDialog extends StatelessWidget {
                     children: [
                       AppText.caption(
                         'Planning meals for',
-                        color: theme.colorScheme.onPrimaryContainer.withAlpha(
-                            200),
+                        color: theme.colorScheme.surfaceContainerLowest,
                       ),
                       AppText.semiBold(
                         _formatDate(selectedDate ??
@@ -224,7 +223,8 @@ class MealPlanFormDialog extends StatelessWidget {
                     'Vegan',
                     'Completely plant-based meals',
                     Icons.spa,
-                    const Color(0xFF009688),
+                    const Color(0xFF2E7D32),
+                    // Deep green for nature/plants
                     MealCategory.vegan,
                     controller,
                   ),
@@ -235,7 +235,8 @@ class MealPlanFormDialog extends StatelessWidget {
                     'Vegetarian',
                     'Plant-based meals with dairy',
                     Icons.eco,
-                    const Color(0xFF4CAF50),
+                    const Color(0xFF66BB6A),
+                    // Lighter green for vegetarian
                     MealCategory.vegetarian,
                     controller,
                   ),
@@ -246,7 +247,8 @@ class MealPlanFormDialog extends StatelessWidget {
                     'Eggitarian',
                     'Plant-based with dairy and eggs',
                     Icons.egg,
-                    const Color(0xFFFFC107),
+                    const Color(0xFFF57C00),
+                    // Warm orange like egg yolk
                     MealCategory.eggitarian,
                     controller,
                   ),
@@ -257,7 +259,8 @@ class MealPlanFormDialog extends StatelessWidget {
                     'Non-Vegetarian',
                     'Includes meat, poultry, and seafood',
                     Icons.restaurant,
-                    const Color(0xFFFF9800),
+                    const Color(0xFFD32F2F),
+                    // Red for meat
                     MealCategory.nonVegetarian,
                     controller,
                   ),
@@ -268,7 +271,8 @@ class MealPlanFormDialog extends StatelessWidget {
                     'Other',
                     'Other dietary preferences',
                     Icons.more_horiz,
-                    const Color(0xFF9E9E9E),
+                    const Color(0xFF7B1FA2),
+                    // Purple for other/mixed
                     MealCategory.other,
                     controller,
                   ),
@@ -570,7 +574,7 @@ class MealPlanFormDialog extends StatelessWidget {
                       'Breakfast',
                       MealPeriod.breakfast,
                       Icons.wb_sunny,
-                      const Color(0xFFFF9800),
+                      const Color(0xFFFF8F00), // Sunrise orange/amber
                     ),
                     const SizedBox(height: 16),
                     _buildMealSection(
@@ -580,7 +584,7 @@ class MealPlanFormDialog extends StatelessWidget {
                       'Lunch',
                       MealPeriod.lunch,
                       Icons.lunch_dining,
-                      const Color(0xFF4CAF50),
+                      const Color(0xFF43A047), // Fresh green for midday energy
                     ),
                     const SizedBox(height: 16),
                     _buildMealSection(
@@ -590,7 +594,7 @@ class MealPlanFormDialog extends StatelessWidget {
                       'Dinner',
                       MealPeriod.dinner,
                       Icons.dinner_dining,
-                      const Color(0xFF2196F3),
+                      const Color(0xFF3F51B5), // Deep indigo for evening
                     ),
                   ],
                 ),
@@ -766,17 +770,17 @@ class MealPlanFormDialog extends StatelessWidget {
   Color _getDietColor(MealCategory? category) {
     switch (category) {
       case MealCategory.vegetarian:
-        return const Color(0xFF4CAF50);
+        return const Color(0xFF66BB6A); // Lighter green for vegetarian
       case MealCategory.nonVegetarian:
-        return const Color(0xFFFF9800);
+        return const Color(0xFFD32F2F); // Red for meat
       case MealCategory.vegan:
-        return const Color(0xFF009688);
+        return const Color(0xFF2E7D32); // Deep green for nature/plants
       case MealCategory.eggitarian:
-        return const Color(0xFFFFC107);
+        return const Color(0xFFF57C00); // Warm orange like egg yolk
       case MealCategory.other:
-        return const Color(0xFF9E9E9E);
+        return const Color(0xFF7B1FA2); // Purple for other/mixed
       default:
-        return Colors.grey;
+        return const Color(0xFF9E9E9E); // Keep grey for unknown
     }
   }
 

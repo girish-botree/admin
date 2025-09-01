@@ -18,328 +18,733 @@ class IngredientDialogs {
     List<dynamic> selectedVitamins = [];
     List<dynamic> selectedMinerals = [];
 
+    // State variables for section expansion
+    bool isBasicExpanded = false;
+    bool isNutritionExpanded = false;
+    bool isFatBreakdownExpanded = false;
+    bool isAdditionalExpanded = false;
+
     Get.dialog<void>(
       Dialog.fullscreen(
         backgroundColor: context.theme.colorScheme.surface,
-        child: Scaffold(
-          backgroundColor: context.theme.colorScheme.surface,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            leading: IconButton(
-              onPressed: () => Get.back<void>(),
-              icon: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: context.theme.colorScheme.surfaceContainer,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.close_rounded,
-                  size: 20,
-                  color: context.theme.colorScheme.onSurface,
-                ),
-              ),
-            ),
-            title: Text(
-              'Add New Ingredient',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w600,
-                color: context.theme.colorScheme.onSurface,
-              ),
-            ),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 16),
-                child: FilledButton.icon(
-                  onPressed: () {
-                    if (controller.validateIngredientForm()) {
-                      final data = controller.createIngredientData(
-                          dietaryCategory);
-                      controller.createIngredient(data).then((success) {
-                        if (success) {
-                          Get.back<void>();
-                          Get.snackbar(
-                              'Success', 'Ingredient created successfully');
-                        }
-                      });
-                    }
-                  },
-                  icon: const Icon(Icons.save_rounded),
-                  label: const Text('Save'),
-                  style: FilledButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+        child: StatefulBuilder(
+          builder: (context, setDialogState) =>
+              Scaffold(
+                backgroundColor: context.theme.colorScheme.surface,
+                appBar: AppBar(
+                  backgroundColor: context.theme.colorScheme.surfaceContainer,
+                  elevation: 0,
+                  leading: IconButton(
+                    onPressed: () => Get.back<void>(),
+                    icon: Container(
+                      padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: context.theme.colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: context.theme.colorScheme.outline.withValues(
+                          alpha: 0.2),
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.close_rounded,
+                    size: 22,
+                    color: context.theme.colorScheme.onSurface,
                   ),
                 ),
               ),
-            ],
-          ),
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Obx(() =>
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    IngredientFormSection(
-                      title: 'Basic Information',
-                      icon: Icons.info_outline_rounded,
+              title: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: context.theme.colorScheme.primaryContainer
+                          .withValues(alpha: 0.8),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(
+                      Icons.add_rounded,
+                      size: 24,
+                      color: context.theme.colorScheme.onPrimaryContainer,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        IngredientValidatedTextField(
-                          controller.nameController,
-                          'Ingredient Name',
-                          context,
-                          isRequired: true,
-                          errorText: controller.nameError.value,
-                          onChanged: controller.validateName,
+                        Text(
+                          'Add New Ingredient',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w700,
+                            color: context.theme.colorScheme.onSurface,
+                            letterSpacing: -0.5,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                         ),
-                        const SizedBox(height: 16),
-                        IngredientValidatedTextField(
-                          controller.descriptionController,
-                          'Description',
-                          context,
-                          maxLines: 3,
-                          errorText: controller.descriptionError.value,
-                          onChanged: controller.validateDescription,
-                        ),
-                        const SizedBox(height: 16),
-                        IngredientValidatedTextField(
-                          controller.categoryController,
-                          'Category',
-                          context,
+                        Text(
+                          'Tap sections to expand and fill details',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: context.theme.colorScheme.onSurface
+                                .withValues(
+                                alpha: 0.7),
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                         ),
                       ],
                     ),
-
-                    const SizedBox(height: 32),
-
-                    IngredientFormSection(
-                      title: 'Nutritional Information (per 100g)',
-                      icon: Icons.analytics_outlined,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: IngredientValidatedTextField(
-                                controller.caloriesController,
-                                'Calories (per 100g)',
-                                context,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: MealController
-                                    .getIntegerInputFormatters(),
-                                errorText: controller.caloriesError.value,
-                                onChanged: controller.validateCalories,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: IngredientValidatedTextField(
-                                controller.proteinController,
-                                'Protein (g per 100g)',
-                                context,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: MealController
-                                    .getNumberInputFormatters(),
-                                errorText: controller.proteinError.value,
-                                onChanged: (value) =>
-                                    controller.validateNutrient(
-                                        value, controller.proteinError,
-                                        'Protein'),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: IngredientValidatedTextField(
-                                controller.carbsController,
-                                'Carbs (g per 100g)',
-                                context,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: MealController
-                                    .getNumberInputFormatters(),
-                                errorText: controller.carbsError.value,
-                                onChanged: (value) =>
-                                    controller.validateNutrient(
-                                        value, controller.carbsError, 'Carbs'),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: IngredientValidatedTextField(
-                                controller.fatController,
-                                'Fat (g per 100g)',
-                                context,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: MealController
-                                    .getNumberInputFormatters(),
-                                errorText: controller.fatError.value,
-                                onChanged: (value) =>
-                                    controller.validateNutrient(
-                                        value, controller.fatError, 'Fat'),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: IngredientValidatedTextField(
-                                controller.fiberController,
-                                'Fiber (g per 100g)',
-                                context,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: MealController
-                                    .getNumberInputFormatters(),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: IngredientValidatedTextField(
-                                controller.sugarController,
-                                'Sugar (g per 100g)',
-                                context,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: MealController
-                                    .getNumberInputFormatters(),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 32),
-
-                    IngredientFormSection(
-                      title: 'Fat Breakdown (per 100g)',
-                      icon: Icons.pie_chart_outline_rounded,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: IngredientValidatedTextField(
-                                controller.saturatedFatController,
-                                'Saturated (g per 100g)',
-                                context,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: MealController
-                                    .getNumberInputFormatters(),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: IngredientValidatedTextField(
-                                controller.monoFatController,
-                                'Monounsaturated (g per 100g)',
-                                context,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: MealController
-                                    .getNumberInputFormatters(),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        IngredientValidatedTextField(
-                          controller.polyFatController,
-                          'Polyunsaturated (g per 100g)',
-                          context,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: MealController
-                              .getNumberInputFormatters(),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 32),
-
-                    IngredientFormSection(
-                      title: 'Additional Information',
-                      icon: Icons.more_horiz_rounded,
-                      children: [
-                        StatefulBuilder(
-                          builder: (context, setState) =>
-                              TypedMultiSelectDropdown(
-                                dropdownType: DropdownType.vitamins,
-                                selectedValues: selectedVitamins,
-                                label: 'Vitamins (per 100g)',
-                                hint: 'Select vitamins',
-                                onChanged: (selected) {
-                                  setState(() => selectedVitamins = selected);
-                                  // Update the controller with JSON format
-                                  final vitaminMap = <String, dynamic>{};
-                                  for (final vitamin in selected) {
-                                    final item = DropdownDataManager
-                                        .findItemByValue(
-                                        DropdownDataManager.vitamins,
-                                        vitamin
-                                    );
-                                    if (item != null) {
-                                      vitaminMap[item.label] =
-                                      0.0; // Default value
-                                    }
-                                  }
-                                  controller.vitaminsController.text =
-                                  vitaminMap.isEmpty ? '' : jsonEncode(
-                                      vitaminMap);
-                                },
-                              ),
-                        ),
-                        const SizedBox(height: 16),
-                        StatefulBuilder(
-                          builder: (context, setState) =>
-                              TypedMultiSelectDropdown(
-                                dropdownType: DropdownType.minerals,
-                                selectedValues: selectedMinerals,
-                                label: 'Minerals (per 100g)',
-                                hint: 'Select minerals',
-                                onChanged: (selected) {
-                                  setState(() => selectedMinerals = selected);
-                                  // Update the controller with JSON format
-                                  final mineralMap = <String, dynamic>{};
-                                  for (final mineral in selected) {
-                                    final item = DropdownDataManager
-                                        .findItemByValue(
-                                        DropdownDataManager.minerals,
-                                        mineral
-                                    );
-                                    if (item != null) {
-                                      mineralMap[item.label] =
-                                      0.0; // Default value
-                                    }
-                                  }
-                                  controller.mineralsController.text =
-                                  mineralMap.isEmpty ? '' : jsonEncode(
-                                      mineralMap);
-                                },
-                              ),
-                        ),
-                        const SizedBox(height: 16),
-                        StatefulBuilder(
-                          builder: (context, setState) =>
-                              TypedSearchableDropdown(
-                                dropdownType: DropdownType.dietaryCategories,
-                                value: dietaryCategory,
-                                label: 'Dietary Category',
-                                hint: 'Select dietary category',
-                                onChanged: (value) =>
-                                    setState(() =>
-                                    dietaryCategory = (value as int?) ?? 0),
-                              ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 100), // Bottom padding for scrolling
+                  ),
+                ],
+              ),
+              toolbarHeight: 80,
+            ),
+            body: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    context.theme.colorScheme.surfaceContainer,
+                    context.theme.colorScheme.surface,
                   ],
-                )),
+                  stops: const [0.0, 0.3],
+                ),
+              ),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
+                child: Obx(() =>
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Basic Information Section
+                        _buildCollapsibleFormSection(
+                          context: context,
+                          title: 'Basic Information',
+                          subtitle: 'Essential ingredient details',
+                          icon: Icons.info_outline_rounded,
+                          iconColor: context.theme.colorScheme.primary,
+                          isExpanded: isBasicExpanded,
+                          isRequired: true,
+                          onToggle: () =>
+                              setDialogState(() =>
+                              isBasicExpanded = !isBasicExpanded),
+                          children: [
+                            _buildRequiredFieldIndicator(context),
+                            const SizedBox(height: 20),
+                            IngredientValidatedTextField(
+                              controller.nameController,
+                              'Ingredient Name',
+                              context,
+                              isRequired: true,
+                              errorText: controller.nameError.value,
+                              onChanged: controller.validateName,
+                            ),
+                            const SizedBox(height: 20),
+                            IngredientValidatedTextField(
+                              controller.descriptionController,
+                              'Description',
+                              context,
+                              maxLines: 3,
+                              errorText: controller.descriptionError.value,
+                              onChanged: controller.validateDescription,
+                            ),
+                            const SizedBox(height: 20),
+                            IngredientValidatedTextField(
+                              controller.categoryController,
+                              'Category',
+                              context,
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Nutritional Information Section
+                        _buildCollapsibleFormSection(
+                          context: context,
+                          title: 'Nutritional Information',
+                          subtitle: 'Per 100g serving size',
+                          icon: Icons.analytics_outlined,
+                          iconColor: Colors.green,
+                          isExpanded: isNutritionExpanded,
+                          onToggle: () =>
+                              setDialogState(() =>
+                              isNutritionExpanded = !isNutritionExpanded),
+                          children: [
+                            _buildNutrientRow(
+                              context,
+                              [
+                                _buildNutrientField(
+                                  context,
+                                  controller.caloriesController,
+                                  'Calories',
+                                  'kcal',
+                                  controller.caloriesError.value,
+                                  controller.validateCalories,
+                                ),
+                                _buildNutrientField(
+                                  context,
+                                  controller.proteinController,
+                                  'Protein',
+                                  'g',
+                                  controller.proteinError.value,
+                                      (value) =>
+                                      controller.validateNutrient(
+                                          value, controller.proteinError,
+                                          'Protein'),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            _buildNutrientRow(
+                              context,
+                              [
+                                _buildNutrientField(
+                                  context,
+                                  controller.carbsController,
+                                  'Carbs',
+                                  'g',
+                                  controller.carbsError.value,
+                                      (value) =>
+                                      controller.validateNutrient(
+                                          value, controller.carbsError,
+                                          'Carbs'),
+                                ),
+                                _buildNutrientField(
+                                  context,
+                                  controller.fatController,
+                                  'Fat',
+                                  'g',
+                                  controller.fatError.value,
+                                      (value) =>
+                                      controller.validateNutrient(
+                                          value, controller.fatError, 'Fat'),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            _buildNutrientRow(
+                              context,
+                              [
+                                _buildNutrientField(
+                                  context,
+                                  controller.fiberController,
+                                  'Fiber',
+                                  'g',
+                                  null,
+                                  null,
+                                ),
+                                _buildNutrientField(
+                                  context,
+                                  controller.sugarController,
+                                  'Sugar',
+                                  'g',
+                                  null,
+                                  null,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Fat Breakdown Section
+                        _buildCollapsibleFormSection(
+                          context: context,
+                          title: 'Fat Breakdown',
+                          subtitle: 'Detailed fat composition per 100g',
+                          icon: Icons.pie_chart_outline_rounded,
+                          iconColor: Colors.orange,
+                          isExpanded: isFatBreakdownExpanded,
+                          onToggle: () =>
+                              setDialogState(() =>
+                              isFatBreakdownExpanded = !isFatBreakdownExpanded),
+                          children: [
+                            _buildNutrientRow(
+                              context,
+                              [
+                                _buildNutrientField(
+                                  context,
+                                  controller.saturatedFatController,
+                                  'Saturated Fat',
+                                  'g',
+                                  null,
+                                  null,
+                                ),
+                                _buildNutrientField(
+                                  context,
+                                  controller.monoFatController,
+                                  'Monounsaturated',
+                                  'g',
+                                  null,
+                                  null,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            _buildNutrientField(
+                              context,
+                              controller.polyFatController,
+                              'Polyunsaturated Fat',
+                              'g',
+                              null,
+                              null,
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Additional Information Section
+                        _buildCollapsibleFormSection(
+                          context: context,
+                          title: 'Additional Information',
+                          subtitle: 'Vitamins, minerals, and dietary preferences',
+                          icon: Icons.more_horiz_rounded,
+                          iconColor: Colors.purple,
+                          isExpanded: isAdditionalExpanded,
+                          onToggle: () =>
+                              setDialogState(() =>
+                              isAdditionalExpanded = !isAdditionalExpanded),
+                          children: [
+                            StatefulBuilder(
+                              builder: (context, setState) =>
+                                  _buildEnhancedDropdown(
+                                    context,
+                                    child: TypedMultiSelectDropdown(
+                                      dropdownType: DropdownType.vitamins,
+                                      selectedValues: selectedVitamins,
+                                      label: 'Vitamins',
+                                      hint: 'Select vitamins present',
+                                      onChanged: (selected) {
+                                        setState(() =>
+                                        selectedVitamins = selected);
+                                        final vitaminMap = <String, dynamic>{};
+                                        for (final vitamin in selected) {
+                                          final item = DropdownDataManager
+                                              .findItemByValue(
+                                              DropdownDataManager.vitamins,
+                                              vitamin
+                                          );
+                                          if (item != null) {
+                                            vitaminMap[item.label] = 0.0;
+                                          }
+                                        }
+                                        controller.vitaminsController.text =
+                                        vitaminMap.isEmpty ? '' : jsonEncode(
+                                            vitaminMap);
+                                      },
+                                    ),
+                                  ),
+                            ),
+                            const SizedBox(height: 20),
+                            StatefulBuilder(
+                              builder: (context, setState) =>
+                                  _buildEnhancedDropdown(
+                                    context,
+                                    child: TypedMultiSelectDropdown(
+                                      dropdownType: DropdownType.minerals,
+                                      selectedValues: selectedMinerals,
+                                      label: 'Minerals',
+                                      hint: 'Select minerals present',
+                                      onChanged: (selected) {
+                                        setState(() =>
+                                        selectedMinerals = selected);
+                                        final mineralMap = <String, dynamic>{};
+                                        for (final mineral in selected) {
+                                          final item = DropdownDataManager
+                                              .findItemByValue(
+                                              DropdownDataManager.minerals,
+                                              mineral
+                                          );
+                                          if (item != null) {
+                                            mineralMap[item.label] = 0.0;
+                                          }
+                                        }
+                                        controller.mineralsController.text =
+                                        mineralMap.isEmpty ? '' : jsonEncode(
+                                            mineralMap);
+                                      },
+                                    ),
+                                  ),
+                            ),
+                            const SizedBox(height: 20),
+                            StatefulBuilder(
+                              builder: (context, setState) =>
+                                  _buildEnhancedDropdown(
+                                    context,
+                                    child: TypedSearchableDropdown(
+                                      dropdownType: DropdownType
+                                          .dietaryCategories,
+                                      value: dietaryCategory,
+                                      label: 'Dietary Category',
+                                      hint: 'Select dietary classification',
+                                      onChanged: (value) =>
+                                          setState(() =>
+                                          dietaryCategory =
+                                              (value as int?) ?? 0),
+                                    ),
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )),
+              ),
+            ),
+            floatingActionButton: Container(
+              margin: const EdgeInsets.only(bottom: 20),
+              child: FloatingActionButton.extended(
+                onPressed: () {
+                  if (controller.validateIngredientForm()) {
+                    final data = controller.createIngredientData(
+                        dietaryCategory);
+                    controller.createIngredient(data).then((success) {
+                      if (success) {
+                        Get.back<void>();
+                        Get.snackbar(
+                            'Success', 'Ingredient created successfully');
+                      }
+                    });
+                  }
+                },
+                backgroundColor: context.theme.colorScheme.onSurface,
+                foregroundColor: context.theme.colorScheme.onPrimary,
+                elevation: 6,
+                icon: const Icon(Icons.check_rounded, size: 22),
+                label: const Text(
+                  'Save Ingredient',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+            ),
+            floatingActionButtonLocation: FloatingActionButtonLocation
+                .centerFloat,
           ),
         ),
+      ),
+    );
+  }
+
+  // Helper method to build collapsible form sections
+  static Widget _buildCollapsibleFormSection({
+    required BuildContext context,
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color iconColor,
+    required bool isExpanded,
+    required VoidCallback onToggle,
+    required List<Widget> children,
+    bool isRequired = false,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: context.theme.colorScheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isExpanded
+              ? iconColor.withValues(alpha: 0.3)
+              : context.theme.colorScheme.outline.withValues(alpha: 0.08),
+          width: isExpanded ? 2 : 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isExpanded
+                ? iconColor.withValues(alpha: 0.1)
+                : context.theme.colorScheme.shadow.withValues(alpha: 0.04),
+            blurRadius: isExpanded ? 16 : 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onToggle,
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: iconColor.withValues(
+                            alpha: isExpanded ? 0.2 : 0.12),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: iconColor.withValues(alpha: isExpanded
+                              ? 0.4
+                              : 0.2),
+                          width: 1,
+                        ),
+                      ),
+                      child: Icon(
+                        icon,
+                        size: 28,
+                        color: iconColor,
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  title,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w700,
+                                    color: context.theme.colorScheme.onSurface,
+                                    letterSpacing: -0.3,
+                                  ),
+                                ),
+                              ),
+                              if (isRequired)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: Colors.red.withValues(alpha: 0.3),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'Required',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.red.shade700,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            subtitle,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: context.theme.colorScheme.onSurface
+                                  .withValues(
+                                  alpha: 0.65),
+                              letterSpacing: 0,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    AnimatedRotation(
+                      turns: isExpanded ? 0.5 : 0.0,
+                      duration: const Duration(milliseconds: 300),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: context.theme.colorScheme.surfaceContainer,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          Icons.expand_more_rounded,
+                          size: 24,
+                          color: context.theme.colorScheme.onSurface.withValues(
+                              alpha: 0.7),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 400),
+                  curve: Curves.easeInOut,
+                  child: isExpanded
+                      ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 24),
+                      Divider(
+                        color: iconColor.withValues(alpha: 0.2),
+                        thickness: 1,
+                      ),
+                      const SizedBox(height: 24),
+                      ...children,
+                    ],
+                  )
+                      : const SizedBox.shrink(),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Helper method to build nutrient rows
+  static Widget _buildNutrientRow(BuildContext context, List<Widget> children) {
+    return Row(
+      children: [
+        for (int i = 0; i < children.length; i++) ...[
+          Expanded(child: children[i]),
+          if (i < children.length - 1) const SizedBox(width: 16),
+        ],
+      ],
+    );
+  }
+
+  // Helper method to build individual nutrient fields
+  static Widget _buildNutrientField(BuildContext context,
+      TextEditingController controller,
+      String label,
+      String unit,
+      String? errorText,
+      void Function(String)? onChanged,) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: context.theme.colorScheme.shadow.withValues(alpha: 0.06),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: controller,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        inputFormatters: MealController.getNumberInputFormatters(),
+        style: TextStyle(
+          color: context.theme.colorScheme.onSurface,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          labelText: label,
+          suffixText: unit,
+          suffixStyle: TextStyle(
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.6),
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+          labelStyle: TextStyle(
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: context.theme.colorScheme.outline.withValues(alpha: 0.2),
+              width: 1.5,
+            ),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: context.theme.colorScheme.primary,
+              width: 2.5,
+            ),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Colors.red, width: 2),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Colors.red, width: 2.5),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          errorText: errorText != null && errorText.isNotEmpty
+              ? errorText
+              : null,
+          errorStyle: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+          filled: true,
+          fillColor: context.theme.colorScheme.surfaceContainerLowest,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 18,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Helper method to build enhanced dropdown containers
+  static Widget _buildEnhancedDropdown(BuildContext context,
+      {required Widget child}) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: context.theme.colorScheme.shadow.withValues(alpha: 0.06),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
+  // Helper method to build required field indicator
+  static Widget _buildRequiredFieldIndicator(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.red.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.red.withValues(alpha: 0.2),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.star_rounded,
+            size: 16,
+            color: Colors.red.shade600,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'Fields marked with * are required',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: Colors.red.shade700,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -420,12 +825,12 @@ class IngredientDialogs {
                           Expanded(child: IngredientTextField(
                               controller.caloriesController,
                               'Calories (per 100g)',
-                              context, keyboardType: TextInputType.number)),
+                              context, keyboardType: TextInputType.numberWithOptions(decimal: true))),
                           const SizedBox(width: 12),
                           Expanded(child: IngredientTextField(
                               controller.proteinController,
                               'Protein (g per 100g)',
-                              context, keyboardType: TextInputType.number)),
+                              context, keyboardType: TextInputType.numberWithOptions(decimal: true))),
                         ],
                       ),
                       const SizedBox(height: 12),
@@ -434,12 +839,12 @@ class IngredientDialogs {
                           Expanded(child: IngredientTextField(
                               controller.carbsController, 'Carbs (g per 100g)',
                               context,
-                              keyboardType: TextInputType.number)),
+                              keyboardType: TextInputType.numberWithOptions(decimal: true))),
                           const SizedBox(width: 12),
                           Expanded(child: IngredientTextField(
                               controller.fatController, 'Fat (g per 100g)',
                               context,
-                              keyboardType: TextInputType.number)),
+                              keyboardType: TextInputType.numberWithOptions(decimal: true))),
                         ],
                       ),
                       const SizedBox(height: 12),
@@ -448,12 +853,12 @@ class IngredientDialogs {
                           Expanded(child: IngredientTextField(
                               controller.fiberController, 'Fiber (g per 100g)',
                               context,
-                              keyboardType: TextInputType.number)),
+                              keyboardType: TextInputType.numberWithOptions(decimal: true))),
                           const SizedBox(width: 12),
                           Expanded(child: IngredientTextField(
                               controller.sugarController, 'Sugar (g per 100g)',
                               context,
-                              keyboardType: TextInputType.number)),
+                              keyboardType: TextInputType.numberWithOptions(decimal: true))),
                         ],
                       ),
                       const SizedBox(height: 24),
@@ -466,19 +871,19 @@ class IngredientDialogs {
                           Expanded(child: IngredientTextField(
                               controller.saturatedFatController,
                               'Saturated (g per 100g)', context,
-                              keyboardType: TextInputType.number)),
+                              keyboardType: TextInputType.numberWithOptions(decimal: true))),
                           const SizedBox(width: 12),
                           Expanded(child: IngredientTextField(
                               controller.monoFatController,
                               'Monounsaturated (g per 100g)', context,
-                              keyboardType: TextInputType.number)),
+                              keyboardType: TextInputType.numberWithOptions(decimal: true))),
                         ],
                       ),
                       const SizedBox(height: 12),
                       IngredientTextField(
                           controller.polyFatController,
                           'Polyunsaturated (g per 100g)',
-                          context, keyboardType: TextInputType.number),
+                          context, keyboardType: TextInputType.numberWithOptions(decimal: true)),
                       const SizedBox(height: 24),
 
                       IngredientSectionTitle(context, 'Additional Information'),

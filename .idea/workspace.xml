@@ -10,7 +10,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="refactor: improve search utils with fuzzy matching caching and performance monitoring; enhance dropdowns with checkmarks and caching; optimize recipe and plan modules; centralize error handling; remove redundant network checks; add comprehensive dialog closure; update routing and category mapping; document error handling strategies.">
+      <change beforePath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/admins/create_admins/create_admin_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/admins/create_admins/create_admin_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/delivery_persons/manage_delivery_persons/delivery_person_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/delivery_persons/manage_delivery_persons/delivery_person_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/ingredients/dialogs/ingredient_dialogs.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/ingredients/dialogs/ingredient_dialogs.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_dialog.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_dialog.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/shared/widgets/common_widgets.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/shared/widgets/common_widgets.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/plan/widgets/meal_plan_form_dialog.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/widgets/meal_plan_form_dialog.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/widgets/searchable_dropdown.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/searchable_dropdown.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

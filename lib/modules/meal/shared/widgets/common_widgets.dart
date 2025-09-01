@@ -553,7 +553,7 @@ class ModernFAB extends StatelessWidget {
       return FloatingActionButton(
         onPressed: enabled ? onPressed : null,
         backgroundColor: enabled 
-            ? theme.colorScheme.primary 
+            ? theme.colorScheme.onSurface
             : theme.colorScheme.surfaceContainerHighest,
         foregroundColor: enabled
             ? theme.colorScheme.onPrimary
@@ -578,7 +578,7 @@ class ModernFAB extends StatelessWidget {
     return FloatingActionButton.extended(
       onPressed: enabled ? onPressed : null,
       backgroundColor: enabled 
-          ? theme.colorScheme.primary 
+          ? theme.colorScheme.onSurface
           : theme.colorScheme.surfaceContainerHighest,
       foregroundColor: enabled
           ? theme.colorScheme.onPrimary

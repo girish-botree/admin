@@ -433,6 +433,7 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
             decoration: _createInputDecoration(
                 context, 'Identification Number'),
             style: TextStyle(color: context.theme.colorScheme.onSurface),
+            keyboardType: TextInputType.text,
           ),
           SizedBox(height: 16),
 

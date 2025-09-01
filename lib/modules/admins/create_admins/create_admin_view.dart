@@ -198,6 +198,7 @@ class AdminBottomSheets {
                                 controller: controller.emailController,
                                 decoration: _createInputDecoration(context, 'Email'),
                                 style: TextStyle(color: context.theme.colorScheme.onSurface),
+                                keyboardType: TextInputType.emailAddress,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter an email address';
@@ -245,6 +246,7 @@ class AdminBottomSheets {
                                   controller: controller.emailController,
                                   decoration: _createInputDecoration(context, 'Email'),
                                   style: TextStyle(color: context.theme.colorScheme.onSurface),
+                                  keyboardType: TextInputType.emailAddress,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
                                       return 'Please enter an email address';
@@ -396,6 +398,7 @@ class AdminBottomSheets {
                         decoration: _createInputDecoration(context, 'Address'),
                         style: TextStyle(color: context.theme.colorScheme
                             .onSurface),
+                        keyboardType: TextInputType.streetAddress,
                         maxLines: 2,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
