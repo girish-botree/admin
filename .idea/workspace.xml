@@ -10,19 +10,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="refactor: improve dialog sections with expandable content and add required field indicator; update dropdown hint style for better accessibility">
-      <change beforePath="$PROJECT_DIR$/lib/design_system/app_spacing.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/design_system/app_spacing.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/components/mobile_dashboard.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/components/mobile_dashboard.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/components/tablet_dashboard.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/components/tablet_dashboard.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/components/web_dashboard.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/components/web_dashboard.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/widgets/dashboard_stat_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/widgets/dashboard_stat_card.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/login/components/mobile_login.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/login/components/mobile_login.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_controller.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_view.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/meal/components/comprehensive_meal_statistics.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/components/comprehensive_meal_statistics.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/meal/components/mobile_meal.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/components/mobile_meal.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/plan/widgets/meal_section.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/widgets/meal_section.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/widgets/custom_displays.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/custom_displays.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/widgets/loading_widgets.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/loading_widgets.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/ingredients/dialogs/ingredient_dialogs.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/ingredients/dialogs/ingredient_dialogs.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_dialog.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_dialog.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

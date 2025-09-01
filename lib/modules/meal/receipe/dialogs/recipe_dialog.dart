@@ -18,7 +18,7 @@ class RecipeDialogs {
     bool isDialogActive = true;
 
     // State variables for section expansion
-    bool isBasicExpanded = false;
+    bool isBasicExpanded = true; // Changed from false to true
     bool isDetailsExpanded = false;
     bool isIngredientsExpanded = false;
     bool isImageExpanded = false;
@@ -359,15 +359,14 @@ class RecipeDialogs {
               : context.theme.colorScheme.outline.withValues(alpha: 0.08),
           width: isExpanded ? 2 : 1,
         ),
-        boxShadow: [
+        // Simplified shadow during animation for better performance
+        boxShadow: isExpanded ? [
           BoxShadow(
-            color: isExpanded
-                ? iconColor.withValues(alpha: 0.1)
-                : context.theme.colorScheme.shadow.withValues(alpha: 0.04),
-            blurRadius: isExpanded ? 16 : 8,
-            offset: const Offset(0, 4),
+            color: iconColor.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 3),
           ),
-        ],
+        ] : null,
       ),
       child: Material(
         color: Colors.transparent,
@@ -458,7 +457,8 @@ class RecipeDialogs {
                     const SizedBox(width: 12),
                     AnimatedRotation(
                       turns: isExpanded ? 0.5 : 0.0,
-                      duration: const Duration(milliseconds: 300),
+                      duration: const Duration(milliseconds: 200),
+                      // Reduced from 300ms
                       child: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
@@ -475,9 +475,13 @@ class RecipeDialogs {
                     ),
                   ],
                 ),
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 400),
-                  curve: Curves.easeInOut,
+                // Optimized animation for better performance
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  // Reduced from 400ms
+                  curve: Curves.easeOut,
+                  // Changed curve for smoother animation
+                  height: isExpanded ? null : 0,
                   child: isExpanded
                       ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -491,7 +495,7 @@ class RecipeDialogs {
                       ...children,
                     ],
                   )
-                      : const SizedBox.shrink(),
+                      : null,
                 ),
               ],
             ),

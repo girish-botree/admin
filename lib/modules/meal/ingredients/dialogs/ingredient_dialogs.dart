@@ -19,7 +19,7 @@ class IngredientDialogs {
     List<dynamic> selectedMinerals = [];
 
     // State variables for section expansion
-    bool isBasicExpanded = false;
+    bool isBasicExpanded = true; // Changed from false to true
     bool isNutritionExpanded = false;
     bool isFatBreakdownExpanded = false;
     bool isAdditionalExpanded = false;
@@ -316,81 +316,72 @@ class IngredientDialogs {
                           children: [
                             StatefulBuilder(
                               builder: (context, setState) =>
-                                  _buildEnhancedDropdown(
-                                    context,
-                                    child: TypedMultiSelectDropdown(
-                                      dropdownType: DropdownType.vitamins,
-                                      selectedValues: selectedVitamins,
-                                      label: 'Vitamins',
-                                      hint: 'Select vitamins present',
-                                      onChanged: (selected) {
-                                        setState(() =>
+                                  TypedMultiSelectDropdown(
+                                    dropdownType: DropdownType.vitamins,
+                                    selectedValues: selectedVitamins,
+                                    label: 'Vitamins',
+                                    hint: 'Select vitamins present',
+                                    onChanged: (selected) {
+                                      setState(() =>
                                         selectedVitamins = selected);
-                                        final vitaminMap = <String, dynamic>{};
-                                        for (final vitamin in selected) {
-                                          final item = DropdownDataManager
-                                              .findItemByValue(
-                                              DropdownDataManager.vitamins,
-                                              vitamin
-                                          );
-                                          if (item != null) {
-                                            vitaminMap[item.label] = 0.0;
-                                          }
+                                      final vitaminMap = <String, dynamic>{};
+                                      for (final vitamin in selected) {
+                                        final item = DropdownDataManager
+                                            .findItemByValue(
+                                            DropdownDataManager.vitamins,
+                                            vitamin
+                                        );
+                                        if (item != null) {
+                                          vitaminMap[item.label] = 0.0;
                                         }
-                                        controller.vitaminsController.text =
-                                        vitaminMap.isEmpty ? '' : jsonEncode(
-                                            vitaminMap);
-                                      },
-                                    ),
+                                      }
+                                      controller.vitaminsController.text =
+                                      vitaminMap.isEmpty ? '' : jsonEncode(
+                                          vitaminMap);
+                                    },
                                   ),
                             ),
                             const SizedBox(height: 20),
                             StatefulBuilder(
                               builder: (context, setState) =>
-                                  _buildEnhancedDropdown(
-                                    context,
-                                    child: TypedMultiSelectDropdown(
-                                      dropdownType: DropdownType.minerals,
-                                      selectedValues: selectedMinerals,
-                                      label: 'Minerals',
-                                      hint: 'Select minerals present',
-                                      onChanged: (selected) {
-                                        setState(() =>
+                                  TypedMultiSelectDropdown(
+                                    dropdownType: DropdownType.minerals,
+                                    selectedValues: selectedMinerals,
+                                    label: 'Minerals',
+                                    hint: 'Select minerals present',
+                                    onChanged: (selected) {
+                                      setState(() =>
                                         selectedMinerals = selected);
-                                        final mineralMap = <String, dynamic>{};
-                                        for (final mineral in selected) {
-                                          final item = DropdownDataManager
-                                              .findItemByValue(
-                                              DropdownDataManager.minerals,
-                                              mineral
-                                          );
-                                          if (item != null) {
-                                            mineralMap[item.label] = 0.0;
-                                          }
+                                      final mineralMap = <String, dynamic>{};
+                                      for (final mineral in selected) {
+                                        final item = DropdownDataManager
+                                            .findItemByValue(
+                                            DropdownDataManager.minerals,
+                                            mineral
+                                        );
+                                        if (item != null) {
+                                          mineralMap[item.label] = 0.0;
                                         }
-                                        controller.mineralsController.text =
-                                        mineralMap.isEmpty ? '' : jsonEncode(
-                                            mineralMap);
-                                      },
-                                    ),
+                                      }
+                                      controller.mineralsController.text =
+                                      mineralMap.isEmpty ? '' : jsonEncode(
+                                          mineralMap);
+                                    },
                                   ),
                             ),
                             const SizedBox(height: 20),
                             StatefulBuilder(
                               builder: (context, setState) =>
-                                  _buildEnhancedDropdown(
-                                    context,
-                                    child: TypedSearchableDropdown(
-                                      dropdownType: DropdownType
-                                          .dietaryCategories,
-                                      value: dietaryCategory,
-                                      label: 'Dietary Category',
-                                      hint: 'Select dietary classification',
-                                      onChanged: (value) =>
-                                          setState(() =>
-                                          dietaryCategory =
-                                              (value as int?) ?? 0),
-                                    ),
+                                  TypedSearchableDropdown(
+                                    dropdownType: DropdownType
+                                        .dietaryCategories,
+                                    value: dietaryCategory,
+                                    label: 'Dietary Category',
+                                    hint: 'Select dietary classification',
+                                    onChanged: (value) =>
+                                        setState(() =>
+                                        dietaryCategory =
+                                            (value as int?) ?? 0),
                                   ),
                             ),
                           ],
@@ -461,15 +452,14 @@ class IngredientDialogs {
               : context.theme.colorScheme.outline.withValues(alpha: 0.08),
           width: isExpanded ? 2 : 1,
         ),
-        boxShadow: [
+        // Simplified shadow during animation for better performance
+        boxShadow: isExpanded ? [
           BoxShadow(
-            color: isExpanded
-                ? iconColor.withValues(alpha: 0.1)
-                : context.theme.colorScheme.shadow.withValues(alpha: 0.04),
-            blurRadius: isExpanded ? 16 : 8,
-            offset: const Offset(0, 4),
+            color: iconColor.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 3),
           ),
-        ],
+        ] : null,
       ),
       child: Material(
         color: Colors.transparent,
@@ -550,8 +540,7 @@ class IngredientDialogs {
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
                               color: context.theme.colorScheme.onSurface
-                                  .withValues(
-                                  alpha: 0.65),
+                                  .withValues(alpha: 0.65),
                               letterSpacing: 0,
                             ),
                           ),
@@ -561,7 +550,8 @@ class IngredientDialogs {
                     const SizedBox(width: 12),
                     AnimatedRotation(
                       turns: isExpanded ? 0.5 : 0.0,
-                      duration: const Duration(milliseconds: 300),
+                      duration: const Duration(milliseconds: 200),
+                      // Reduced from 300ms
                       child: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
@@ -578,9 +568,13 @@ class IngredientDialogs {
                     ),
                   ],
                 ),
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 400),
-                  curve: Curves.easeInOut,
+                // Optimized animation for better performance
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  // Reduced from 400ms
+                  curve: Curves.easeOut,
+                  // Changed curve for smoother animation
+                  height: isExpanded ? null : 0,
                   child: isExpanded
                       ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -594,7 +588,7 @@ class IngredientDialogs {
                       ...children,
                     ],
                   )
-                      : const SizedBox.shrink(),
+                      : null,
                 ),
               ],
             ),
@@ -623,97 +617,68 @@ class IngredientDialogs {
       String unit,
       String? errorText,
       void Function(String)? onChanged,) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: context.theme.colorScheme.shadow.withValues(alpha: 0.06),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+    return TextField(
+      controller: controller,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      inputFormatters: MealController.getNumberInputFormatters(),
+      style: TextStyle(
+        color: context.theme.colorScheme.onSurface,
+        fontSize: 16,
+        fontWeight: FontWeight.w500,
       ),
-      child: TextField(
-        controller: controller,
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        inputFormatters: MealController.getNumberInputFormatters(),
-        style: TextStyle(
-          color: context.theme.colorScheme.onSurface,
-          fontSize: 16,
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        labelText: label,
+        suffixText: unit,
+        suffixStyle: TextStyle(
+          color: context.theme.colorScheme.onSurface.withValues(alpha: 0.6),
+          fontSize: 14,
           fontWeight: FontWeight.w500,
         ),
-        onChanged: onChanged,
-        decoration: InputDecoration(
-          labelText: label,
-          suffixText: unit,
-          suffixStyle: TextStyle(
-            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.6),
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
+        labelStyle: TextStyle(
+          color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: context.theme.colorScheme.outline.withValues(alpha: 0.2),
+            width: 1.5,
           ),
-          labelStyle: TextStyle(
-            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: context.theme.colorScheme.primary,
+            width: 2.5,
           ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: context.theme.colorScheme.outline.withValues(alpha: 0.2),
-              width: 1.5,
-            ),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: context.theme.colorScheme.primary,
-              width: 2.5,
-            ),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.red, width: 2),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.red, width: 2.5),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          errorText: errorText != null && errorText.isNotEmpty
-              ? errorText
-              : null,
-          errorStyle: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-          ),
-          filled: true,
-          fillColor: context.theme.colorScheme.surfaceContainerLowest,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 18,
-          ),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: Colors.red, width: 2),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: Colors.red, width: 2.5),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        errorText: errorText != null && errorText.isNotEmpty
+            ? errorText
+            : null,
+        errorStyle: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+        ),
+        filled: true,
+        fillColor: context.theme.colorScheme.surfaceContainerLowest,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 18,
         ),
       ),
     );
   }
 
-  // Helper method to build enhanced dropdown containers
-  static Widget _buildEnhancedDropdown(BuildContext context,
-      {required Widget child}) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: context.theme.colorScheme.shadow.withValues(alpha: 0.06),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: child,
-    );
-  }
 
   // Helper method to build required field indicator
   static Widget _buildRequiredFieldIndicator(BuildContext context) {
@@ -1507,76 +1472,64 @@ class IngredientValidatedTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: context.theme.colorScheme.shadow.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+    return TextField(
+      controller: controller,
+      maxLines: maxLines,
+      keyboardType: keyboardType,
+      inputFormatters: inputFormatters,
+      style: TextStyle(
+        color: context.theme.colorScheme.onSurface,
+        fontSize: 16,
       ),
-      child: TextField(
-        controller: controller,
-        maxLines: maxLines,
-        keyboardType: keyboardType,
-        inputFormatters: inputFormatters,
-        style: TextStyle(
-          color: context.theme.colorScheme.onSurface,
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        labelText: isRequired ? '$label *' : label,
+        labelStyle: TextStyle(
+          color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
           fontSize: 16,
         ),
-        onChanged: onChanged,
-        decoration: InputDecoration(
-          labelText: isRequired ? '$label *' : label,
-          labelStyle: TextStyle(
-            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
-            fontSize: 16,
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: context.theme.colorScheme.outline.withValues(alpha: 0.3),
+            width: 1.5,
           ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: context.theme.colorScheme.outline.withValues(alpha: 0.3),
-              width: 1.5,
-            ),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: context.theme.colorScheme.primary,
-              width: 2,
-            ),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.red, width: 2),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.red, width: 2),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          errorText: errorText != null && errorText!.isNotEmpty
-              ? errorText
-              : null,
-          errorStyle: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-          ),
-          filled: true,
-          fillColor: context.theme.colorScheme.surfaceContainerLowest,
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: maxLines > 1 ? 16 : 14,
-          ),
-          suffixIcon: isRequired
-              ? Icon(
-            Icons.star,
-            size: 12,
-            color: Colors.red.withValues(alpha: 0.6),
-          )
-              : null,
+          borderRadius: BorderRadius.circular(12),
         ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: context.theme.colorScheme.primary,
+            width: 2,
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: Colors.red, width: 2),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: Colors.red, width: 2),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        errorText: errorText != null && errorText!.isNotEmpty
+            ? errorText
+            : null,
+        errorStyle: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+        ),
+        filled: true,
+        fillColor: context.theme.colorScheme.surfaceContainerLowest,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: maxLines > 1 ? 16 : 14,
+        ),
+        suffixIcon: isRequired
+            ? Icon(
+          Icons.star,
+          size: 12,
+          color: Colors.red.withValues(alpha: 0.6),
+        )
+            : null,
       ),
     );
   }
@@ -1599,51 +1552,39 @@ class IngredientTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: context.theme.colorScheme.shadow.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+    return TextField(
+      controller: controller,
+      maxLines: maxLines,
+      keyboardType: keyboardType,
+      style: TextStyle(
+        color: context.theme.colorScheme.onSurface,
+        fontSize: 16,
       ),
-      child: TextField(
-        controller: controller,
-        maxLines: maxLines,
-        keyboardType: keyboardType,
-        style: TextStyle(
-          color: context.theme.colorScheme.onSurface,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(
+          color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
           fontSize: 16,
         ),
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: TextStyle(
-            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
-            fontSize: 16,
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: context.theme.colorScheme.outline.withValues(alpha: 0.3),
+            width: 1.5,
           ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: context.theme.colorScheme.outline.withValues(alpha: 0.3),
-              width: 1.5,
-            ),
-            borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: context.theme.colorScheme.primary,
+            width: 2,
           ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: context.theme.colorScheme.primary,
-              width: 2,
-            ),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          filled: true,
-          fillColor: context.theme.colorScheme.surfaceContainerLowest,
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: maxLines > 1 ? 16 : 14,
-          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        filled: true,
+        fillColor: context.theme.colorScheme.surfaceContainerLowest,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: maxLines > 1 ? 16 : 14,
         ),
       ),
     );
