@@ -89,7 +89,7 @@ class EnhancedBaseWidgets {
       foregroundColor: foregroundColor ?? theme.colorScheme.onSurface,
       elevation: elevation,
       surfaceTintColor: Colors.transparent,
-      shadowColor: theme.colorScheme.shadow.withOpacity(0.1),
+      shadowColor: theme.colorScheme.shadow.withValues(alpha: 0.1),
     );
   }
   
@@ -141,7 +141,7 @@ class EnhancedBaseWidgets {
         borderRadius: borderRadius ?? BorderRadius.circular(MaterialDesignSystem.radius16),
         boxShadow: isElevated ? (boxShadow ?? [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),

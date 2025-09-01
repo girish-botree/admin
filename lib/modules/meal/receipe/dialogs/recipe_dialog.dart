@@ -841,7 +841,7 @@ class RecipeImageSection extends StatelessWidget {
                     icon: const Icon(Icons.close),
                     style: IconButton.styleFrom(
                       backgroundColor: context.theme.colorScheme.onSurface
-                          .withOpacity(0.7),
+                          .withValues(alpha: 0.7),
                       foregroundColor: context.theme.colorScheme
                           .surfaceContainerLowest,
                     ),
@@ -1994,7 +1994,8 @@ class RecipeEditImageSection extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: context.theme.colorScheme.primary.withOpacity(0.15),
+                    color: context.theme.colorScheme.primary.withValues(
+                        alpha: 0.15),
                   ),
                 ),
                 child: ClipRRect(
@@ -2088,7 +2089,8 @@ class RecipeEditImageSection extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: context.theme.colorScheme.primary.withOpacity(0.15),
+                    color: context.theme.colorScheme.primary.withValues(
+                        alpha: 0.15),
                   ),
                   color: Colors.black12,
                 ),
@@ -2105,8 +2107,8 @@ class RecipeEditImageSection extends StatelessWidget {
                     child: Icon(
                       Icons.image,
                       size: 48,
-                      color: context.theme.colorScheme.onSurface.withOpacity(
-                          0.2),
+                      color: context.theme.colorScheme.onSurface.withValues(
+                          alpha: 0.2),
                     ),
                   ),
                 ),

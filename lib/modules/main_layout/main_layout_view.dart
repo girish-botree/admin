@@ -35,7 +35,7 @@ class MainLayoutView extends GetView<MainLayoutController> {
               colorFilter: ColorFilter.mode(
                 controller.currentIndex == 0
                     ? context.theme.colorScheme.onSurface
-                    : Colors.grey,
+                    : context.theme.colorScheme.onSurfaceVariant,
                 BlendMode.srcIn,
               ),
             ),
@@ -48,7 +48,7 @@ class MainLayoutView extends GetView<MainLayoutController> {
               colorFilter: ColorFilter.mode(
                 controller.currentIndex == 1
                     ? context.theme.colorScheme.onSurface
-                    : Colors.grey,
+                    : context.theme.colorScheme.onSurfaceVariant,
                 BlendMode.srcIn,
               ),
             ),
@@ -61,7 +61,7 @@ class MainLayoutView extends GetView<MainLayoutController> {
               colorFilter: ColorFilter.mode(
                 controller.currentIndex == 2
                     ? context.theme.colorScheme.onSurface
-                    : Colors.grey,
+                    : context.theme.colorScheme.onSurfaceVariant,
                 BlendMode.srcIn,
               ),
             ),
@@ -74,7 +74,7 @@ class MainLayoutView extends GetView<MainLayoutController> {
               colorFilter: ColorFilter.mode(
                 controller.currentIndex == 3
                     ? context.theme.colorScheme.onSurface
-                    : Colors.grey,
+                    : context.theme.colorScheme.onSurfaceVariant,
                 BlendMode.srcIn,
               ),
             ),
@@ -111,7 +111,7 @@ class MainLayoutView extends GetView<MainLayoutController> {
                   colorFilter: ColorFilter.mode(
                     controller.currentIndex == 0
                         ? context.theme.colorScheme.primary
-                        : Colors.grey,
+                        : context.theme.colorScheme.onSurfaceVariant,
                     BlendMode.srcIn,
                   ),
                 ),
@@ -126,7 +126,7 @@ class MainLayoutView extends GetView<MainLayoutController> {
                   colorFilter: ColorFilter.mode(
                     controller.currentIndex == 1
                         ? context.theme.colorScheme.primary
-                        : Colors.grey,
+                        : context.theme.colorScheme.onSurfaceVariant,
                     BlendMode.srcIn,
                   ),
                 ),
@@ -141,7 +141,7 @@ class MainLayoutView extends GetView<MainLayoutController> {
                   colorFilter: ColorFilter.mode(
                     controller.currentIndex == 2
                         ? context.theme.colorScheme.primary
-                        : Colors.grey,
+                        : context.theme.colorScheme.onSurfaceVariant,
                     BlendMode.srcIn,
                   ),
                 ),
@@ -156,7 +156,7 @@ class MainLayoutView extends GetView<MainLayoutController> {
                   colorFilter: ColorFilter.mode(
                     controller.currentIndex == 3
                         ? context.theme.colorScheme.primary
-                        : Colors.grey,
+                        : context.theme.colorScheme.onSurfaceVariant,
                     BlendMode.srcIn,
                   ),
                 ),

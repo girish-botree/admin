@@ -14,7 +14,10 @@ class WebDashboard extends GetView<DashboardController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFAFBFC),
+      backgroundColor: Theme
+          .of(context)
+          .colorScheme
+          .surfaceContainerLowest,
       body: controller.obx(
             (state) => _buildWebDashboard(context, state!),
         onLoading: _buildWebShimmerLoading(context),
@@ -76,15 +79,26 @@ class WebDashboard extends GetView<DashboardController> {
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
+                      color: Theme
+                          .of(context)
+                          .colorScheme
+                          .onSurface
+                          .withAlpha(50),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.3),
+                        color: Theme
+                            .of(context)
+                            .colorScheme
+                            .onSurface
+                            .withAlpha(70),
                       ),
                     ),
                     child: AppText(
                       '✨ ' + 'dashboard'.tr,
-                      color: Colors.white,
+                      color: Theme
+                          .of(context)
+                          .colorScheme
+                          .onSurface,
                       size: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -92,7 +106,10 @@ class WebDashboard extends GetView<DashboardController> {
                   const SizedBox(height: 20),
                   AppText.semiBold(
                     'welcome_recipes'.tr,
-                    color: Colors.white,
+                    color: Theme
+                        .of(context)
+                        .colorScheme
+                        .onSurface,
                     size: 48,
                     textAlign: TextAlign.center,
                     height: 1.2,
@@ -100,7 +117,12 @@ class WebDashboard extends GetView<DashboardController> {
                   const SizedBox(height: 16),
                   AppText(
                     'Track your recipes, ingredients, and meal plans with beautiful insights',
-                    color: Colors.white.withValues(alpha: 0.9),
+                    color: Theme.of(
+                      context,
+                    )
+                        .colorScheme
+                        .onSurface
+                        .withAlpha(230),
                     size: 18,
                     textAlign: TextAlign.center,
                     fontWeight: FontWeight.w400,
@@ -145,7 +167,7 @@ class WebDashboard extends GetView<DashboardController> {
         // Hero section shimmer
         Container(
           height: 280,
-          color: const Color(0xFFE5E7EB),
+          color: Theme.of(context).colorScheme.surfaceContainerLowest,
         ),
 
         Container(
@@ -184,26 +206,26 @@ class WebDashboard extends GetView<DashboardController> {
               width: 120,
               height: 120,
               decoration: BoxDecoration(
-                color: const Color(0xFFFEF2F2),
+                color: Theme.of(context).colorScheme.errorContainer,
                 borderRadius: BorderRadius.circular(60),
               ),
               child: Icon(
                 Icons.error_outline_rounded,
-                color: const Color(0xFFDC2626),
+                color: Theme.of(context).colorScheme.onErrorContainer,
                 size: 48,
               ),
             ),
             const SizedBox(height: 32),
             AppText.semiBold(
               'error'.tr,
-              color: const Color(0xFF111827),
+              color: Theme.of(context).colorScheme.onSurface,
               size: 24,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
             AppText(
               error ?? 'no_data'.tr,
-              color: const Color(0xFF6B7280),
+              color: Theme.of(context).colorScheme.onSurface.withAlpha(150),
               size: 16,
               textAlign: TextAlign.center,
               height: 1.5,
@@ -214,8 +236,8 @@ class WebDashboard extends GetView<DashboardController> {
               icon: const Icon(Icons.refresh_rounded),
               label: Text('try_again'.tr),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2563EB),
-                foregroundColor: Colors.white,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 32,
                   vertical: 16,

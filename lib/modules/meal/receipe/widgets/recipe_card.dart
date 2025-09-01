@@ -31,13 +31,15 @@ class RecipeCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
-                color: context.theme.colorScheme.onSurface.withOpacity(0.08),
+                color: context.theme.colorScheme.onSurface.withValues(
+                    alpha: 0.08),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
             ],
             border: Border.all(
-                color: context.theme.colorScheme.onSurface.withOpacity(0.08)),
+                color: context.theme.colorScheme.onSurface.withValues(
+                    alpha: 0.08)),
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(18),
@@ -61,13 +63,13 @@ class RecipeCard extends StatelessWidget {
                             colors: hasImage
                                 ? [
                               Colors.transparent,
-                              Colors.black.withOpacity(0.4),
-                              Colors.black.withOpacity(0.7),
+                              Colors.black.withValues(alpha: 0.4),
+                              Colors.black.withValues(alpha: 0.7),
                             ]
                                 : [
-                              Colors.black.withOpacity(0.12),
-                              Colors.black.withOpacity(0.18),
-                              Colors.black.withOpacity(0.26),
+                              Colors.black.withValues(alpha: 0.12),
+                              Colors.black.withValues(alpha: 0.18),
+                              Colors.black.withValues(alpha: 0.26),
                             ],
                             stops: const [0.0, 0.6, 1.0],
                           ),
@@ -141,7 +143,7 @@ class RecipeCard extends StatelessWidget {
                                   label: recipe['cuisine']?.toString() ?? '',
                                   backgroundColor: context.theme.colorScheme
                                       .onSurface
-                                      .withOpacity(0.16),
+                                      .withValues(alpha: 0.16),
                                 ),
                                 const SizedBox(width: 6),
                               ],
@@ -152,7 +154,7 @@ class RecipeCard extends StatelessWidget {
                                       .toString()} servings',
                                   backgroundColor: context.theme.colorScheme
                                       .onSurface
-                                      .withOpacity(0.14),
+                                      .withValues(alpha: 0.14),
                                 ),
                             ],
                           ),
@@ -320,16 +322,16 @@ class RecipePopupMenu extends StatelessWidget {
       width: 32,
       height: 32,
       decoration: BoxDecoration(
-        color: context.theme.colorScheme.onSurface.withOpacity(0.4),
+        color: context.theme.colorScheme.onSurface.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: context.theme.colorScheme.surfaceContainerLowest.withOpacity(
-              0.2),
+          color: context.theme.colorScheme.surfaceContainerLowest.withValues(
+              alpha: 0.2),
           width: 0.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: context.theme.colorScheme.onSurface.withOpacity(0.2),
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.2),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -368,7 +370,8 @@ class RecipePopupMenu extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: context.theme.colorScheme.onSurface.withOpacity(0.1),
+                    color: context.theme.colorScheme.onSurface.withValues(
+                        alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -395,7 +398,8 @@ class RecipePopupMenu extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: context.theme.colorScheme.onSurface.withOpacity(0.1),
+                    color: context.theme.colorScheme.onSurface.withValues(
+                        alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -437,16 +441,16 @@ class DietaryBadge extends StatelessWidget {
       constraints: const BoxConstraints(maxWidth: 80), // Prevent overflow
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: context.theme.colorScheme.onSurface.withOpacity(0.9),
+        color: context.theme.colorScheme.onSurface.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: context.theme.colorScheme.surfaceContainerLowest.withOpacity(
-              0.3),
+          color: context.theme.colorScheme.surfaceContainerLowest.withValues(
+              alpha: 0.3),
           width: 0.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: context.theme.colorScheme.onSurface.withOpacity(0.3),
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.3),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -512,7 +516,7 @@ class RecipeInfoChip extends StatelessWidget {
         color: backgroundColor,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.white.withOpacity(0.2),
+          color: Colors.white.withValues(alpha: 0.2),
           width: 0.5,
         ),
       ),

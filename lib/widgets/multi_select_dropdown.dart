@@ -205,7 +205,8 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown>
             child: GestureDetector(
               onTap: _closeDropdown,
               child: Container(
-                color: Colors.black.withOpacity(0.3), // Semi-transparent background
+                color: Colors.black.withValues(
+                    alpha: 0.3), // Semi-transparent background
               ),
             ),
           ),
@@ -351,7 +352,7 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown>
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: theme.shadowColor.withOpacity(0.05),
+                color: theme.shadowColor.withValues(alpha: 0.05),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -365,7 +366,7 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown>
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: widget.enabled
                       ? theme.colorScheme.onSurface
-                      : theme.colorScheme.onSurface.withOpacity(0.38),
+                      : theme.colorScheme.onSurface.withValues(alpha: 0.38),
                 ),
                 decoration: InputDecoration(
                   labelText: widget.isRequired ? '${widget.label} *' : widget
@@ -379,8 +380,8 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown>
                     child: Icon(
                       Icons.keyboard_arrow_down,
                       color: widget.enabled
-                          ? theme.colorScheme.onSurface.withOpacity(0.7)
-                          : theme.colorScheme.onSurface.withOpacity(0.38),
+                          ? theme.colorScheme.onSurface.withValues(alpha: 0.7)
+                          : theme.colorScheme.onSurface.withValues(alpha: 0.38),
                     ),
                   ),
                   filled: true,
@@ -388,12 +389,13 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown>
                       (widget.enabled
                           ? theme.colorScheme.surfaceContainerLowest
                           : theme.colorScheme.surfaceContainerLowest
-                          .withOpacity(0.5)),
+                          .withValues(alpha: 0.5)),
                   border: widget.border ??
                       OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(
-                          color: theme.colorScheme.outline.withOpacity(0.3),
+                          color: theme.colorScheme.outline.withValues(
+                              alpha: 0.3),
                           width: 1.5,
                         ),
                       ),
@@ -401,7 +403,8 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown>
                       OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(
-                          color: theme.colorScheme.outline.withOpacity(0.3),
+                          color: theme.colorScheme.outline.withValues(
+                              alpha: 0.3),
                           width: 1.5,
                         ),
                       ),
@@ -421,7 +424,8 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown>
                       OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(
-                          color: theme.colorScheme.outline.withOpacity(0.12),
+                          color: theme.colorScheme.outline.withValues(
+                              alpha: 0.12),
                           width: 1,
                         ),
                       ),
@@ -595,11 +599,11 @@ class _DropdownMenuState extends State<_DropdownMenu> {
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: theme.colorScheme.outline.withOpacity(0.2),
+          color: theme.colorScheme.outline.withValues(alpha: 0.2),
         ),
         boxShadow: [
           BoxShadow(
-            color: theme.shadowColor.withOpacity(0.15),
+            color: theme.shadowColor.withValues(alpha: 0.15),
             blurRadius: 24,
             offset: const Offset(0, 8),
           ),
@@ -622,7 +626,7 @@ class _DropdownMenuState extends State<_DropdownMenu> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primaryContainer.withOpacity(0.1),
+        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.1),
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
@@ -684,7 +688,7 @@ class _DropdownMenuState extends State<_DropdownMenu> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
       ),
       child: TextField(
         controller: widget.searchController,
@@ -695,7 +699,7 @@ class _DropdownMenuState extends State<_DropdownMenu> {
         decoration: InputDecoration(
           hintText: 'Search items...',
           hintStyle: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurface.withOpacity(0.6),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
           ),
           prefixIcon: Icon(
             Icons.search,
@@ -713,7 +717,7 @@ class _DropdownMenuState extends State<_DropdownMenu> {
                 },
                 icon: Icon(
                   Icons.clear,
-                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   size: 18,
                 ),
               )
@@ -745,13 +749,13 @@ class _DropdownMenuState extends State<_DropdownMenu> {
             Icon(
               Icons.search_off,
               size: 48,
-              color: theme.colorScheme.onSurface.withOpacity(0.3),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
             ),
             const SizedBox(height: 12),
             Text(
               'No items found',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
           ],
@@ -785,8 +789,9 @@ class _DropdownMenuState extends State<_DropdownMenu> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: isSelected
-              ? theme.colorScheme.primaryContainer.withOpacity(0.1)
-              : theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+              ? theme.colorScheme.primaryContainer.withValues(alpha: 0.1)
+              : theme.colorScheme.surfaceContainerHighest.withValues(
+              alpha: 0.5),
           borderRadius: BorderRadius.circular(8),
         ),
         margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -811,9 +816,9 @@ class _DropdownMenuState extends State<_DropdownMenu> {
                 height: 36,
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? theme.colorScheme.primary.withOpacity(0.1)
-                      : theme.colorScheme.surfaceContainerHighest.withOpacity(
-                          0.5,
+                      ? theme.colorScheme.primary.withValues(alpha: 0.1)
+                      : theme.colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.5,
                         ),
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -849,7 +854,8 @@ class _DropdownMenuState extends State<_DropdownMenu> {
                       Text(
                         item.description,
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurface.withOpacity(0.7),
+                          color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.7),
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -862,7 +868,7 @@ class _DropdownMenuState extends State<_DropdownMenu> {
             if (!canSelect && !isSelected)
               Icon(
                 Icons.block,
-                color: theme.colorScheme.error.withOpacity(0.6),
+                color: theme.colorScheme.error.withValues(alpha: 0.6),
                 size: 20,
               ),
           ],
@@ -876,7 +882,7 @@ class _DropdownMenuState extends State<_DropdownMenu> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(16),
           bottomRight: Radius.circular(16),
@@ -888,14 +894,14 @@ class _DropdownMenuState extends State<_DropdownMenu> {
             Text(
               '$selectedCount items selected',
               style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             )
           else
             Text(
               '$selectedCount items selected',
               style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
           const Spacer(),

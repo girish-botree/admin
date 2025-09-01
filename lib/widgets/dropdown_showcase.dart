@@ -247,7 +247,7 @@ class _DropdownShowcaseState extends State<DropdownShowcase> {
                           .of(context)
                           .colorScheme
                           .onSurface
-                          .withOpacity(0.7),
+                          .withValues(alpha: 0.7),
                     ),
                   ),
                 ],
@@ -273,14 +273,14 @@ class _DropdownShowcaseState extends State<DropdownShowcase> {
               .of(context)
               .colorScheme
               .outline
-              .withOpacity(0.1),
+              .withValues(alpha: 0.1),
         ),
         boxShadow: [
           BoxShadow(
             color: Theme
                 .of(context)
                 .shadowColor
-                .withOpacity(0.05),
+                .withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -317,7 +317,7 @@ class _DropdownShowcaseState extends State<DropdownShowcase> {
                     .of(context)
                     .colorScheme
                     .onSurface
-                    .withOpacity(0.7),
+                    .withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: 16),
@@ -378,7 +378,7 @@ class _DropdownShowcaseState extends State<DropdownShowcase> {
                     .of(context)
                     .colorScheme
                     .outline
-                    .withOpacity(0.1),
+                    .withValues(alpha: 0.1),
               ),
             ),
             child: Row(
@@ -390,7 +390,7 @@ class _DropdownShowcaseState extends State<DropdownShowcase> {
                         .of(context)
                         .colorScheme
                         .primary
-                        .withOpacity(0.1),
+                        .withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
@@ -433,7 +433,7 @@ class _DropdownShowcaseState extends State<DropdownShowcase> {
                               .of(context)
                               .colorScheme
                               .onSurface
-                              .withOpacity(0.7),
+                              .withValues(alpha: 0.7),
                         ),
                       ),
                     ],
@@ -473,7 +473,7 @@ class _DropdownShowcaseState extends State<DropdownShowcase> {
                 .of(context)
                 .colorScheme
                 .primaryContainer
-                .withOpacity(0.7),
+                .withValues(alpha: 0.7),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -485,7 +485,7 @@ class _DropdownShowcaseState extends State<DropdownShowcase> {
                 .of(context)
                 .colorScheme
                 .primary
-                .withOpacity(0.1),
+                .withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -528,7 +528,7 @@ class _DropdownShowcaseState extends State<DropdownShowcase> {
                   .of(context)
                   .colorScheme
                   .onPrimaryContainer
-                  .withOpacity(0.8),
+                  .withValues(alpha: 0.8),
             ),
             textAlign: TextAlign.center,
           ),
@@ -544,7 +544,7 @@ class _DropdownShowcaseState extends State<DropdownShowcase> {
                   .of(context)
                   .colorScheme
                   .onPrimaryContainer
-                  .withOpacity(0.7),
+                  .withValues(alpha: 0.7),
               fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,

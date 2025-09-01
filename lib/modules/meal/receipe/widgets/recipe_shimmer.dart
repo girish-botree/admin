@@ -90,7 +90,7 @@ class ShimmerRecipeCardState extends State<ShimmerRecipeCard>
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
-                color: context.theme.colorScheme.shadow.withOpacity(0.1),
+                color: context.theme.colorScheme.shadow.withValues(alpha: 0.1),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -114,7 +114,7 @@ class ShimmerRecipeCardState extends State<ShimmerRecipeCard>
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        Colors.black.withOpacity(0.3)
+                        Colors.black.withValues(alpha: 0.3)
                       ],
                       stops: const [0.5, 1.0],
                     ),

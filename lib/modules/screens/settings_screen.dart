@@ -156,7 +156,8 @@ class SettingsScreen extends StatelessWidget {
           decoration: BoxDecoration(
             border: !isLast ? Border(
               bottom: BorderSide(
-                color: Get.context!.theme.colorScheme.outline.withOpacity(0.1),
+                color: Get.context!.theme.colorScheme.outline.withValues(
+                    alpha: 0.1),
                 width: 0.5,
               ),
             ) : null,
@@ -196,7 +197,7 @@ class SettingsScreen extends StatelessWidget {
                 Icons.chevron_right,
                 size: 20,
                 color: Get.context!.theme.colorScheme.onSurfaceVariant
-                    .withOpacity(0.6),
+                    .withValues(alpha: 0.6),
               ),
             ],
           ),

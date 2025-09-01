@@ -91,7 +91,8 @@ class MobileLogin extends GetView<LoginController> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
+                  color: context.theme.colorScheme.onSurface.withValues(
+                      alpha: 0.1),
                   blurRadius: 16,
                   offset: const Offset(0, 8),
                 ),
@@ -186,7 +187,8 @@ class MobileLogin extends GetView<LoginController> {
             borderRadius: BorderRadius.circular(25),
           ),
           elevation: 8,
-          shadowColor: Colors.black.withValues(alpha: 0.3),
+          shadowColor: context.theme.colorScheme.onSurface.withValues(
+              alpha: 0.3),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -246,7 +248,7 @@ class MobileLogin extends GetView<LoginController> {
             const SizedBox(width: 16),
             buildSocialButton(
               icon: Icons.apple,
-              color: Colors.black,
+              color: context.theme.colorScheme.onSurface,
                               onTap: () {},
               containerWidth: 56,
               containerHeight: 56,
@@ -352,7 +354,8 @@ class MobileLogin extends GetView<LoginController> {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
+                      color: context.theme.colorScheme.onSurface.withValues(
+                          alpha: 0.1),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),

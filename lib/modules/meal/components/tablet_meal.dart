@@ -118,7 +118,10 @@ class TabletMeal extends GetView<MealController> {
       subtitle: 'Discover & manage your cooking recipes',
       titleSize: 28,
       subtitleSize: 20,
-      gradientColors: const [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+      gradientColors: _CardColors
+          .recipes(context)
+          .gradient
+          .colors,
     );
   }
 
@@ -130,7 +133,10 @@ class TabletMeal extends GetView<MealController> {
       subtitle: 'Track & organize your food ingredients',
       titleSize: 28,
       subtitleSize: 20,
-      gradientColors: const [Color(0xFF10B981), Color(0xFF059669)],
+      gradientColors: _CardColors
+          .ingredients(context)
+          .gradient
+          .colors,
     );
   }
 
@@ -142,13 +148,13 @@ class TabletMeal extends GetView<MealController> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: context.theme.shadowColor.withOpacity(0.1),
+            color: context.theme.shadowColor.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
         ],
         border: Border.all(
-          color: context.theme.colorScheme.outline.withOpacity(0.1),
+          color: context.theme.colorScheme.outline.withValues(alpha: 0.1),
           width: 1,
         ),
       ),
@@ -169,7 +175,7 @@ class TabletMeal extends GetView<MealController> {
         Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: context.theme.colorScheme.primary.withOpacity(0.1),
+            color: context.theme.colorScheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(
@@ -228,6 +234,49 @@ class TabletMeal extends GetView<MealController> {
   }
 }
 
+class _CardColors {
+  final Color primary;
+  final Color secondary;
+  final Gradient gradient;
+
+  const _CardColors({
+    required this.primary,
+    required this.secondary,
+    required this.gradient,
+  });
+
+  factory _CardColors.recipes(BuildContext context) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary.withValues(alpha: 0.7);
+    final secondary = theme.colorScheme.secondary.withValues(alpha: 0.6);
+    return _CardColors(
+      primary: primary,
+      secondary: secondary,
+      gradient: LinearGradient(
+        colors: [primary, secondary],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+    );
+  }
+
+  factory _CardColors.ingredients(BuildContext context) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.tertiary.withValues(alpha: 0.7);
+    final secondary = theme.colorScheme.tertiaryContainer.withValues(
+        alpha: 0.8);
+    return _CardColors(
+      primary: primary,
+      secondary: secondary,
+      gradient: LinearGradient(
+        colors: [primary, secondary],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+    );
+  }
+}
+
 class MealCard extends StatelessWidget {
   final VoidCallback onTap;
   final IconData iconData;
@@ -269,7 +318,7 @@ class MealCard extends StatelessWidget {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: gradientColors[0].withOpacity(0.3),
+                  color: gradientColors[0].withValues(alpha: 0.3),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 ),
@@ -282,10 +331,10 @@ class MealCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: Colors.white.withOpacity(0.3),
+                        color: Colors.white.withValues(alpha: 0.3),
                         width: 1,
                       ),
                     ),
@@ -309,7 +358,7 @@ class MealCard extends StatelessWidget {
                         const SizedBox(height: 8),
                         AppText(
                           subtitle,
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                           size: subtitleSize,
                         ),
                       ],
@@ -317,7 +366,7 @@ class MealCard extends StatelessWidget {
                   ),
                   Icon(
                     Icons.arrow_forward_ios_rounded,
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.withValues(alpha: 0.8),
                     size: 24,
                   ),
                 ],

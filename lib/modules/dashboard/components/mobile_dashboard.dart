@@ -27,8 +27,8 @@ class MobileDashboard extends GetView<DashboardController> {
   Widget _buildMobileContent(BuildContext context, DashboardStats stats) {
     return RefreshIndicator(
       onRefresh: () => controller.refreshData(),
-      color: const Color(0xFF2563EB),
-      backgroundColor: Colors.white,
+      color: context.theme.colorScheme.primary,
+      backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
       strokeWidth: 2.5,
       child: CustomScrollView(
         slivers: [
@@ -57,18 +57,18 @@ class MobileDashboard extends GetView<DashboardController> {
       floating: false,
       pinned: true,
       elevation: 0,
-      backgroundColor: Colors.transparent,
+      backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
       clipBehavior: Clip.hardEdge,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Color(0xFF2563EB),
-                Color(0xFF7C3AED),
-                Color(0xFFDB2777),
+                context.theme.colorScheme.primary,
+                context.theme.colorScheme.secondary,
+                context.theme.colorScheme.tertiary,
               ],
             ),
           ),
@@ -85,15 +85,17 @@ class MobileDashboard extends GetView<DashboardController> {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
+                      color: context.theme.colorScheme.surfaceContainerLowest
+                          .withAlpha(51),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.3),
+                        color: context.theme.colorScheme.surfaceContainerLowest
+                            .withAlpha(77),
                       ),
                     ),
-                    child: const AppText(
+                    child: AppText(
                       '✨ Dashboard',
-                      color: Colors.white,
+                      color: context.theme.colorScheme.onSurface,
                       size: 12,
                       fontWeight: FontWeight.w500,
                     ),
@@ -101,12 +103,12 @@ class MobileDashboard extends GetView<DashboardController> {
                   const SizedBox(height: 12),
                   AppText.h2(
                     'recipes'.tr,
-                    color: Colors.white,
+                    color: context.theme.colorScheme.surfaceContainerLowest,
                   ),
                   const SizedBox(height: 6),
                   AppText(
                     'Track your culinary journey',
-                    color: Colors.white.withValues(alpha: 0.9),
+                    color: context.theme.colorScheme.onSurfaceVariant,
                     size: 16,
                     fontWeight: FontWeight.w400,
                   ),
@@ -124,15 +126,17 @@ class MobileDashboard extends GetView<DashboardController> {
             icon: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
+                color: context.theme.colorScheme.surfaceContainerLowest
+                    .withAlpha(51),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.3),
+                  color: context.theme.colorScheme.surfaceContainerLowest
+                      .withAlpha(77),
                 ),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.refresh_rounded,
-                color: Colors.white,
+                color: context.theme.colorScheme.onSurfaceVariant,
                 size: 20,
               ),
             ),
@@ -147,14 +151,13 @@ class MobileDashboard extends GetView<DashboardController> {
     return CustomScrollView(
       slivers: [
         // Header shimmer
-        const SliverAppBar(
+        SliverAppBar(
           expandedHeight: 200,
           floating: false,
           pinned: true,
           elevation: 0,
-          backgroundColor: Color(0xFFE5E7EB),
+          backgroundColor: context.theme.colorScheme.surfaceContainerLow,
         ),
-
         SliverPadding(
           padding: const EdgeInsets.all(20.0),
           sliver: SliverList(
@@ -183,25 +186,25 @@ class MobileDashboard extends GetView<DashboardController> {
               width: 100,
               height: 100,
               decoration: BoxDecoration(
-                color: const Color(0xFFFEF2F2),
+                color: context.theme.colorScheme.errorContainer,
                 borderRadius: BorderRadius.circular(50),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.error_outline_rounded,
-                color: Color(0xFFDC2626),
+                color: context.theme.colorScheme.error,
                 size: 40,
               ),
             ),
             const SizedBox(height: 24),
             AppText.h4(
               'error'.tr,
-              color: const Color(0xFF111827),
+              color: context.theme.colorScheme.onSurface,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             AppText(
               error ?? 'no_data'.tr,
-              color: const Color(0xFF6B7280),
+              color: context.theme.colorScheme.onSurfaceVariant,
               size: 14,
               textAlign: TextAlign.center,
               height: 1.4,
@@ -212,8 +215,8 @@ class MobileDashboard extends GetView<DashboardController> {
               icon: const Icon(Icons.refresh_rounded),
               label: Text('try_again'.tr),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2563EB),
-                foregroundColor: Colors.white,
+                backgroundColor: context.theme.colorScheme.primary,
+                foregroundColor: context.theme.colorScheme.onPrimary,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,
                   vertical: 12,
@@ -241,25 +244,25 @@ class MobileDashboard extends GetView<DashboardController> {
               width: 100,
               height: 100,
               decoration: BoxDecoration(
-                color: const Color(0xFFF3F4F6),
+                color: context.theme.colorScheme.surfaceContainerHigh,
                 borderRadius: BorderRadius.circular(50),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.analytics_outlined,
-                color: Color(0xFF6B7280),
+                color: context.theme.colorScheme.onSurfaceVariant,
                 size: 40,
               ),
             ),
             const SizedBox(height: 24),
             AppText.h4(
               'no_data'.tr,
-              color: const Color(0xFF111827),
+              color: context.theme.colorScheme.onSurface,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             AppText(
               'dashboard_data'.tr,
-              color: const Color(0xFF6B7280),
+              color: context.theme.colorScheme.onSurfaceVariant,
               size: 14,
               textAlign: TextAlign.center,
               height: 1.4,
@@ -270,8 +273,8 @@ class MobileDashboard extends GetView<DashboardController> {
               icon: const Icon(Icons.refresh_rounded),
               label: Text('refresh'.tr),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2563EB),
-                foregroundColor: Colors.white,
+                backgroundColor: context.theme.colorScheme.primary,
+                foregroundColor: context.theme.colorScheme.onPrimary,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,
                   vertical: 12,

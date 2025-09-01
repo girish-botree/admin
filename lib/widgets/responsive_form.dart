@@ -252,7 +252,10 @@ class ResponsiveDropdown<T> extends StatelessWidget {
         borderRadius: BorderRadius.circular(responsiveBorderRadius),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).shadowColor.withOpacity(0.05),
+            color: Theme
+                .of(context)
+                .shadowColor
+                .withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -282,18 +285,30 @@ class ResponsiveDropdown<T> extends StatelessWidget {
           filled: true,
           fillColor: enabled
               ? Theme.of(context).colorScheme.surfaceContainerLowest
-              : Theme.of(context).colorScheme.surfaceContainerLowest.withOpacity(0.5),
+              : Theme
+              .of(context)
+              .colorScheme
+              .surfaceContainerLowest
+              .withValues(alpha: 0.5),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(responsiveBorderRadius),
             borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+              color: Theme
+                  .of(context)
+                  .colorScheme
+                  .outline
+                  .withValues(alpha: 0.3),
               width: 1.5,
             ),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(responsiveBorderRadius),
             borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+              color: Theme
+                  .of(context)
+                  .colorScheme
+                  .outline
+                  .withValues(alpha: 0.3),
               width: 1.5,
             ),
           ),
@@ -311,7 +326,11 @@ class ResponsiveDropdown<T> extends StatelessWidget {
           disabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(responsiveBorderRadius),
             borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.outline.withOpacity(0.12),
+              color: Theme
+                  .of(context)
+                  .colorScheme
+                  .outline
+                  .withValues(alpha: 0.12),
               width: 1,
             ),
           ),

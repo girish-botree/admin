@@ -545,7 +545,8 @@ class _NutritionalOverview extends StatelessWidget {
                   value: nutritionStats['avgCalories']?.toStringAsFixed(0) ??
                       '0',
                   unit: 'kcal',
-                  color: Colors.orange,
+                  color: context.theme.colorScheme
+                      .primary, // Changed Colors.orange to context.theme.colorScheme.primary
                 ),
               ),
               const SizedBox(width: 12),

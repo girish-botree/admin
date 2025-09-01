@@ -9,14 +9,12 @@ import 'meal_plan_form_dialog.dart';
 class MealSection extends StatelessWidget {
   final String title;
   final List<MealPlan> mealPlans;
-  final IconData icon;
   final Color? borderColor;
 
   const MealSection({
     Key? key,
     required this.title,
     required this.mealPlans,
-    required this.icon,
     this.borderColor,
   }) : super(key: key);
 
@@ -29,32 +27,32 @@ class MealSection extends StatelessWidget {
     switch (foodType) {
       case FoodType.vegan:
         iconData = Icons.grass;
-        iconColor = Colors.green;
+        iconColor = theme.colorScheme.primary;
         break;
       case FoodType.vegetarian:
         iconData = Icons.eco;
-        iconColor = Colors.lightGreen;
+        iconColor = theme.colorScheme.secondary;
         break;
       case FoodType.eggitarian:
         iconData = Icons.egg;
-        iconColor = Colors.orange;
+        iconColor = theme.colorScheme.tertiary;
         break;
       case FoodType.nonVegetarian:
         iconData = Icons.restaurant;
-        iconColor = Colors.red;
+        iconColor = theme.colorScheme.error;
         break;
       case FoodType.other:
         iconData = Icons.more_horiz;
-        iconColor = Colors.grey;
+        iconColor = theme.colorScheme.outline;
         break;
     }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: iconColor.withOpacity(0.1),
+        color: iconColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: iconColor.withOpacity(0.3), width: 1),
+        border: Border.all(color: iconColor.withValues(alpha: 0.3), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -78,7 +76,10 @@ class MealSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
+    IconData mealIcon = Icons.restaurant;
+    Color mealIconColor = theme.colorScheme.primary;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
@@ -95,7 +96,7 @@ class MealSection extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, color: theme.colorScheme.onSurface, size: 20),
+              Icon(mealIcon, color: mealIconColor, size: 20),
               const SizedBox(width: 8),
               AppText.semiBold(title, color: theme.colorScheme.onSurface,
                   size: Responsive.getSubtitleTextSize(context)),
@@ -195,14 +196,15 @@ class MealSection extends StatelessWidget {
                               Container(
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
-                                  color: Colors.blue.withOpacity(0.1),
+                                  color: theme.colorScheme.primary.withValues(
+                                      alpha: 0.1),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
-                                child: const Icon(Icons.edit_rounded, size: 14,
-                                    color: Colors.blue),
+                                child: Icon(Icons.edit_rounded, size: 14,
+                                    color: theme.colorScheme.primary),
                               ),
                               const SizedBox(width: 12),
-                              const Text('Edit Plan', style: TextStyle(
+                              Text('Edit Plan', style: TextStyle(
                                   fontWeight: FontWeight.w500)),
                             ],
                           ),
@@ -214,16 +216,18 @@ class MealSection extends StatelessWidget {
                               Container(
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
-                                  color: Colors.red.withOpacity(0.1),
+                                  color: theme.colorScheme.error.withValues(
+                                      alpha: 0.1),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                     Icons.delete_rounded, size: 14,
-                                    color: Colors.red),
+                                    color: theme.colorScheme.error),
                               ),
                               const SizedBox(width: 12),
-                              const Text('Delete Plan',
-                                  style: TextStyle(color: Colors.red,
+                              Text('Delete Plan',
+                                  style: TextStyle(
+                                      color: theme.colorScheme.error,
                                       fontWeight: FontWeight.w500)),
                             ],
                           ),
@@ -258,13 +262,13 @@ class MealSection extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.1),
+                  color: context.theme.colorScheme.error.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.delete_outline_rounded,
                   size: 32,
-                  color: Colors.red,
+                  color: context.theme.colorScheme.error,
                 ),
               ),
               const SizedBox(height: 24),
@@ -327,8 +331,8 @@ class MealSection extends StatelessWidget {
                             Get.snackbar(
                               'Error',
                               'Failed to delete meal plan: ${e.toString()}',
-                              backgroundColor: Colors.red,
-                              colorText: Colors.white,
+                              backgroundColor: context.theme.colorScheme.error,
+                              colorText: context.theme.colorScheme.onError,
                               duration: const Duration(seconds: 5),
                             );
                           }
@@ -337,15 +341,15 @@ class MealSection extends StatelessWidget {
                           Get.snackbar(
                             'Error',
                             'Cannot delete meal plan: Invalid ID (${plan.id})',
-                            backgroundColor: Colors.red,
-                            colorText: Colors.white,
+                            backgroundColor: context.theme.colorScheme.error,
+                            colorText: context.theme.colorScheme.onError,
                             duration: const Duration(seconds: 5),
                           );
                         }
                       },
                       style: FilledButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
+                        backgroundColor: context.theme.colorScheme.error,
+                        foregroundColor: context.theme.colorScheme.onError,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),

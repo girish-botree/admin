@@ -133,7 +133,7 @@ class EnhancedThemeConfig {
         vertical: MaterialDesignSystem.spacing12,
       ),
       hintStyle: TextStyle(
-        color: _lightColorScheme.onSurface.withOpacity(0.6),
+        color: _lightColorScheme.onSurface.withValues(alpha: 0.6),
         fontSize: 16,
         fontFamily: MaterialDesignSystem.fontFamily,
       ),
@@ -158,7 +158,7 @@ class EnhancedThemeConfig {
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: _lightColorScheme.surface,
       selectedItemColor: _lightColorScheme.primary,
-      unselectedItemColor: _lightColorScheme.onSurface.withOpacity(0.6),
+      unselectedItemColor: _lightColorScheme.onSurface.withValues(alpha: 0.6),
       type: BottomNavigationBarType.fixed,
       elevation: MaterialDesignSystem.elevation8,
       selectedLabelStyle: TextStyle(
@@ -221,7 +221,7 @@ class EnhancedThemeConfig {
     
     // Divider Theme
     dividerTheme: DividerThemeData(
-      color: _lightColorScheme.outline.withOpacity(0.2),
+      color: _lightColorScheme.outline.withValues(alpha: 0.2),
       thickness: 1,
       space: 1,
     ),
@@ -368,7 +368,7 @@ class EnhancedThemeConfig {
         vertical: MaterialDesignSystem.spacing12,
       ),
       hintStyle: TextStyle(
-        color: _darkColorScheme.onSurface.withOpacity(0.6),
+        color: _darkColorScheme.onSurface.withValues(alpha: 0.6),
         fontSize: 16,
         fontFamily: MaterialDesignSystem.fontFamily,
       ),
@@ -393,7 +393,7 @@ class EnhancedThemeConfig {
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: _darkColorScheme.surface,
       selectedItemColor: _darkColorScheme.primary,
-      unselectedItemColor: _darkColorScheme.onSurface.withOpacity(0.6),
+      unselectedItemColor: _darkColorScheme.onSurface.withValues(alpha: 0.6),
       type: BottomNavigationBarType.fixed,
       elevation: MaterialDesignSystem.elevation8,
       selectedLabelStyle: TextStyle(
@@ -456,7 +456,7 @@ class EnhancedThemeConfig {
     
     // Divider Theme
     dividerTheme: DividerThemeData(
-      color: _darkColorScheme.outline.withOpacity(0.2),
+      color: _darkColorScheme.outline.withValues(alpha: 0.2),
       thickness: 1,
       space: 1,
     ),

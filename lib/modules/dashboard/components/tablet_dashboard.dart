@@ -14,12 +14,23 @@ class TabletDashboard extends GetView<DashboardController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFAFBFC),
-      body: controller.obx(
-        (DashboardStats? stats) => _buildTabletContent(context, stats!),
-        onLoading: _buildTabletShimmerLoading(context),
-        onError: (String? error) => _buildTabletErrorState(context, error),
-        onEmpty: _buildTabletEmptyState(context),
+      backgroundColor: Theme
+          .of(context)
+          .colorScheme
+          .onSurface,
+      body: Container(
+        decoration: BoxDecoration(
+          color: Theme
+              .of(context)
+              .colorScheme
+              .surfaceContainerLowest,
+        ),
+        child: controller.obx(
+              (DashboardStats? stats) => _buildTabletContent(context, stats!),
+          onLoading: _buildTabletShimmerLoading(context),
+          onError: (String? error) => _buildTabletErrorState(context, error),
+          onEmpty: _buildTabletEmptyState(context),
+        ),
       ),
     );
   }
@@ -27,8 +38,14 @@ class TabletDashboard extends GetView<DashboardController> {
   Widget _buildTabletContent(BuildContext context, DashboardStats stats) {
     return RefreshIndicator(
       onRefresh: () => controller.refreshData(),
-      color: const Color(0xFF2563EB),
-      backgroundColor: Colors.white,
+      color: Theme
+          .of(context)
+          .colorScheme
+          .primary,
+      backgroundColor: Theme
+          .of(context)
+          .colorScheme
+          .surfaceContainerLowest,
       strokeWidth: 2.5,
       child: CustomScrollView(
         slivers: [
@@ -56,14 +73,14 @@ class TabletDashboard extends GetView<DashboardController> {
       backgroundColor: Colors.transparent,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Color(0xFF2563EB),
-                Color(0xFF7C3AED),
-                Color(0xFFDB2777),
+                Theme.of(context).colorScheme.primary,
+                Theme.of(context).colorScheme.primaryContainer,
+                Theme.of(context).colorScheme.error,
               ],
               stops: [0.0, 0.6, 1.0],
             ),
@@ -81,15 +98,22 @@ class TabletDashboard extends GetView<DashboardController> {
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
+                      color: Theme
+                          .of(
+                        context,
+                      ).colorScheme.onSurface.withAlpha(50),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.3),
-                      ),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withAlpha(100)),
                     ),
                     child: AppText(
                       '✨ Analytics Dashboard',
-                      color: Colors.white,
+                      color: Theme
+                          .of(context)
+                          .colorScheme
+                          .onPrimary,
                       size: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -97,12 +121,19 @@ class TabletDashboard extends GetView<DashboardController> {
                   const SizedBox(height: 16),
                   AppText.h1(
                     'recipes'.tr,
-                    color: Colors.white,
+                    color: Theme
+                        .of(context)
+                        .colorScheme
+                        .onPrimary,
                   ),
                   const SizedBox(height: 8),
                   AppText(
                     'track_recipes'.tr,
-                    color: Colors.white.withValues(alpha: 0.9),
+                    color: Theme
+                        .of(context)
+                        .colorScheme
+                        .onPrimary
+                        .withAlpha(230),
                     size: 18,
                     fontWeight: FontWeight.w400,
                   ),
@@ -120,15 +151,18 @@ class TabletDashboard extends GetView<DashboardController> {
             icon: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
+                color: Theme.of(context).colorScheme.onSurface.withAlpha(50),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.3),
+                  color: Theme.of(context).colorScheme.onSurface.withAlpha(100),
                 ),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.refresh_rounded,
-                color: Colors.white,
+                color: Theme
+                    .of(context)
+                    .colorScheme
+                    .onPrimary,
                 size: 24,
               ),
             ),
@@ -159,7 +193,7 @@ class TabletDashboard extends GetView<DashboardController> {
           floating: false,
           pinned: true,
           elevation: 0,
-          backgroundColor: const Color(0xFFE5E7EB),
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
         ),
 
         SliverPadding(
@@ -195,25 +229,25 @@ class TabletDashboard extends GetView<DashboardController> {
               width: 120,
               height: 120,
               decoration: BoxDecoration(
-                color: const Color(0xFFFEF2F2),
+                color: Theme.of(context).colorScheme.errorContainer,
                 borderRadius: BorderRadius.circular(60),
               ),
               child: Icon(
                 Icons.error_outline_rounded,
-                color: const Color(0xFFDC2626),
+                color: Theme.of(context).colorScheme.onErrorContainer,
                 size: 48,
               ),
             ),
             const SizedBox(height: 32),
             AppText.h3(
               'error'.tr,
-              color: const Color(0xFF111827),
+              color: Theme.of(context).colorScheme.onSurface,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
             AppText(
               error ?? 'no_data'.tr,
-              color: const Color(0xFF6B7280),
+              color: Theme.of(context).colorScheme.onSurface,
               size: 16,
               textAlign: TextAlign.center,
               height: 1.5,
@@ -224,8 +258,8 @@ class TabletDashboard extends GetView<DashboardController> {
               icon: const Icon(Icons.refresh_rounded),
               label: Text('try_again'.tr),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2563EB),
-                foregroundColor: Colors.white,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 32,
                   vertical: 16,
@@ -254,25 +288,28 @@ class TabletDashboard extends GetView<DashboardController> {
               width: 120,
               height: 120,
               decoration: BoxDecoration(
-                color: const Color(0xFFF3F4F6),
+                color: Theme.of(context).colorScheme.surfaceContainerLowest,
                 borderRadius: BorderRadius.circular(60),
               ),
               child: Icon(
                 Icons.analytics_outlined,
-                color: const Color(0xFF6B7280),
+                color: Theme
+                    .of(context)
+                    .colorScheme
+                    .onSurface,
                 size: 48,
               ),
             ),
             const SizedBox(height: 32),
             AppText.h3(
               'no_data'.tr,
-              color: const Color(0xFF111827),
+              color: Theme.of(context).colorScheme.onSurface,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
             AppText(
               'dashboard_data'.tr,
-              color: const Color(0xFF6B7280),
+              color: Theme.of(context).colorScheme.onSurface,
               size: 16,
               textAlign: TextAlign.center,
               height: 1.5,
@@ -283,8 +320,8 @@ class TabletDashboard extends GetView<DashboardController> {
               icon: const Icon(Icons.refresh_rounded),
               label: Text('refresh'.tr),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2563EB),
-                foregroundColor: Colors.white,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 32,
                   vertical: 16,

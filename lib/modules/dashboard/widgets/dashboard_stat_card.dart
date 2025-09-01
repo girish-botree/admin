@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../../config/app_text.dart';
 
-
 class DashboardStatCard extends StatelessWidget {
   final String title;
   final String value;
@@ -33,7 +32,9 @@ class DashboardStatCard extends StatelessWidget {
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: Colors.white,
+          color: Theme
+              .of(context)
+              .scaffoldBackgroundColor,
           boxShadow: [
             BoxShadow(
               color: const Color(0xFF000000).withValues(alpha: 0.04),
@@ -71,11 +72,14 @@ class DashboardStatCard extends StatelessWidget {
                   child: Icon(
                     icon,
                     size: 24,
-                    color: Colors.white,
+                    color: Theme
+                        .of(context)
+                        .colorScheme
+                        .onPrimary,
                   ),
                 ),
                 if (trendPercentage != null)
-                  _buildTrendIndicator(),
+                  _buildTrendIndicator(context),
               ],
             ),
 
@@ -84,7 +88,10 @@ class DashboardStatCard extends StatelessWidget {
             AppText.bold(
               value,
               size: 36,
-              color: const Color(0xFF111827),
+              color: Theme
+                  .of(context)
+                  .colorScheme
+                  .onBackground,
               height: 1.0,
             ),
 
@@ -93,7 +100,10 @@ class DashboardStatCard extends StatelessWidget {
             AppText.medium(
               title,
               size: 14,
-              color: const Color(0xFF6B7280),
+              color: Theme
+                  .of(context)
+                  .colorScheme
+                  .onSurfaceVariant,
               height: 1.2,
             ),
 
@@ -104,10 +114,17 @@ class DashboardStatCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTrendIndicator() {
+  Widget _buildTrendIndicator(BuildContext context) {
     final bool isPositive = trendPercentage! > 0;
-    final Color trendColor = isPositive ? const Color(0xFF10B981) : const Color(
-        0xFFEF4444);
+    final Color trendColor = isPositive
+        ? Theme
+        .of(context)
+        .colorScheme
+        .primary
+        : Theme
+        .of(context)
+        .colorScheme
+        .error;
     final IconData trendIcon = isPositive ? Icons.trending_up_rounded : Icons
         .trending_down_rounded;
 

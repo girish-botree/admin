@@ -9,17 +9,20 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="refactor: improve search utils with fuzzy matching caching and performance monitoring; enhance dropdowns with checkmarks and caching; optimize recipe and plan modules; centralize error handling; remove redundant network checks; add comprehensive dialog closure; update routing and category mapping; document error handling strategies.">
-      <change beforePath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/admins/create_admins/create_admin_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/admins/create_admins/create_admin_view.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/delivery_persons/manage_delivery_persons/delivery_person_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/delivery_persons/manage_delivery_persons/delivery_person_view.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/meal/ingredients/dialogs/ingredient_dialogs.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/ingredients/dialogs/ingredient_dialogs.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_dialog.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_dialog.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/meal/shared/widgets/common_widgets.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/shared/widgets/common_widgets.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/plan/widgets/meal_plan_form_dialog.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/widgets/meal_plan_form_dialog.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/widgets/searchable_dropdown.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/searchable_dropdown.dart" afterDir="false" />
+    <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="refactor: improve dialog sections with expandable content and add required field indicator; update dropdown hint style for better accessibility">
+      <change beforePath="$PROJECT_DIR$/lib/design_system/app_spacing.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/design_system/app_spacing.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/components/mobile_dashboard.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/components/mobile_dashboard.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/components/tablet_dashboard.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/components/tablet_dashboard.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/components/web_dashboard.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/components/web_dashboard.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/widgets/dashboard_stat_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/widgets/dashboard_stat_card.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/login/components/mobile_login.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/login/components/mobile_login.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/components/comprehensive_meal_statistics.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/components/comprehensive_meal_statistics.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/components/mobile_meal.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/components/mobile_meal.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/plan/widgets/meal_section.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/widgets/meal_section.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/widgets/custom_displays.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/custom_displays.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/widgets/loading_widgets.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/loading_widgets.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -255,7 +258,15 @@
       <option name="project" value="LOCAL" />
       <updated>1756579992160</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="refactor: improve dialog sections with expandable content and add required field indicator; update dropdown hint style for better accessibility">
+      <option name="closed" value="true" />
+      <created>1756708460905</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1756708460905</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -299,6 +310,7 @@
     <MESSAGE value="refactor: enhance dropdowns with checkmarks and caching, improve loading animations with shimmer effects, and optimize recipe and plan modules with better search and data handling" />
     <MESSAGE value="refactor: enhance search utils with fuzzy matching caching and performance monitoring" />
     <MESSAGE value="refactor: improve search utils with fuzzy matching caching and performance monitoring" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor: improve search utils with fuzzy matching caching and performance monitoring" />
+    <MESSAGE value="refactor: improve dialog sections with expandable content and add required field indicator; update dropdown hint style for better accessibility" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor: improve dialog sections with expandable content and add required field indicator; update dropdown hint style for better accessibility" />
   </component>
 </project>

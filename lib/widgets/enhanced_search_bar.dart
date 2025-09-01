@@ -80,13 +80,13 @@ class _EnhancedSearchBarState extends State<EnhancedSearchBar> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: _isFocused ? [
               BoxShadow(
-                color: theme.colorScheme.primary.withOpacity(0.2),
+                color: theme.colorScheme.primary.withValues(alpha: 0.2),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
             ] : [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 4,
                 offset: const Offset(0, 1),
               ),
@@ -101,7 +101,7 @@ class _EnhancedSearchBarState extends State<EnhancedSearchBar> {
             decoration: InputDecoration(
               hintText: widget.hintText,
               hintStyle: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
               labelText: widget.label,
               labelStyle: theme.textTheme.bodyMedium?.copyWith(
@@ -110,8 +110,8 @@ class _EnhancedSearchBarState extends State<EnhancedSearchBar> {
               prefixIcon: widget.prefixIcon ?? Icon(
                 Icons.search_rounded,
                 color: _isFocused 
-                    ? theme.colorScheme.primary 
-                    : theme.colorScheme.onSurface.withOpacity(0.6),
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 size: 24,
               ),
               suffixIcon: _buildSuffixIcon(theme),
@@ -119,15 +119,15 @@ class _EnhancedSearchBarState extends State<EnhancedSearchBar> {
                 borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide(
                   color: _isFocused 
-                      ? theme.colorScheme.primary 
-                      : theme.colorScheme.outline.withOpacity(0.3),
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.outline.withValues(alpha: 0.3),
                   width: _isFocused ? 2 : 1,
                 ),
               ),
               enabledBorder: widget.border ?? OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide(
-                  color: theme.colorScheme.outline.withOpacity(0.3),
+                  color: theme.colorScheme.outline.withValues(alpha: 0.3),
                   width: 1,
                 ),
               ),
@@ -265,7 +265,7 @@ class _EnhancedSearchBarState extends State<EnhancedSearchBar> {
               },
               icon: Icon(
                 Icons.clear,
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 size: 20,
               ),
               tooltip: 'Clear Search',
@@ -284,7 +284,7 @@ class _EnhancedSearchBarState extends State<EnhancedSearchBar> {
           onPressed: _startVoiceSearch,
           icon: Icon(
             Icons.mic,
-            color: theme.colorScheme.onSurface.withOpacity(0.6),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
             size: 20,
           ),
           tooltip: 'Voice Search',
@@ -336,7 +336,7 @@ class CompactSearchBar extends StatelessWidget {
             color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: theme.colorScheme.outline.withOpacity(0.3),
+              color: theme.colorScheme.outline.withValues(alpha: 0.3),
             ),
           ),
           child: TextField(
@@ -345,12 +345,12 @@ class CompactSearchBar extends StatelessWidget {
             decoration: InputDecoration(
               hintText: hintText,
               hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
               prefixIcon: Icon(
                 Icons.search,
                 size: 18,
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
               suffixIcon: Obx(() => searchController.searchController.text.isNotEmpty
                   ? IconButton(
@@ -361,7 +361,8 @@ class CompactSearchBar extends StatelessWidget {
                       icon: Icon(
                         Icons.clear,
                         size: 18,
-                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                        color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.6),
                       ),
                     )
                   : const SizedBox.shrink()),
@@ -436,8 +437,8 @@ class _FilteredSearchBarState extends State<FilteredSearchBar> {
                 icon: Icon(
                   widget.showFilters ? Icons.filter_list : Icons.filter_list_outlined,
                   color: widget.showFilters 
-                      ? theme.colorScheme.primary 
-                      : theme.colorScheme.onSurface.withOpacity(0.6),
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
                 tooltip: 'Toggle Filters',
               ),
@@ -452,7 +453,8 @@ class _FilteredSearchBarState extends State<FilteredSearchBar> {
             margin: const EdgeInsets.symmetric(horizontal: 16),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+              color: theme.colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.3),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(

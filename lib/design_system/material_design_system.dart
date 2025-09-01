@@ -145,7 +145,7 @@ extension MaterialDesignTheme on ThemeData {
   // MARK: - Shadow Extensions
   List<BoxShadow> get shadowSmall => [
     BoxShadow(
-      color: colorScheme.shadow.withOpacity(0.08),
+      color: colorScheme.shadow.withValues(alpha: 0.08),
       blurRadius: 4,
       offset: const Offset(0, 1),
     ),
@@ -153,7 +153,7 @@ extension MaterialDesignTheme on ThemeData {
   
   List<BoxShadow> get shadowMedium => [
     BoxShadow(
-      color: colorScheme.shadow.withOpacity(0.12),
+      color: colorScheme.shadow.withValues(alpha: 0.12),
       blurRadius: 8,
       offset: const Offset(0, 2),
     ),
@@ -161,7 +161,7 @@ extension MaterialDesignTheme on ThemeData {
   
   List<BoxShadow> get shadowLarge => [
     BoxShadow(
-      color: colorScheme.shadow.withOpacity(0.16),
+      color: colorScheme.shadow.withValues(alpha: 0.16),
       blurRadius: 16,
       offset: const Offset(0, 4),
     ),
@@ -169,7 +169,7 @@ extension MaterialDesignTheme on ThemeData {
   
   List<BoxShadow> get shadowXLarge => [
     BoxShadow(
-      color: colorScheme.shadow.withOpacity(0.20),
+      color: colorScheme.shadow.withValues(alpha: 0.20),
       blurRadius: 24,
       offset: const Offset(0, 8),
     ),
@@ -428,7 +428,7 @@ class MaterialComponents {
         borderRadius: borderRadius ?? BorderRadius.circular(MaterialDesignSystem.radius16),
         boxShadow: isElevated ? (boxShadow ?? [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -463,7 +463,7 @@ class MaterialComponents {
         vertical: MaterialDesignSystem.spacing4,
       ),
       decoration: BoxDecoration(
-        color: isSelected ? Colors.blue.withOpacity(0.1) : null,
+        color: isSelected ? Colors.blue.withValues(alpha: 0.1) : null,
         borderRadius: borderRadius ?? BorderRadius.circular(MaterialDesignSystem.radius12),
       ),
       child: ListTile(

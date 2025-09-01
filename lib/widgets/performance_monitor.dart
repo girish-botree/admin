@@ -78,7 +78,7 @@ class _PerformanceMonitorState extends State<PerformanceMonitor> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.7),
+                color: Colors.black.withValues(alpha: 0.7),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
@@ -173,7 +173,9 @@ class _FrameRateMonitorState extends State<FrameRateMonitor>
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
             decoration: BoxDecoration(
-              color: _currentFPS < 50 ? Colors.red.withOpacity(0.7) : Colors.green.withOpacity(0.7),
+              color: _currentFPS < 50
+                  ? Colors.red.withValues(alpha: 0.7)
+                  : Colors.green.withValues(alpha: 0.7),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(

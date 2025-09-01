@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../config/app_config.dart';
+
 class AppSpacing {
   static const double xs = 4.0;
   static const double sm = 8.0;
@@ -21,13 +23,13 @@ class AppShadows {
   static List<BoxShadow> get cardShadow =>
       [
         BoxShadow(
-      color: Colors.black.withValues(alpha: 0.08),
+      color: Theme.of(Get.context!).shadowColor.withAlpha(20),
       blurRadius: 20,
           offset: const Offset(0, 8),
           spreadRadius: 0,
         ),
         BoxShadow(
-      color: Colors.black.withValues(alpha: 0.04),
+      color: Theme.of(Get.context!).shadowColor.withAlpha(10),
       blurRadius: 6,
           offset: const Offset(0, 2),
           spreadRadius: 0,
@@ -37,14 +39,14 @@ class AppShadows {
   static List<BoxShadow> get chartShadow =>
       [
         BoxShadow(
-          color: Colors.black.withValues(alpha: 0.08),
-          blurRadius: 24,
+      color: Theme.of(Get.context!).shadowColor.withAlpha(20),
+      blurRadius: 24,
           offset: const Offset(0, 12),
           spreadRadius: 0,
         ),
         BoxShadow(
-          color: Colors.black.withValues(alpha: 0.04),
-          blurRadius: 6,
+      color: Theme.of(Get.context!).shadowColor.withAlpha(10),
+      blurRadius: 6,
           offset: const Offset(0, 2),
           spreadRadius: 0,
         ),

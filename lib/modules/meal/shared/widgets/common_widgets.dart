@@ -212,7 +212,7 @@ class StandardAppBar extends StatelessWidget implements PreferredSizeWidget {
           style: TextStyle(
             fontSize: fontSize * 0.6,
             fontWeight: FontWeight.w400,
-            color: theme.colorScheme.onSurface.withOpacity(0.7),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             letterSpacing: -0.1,
           ),
           maxLines: 1,
@@ -336,7 +336,7 @@ class _CountBadge extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+          color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
@@ -402,7 +402,7 @@ class _DeleteAllButton extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(
@@ -444,7 +444,7 @@ class _DeleteAllButton extends StatelessWidget {
         content: Text(
           'Are you sure you want to delete all $title? This action cannot be undone.',
           style: TextStyle(
-            color: context.theme.colorScheme.onSurface.withOpacity(0.8),
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.8),
           ),
         ),
         actions: [
@@ -453,7 +453,8 @@ class _DeleteAllButton extends StatelessWidget {
             child: Text(
               'Cancel',
               style: TextStyle(
-                color: context.theme.colorScheme.onSurface.withOpacity(0.7),
+                color: context.theme.colorScheme.onSurface.withValues(
+                    alpha: 0.7),
               ),
             ),
           ),
@@ -557,7 +558,7 @@ class ModernFAB extends StatelessWidget {
             : theme.colorScheme.surfaceContainerHighest,
         foregroundColor: enabled
             ? theme.colorScheme.onPrimary
-            : theme.colorScheme.onSurface.withOpacity(0.4),
+            : theme.colorScheme.onSurface.withValues(alpha: 0.4),
         elevation: enabled ? 6 : 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -582,7 +583,7 @@ class ModernFAB extends StatelessWidget {
           : theme.colorScheme.surfaceContainerHighest,
       foregroundColor: enabled
           ? theme.colorScheme.onPrimary
-          : theme.colorScheme.onSurface.withOpacity(0.4),
+          : theme.colorScheme.onSurface.withValues(alpha: 0.4),
       elevation: enabled ? 6 : 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -688,10 +689,10 @@ class ErrorStateWidget extends StatelessWidget {
       margin: margin ?? responsiveMargin,
       padding: responsivePadding,
       decoration: BoxDecoration(
-        color: theme.colorScheme.errorContainer.withOpacity(0.1),
+        color: theme.colorScheme.errorContainer.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: theme.colorScheme.error.withOpacity(0.2),
+          color: theme.colorScheme.error.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -708,7 +709,7 @@ class ErrorStateWidget extends StatelessWidget {
               ),
             ),
             decoration: BoxDecoration(
-              color: theme.colorScheme.error.withOpacity(0.1),
+              color: theme.colorScheme.error.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -754,7 +755,7 @@ class ErrorStateWidget extends StatelessWidget {
                 tablet: 16.0,
                 web: 18.0,
               ),
-              color: theme.colorScheme.onSurface.withOpacity(0.7),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               height: 1.4,
             ),
             textAlign: TextAlign.center,
@@ -898,7 +899,7 @@ class EmptyStateWidget extends StatelessWidget {
       margin: margin ?? responsiveMargin,
       padding: responsivePadding,
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainer.withOpacity(0.5),
+        color: theme.colorScheme.surfaceContainer.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(24),
       ),
       child: Column(
@@ -917,15 +918,18 @@ class EmptyStateWidget extends StatelessWidget {
               gradient: showGradient
                   ? LinearGradient(
                       colors: [
-                        (iconColor ?? theme.colorScheme.primary).withOpacity(0.2),
-                        (iconColor ?? theme.colorScheme.primary).withOpacity(0.1),
+                        (iconColor ?? theme.colorScheme.primary).withValues(
+                            alpha: 0.2),
+                        (iconColor ?? theme.colorScheme.primary).withValues(
+                            alpha: 0.1),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     )
                   : null,
               color: !showGradient
-                  ? (iconColor ?? theme.colorScheme.onSurface).withOpacity(0.1)
+                  ? (iconColor ?? theme.colorScheme.onSurface).withValues(
+                  alpha: 0.1)
                   : null,
               shape: BoxShape.circle,
             ),
@@ -939,8 +943,8 @@ class EmptyStateWidget extends StatelessWidget {
               ),
               color: iconColor ?? 
                   (showGradient 
-                      ? theme.colorScheme.primary 
-                      : theme.colorScheme.onSurface.withOpacity(0.6)),
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurface.withValues(alpha: 0.6)),
             ),
           ),
           SizedBox(
@@ -975,7 +979,7 @@ class EmptyStateWidget extends StatelessWidget {
                 tablet: 16.0,
                 web: 18.0,
               ),
-              color: theme.colorScheme.onSurface.withOpacity(0.7),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               height: 1.4,
             ),
             textAlign: TextAlign.center,
@@ -1204,7 +1208,7 @@ class _ModernSearchBarState extends State<ModernSearchBar>
             ),
             boxShadow: [
               BoxShadow(
-                color: context.theme.colorScheme.shadow.withOpacity(0.08),
+                color: context.theme.colorScheme.shadow.withValues(alpha: 0.08),
                 blurRadius: 8,
                 offset: const Offset(0, 3),
               ),
@@ -1254,8 +1258,8 @@ class _ModernSearchBarState extends State<ModernSearchBar>
               ? Container(
             margin: const EdgeInsets.only(right: 12),
             decoration: BoxDecoration(
-              color: context.theme.colorScheme.surfaceVariant.withOpacity(
-                  0.5),
+              color: context.theme.colorScheme.surfaceVariant.withValues(
+                  alpha: 0.5),
               shape: BoxShape.circle,
             ),
             child: IconButton(

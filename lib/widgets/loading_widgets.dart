@@ -75,7 +75,10 @@ class StandardLoadingWidget extends StatelessWidget {
     Color? color,
   }) {
     final shimmerSize = size ?? 48.0;
-    final shimmerColor = color ?? Colors.white;
+    final shimmerColor = color ?? Theme
+        .of(Get.context!)
+        .colorScheme
+        .onSurface; // Changed here
     return StandardLoadingWidget(
       key: key,
       size: shimmerSize,
@@ -106,7 +109,10 @@ class StandardLoadingWidget extends StatelessWidget {
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme
+              .of(Get.context!)
+              .colorScheme
+              .surface, // Changed here
           borderRadius: BorderRadius.circular(8),
         ),
       ),
@@ -132,7 +138,10 @@ class StandardLoadingWidget extends StatelessWidget {
         width: loadingSize,
         height: loadingSize,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme
+              .of(context)
+              .colorScheme
+              .surface, // Changed here
           borderRadius: BorderRadius.circular(12),
         ),
       );
@@ -161,7 +170,10 @@ class StandardLoadingWidget extends StatelessWidget {
                 width: 120,
                 height: 16,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .surface, // Changed here
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
@@ -434,7 +446,13 @@ void configLoading() {
     ..textColor = Colors.transparent
     ..radius = 20.0
     ..backgroundColor = Colors.transparent
-    ..maskColor = Colors.black.withValues(alpha: 0.6)
+    ..maskColor = Get.context != null
+        ? Theme
+        .of(Get.context!)
+        .colorScheme
+        .scrim
+        .withValues(alpha: 0.6)
+        : Colors.black.withValues(alpha: 0.6)
     ..userInteractions = false
     ..dismissOnTap = false;
 }
@@ -450,15 +468,15 @@ class _ShimmerLoadingIndicator extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface.withOpacity(0.95),
+        color: theme.colorScheme.surface.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: theme.colorScheme.outline.withOpacity(0.1),
+          color: theme.colorScheme.outline.withValues(alpha: 0.1),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.shadow.withOpacity(0.1),
+            color: theme.colorScheme.shadow.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -471,9 +489,12 @@ class _ShimmerLoadingIndicator extends StatelessWidget {
             child: Container(
               width: 48,
               height: 48,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white,
+                color: Theme
+                    .of(context)
+                    .colorScheme
+                    .surface, // Changed here
               ),
             ),
           ),
@@ -483,7 +504,10 @@ class _ShimmerLoadingIndicator extends StatelessWidget {
               width: 100,
               height: 16,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme
+                    .of(context)
+                    .colorScheme
+                    .surface, // Changed here
                 borderRadius: BorderRadius.circular(8),
               ),
             ),

@@ -43,16 +43,16 @@ class MainLayoutController extends GetxController {
       Get.snackbar(
         'Success',
         'Logged out successfully',
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
+        backgroundColor: Theme.of(Get.context!).colorScheme.primary,
+        colorText: Theme.of(Get.context!).colorScheme.onPrimary,
       );
     } catch (e) {
       // Handle logout error
       Get.snackbar(
         'Error',
         'Failed to logout. Please try again.',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+        backgroundColor: Theme.of(Get.context!).colorScheme.error,
+        colorText: Theme.of(Get.context!).colorScheme.onError,
       );
     }
   }

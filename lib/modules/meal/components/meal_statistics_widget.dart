@@ -105,7 +105,7 @@ class _ModernStatCard extends StatelessWidget {
         gradient: gradient,
         boxShadow: [
           BoxShadow(
-            color: gradient.colors.first.withOpacity(0.3),
+            color: gradient.colors.first.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -120,7 +120,7 @@ class _ModernStatCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
@@ -146,7 +146,7 @@ class _ModernStatCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 AppText(
                   title,
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white.withValues(alpha: 0.9),
                   size: 12,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -180,13 +180,13 @@ class _ModernDistributionCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: context.theme.shadowColor.withOpacity(0.08),
+            color: context.theme.shadowColor.withValues(alpha: 0.08),
             blurRadius: 24,
             offset: const Offset(0, 8),
           ),
         ],
         border: Border.all(
-          color: context.theme.colorScheme.outline.withOpacity(0.08),
+          color: context.theme.colorScheme.outline.withValues(alpha: 0.08),
           width: 1,
         ),
       ),
@@ -201,7 +201,8 @@ class _ModernDistributionCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: context.theme.colorScheme.primary.withOpacity(0.1),
+                    color: context.theme.colorScheme.primary.withValues(
+                        alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Icon(
@@ -285,8 +286,8 @@ class _CuisineDistribution extends StatelessWidget {
                       const SizedBox(height: 2),
                       AppText(
                         '$percentage% of recipes',
-                        color: context.theme.colorScheme.onSurface.withOpacity(
-                            0.6),
+                        color: context.theme.colorScheme.onSurface.withValues(
+                            alpha: 0.6),
                         size: 11,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -299,7 +300,8 @@ class _CuisineDistribution extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: context.theme.colorScheme.primary.withOpacity(0.1),
+                    color: context.theme.colorScheme.primary.withValues(
+                        alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: AppText(
@@ -326,12 +328,12 @@ class _CuisineDistribution extends StatelessWidget {
           Icon(
             Icons.restaurant_outlined,
             size: 48,
-            color: context.theme.colorScheme.onSurface.withOpacity(0.3),
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 12),
           AppText(
             'No cuisine data available',
-            color: context.theme.colorScheme.onSurface.withOpacity(0.6),
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.6),
             size: 14,
             textAlign: TextAlign.center,
           ),
@@ -436,12 +438,12 @@ class _NutritionalOverview extends StatelessWidget {
           Icon(
             Icons.analytics_outlined,
             size: 48,
-            color: context.theme.colorScheme.onSurface.withOpacity(0.3),
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 12),
           AppText(
             'No nutrition data available',
-            color: context.theme.colorScheme.onSurface.withOpacity(0.6),
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.6),
             size: 14,
             textAlign: TextAlign.center,
           ),
@@ -496,7 +498,7 @@ class _NutrientCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: gradient.colors.first.withOpacity(0.3),
+            color: gradient.colors.first.withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 6),
           ),
@@ -510,7 +512,7 @@ class _NutrientCard extends StatelessWidget {
           children: [
             AppText(
               label,
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withValues(alpha: 0.9),
               size: 11,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -535,7 +537,7 @@ class _NutrientCard extends StatelessWidget {
                 const SizedBox(width: 2),
                 AppText(
                   unit,
-                  color: Colors.white.withOpacity(0.8),
+                  color: Colors.white.withValues(alpha: 0.8),
                   size: 10,
                 ),
               ],
@@ -575,7 +577,8 @@ class _StatisticsLoadingWidget extends StatelessWidget {
                 color: context.theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: context.theme.colorScheme.outline.withOpacity(0.08),
+                  color: context.theme.colorScheme.outline.withValues(
+                      alpha: 0.08),
                 ),
               ),
               child: const Center(
@@ -592,7 +595,7 @@ class _StatisticsLoadingWidget extends StatelessWidget {
         color: context.theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: context.theme.colorScheme.outline.withOpacity(0.08),
+          color: context.theme.colorScheme.outline.withValues(alpha: 0.08),
         ),
       ),
       child: const Center(

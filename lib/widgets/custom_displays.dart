@@ -295,13 +295,13 @@ class _ToastWidgetState extends State<_ToastWidget>
         .colorScheme;
     switch (widget.type) {
       case MessageType.success:
-        return Colors.green.shade600;
+        return colorScheme.secondary; // use secondary for success
       case MessageType.error:
         return colorScheme.error;
       case MessageType.warning:
-        return Colors.orange.shade600;
+        return colorScheme.tertiary; // use tertiary for warning if present
       case MessageType.info:
-        return colorScheme.onSurface;
+        return colorScheme.primary;
     }
   }
 
@@ -346,7 +346,7 @@ class _ToastWidgetState extends State<_ToastWidget>
               borderRadius: BorderRadius.circular(8),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
@@ -356,14 +356,20 @@ class _ToastWidgetState extends State<_ToastWidget>
               children: [
                 Icon(
                   _getIcon(),
-                  color: Colors.white,
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .onSecondary,
                   size: 20,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: AppText(
                     widget.message.tr,
-                    color: Colors.white,
+                    color: Theme
+                        .of(context)
+                        .colorScheme
+                        .onSecondary,
                     size: 14,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -445,7 +451,7 @@ class _InfoBarWidget extends StatelessWidget {
         color: _getBackgroundColor(context),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: _getTextColor(context).withOpacity(0.2),
+          color: _getTextColor(context).withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -508,13 +514,13 @@ class InlineMessage extends StatelessWidget {
         .colorScheme;
     switch (type) {
       case MessageType.success:
-        return Colors.green.shade50;
+        return colorScheme.secondaryContainer;
       case MessageType.error:
-        return colorScheme.errorContainer.withOpacity(0.1);
+        return colorScheme.errorContainer;
       case MessageType.warning:
-        return Colors.orange.shade50;
+        return colorScheme.tertiaryContainer;
       case MessageType.info:
-        return colorScheme.primaryContainer.withOpacity(0.1);
+        return colorScheme.primaryContainer;
     }
   }
 
@@ -524,11 +530,11 @@ class InlineMessage extends StatelessWidget {
         .colorScheme;
     switch (type) {
       case MessageType.success:
-        return Colors.green.shade700;
+        return colorScheme.onSecondaryContainer;
       case MessageType.error:
-        return colorScheme.error;
+        return colorScheme.onErrorContainer;
       case MessageType.warning:
-        return Colors.orange.shade700;
+        return colorScheme.onTertiaryContainer;
       case MessageType.info:
         return colorScheme.onPrimaryContainer;
     }
@@ -537,21 +543,25 @@ class InlineMessage extends StatelessWidget {
   Color _getBorderColor(BuildContext context) {
     switch (type) {
       case MessageType.success:
-        return Colors.green.shade200;
+        return Theme
+            .of(context)
+            .colorScheme
+            .secondary;
       case MessageType.error:
         return Theme
             .of(context)
             .colorScheme
-            .error
-            .withOpacity(0.3);
+            .error;
       case MessageType.warning:
-        return Colors.orange.shade200;
+        return Theme
+            .of(context)
+            .colorScheme
+            .tertiary;
       case MessageType.info:
         return Theme
             .of(context)
             .colorScheme
-            .primary
-            .withOpacity(0.3);
+            .primary;
     }
   }
 
@@ -641,7 +651,7 @@ class EmptyStateWidget extends StatelessWidget {
                   .of(context)
                   .colorScheme
                   .onSurface
-                  .withOpacity(0.4),
+                  .withValues(alpha: 0.4),
             ),
             const SizedBox(height: 16),
           ],
@@ -652,7 +662,7 @@ class EmptyStateWidget extends StatelessWidget {
                 .of(context)
                 .colorScheme
                 .onSurface
-                .withOpacity(0.7),
+                .withValues(alpha: 0.7),
           ),
           if (subtitle != null) ...[
             const SizedBox(height: 8),
@@ -663,7 +673,7 @@ class EmptyStateWidget extends StatelessWidget {
                   .of(context)
                   .colorScheme
                   .onSurface
-                  .withOpacity(0.5),
+                  .withValues(alpha: 0.5),
               maxLines: 3,
             ),
           ],
@@ -675,4 +685,70 @@ class EmptyStateWidget extends StatelessWidget {
       ),
     );
   }
+}
+
+// OrderStatusChip
+class OrderStatusChip extends StatelessWidget {
+  final OrderStatus status;
+
+  const OrderStatusChip({
+    super.key,
+    required this.status,
+  });
+
+  static Color _getStatusColor(OrderStatus status) {
+    final colorScheme = Theme
+        .of(Get.context!)
+        .colorScheme;
+    Color textColor = Colors.white;
+    Color backgroundColor;
+
+    switch (status) {
+      case OrderStatus.confirmed:
+        backgroundColor = colorScheme.secondary; // use secondary for success
+        break;
+      case OrderStatus.cancelled:
+        backgroundColor = colorScheme.error;
+        break;
+      case OrderStatus.preparing:
+        backgroundColor =
+            colorScheme.tertiary; // use tertiary for warning if present
+        break;
+      case OrderStatus.onTheWay:
+        backgroundColor = colorScheme.primary;
+        break;
+      default:
+        backgroundColor = colorScheme.surface;
+        break;
+    }
+
+    return backgroundColor;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Chip(
+      label: Text(
+        status
+            .toString()
+            .split('.')
+            .last,
+        style: TextStyle(
+          color: Theme
+              .of(context)
+              .colorScheme
+              .onSecondary,
+        ),
+      ),
+      backgroundColor: _getStatusColor(status),
+    );
+  }
+}
+
+enum OrderStatus {
+  confirmed,
+  preparing,
+  onTheWay,
+  cancelled,
+  delivered,
 }

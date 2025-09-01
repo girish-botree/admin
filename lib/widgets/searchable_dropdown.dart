@@ -220,7 +220,8 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
             child: GestureDetector(
               onTap: _closeDropdown,
               child: Container(
-                color: Colors.black.withOpacity(0.3), // Semi-transparent background
+                color: Colors.black.withValues(
+                    alpha: 0.3), // Semi-transparent background
               ),
             ),
           ),
@@ -267,11 +268,11 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: theme.colorScheme.outline.withOpacity(0.2),
+          color: theme.colorScheme.outline.withValues(alpha: 0.2),
         ),
         boxShadow: [
           BoxShadow(
-            color: theme.shadowColor.withOpacity(0.15),
+            color: theme.shadowColor.withValues(alpha: 0.15),
             blurRadius: 24,
             offset: const Offset(0, 8),
           ),
@@ -298,7 +299,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primaryContainer.withOpacity(0.1),
+        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.1),
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
@@ -338,7 +339,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
@@ -353,7 +354,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
         decoration: InputDecoration(
           hintText: 'Search...',
           hintStyle: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurface.withOpacity(0.6),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
           ),
           prefixIcon: Icon(
             Icons.search,
@@ -368,7 +369,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
             },
             icon: Icon(
               Icons.clear,
-              color: theme.colorScheme.onSurface.withOpacity(0.6),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               size: 18,
             ),
           )
@@ -398,13 +399,13 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
             Icon(
               Icons.search_off,
               size: 48,
-              color: theme.colorScheme.onSurface.withOpacity(0.3),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
             ),
             const SizedBox(height: 12),
             Text(
               'No items found',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
           ],
@@ -438,7 +439,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: isSelected
-              ? theme.colorScheme.primaryContainer.withOpacity(0.3)
+              ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
@@ -451,9 +452,9 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
                 height: 36,
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? theme.colorScheme.primary.withOpacity(0.1)
-                      : theme.colorScheme.surfaceContainerHighest.withOpacity(
-                      0.5),
+                      ? theme.colorScheme.primary.withValues(alpha: 0.1)
+                      : theme.colorScheme.surfaceContainerHighest.withValues(
+                      alpha: 0.5),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
@@ -485,7 +486,8 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
                     Text(
                       item.description,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.7),
+                        color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.7),
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -556,7 +558,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: theme.shadowColor.withOpacity(0.05),
+                color: theme.shadowColor.withValues(alpha: 0.05),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -567,15 +569,15 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
             style: theme.textTheme.bodyMedium?.copyWith(
               color: widget.enabled
                   ? theme.colorScheme.onSurface
-                  : theme.colorScheme.onSurface.withOpacity(0.38),
+                  : theme.colorScheme.onSurface.withValues(alpha: 0.38),
             ),
             decoration: InputDecoration(
               labelText: widget.isRequired ? '${widget.label} *' : widget.label,
               hintText: widget.hint,
               hintStyle: theme.textTheme.bodyMedium?.copyWith(
                 color: widget.enabled
-                    ? theme.colorScheme.onSurface.withOpacity(0.6)
-                    : theme.colorScheme.onSurface.withOpacity(0.38),
+                    ? theme.colorScheme.onSurface.withValues(alpha: 0.6)
+                    : theme.colorScheme.onSurface.withValues(alpha: 0.38),
               ),
               errorText: widget.errorText,
               prefixIcon: widget.prefixIcon,
@@ -585,21 +587,21 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
                 child: Icon(
                   Icons.keyboard_arrow_down,
                   color: widget.enabled
-                      ? theme.colorScheme.onSurface.withOpacity(0.7)
-                      : theme.colorScheme.onSurface.withOpacity(0.38),
+                      ? theme.colorScheme.onSurface.withValues(alpha: 0.7)
+                      : theme.colorScheme.onSurface.withValues(alpha: 0.38),
                 ),
               ),
               filled: true,
               fillColor: widget.fillColor ??
                   (widget.enabled
                       ? theme.colorScheme.surfaceContainerLowest
-                      : theme.colorScheme.surfaceContainerLowest.withOpacity(
-                      0.5)),
+                      : theme.colorScheme.surfaceContainerLowest.withValues(
+                      alpha: 0.5)),
               border: widget.border ??
                   OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
-                      color: theme.colorScheme.outline.withOpacity(0.3),
+                      color: theme.colorScheme.outline.withValues(alpha: 0.3),
                       width: 1.5,
                     ),
                   ),
@@ -607,7 +609,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
                   OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
-                      color: theme.colorScheme.outline.withOpacity(0.3),
+                      color: theme.colorScheme.outline.withValues(alpha: 0.3),
                       width: 1.5,
                     ),
                   ),
@@ -627,7 +629,7 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
                   OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(
-                      color: theme.colorScheme.outline.withOpacity(0.12),
+                      color: theme.colorScheme.outline.withValues(alpha: 0.12),
                       width: 1,
                     ),
                   ),

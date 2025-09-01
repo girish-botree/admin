@@ -109,7 +109,7 @@ class MobileMeal extends GetView<MealController> {
           svgAsset: Assets.icons.icRecipe,
           title: 'Recipes',
           subtitle: 'Discover & manage your cooking recipes',
-          colors: _CardColors.recipes,
+          colors: _CardColors.recipes(context),
         ),
         const SizedBox(height: _cardSpacing),
         _EnhancedCard(
@@ -117,7 +117,7 @@ class MobileMeal extends GetView<MealController> {
           svgAsset: Assets.icons.icIngredient,
           title: 'Ingredients',
           subtitle: 'Track & organize your food ingredients',
-          colors: _CardColors.ingredients,
+          colors: _CardColors.ingredients(context),
         ),
       ],
     );
@@ -131,13 +131,13 @@ class MobileMeal extends GetView<MealController> {
         borderRadius: BorderRadius.circular(_containerBorderRadius),
         boxShadow: [
           BoxShadow(
-            color: context.theme.shadowColor.withOpacity(0.1),
+            color: context.theme.shadowColor.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
         ],
         border: Border.all(
-          color: context.theme.colorScheme.outline.withOpacity(0.1),
+          color: context.theme.colorScheme.outline.withValues(alpha: 0.1),
           width: 1,
         ),
       ),
@@ -158,7 +158,7 @@ class MobileMeal extends GetView<MealController> {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: context.theme.colorScheme.primary.withOpacity(0.1),
+            color: context.theme.colorScheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
@@ -260,7 +260,7 @@ class _EnhancedCard extends StatelessWidget {
                 gradient: colors.gradient,
                 boxShadow: [
                   BoxShadow(
-                    color: colors.primary.withOpacity(0.3),
+                    color: colors.primary.withValues(alpha: 0.3),
                     blurRadius: 20,
                     offset: const Offset(0, 8),
                   ),
@@ -268,8 +268,9 @@ class _EnhancedCard extends StatelessWidget {
               ),
               child: Stack(
                 children: [
-                  _buildDecorationCircles(),
-                  _buildContent(),
+                  Builder(
+                      builder: (context) => _buildDecorationCircles(context)),
+                  _buildContent(context),
                 ],
               ),
             ),
@@ -279,7 +280,7 @@ class _EnhancedCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDecorationCircles() {
+  Widget _buildDecorationCircles(BuildContext context) {
     return Stack(
       children: [
         Positioned(
@@ -290,7 +291,8 @@ class _EnhancedCard extends StatelessWidget {
             height: 100,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.white.withOpacity(0.1),
+              color: context.theme.colorScheme.surfaceContainerLowest
+                  .withValues(alpha: 0.1),
             ),
           ),
         ),
@@ -302,7 +304,8 @@ class _EnhancedCard extends StatelessWidget {
             height: 60,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.white.withOpacity(0.05),
+              color: context.theme.colorScheme.surfaceContainerLowest
+                  .withValues(alpha: 0.05),
             ),
           ),
         ),
@@ -310,17 +313,17 @@ class _EnhancedCard extends StatelessWidget {
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Row(
         children: [
-          _buildIconContainer(),
+          _buildIconContainer(context),
           const SizedBox(width: 20),
-          _buildTextContent(),
+          _buildTextContent(context),
           Icon(
             Icons.arrow_forward_ios_rounded,
-            color: Colors.white.withOpacity(0.8),
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.8),
             size: 20,
           ),
         ],
@@ -328,51 +331,48 @@ class _EnhancedCard extends StatelessWidget {
     );
   }
 
-  Widget _buildIconContainer() {
+  Widget _buildIconContainer(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: context.theme.colorScheme.surfaceContainerLowest.withValues(
+            alpha: 0.2),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.white.withOpacity(0.3),
+          color: context.theme.colorScheme.onSurface.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
       child: svgAsset.svg(
         width: 32,
         height: 32,
-        colorFilter: const ColorFilter.mode(
-          Colors.white,
+        colorFilter: ColorFilter.mode(
+          context.theme.colorScheme.onSurface,
           BlendMode.srcIn,
         ),
       ),
     );
   }
 
-  Widget _buildTextContent() {
+  Widget _buildTextContent(BuildContext context) {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Builder(builder: (context) {
-            return AppText.semiBold(
-              title,
-              color: Colors.white,
-              size: Responsive.responsiveTextSize(
-                  context, mobile: 24, tablet: 28, web: 22),
-            );
-          }),
+          AppText.semiBold(
+            title,
+            color: context.theme.colorScheme.onSurface,
+            size: Responsive.responsiveTextSize(
+                context, mobile: 24, tablet: 28, web: 22),
+          ),
           const SizedBox(height: 8),
-          Builder(builder: (context) {
-            return AppText(
-              subtitle,
-              color: Colors.white.withOpacity(0.9),
-              size: Responsive.responsiveTextSize(
-                  context, mobile: 16, tablet: 18, web: 14),
-            );
-          }),
+          AppText(
+            subtitle,
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.9),
+            size: Responsive.responsiveTextSize(
+                context, mobile: 16, tablet: 18, web: 14),
+          ),
         ],
       ),
     );
@@ -390,23 +390,37 @@ class _CardColors {
     required this.gradient,
   });
 
-  static const recipes = _CardColors(
-    primary: Color(0xFF6366F1),
-    secondary: Color(0xFF8B5CF6),
-    gradient: LinearGradient(
-      colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-    ),
-  );
+  /// Recipes card color set, uses primary/secondary theme colors.
+  factory _CardColors.recipes(BuildContext context) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary.withValues(alpha: 0.7);
+    final secondary = theme.colorScheme.secondary.withValues(alpha: 0.6);
+    return _CardColors(
+      primary: primary,
+      secondary: secondary,
+      gradient: LinearGradient(
+        colors: [primary, secondary],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+    );
+  }
 
-  static const ingredients = _CardColors(
-    primary: Color(0xFF10B981),
-    secondary: Color(0xFF059669),
-    gradient: LinearGradient(
-      colors: [Color(0xFF10B981), Color(0xFF059669)],
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-    ),
-  );
+  /// Ingredients card color set, uses tertiary surface colors or similar.
+  factory _CardColors.ingredients(BuildContext context) {
+    final theme = Theme.of(context);
+    // Fallbacks if theme extensions missing
+    final primary = theme.colorScheme.tertiary.withValues(alpha: 0.7);
+    final secondary = theme.colorScheme.tertiaryContainer.withValues(
+        alpha: 0.8);
+    return _CardColors(
+      primary: primary,
+      secondary: secondary,
+      gradient: LinearGradient(
+        colors: [primary, secondary],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+    );
+  }
 }
