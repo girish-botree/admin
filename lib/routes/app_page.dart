@@ -4,10 +4,12 @@ import 'package:admin/modules/home/home_binding.dart';
 import 'package:admin/modules/home/home_view.dart';
 import 'package:admin/modules/meal/meal_binding.dart';
 import 'package:admin/modules/meal/meal_view.dart';
+import 'package:admin/modules/meal/meal_statistics_view.dart';
 import 'package:admin/modules/main_layout/main_layout_binding.dart';
 import 'package:admin/modules/main_layout/main_layout_view.dart';
 import 'package:admin/modules/plan/plan_binding.dart';
 import 'package:admin/modules/plan/plan_view.dart';
+import 'package:admin/modules/plan/plan_statistics_view.dart';
 import 'package:admin/modules/plan/meal_plan_detail_view.dart';
 import 'package:admin/modules/dashboard/dashboard_binding.dart';
 import 'package:admin/modules/dashboard/dashboard_view.dart';
@@ -75,6 +77,15 @@ class AppPages {
         page: () => const DeliveryPersonView(),
         binding: DeliveryPersonBinding(),
         middlewares: [AuthMiddleware()]),
-
+    GetPage<void>(
+        name: AppRoutes.mealStatistics,
+        page: () => const MealStatisticsView(),
+        binding: MealBinding(),
+        middlewares: [AuthMiddleware()]),
+    GetPage<void>(
+        name: AppRoutes.planStatistics,
+        page: () => const PlanStatisticsView(),
+        binding: PlanBinding(),
+        middlewares: [AuthMiddleware()]),
   ];
 }

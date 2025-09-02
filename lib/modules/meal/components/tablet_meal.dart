@@ -4,8 +4,7 @@ import '../../../config/app_config.dart';
 import '../meal_controller.dart';
 import '../ingredients/ingredients_view.dart';
 import '../receipe/receipes_view.dart';
-import 'meal_statistics_widget.dart';
-
+import '../../../routes/app_routes.dart';
 
 class TabletMeal extends GetView<MealController> {
   const TabletMeal({super.key});
@@ -60,6 +59,16 @@ class TabletMeal extends GetView<MealController> {
                 tooltip: 'Refresh',
               )),
         ),
+        IconButton(
+          icon: Icon(
+            Icons.analytics_rounded,
+            color: context.theme.colorScheme.primary,
+            size: 28,
+          ),
+          onPressed: () {
+            Get.toNamed(AppRoutes.mealStatistics);
+          },
+        ),
       ],
     );
   }
@@ -79,8 +88,6 @@ class TabletMeal extends GetView<MealController> {
             _buildSectionTitle(context, 'Quick Actions'),
             const SizedBox(height: 20),
             _buildActionCards(context),
-            const SizedBox(height: 36),
-            _buildStatisticsSection(context),
             const SizedBox(height: 24),
           ],
         ),
@@ -137,60 +144,6 @@ class TabletMeal extends GetView<MealController> {
           .ingredients(context)
           .gradient
           .colors,
-    );
-  }
-
-  Widget _buildStatisticsSection(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: context.theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: context.theme.shadowColor.withValues(alpha: 0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
-        border: Border.all(
-          color: context.theme.colorScheme.outline.withValues(alpha: 0.1),
-          width: 1,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildStatisticsHeader(context),
-          const SizedBox(height: 20),
-          const MealStatisticsWidget(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatisticsHeader(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: context.theme.colorScheme.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(
-            Icons.analytics_rounded,
-            color: context.theme.colorScheme.primary,
-            size: 30,
-          ),
-        ),
-        const SizedBox(width: 15),
-        AppText.semiBold(
-          'Statistics',
-          color: context.theme.colorScheme.onSurface,
-          size: 28,
-        ),
-      ],
     );
   }
 

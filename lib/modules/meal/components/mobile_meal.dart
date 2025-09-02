@@ -8,7 +8,7 @@ import '../../../widgets/loading_widgets.dart';
 import '../meal_controller.dart';
 import '../ingredients/ingredients_view.dart';
 import '../receipe/receipes_view.dart';
-import 'meal_statistics_widget.dart';
+import '../../../routes/app_routes.dart';
 
 class MobileMeal extends GetView<MealController> {
   const MobileMeal({super.key});
@@ -44,25 +44,26 @@ class MobileMeal extends GetView<MealController> {
       backgroundColor: Colors.transparent,
       centerTitle: false,
       actions: [
-        Container(
-          margin: const EdgeInsets.only(right: 16),
-          decoration: BoxDecoration(
-            color: context.theme.colorScheme.surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(12),
+        Obx(() =>
+            IconButton(
+              onPressed: controller.isLoading.value ? null : _handleRefresh,
+              icon: controller.isLoading.value
+                  ? StandardLoadingWidget.circular(
+                      size: 20,
+                    )
+                  : Icon(
+                      Icons.refresh_rounded,
+                      color: context.theme.colorScheme.onSurface,
+                    ),
+              tooltip: 'Refresh',
+            )),
+        IconButton(
+          onPressed: _navigateToStatistics,
+          icon: Icon(
+            Icons.bar_chart,
+            color: context.theme.colorScheme.onSurface,
           ),
-          child: Obx(() =>
-              IconButton(
-                onPressed: controller.isLoading.value ? null : _handleRefresh,
-                icon: controller.isLoading.value
-                    ? StandardLoadingWidget.circular(
-                        size: 20,
-                      )
-                    : Icon(
-                        Icons.refresh_rounded,
-                        color: context.theme.colorScheme.primary,
-                      ),
-                tooltip: 'Refresh',
-              )),
+          tooltip: 'Statistics',
         ),
       ],
     );
@@ -84,8 +85,6 @@ class MobileMeal extends GetView<MealController> {
             const SizedBox(height: 16),
             _buildActionCards(context),
             const SizedBox(height: _sectionSpacing),
-            _buildStatisticsSection(context),
-            const SizedBox(height: _cardSpacing),
           ],
         ),
       ),
@@ -118,62 +117,6 @@ class MobileMeal extends GetView<MealController> {
           title: 'Ingredients',
           subtitle: 'Track & organize your food ingredients',
           colors: _CardColors.ingredients(context),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStatisticsSection(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: context.theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(_containerBorderRadius),
-        boxShadow: [
-          BoxShadow(
-            color: context.theme.shadowColor.withValues(alpha: 0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
-        border: Border.all(
-          color: context.theme.colorScheme.outline.withValues(alpha: 0.1),
-          width: 1,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildStatisticsHeader(context),
-          const SizedBox(height: 16),
-          const MealStatisticsWidget(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatisticsHeader(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: context.theme.colorScheme.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            Icons.analytics_rounded,
-            color: context.theme.colorScheme.primary,
-            size: Responsive.responsiveValue(
-                context, mobile: 24.0, tablet: 26.0, web: 20.0),
-          ),
-        ),
-        const SizedBox(width: 12),
-        AppText.semiBold(
-          'Statistics',
-          color: context.theme.colorScheme.onSurface,
-          size: Responsive.responsiveTextSize(
-              context, mobile: 22, tablet: 24, web: 18),
         ),
       ],
     );
@@ -221,6 +164,12 @@ class MobileMeal extends GetView<MealController> {
           () => const IngredientsView(),
       transition: Transition.rightToLeftWithFade,
     );
+  }
+
+  void _navigateToStatistics() async {
+    HapticFeedback.selectionClick();
+
+    await Get.toNamed(AppRoutes.mealStatistics);
   }
 }
 

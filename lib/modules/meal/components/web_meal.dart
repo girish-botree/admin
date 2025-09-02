@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../config/app_config.dart';
 import '../../../widgets/loading_widgets.dart';
+import '../../../routes/app_routes.dart';
 
 import '../meal_controller.dart';
 import '../ingredients/ingredients_view.dart';
 import '../receipe/receipes_view.dart';
-import 'meal_statistics_widget.dart';
-
 
 class WebMeal extends GetView<MealController> {
   const WebMeal({super.key});
@@ -55,6 +54,22 @@ class WebMeal extends GetView<MealController> {
                 tooltip: 'Refresh',
               )),
         ),
+        Container(
+          margin: const EdgeInsets.only(right: 24),
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.surfaceContainerLowest,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: IconButton(
+            onPressed: () => Get.toNamed(AppRoutes.mealStatistics),
+            icon: Icon(
+              Icons.analytics_rounded,
+              color: context.theme.colorScheme.primary,
+              size: 30,
+            ),
+            tooltip: 'Statistics',
+          ),
+        ),
       ],
     );
   }
@@ -74,8 +89,6 @@ class WebMeal extends GetView<MealController> {
             _buildSectionTitle(context, 'Quick Actions'),
             const SizedBox(height: 24),
             _buildActionCards(context),
-            const SizedBox(height: 40),
-            _buildStatisticsSection(context),
             const SizedBox(height: 32),
           ],
         ),
@@ -132,60 +145,6 @@ class WebMeal extends GetView<MealController> {
           .ingredients(context)
           .gradient
           .colors,
-    );
-  }
-
-  Widget _buildStatisticsSection(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(28),
-      decoration: BoxDecoration(
-        color: context.theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: context.theme.shadowColor.withValues(alpha: 0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
-        border: Border.all(
-          color: context.theme.colorScheme.outline.withValues(alpha: 0.1),
-          width: 1,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildStatisticsHeader(context),
-          const SizedBox(height: 24),
-          const MealStatisticsWidget(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatisticsHeader(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: context.theme.colorScheme.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(
-            Icons.analytics_rounded,
-            color: context.theme.colorScheme.primary,
-            size: 36,
-          ),
-        ),
-        const SizedBox(width: 16),
-        AppText.semiBold(
-          'Analytics Dashboard',
-          color: context.theme.colorScheme.onSurface,
-          size: 32,
-        ),
-      ],
     );
   }
 

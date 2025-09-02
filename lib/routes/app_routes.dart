@@ -10,5 +10,9 @@ class AppRoutes {
   static const dashboard = '/dashboard';
   static const deliveryPersons = '/delivery-persons';
 
+  // Statistics routes
+  static const planStatistics = '/plan-statistics';
+  static const mealStatistics = '/meal-statistics';
+
   static const createAdmin = '/create-admin';
 }

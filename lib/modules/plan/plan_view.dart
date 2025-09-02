@@ -12,7 +12,6 @@ import 'meal_plan_model.dart';
 import 'meal_plan_assignment_model.dart';
 import 'widgets/meal_plan_form_dialog.dart';
 import 'widgets/meal_plan_loading.dart';
-import 'widgets/plan_statistics_widget.dart';
 
 class PlanView extends GetView<PlanController> {
   const PlanView({super.key});
@@ -48,6 +47,14 @@ class PlanView extends GetView<PlanController> {
             },
             icon: Icon(Icons.refresh, color: context.theme.colorScheme.onSurface),
             tooltip: 'Refresh',
+          ),
+          IconButton(
+            onPressed: () {
+              Get.toNamed(AppRoutes.planStatistics);
+            },
+            icon: Icon(
+                Icons.bar_chart, color: context.theme.colorScheme.onSurface),
+            tooltip: 'Statistics',
           ),
         ],
       ),
@@ -105,8 +112,6 @@ class PlanView extends GetView<PlanController> {
                   subtitle: 'Create your first meal plan for this date',
                 )
                     : _buildMealPlanCard(context),
-                const SizedBox(height: _spacingLarge),
-                const PlanStatisticsWidget(),
               ],
             ),
           ),
