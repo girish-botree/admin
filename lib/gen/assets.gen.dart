@@ -35,16 +35,34 @@ class $AssetsFontsGen {
 class $AssetsIconsGen {
   const $AssetsIconsGen();
 
-  /// File path: assets/icons/ic_dashboard.svg
-  SvgGenImage get icDashboard =>
-      const SvgGenImage('assets/icons/ic_dashboard.svg');
+  /// File path: assets/icons/ic_dashbaord_stroke.svg
+  SvgGenImage get icDashbaordStroke =>
+      const SvgGenImage('assets/icons/ic_dashbaord_stroke.svg');
+
+  /// File path: assets/icons/ic_dashboard_fill.svg
+  SvgGenImage get icDashboardFill =>
+      const SvgGenImage('assets/icons/ic_dashboard_fill.svg');
+
+  /// File path: assets/icons/ic_email.svg
+  SvgGenImage get icEmail => const SvgGenImage('assets/icons/ic_email.svg');
+
+  /// File path: assets/icons/ic_hide_password.svg
+  SvgGenImage get icHidePassword =>
+      const SvgGenImage('assets/icons/ic_hide_password.svg');
 
   /// File path: assets/icons/ic_home.svg
   SvgGenImage get icHome => const SvgGenImage('assets/icons/ic_home.svg');
 
+  /// File path: assets/icons/ic_home_fill.svg
+  SvgGenImage get icHomeFill =>
+      const SvgGenImage('assets/icons/ic_home_fill.svg');
+
   /// File path: assets/icons/ic_ingredient.svg
   SvgGenImage get icIngredient =>
       const SvgGenImage('assets/icons/ic_ingredient.svg');
+
+  /// File path: assets/icons/ic_lock.svg
+  SvgGenImage get icLock => const SvgGenImage('assets/icons/ic_lock.svg');
 
   /// File path: assets/icons/ic_login.svg
   SvgGenImage get icLogin => const SvgGenImage('assets/icons/ic_login.svg');
@@ -55,8 +73,16 @@ class $AssetsIconsGen {
   /// File path: assets/icons/ic_meal.svg
   SvgGenImage get icMeal => const SvgGenImage('assets/icons/ic_meal.svg');
 
+  /// File path: assets/icons/ic_meal_fill.svg
+  SvgGenImage get icMealFill =>
+      const SvgGenImage('assets/icons/ic_meal_fill.svg');
+
   /// File path: assets/icons/ic_plan.svg
   SvgGenImage get icPlan => const SvgGenImage('assets/icons/ic_plan.svg');
+
+  /// File path: assets/icons/ic_plan_fill.svg
+  SvgGenImage get icPlanFill =>
+      const SvgGenImage('assets/icons/ic_plan_fill.svg');
 
   /// File path: assets/icons/ic_recipe.svg
   SvgGenImage get icRecipe => const SvgGenImage('assets/icons/ic_recipe.svg');
@@ -67,13 +93,20 @@ class $AssetsIconsGen {
 
   /// List of all assets
   List<SvgGenImage> get values => [
-        icDashboard,
+        icDashbaordStroke,
+        icDashboardFill,
+        icEmail,
+        icHidePassword,
         icHome,
+        icHomeFill,
         icIngredient,
+        icLock,
         icLogin,
         icLogout,
         icMeal,
+        icMealFill,
         icPlan,
+        icPlanFill,
         icRecipe,
         icSettings
       ];

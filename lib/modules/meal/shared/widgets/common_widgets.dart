@@ -250,7 +250,7 @@ class _BackButton extends StatelessWidget {
       icon: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainer,
+          color: theme.colorScheme.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(
@@ -297,13 +297,13 @@ class _RefreshButton extends StatelessWidget {
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    theme.colorScheme.primary,
+                    theme.colorScheme.onSurface,
                   ),
                 ),
               )
             : Icon(
                 Icons.refresh_rounded,
-                color: theme.colorScheme.primary,
+          color: theme.colorScheme.onSurface,
                 size: Responsive.responsiveValue(
                   context,
                   mobile: 22.0,
@@ -336,7 +336,8 @@ class _CountBadge extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+          color: theme.colorScheme.surfaceContainerLowest.withValues(
+              alpha: 0.3),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
@@ -349,7 +350,7 @@ class _CountBadge extends StatelessWidget {
               web: 13.0,
             ),
             fontWeight: FontWeight.w600,
-            color: theme.colorScheme.primary,
+            color: theme.colorScheme.onSurface,
           ),
         ),
       ),
@@ -375,7 +376,7 @@ class _DeleteAllButton extends StatelessWidget {
       icon: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainer,
+          color: theme.colorScheme.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(

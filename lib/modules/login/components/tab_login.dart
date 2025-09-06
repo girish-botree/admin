@@ -12,7 +12,10 @@ class TabLogin extends GetView<LoginController> {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.onSurface,
+          color: Theme
+              .of(context)
+              .colorScheme
+              .surfaceContainerLowest,
         ),
         child: SafeArea(
           child: Responsive.isLandscape(context)
@@ -27,48 +30,72 @@ class TabLogin extends GetView<LoginController> {
     return Row(
       children: [
         Expanded(
-          flex: 1,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Container(
-              constraints: BoxConstraints(
-                minHeight:
-                    MediaQuery.of(context).size.height -
-                    MediaQuery.of(context).padding.top -
-                    MediaQuery.of(context).padding.bottom -
-                    48,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildTabletCompactLogoSection(context),
-                  const SizedBox(height: 24),
-                  _buildTabletSocialLoginOptions(context),
-                ],
+          flex: 5,
+          child: Container(
+            color: Theme
+                .of(context)
+                .colorScheme
+                .surfaceContainerLowest,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(32),
+              child: Container(
+                constraints: BoxConstraints(
+                  minHeight: MediaQuery
+                      .of(context)
+                      .size
+                      .height -
+                      MediaQuery
+                          .of(context)
+                          .padding
+                          .top -
+                      MediaQuery
+                          .of(context)
+                          .padding
+                          .bottom -
+                      64,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 800),
+                      curve: Curves.easeOutBack,
+                      child: _buildTabletCompactLogoSection(context),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                ),
               ),
             ),
           ),
         ),
-
         Expanded(
-          flex: 1,
+          flex: 6,
           child: Container(
-            margin: const EdgeInsets.all(20),
+            margin: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerLowest,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 24,
-                  offset: const Offset(0, 12),
-                ),
-              ],
+              color: Theme
+                  .of(context)
+                  .colorScheme
+                  .surfaceContainerLowest,
+              borderRadius: BorderRadius.circular(28),
+              border: Border.all(
+                color: Theme
+                    .of(context)
+                    .colorScheme
+                    .onSurface
+                    .withAlpha(30),
+                width: 1,
+              ),
             ),
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(32),
-              child: _buildTabletLoginForm(context),
+              padding: const EdgeInsets.all(40),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 600),
+                curve: Curves.easeOut,
+                child: _buildTabletLoginForm(context),
+              ),
             ),
           ),
         ),
@@ -85,33 +112,48 @@ class TabLogin extends GetView<LoginController> {
             constraints: BoxConstraints(
               minHeight: MediaQuery.of(context).size.height * 0.45,
             ),
-            padding: const EdgeInsets.all(40),
+            color: Theme
+                .of(context)
+                .colorScheme
+                .surfaceContainerLowest,
+            padding: const EdgeInsets.all(48),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildTabletLogoSection(context),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 800),
+                  curve: Curves.easeOutBack,
+                  child: _buildTabletLogoSection(context),
+                ),
                 const SizedBox(height: 32),
-                _buildTabletSocialLoginOptions(context),
               ],
             ),
           ),
-
           Container(
-            margin: const EdgeInsets.all(20),
-            padding: const EdgeInsets.all(40),
+            margin: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+            padding: const EdgeInsets.all(48),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerLowest,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 24,
-                  offset: Offset(0, -12),
-                ),
-              ],
+              color: Theme
+                  .of(context)
+                  .colorScheme
+                  .surfaceContainerLowest,
+              borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(32)),
+              border: Border.all(
+                color: Theme
+                    .of(context)
+                    .colorScheme
+                    .onSurface
+                    .withAlpha(20),
+                width: 1,
+              ),
             ),
-            child: _buildTabletLoginForm(context),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 600),
+              curve: Curves.easeOut,
+              child: _buildTabletLoginForm(context),
+            ),
           ),
         ],
       ),
@@ -121,32 +163,38 @@ class TabLogin extends GetView<LoginController> {
   Widget _buildTabletLogoSection(BuildContext context) {
     return Column(
       children: [
-        buildLogoContainer(
-          height: 140,
-          width: 140,
-          borderRadius: 32,
-          iconSize: 70,
-        ),
-        const SizedBox(height: 32),
-        Text(
-          'Elith Admin',
-          style: TextStyle(
-            fontSize: 48,
-            fontWeight: FontWeight.bold,
-            color: context.theme.colorScheme.onSurface,
-            letterSpacing: 1.0,
+        Hero(
+          tag: 'app_logo',
+          child: buildLogoContainer(
+            height: 160,
+            width: 160,
+            borderRadius: 36,
+            iconSize: 80,
           ),
         ),
-        const SizedBox(height: 16),
-        Text(
-          'HEALTH TRACKING MANAGEMENT',
+        const SizedBox(height: 40),
+        AnimatedDefaultTextStyle(
+          duration: const Duration(milliseconds: 600),
           style: TextStyle(
-            fontSize: 16,
+            fontSize: 52,
+            fontWeight: FontWeight.w800,
+            color: context.theme.colorScheme.onSurface,
+            letterSpacing: -0.8,
+            height: 1.1,
+          ),
+          child: const Text('Elith Admin'),
+        ),
+        const SizedBox(height: 20),
+        AnimatedDefaultTextStyle(
+          duration: const Duration(milliseconds: 800),
+          style: TextStyle(
+            fontSize: 18,
             fontWeight: FontWeight.w500,
             color: context.theme.colorScheme.onSurface,
-            letterSpacing: 2.0,
+            letterSpacing: 0.4,
+            height: 1.3,
           ),
-          textAlign: TextAlign.center,
+          child: const Text('Professional Admin Dashboard'),
         ),
       ],
     );
@@ -156,175 +204,100 @@ class TabLogin extends GetView<LoginController> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        buildLogoContainer(
-          height: 100,
-          width: 100,
-          borderRadius: 24,
-          iconSize: 50,
-        ),
-        const SizedBox(height: 20),
-        Text(
-          'Elith Admin',
-          style: TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-            color: context.theme.colorScheme.onSurface,
-            letterSpacing: 1.0,
+        Hero(
+          tag: 'app_logo',
+          child: buildLogoContainer(
+            height: 120,
+            width: 120,
+            borderRadius: 28,
+            iconSize: 60,
           ),
         ),
-        const SizedBox(height: 12),
-        Text(
-          'HEALTH TRACKING',
+        const SizedBox(height: 28),
+        AnimatedDefaultTextStyle(
+          duration: const Duration(milliseconds: 600),
           style: TextStyle(
-            fontSize: 12,
+            fontSize: 36,
+            fontWeight: FontWeight.w800,
+            color: context.theme.colorScheme.onSurface,
+            letterSpacing: -0.5,
+            height: 1.1,
+          ),
+          child: const Text('Elith Admin'),
+        ),
+        const SizedBox(height: 16),
+        AnimatedDefaultTextStyle(
+          duration: const Duration(milliseconds: 800),
+          style: TextStyle(
+            fontSize: 16,
             fontWeight: FontWeight.w500,
             color: context.theme.colorScheme.onSurface,
-            letterSpacing: 2.0,
+            letterSpacing: 0.3,
+            height: 1.3,
           ),
-          textAlign: TextAlign.center,
+          child: const Text('Professional Dashboard'),
         ),
       ],
     );
   }
-
-  Widget _buildTabletSocialLoginOptions(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          'Or continue with',
-          style: TextStyle(
-            fontSize: 18,
-            color: context.theme.colorScheme.onSurface,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 24),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            buildSocialButton(
-              icon: Icons.facebook,
-              color: const Color(0xFF1877F2),
-                              onTap: () {},
-              containerWidth: 72,
-              containerHeight: 72,
-              borderRadius: 24,
-              blurRadius: 10,
-              iconSize: 34,
-            ),
-            const SizedBox(width: 24),
-            buildSocialButton(
-              icon: Icons.g_mobiledata_outlined,
-              color: const Color(0xFF4285F4),
-                              onTap: () {},
-              containerWidth: 72,
-              containerHeight: 72,
-              borderRadius: 24,
-              blurRadius: 10,
-              iconSize: 34,
-            ),
-            const SizedBox(width: 24),
-            buildSocialButton(
-              icon: Icons.apple,
-              color: Colors.black,
-                              onTap: () {},
-              containerWidth: 72,
-              containerHeight: 72,
-              borderRadius: 24,
-              blurRadius: 10,
-              iconSize: 34,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  // Widget _buildTabletSocialButton({
-  //   required IconData icon,
-  //   required Color color,
-  //   required VoidCallback onTap,
-  // }) {
-  //   return GestureDetector(
-  //     onTap: onTap,
-  //     child: Container(
-  //       width: 72,
-  //       height: 72,
-  //       decoration: BoxDecoration(
-  //         color: Colors.white,
-  //         borderRadius: BorderRadius.circular(24),
-  //         boxShadow: [
-  //           BoxShadow(
-  //             color: Colors.black.withValues(alpha: 0.1),
-  //             blurRadius: 10,
-  //             offset: const Offset(0, 4),
-  //           ),
-  //         ],
-  //       ),
-  //       child: Icon(icon, size: 34, color: color),
-  //     ),
-  //   );
-  // }
 
   Widget _buildTabletLoginForm(BuildContext context) {
     return Form(
       key: controller.formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          buildWelcomeText(
-            fontSize: 32,
-            subtitleFontSize: 18,
-          ),
-          const SizedBox(height: 32),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 400),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            buildWelcomeText(fontSize: 34, subtitleFontSize: 17),
+            const SizedBox(height: 40),
 
-          buildEmailField(
-            controller: controller.emailController,
-            validator: controller.validateEmail,
-            onChanged: controller.clearError,
-            fontSize: 18,
-            borderRadius: 16,
-            iconSize: 24,
-          ),
-          const SizedBox(height: 20),
+            buildEmailField(
+              controller: controller.emailController,
+              validator: controller.validateEmail,
+              onChanged: controller.clearError,
+              fontSize: 17,
+              borderRadius: 16,
+              iconSize: 22,
+            ),
+            const SizedBox(height: 24),
 
-          buildPasswordField(
-            controller: controller.passwordController,
-            isPasswordVisible: controller.isPasswordVisible,
-            validator: controller.validatePassword,
-            onChanged: controller.clearError,
-            toggleVisibility: controller.togglePasswordVisibility,
-            fontSize: 18,
-            borderRadius: 16,
-            iconSize: 24,
-          ),
-          const SizedBox(height: 24),
+            buildPasswordField(
+              controller: controller.passwordController,
+              isPasswordVisible: controller.isPasswordVisible,
+              validator: controller.validatePassword,
+              onChanged: controller.clearError,
+              toggleVisibility: controller.togglePasswordVisibility,
+              fontSize: 17,
+              borderRadius: 16,
+              iconSize: 22,
+            ),
+            const SizedBox(height: 28),
 
-          buildErrorMessage(
-            errorMessage: controller.errorMessage,
-            fontSize: 16,
-            borderRadius: 12,
-            iconSize: 24,
-          ),
+            buildErrorMessage(
+              errorMessage: controller.errorMessage,
+              fontSize: 15,
+              borderRadius: 12,
+              iconSize: 22,
+            ),
 
-          buildLoginButton(
-            isLoading: controller.isLoading,
-            onPressed: controller.login,
-            height: 56,
-            fontSize: 20,
-            borderRadius: 16,
-          ),
-          const SizedBox(height: 20),
+            buildLoginButton(
+              isLoading: controller.isLoading,
+              onPressed: controller.login,
+              height: 54,
+              fontSize: 17,
+              borderRadius: 16,
+            ),
+            const SizedBox(height: 24),
 
-          buildForgotPasswordButton(
-            onPressed: controller.navigateToForgotPassword,
-            fontSize: 18,
-          ),
-        ],
+            buildForgotPasswordButton(
+              onPressed: controller.navigateToForgotPassword,
+              fontSize: 16,
+            ),
+          ],
+        ),
       ),
     );
   }
-
-
 }

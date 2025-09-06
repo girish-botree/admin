@@ -29,7 +29,9 @@ class MainLayoutView extends GetView<MainLayoutController> {
         type: BottomNavigationBarType.fixed,
         items: [
           BottomNavigationBarItem(
-            icon: Assets.icons.icHome.svg(
+            icon: (controller.currentIndex == 0
+                ? Assets.icons.icHomeFill
+                : Assets.icons.icHome).svg(
               width: 24,
               height: 24,
               colorFilter: ColorFilter.mode(
@@ -42,7 +44,9 @@ class MainLayoutView extends GetView<MainLayoutController> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Assets.icons.icPlan.svg(
+            icon: (controller.currentIndex == 1
+                ? Assets.icons.icPlanFill
+                : Assets.icons.icPlan).svg(
               width: 24,
               height: 24,
               colorFilter: ColorFilter.mode(
@@ -55,7 +59,9 @@ class MainLayoutView extends GetView<MainLayoutController> {
             label: 'Plan',
           ),
           BottomNavigationBarItem(
-            icon: Assets.icons.icMeal.svg(
+            icon: (controller.currentIndex == 2
+                ? Assets.icons.icMealFill
+                : Assets.icons.icMeal).svg(
               width: 24,
               height: 24,
               colorFilter: ColorFilter.mode(
@@ -68,7 +74,9 @@ class MainLayoutView extends GetView<MainLayoutController> {
             label: 'Meal',
           ),
           BottomNavigationBarItem(
-            icon: Assets.icons.icDashboard.svg(
+            icon: (controller.currentIndex == 3
+                ? Assets.icons.icDashboardFill
+                : Assets.icons.icDashbaordStroke).svg(
               width: 26,
               height: 26,
               colorFilter: ColorFilter.mode(
@@ -105,7 +113,9 @@ class MainLayoutView extends GetView<MainLayoutController> {
               ),
               _buildDrawerItem(
                 context,
-                icon: Assets.icons.icHome.svg(
+                icon: (controller.currentIndex == 0
+                    ? Assets.icons.icHomeFill
+                    : Assets.icons.icHome).svg(
                   width: 24,
                   height: 24,
                   colorFilter: ColorFilter.mode(
@@ -120,7 +130,9 @@ class MainLayoutView extends GetView<MainLayoutController> {
               ),
               _buildDrawerItem(
                 context,
-                icon: Assets.icons.icPlan.svg(
+                icon: (controller.currentIndex == 1
+                    ? Assets.icons.icPlanFill
+                    : Assets.icons.icPlan).svg(
                   width: 24,
                   height: 24,
                   colorFilter: ColorFilter.mode(
@@ -135,7 +147,9 @@ class MainLayoutView extends GetView<MainLayoutController> {
               ),
               _buildDrawerItem(
                 context,
-                icon: Assets.icons.icMeal.svg(
+                icon: (controller.currentIndex == 2
+                    ? Assets.icons.icMealFill
+                    : Assets.icons.icMeal).svg(
                   width: 24,
                   height: 24,
                   colorFilter: ColorFilter.mode(
@@ -150,7 +164,9 @@ class MainLayoutView extends GetView<MainLayoutController> {
               ),
               _buildDrawerItem(
                 context,
-                icon: Assets.icons.icDashboard.svg(
+                icon: (controller.currentIndex == 3
+                    ? Assets.icons.icDashboardFill
+                    : Assets.icons.icDashbaordStroke).svg(
                   width: 26,
                   height: 26,
                   colorFilter: ColorFilter.mode(
@@ -187,15 +203,15 @@ class MainLayoutView extends GetView<MainLayoutController> {
   Widget _getCurrentPage() {
     switch (controller.currentIndex) {
       case 0:
-        return HomeView(showBottomNav: false);
+        return const HomeView(showBottomNav: false);
       case 1:
-        return PlanView();
+        return const PlanView();
       case 2:
-        return MealView();
+        return const MealView();
       case 3:
-        return DashboardView();
+        return const DashboardView();
       default:
-        return HomeView(showBottomNav: false);
+        return const HomeView(showBottomNav: false);
     }
   }
 }

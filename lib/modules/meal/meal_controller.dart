@@ -43,7 +43,10 @@ class MealController extends GetxController {
   final isRecipesLoading = false.obs;
   final isIngredientsLoading = false.obs;
   final error = ''.obs;
-  
+
+  // Carousel state
+  final currentCarouselIndex = 0.obs;
+
   // Validation state
   final nameError = RxString('');
   final descriptionError = RxString('');
@@ -978,6 +981,7 @@ class MealController extends GetxController {
               (b['protein'] as num?) ?? 0);
           break;
         case 'carbs':
+        case 'carbohydrates':
           comparison = ((a['carbohydrates'] as num?) ?? 0).compareTo(
               (b['carbohydrates'] as num?) ?? 0);
           break;
@@ -1027,6 +1031,10 @@ class MealController extends GetxController {
 
   void toggleFilterVisibility() {
     showFilters.value = !showFilters.value;
+  }
+
+  void updateCarouselIndex(int index) {
+    currentCarouselIndex.value = index;
   }
 
   // Add refresh method with proper loading state management

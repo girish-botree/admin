@@ -10,129 +10,101 @@ class TabletMeal extends GetView<MealController> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: context.theme.colorScheme.surface,
-        appBar: _buildTabletAppBar(context),
-        body: _buildTabletBody(context),
-      ),
-    );
-  }
-
-  PreferredSizeWidget _buildTabletAppBar(BuildContext context) {
-    return AppBar(
-      title: AppText.bold(
-        'Meal Management',
-        color: context.theme.colorScheme.onSurface,
-        size: 20,
-      ),
-      elevation: 0,
-      backgroundColor: Colors.transparent,
-      centerTitle: false,
-      actions: [
-        Container(
-          margin: const EdgeInsets.only(right: 20),
-          decoration: BoxDecoration(
-            color: context.theme.colorScheme.surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(12),
+    return Scaffold(
+      backgroundColor: context.theme.colorScheme.surface,
+      body: CustomScrollView(
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            sliver: SliverToBoxAdapter(
+              child: _buildTabletBody(context),
+            ),
           ),
-          child: Obx(() =>
-              IconButton(
-                onPressed: controller.isLoading.value ? null : _handleRefresh,
-                icon: controller.isLoading.value
-                    ? SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      context.theme.colorScheme.primary,
-                    ),
-                  ),
-                )
-                    : Icon(
-                  Icons.refresh_rounded,
-                  color: context.theme.colorScheme.primary,
-                  size: 28,
-                ),
-                tooltip: 'Refresh',
-              )),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   Widget _buildTabletBody(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: _handleRefresh,
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.symmetric(
-          horizontal: 24,
-          vertical: 20,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildSectionTitle(context, 'Quick Actions'),
-            const SizedBox(height: 20),
-            _buildActionCards(context),
-            const SizedBox(height: 24),
+            Text(
+              'Quick Actions',
+              style: context.textTheme.headlineLarge?.copyWith(
+                color: context.theme.colorScheme.onSurface,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Obx(() =>
+                FilledButton.tonalIcon(
+                  onPressed: controller.isLoading.value ? null : _handleRefresh,
+                  icon: controller.isLoading.value
+                      ? SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: context.theme.colorScheme.onSurface,
+                        ),
+                  )
+                    : const Icon(Icons.refresh_rounded, size: 22),
+                label: const Text('Refresh'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: context.theme.colorScheme.secondaryContainer,
+                  foregroundColor: context.theme.colorScheme
+                      .onSecondaryContainer,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20, vertical: 12),
+                ),
+              ),
+            ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(BuildContext context, String title) {
-    return AppText.semiBold(
-      title,
-      color: context.theme.colorScheme.onSurface,
-      size: 30,
+        const SizedBox(height: 28),
+        _buildActionCards(context),
+      ],
     );
   }
 
   Widget _buildActionCards(BuildContext context) {
     return Row(
       children: [
-        Expanded(
-          child: _buildRecipeCard(context),
-        ),
+        Expanded(child: _buildRecipeCard(context)),
         const SizedBox(width: 20),
-        Expanded(
-          child: _buildIngredientCard(context),
-        ),
+        Expanded(child: _buildIngredientCard(context)),
       ],
     );
   }
 
   Widget _buildRecipeCard(BuildContext context) {
-    return MealCard(
+    return TabletMealCard(
       onTap: () => _navigateToRecipes(context),
-      iconData: Icons.restaurant_menu,
       title: 'Recipes',
       subtitle: 'Discover & manage your cooking recipes',
-      titleSize: 28,
-      subtitleSize: 20,
-      gradientColors: _CardColors
-          .recipes(context)
-          .gradient
-          .colors,
+      imageUrl: 'https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=800&h=600&fit=crop&crop=center',
+      gradientColors: [
+        context.theme.colorScheme.primary,
+        context.theme.colorScheme.primaryContainer,
+      ],
+      icon: Icons.restaurant_menu_rounded,
     );
   }
 
   Widget _buildIngredientCard(BuildContext context) {
-    return MealCard(
+    return TabletMealCard(
       onTap: () => _navigateToIngredients(context),
-      iconData: Icons.inventory_2,
       title: 'Ingredients',
       subtitle: 'Track & organize your food ingredients',
-      titleSize: 28,
-      subtitleSize: 20,
-      gradientColors: _CardColors
-          .ingredients(context)
-          .gradient
-          .colors,
+      imageUrl: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=800&h=600&fit=crop&crop=center',
+      gradientColors: [
+        context.theme.colorScheme.tertiary,
+        context.theme.colorScheme.tertiaryContainer,
+      ],
+      icon: Icons.inventory_2_rounded,
     );
   }
 
@@ -173,144 +145,157 @@ class TabletMeal extends GetView<MealController> {
   }
 }
 
-class _CardColors {
-  final Color primary;
-  final Color secondary;
-  final Gradient gradient;
-
-  const _CardColors({
-    required this.primary,
-    required this.secondary,
-    required this.gradient,
-  });
-
-  factory _CardColors.recipes(BuildContext context) {
-    final theme = Theme.of(context);
-    final primary = theme.colorScheme.primary.withValues(alpha: 0.7);
-    final secondary = theme.colorScheme.secondary.withValues(alpha: 0.6);
-    return _CardColors(
-      primary: primary,
-      secondary: secondary,
-      gradient: LinearGradient(
-        colors: [primary, secondary],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
-    );
-  }
-
-  factory _CardColors.ingredients(BuildContext context) {
-    final theme = Theme.of(context);
-    final primary = theme.colorScheme.tertiary.withValues(alpha: 0.7);
-    final secondary = theme.colorScheme.tertiaryContainer.withValues(
-        alpha: 0.8);
-    return _CardColors(
-      primary: primary,
-      secondary: secondary,
-      gradient: LinearGradient(
-        colors: [primary, secondary],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
-    );
-  }
-}
-
-class MealCard extends StatelessWidget {
+class TabletMealCard extends StatelessWidget {
   final VoidCallback onTap;
-  final IconData iconData;
   final String title;
   final String subtitle;
-  final double titleSize;
-  final double subtitleSize;
+  final String imageUrl;
   final List<Color> gradientColors;
+  final IconData icon;
 
-  const MealCard({
+  const TabletMealCard({
     super.key,
     required this.onTap,
-    required this.iconData,
     required this.title,
     required this.subtitle,
-    this.titleSize = 24,
-    this.subtitleSize = 16,
+    required this.imageUrl,
     required this.gradientColors,
+    required this.icon,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 160,
-      child: Material(
-        borderRadius: BorderRadius.circular(24),
-        elevation: 0,
+      height: 180,
+      child: Card(
+        elevation: 4,
         color: Colors.transparent,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(24),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
-              gradient: LinearGradient(
-                colors: gradientColors,
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: gradientColors[0].withValues(alpha: 0.3),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.3),
-                        width: 1,
+          child: Stack(
+            children: [
+              // Background Image
+              Positioned.fill(
+                child: Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: gradientColors.map((c) =>
+                              c.withValues(alpha: 0.8)).toList(),
+                        ),
                       ),
-                    ),
-                    child: Icon(
-                      iconData,
-                      color: Colors.white,
-                      size: 32,
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        AppText.semiBold(
-                          title,
-                          color: Colors.white,
-                          size: titleSize,
+                    );
+                  },
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: gradientColors.map((c) =>
+                              c.withValues(alpha: 0.8)).toList(),
                         ),
-                        const SizedBox(height: 8),
-                        AppText(
-                          subtitle,
-                          color: Colors.white.withValues(alpha: 0.9),
-                          size: subtitleSize,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    color: Colors.white.withValues(alpha: 0.8),
-                    size: 24,
-                  ),
-                ],
+                      ),
+                      child: const Center(
+                        child: CircularProgressIndicator(color: Colors.white),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
+              // Gradient Overlay
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withValues(alpha: 0.3),
+                        Colors.black.withValues(alpha: 0.7),
+                      ],
+                      stops: const [0.0, 0.6, 1.0],
+                    ),
+                  ),
+                ),
+              ),
+              // Content
+              Positioned.fill(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: Icon(icon, color: Colors.white, size: 28),
+                      ),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              title,
+                              style: context.textTheme.headlineSmall?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                shadows: [
+                                  const Shadow(
+                                    offset: Offset(0, 1),
+                                    blurRadius: 3,
+                                    color: Colors.black54,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              subtitle,
+                              style: context.textTheme.bodyMedium?.copyWith(
+                                color: Colors.white.withValues(alpha: 0.9),
+                                shadows: [
+                                  const Shadow(
+                                    offset: Offset(0, 1),
+                                    blurRadius: 2,
+                                    color: Colors.black45,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(
+                        Icons.arrow_forward_rounded,
+                        color: Colors.white.withValues(alpha: 0.8),
+                        size: 26,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
