@@ -365,6 +365,60 @@ class DropdownDataManager {
         icon: '❌'),
   ];
 
+  // Cuisines
+  static const List<DropdownItem> cuisines = [
+    DropdownItem(value: 'indian',
+        label: 'Indian',
+        description: 'Traditional Indian cuisine',
+        icon: '🍛'),
+    DropdownItem(value: 'italian',
+        label: 'Italian',
+        description: 'Italian cuisine',
+        icon: '🍕'),
+    DropdownItem(value: 'chinese',
+        label: 'Chinese',
+        description: 'Chinese cuisine',
+        icon: '🥢'),
+    DropdownItem(value: 'mexican',
+        label: 'Mexican',
+        description: 'Mexican cuisine',
+        icon: '🌮'),
+    DropdownItem(value: 'american',
+        label: 'American',
+        description: 'American cuisine',
+        icon: '🍔'),
+    DropdownItem(value: 'french',
+        label: 'French',
+        description: 'French cuisine',
+        icon: '🥖'),
+    DropdownItem(value: 'japanese',
+        label: 'Japanese',
+        description: 'Japanese cuisine',
+        icon: '🍣'),
+    DropdownItem(
+        value: 'thai', label: 'Thai', description: 'Thai cuisine', icon: '🍜'),
+    DropdownItem(value: 'mediterranean',
+        label: 'Mediterranean',
+        description: 'Mediterranean cuisine',
+        icon: '🫒'),
+    DropdownItem(value: 'korean',
+        label: 'Korean',
+        description: 'Korean cuisine',
+        icon: '🥘'),
+    DropdownItem(value: 'greek',
+        label: 'Greek',
+        description: 'Greek cuisine',
+        icon: '🇬🇷'),
+    DropdownItem(value: 'spanish',
+        label: 'Spanish',
+        description: 'Spanish cuisine',
+        icon: '🥘'),
+    DropdownItem(value: 'other',
+        label: 'Other',
+        description: 'Other cuisines',
+        icon: '🌍'),
+  ];
+
   // Helper methods to get dropdown data by type
   static List<DropdownItem> getDropdownItems(DropdownType type) {
     switch (type) {
@@ -390,6 +444,8 @@ class DropdownDataManager {
         return priorityLevels;
       case DropdownType.statusOptions:
         return statusOptions;
+      case DropdownType.cuisines:
+        return cuisines;
     }
   }
 
@@ -494,4 +550,5 @@ enum DropdownType {
   mealPeriods,
   priorityLevels,
   statusOptions,
+  cuisines,
 }

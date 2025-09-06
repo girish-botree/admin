@@ -139,8 +139,7 @@ class WebHome extends GetView<HomeController> {
         color: context.theme.colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
-          onTap: () =>
-              AdminBottomSheets.showAdminOptionsBottomSheet(context),
+          onTap: () => Get.toNamed<void>(AppRoutes.deliveryPersons),
           borderRadius: BorderRadius.circular(12),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -171,7 +170,7 @@ class WebHome extends GetView<HomeController> {
                       ),
                       const SizedBox(height: 4),
                       AppText(
-                        'Add new admin or delivery person',
+                        'Handle delivery person',
                         color: context.theme.colorScheme.onSurface.withValues(
                             alpha: 0.7),
                         size: 14,
@@ -179,16 +178,20 @@ class WebHome extends GetView<HomeController> {
                     ],
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(
-                    color: context.theme.colorScheme.onSurface,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    Icons.add,
-                    color: context.theme.colorScheme.surfaceContainerLowest,
-                    size: 20,
+                GestureDetector(
+                  onTap: () =>
+                      AdminBottomSheets.showAdminOptionsBottomSheet(context),
+                  child: Container(
+                    padding: const EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: context.theme.colorScheme.onSurface,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.add,
+                      color: context.theme.colorScheme.surfaceContainerLowest,
+                      size: 20,
+                    ),
                   ),
                 ),
               ],

@@ -12,9 +12,16 @@ class DeliveryPersonController extends GetxController {
   final isDeleting = false.obs;
   final isUpdating = false.obs;
 
-  // Data
+  // Data - now supporting both delivery persons and delivery agents
   final deliveryPersons = <DeliveryPerson>[].obs;
+  final deliveryAgents = <DeliveryAgent>[].obs;
   final filteredDeliveryPersons = <DeliveryPerson>[].obs;
+  final filteredDeliveryAgents = <DeliveryAgent>[].obs;
+  final isShowingAgents = true.obs; // Flag to determine which data to show
+
+  // Expandable card states
+  final expandedPersonCards = <int>{}.obs;
+  final expandedAgentCards = <int>{}.obs;
 
   // Search
   final searchController = TextEditingController();
@@ -32,6 +39,12 @@ class DeliveryPersonController extends GetxController {
   final editProfilePictureUrlController = TextEditingController();
   final editDocumentsUrlController = TextEditingController();
 
+  // Form controllers for editing delivery agents
+  final editAgentNameController = TextEditingController();
+  final editAgentPhoneController = TextEditingController();
+  final editAgentMaxCapacityController = TextEditingController();
+  final editAgentCoveredPincodesController = TextEditingController();
+
   // Observables for editing
   final editSelectedVehicleType = 'Car'.obs;
   final editSelectedDateOfBirth = DateTime
@@ -39,17 +52,24 @@ class DeliveryPersonController extends GetxController {
       .subtract(Duration(days: 18 * 365))
       .obs;
 
+  // Observables for editing delivery agents
+  final editSelectedAvailabilityStatus = 'ACTIVE'.obs;
+
   // Vehicle type options
   final vehicleTypes = ['Car', 'Motorcycle', 'Bicycle', 'Van', 'Truck'].obs;
 
   @override
   void onInit() {
     super.onInit();
-    fetchDeliveryPersons();
+    fetchDeliveryAgents(); // Fetch delivery agents by default
 
     // Listen to search query changes with debouncing
     searchQuery.listen((query) {
-      SearchUtils.debounceSearch(query, filterDeliveryPersons);
+      if (isShowingAgents.value) {
+        SearchUtils.debounceSearch(query, filterDeliveryAgents);
+      } else {
+        SearchUtils.debounceSearch(query, filterDeliveryPersons);
+      }
     });
   }
 
@@ -70,14 +90,44 @@ class DeliveryPersonController extends GetxController {
     editEmergencyContactController.dispose();
     editProfilePictureUrlController.dispose();
     editDocumentsUrlController.dispose();
+    editAgentNameController.dispose();
+    editAgentPhoneController.dispose();
+    editAgentMaxCapacityController.dispose();
+    editAgentCoveredPincodesController.dispose();
     
     super.onClose();
   }
 
-  /// Fetch all delivery persons
+  /// Fetch delivery agents using admin API
+  Future<void> fetchDeliveryAgents() async {
+    try {
+      isLoading.value = true;
+      isShowingAgents.value = true;
+
+      final response = await DioNetworkService.getAllDeliveryAgents(
+          showLoader: false);
+
+      if (response != null && response['data'] != null &&
+          response['data'] is List) {
+        deliveryAgents.value = (response['data'] as List)
+            .where((json) => json is Map<String, dynamic>)
+            .map((json) => DeliveryAgent.fromJson(json as Map<String, dynamic>))
+            .toList();
+        filteredDeliveryAgents.value = deliveryAgents;
+      }
+    } catch (e) {
+      CustomDisplays.showSnackBar(message: 'Failed to load delivery agents');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /// Fetch all delivery persons (keeping existing functionality)
   Future<void> fetchDeliveryPersons() async {
     try {
       isLoading.value = true;
+      isShowingAgents.value = false;
+
       final response = await DioNetworkService.getDeliveryPersons(showLoader: false);
 
       if (response != null && response is List) {
@@ -92,6 +142,26 @@ class DeliveryPersonController extends GetxController {
       CustomDisplays.showSnackBar(message: 'Failed to load delivery persons');
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  /// Filter delivery agents based on search query
+  void filterDeliveryAgents(String query) {
+    if (query.isEmpty) {
+      filteredDeliveryAgents.value = deliveryAgents;
+    } else {
+      filteredDeliveryAgents.value = SearchUtils.filterAndSort(
+        deliveryAgents,
+        query,
+            (agent) =>
+        [
+          agent.name,
+          agent.phoneNumber,
+          agent.availabilityStatus,
+          agent.coveredPincodes.join(' '),
+        ],
+        fallbackToContains: true,
+      );
     }
   }
 
@@ -114,9 +184,58 @@ class DeliveryPersonController extends GetxController {
     }
   }
 
-  /// Search delivery persons
+  /// Search function - works for both agents and persons
   void searchDeliveryPersons(String query) {
     searchQuery.value = query;
+  }
+
+  /// Delete delivery agent
+  Future<void> deleteDeliveryAgent(String id) async {
+    try {
+      isDeleting.value = true;
+
+      final response = await DioNetworkService.deleteDeliveryAgent(
+          id, showLoader: false);
+
+      if (response != null) {
+        // Remove from local list
+        deliveryAgents.removeWhere((agent) => agent.id == id);
+        filteredDeliveryAgents.removeWhere((agent) => agent.id == id);
+
+        CustomDisplays.showSnackBar(
+            message: 'Delivery agent deleted successfully');
+      }
+    } catch (e) {
+      CustomDisplays.showSnackBar(message: 'Failed to delete delivery agent');
+    } finally {
+      isDeleting.value = false;
+    }
+  }
+
+  /// Show delete confirmation for delivery agent
+  void showDeleteConfirmationForAgent(DeliveryAgent agent) {
+    Get.dialog<void>(
+      AlertDialog(
+        backgroundColor: Get.theme.colorScheme.surface,
+        title: Text('Delete Delivery Agent'),
+        content: Text(
+            'Are you sure you want to delete ${agent.name}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back<void>(),
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Get.back<void>();
+              deleteDeliveryAgent(agent.id);
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: Text('Delete'),
+          ),
+        ],
+      ),
+    );
   }
 
   /// Load delivery person data into edit form
@@ -135,6 +254,15 @@ class DeliveryPersonController extends GetxController {
     editSelectedDateOfBirth.value = person.dateOfBirth;
   }
 
+  /// Load delivery agent data into edit form
+  void loadDeliveryAgentForEdit(DeliveryAgent agent) {
+    editAgentNameController.text = agent.name;
+    editAgentPhoneController.text = agent.phoneNumber;
+    editAgentMaxCapacityController.text = agent.maxCapacity.toString();
+    editAgentCoveredPincodesController.text = '';
+    editSelectedAvailabilityStatus.value = agent.availabilityStatus;
+  }
+
   /// Clear edit form
   void clearEditForm() {
     editFirstNameController.clear();
@@ -150,6 +278,13 @@ class DeliveryPersonController extends GetxController {
     editSelectedVehicleType.value = 'Car';
     editSelectedDateOfBirth.value =
         DateTime.now().subtract(Duration(days: 18 * 365));
+  }
+
+  /// Clear delivery agent edit form
+  void clearAgentEditForm() {
+    editAgentPhoneController.clear();
+    editAgentMaxCapacityController.clear();
+    editSelectedAvailabilityStatus.value = 'ACTIVE';
   }
 
   /// Update delivery person
@@ -192,6 +327,35 @@ class DeliveryPersonController extends GetxController {
       }
     } catch (e) {
       CustomDisplays.showSnackBar(message: 'Failed to update delivery person');
+    } finally {
+      isUpdating.value = false;
+    }
+  }
+
+  /// Update delivery agent
+  Future<void> updateDeliveryAgent(String id) async {
+    try {
+      isUpdating.value = true;
+
+      final data = {
+        'phoneNumber': editAgentPhoneController.text.trim(),
+        'maxCapacity': int.parse(editAgentMaxCapacityController.text.trim()),
+        'availabilityStatus': editSelectedAvailabilityStatus.value,
+      };
+
+      final response = await DioNetworkService.updateDeliveryAgent(
+          id, data, showLoader: false);
+
+      if (response != null) {
+        // Refresh the list
+        await fetchDeliveryAgents();
+
+        Get.back<void>(); // Close edit dialog
+        CustomDisplays.showSnackBar(
+            message: 'Delivery agent updated successfully');
+      }
+    } catch (e) {
+      CustomDisplays.showSnackBar(message: 'Failed to update delivery agent');
     } finally {
       isUpdating.value = false;
     }
@@ -246,5 +410,23 @@ class DeliveryPersonController extends GetxController {
     );
   }
 
+  /// Toggle delivery person card expansion
+  void togglePersonCardExpansion(int index) {
+    if (expandedPersonCards.contains(index)) {
+      expandedPersonCards.remove(index);
+    } else {
+      expandedPersonCards.add(index);
+    }
+    update(['person_$index']);
+  }
 
+  /// Toggle delivery agent card expansion
+  void toggleAgentCardExpansion(int index) {
+    if (expandedAgentCards.contains(index)) {
+      expandedAgentCards.remove(index);
+    } else {
+      expandedAgentCards.add(index);
+    }
+    update(['agent_$index']);
+  }
 }

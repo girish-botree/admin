@@ -51,6 +51,9 @@ abstract class ApiClient {
   @GET('${AppUrl.getRecipes}/{id}')
   Future<HttpResponse<dynamic>> getRecipeById(@Path('id') String id);
 
+  @GET('${AppUrl.recipes}/{id}/details')
+  Future<HttpResponse<dynamic>> getRecipeDetails(@Path('id') String id);
+
   @POST(AppUrl.recipes)
   Future<HttpResponse<dynamic>> createRecipe(@Body() Map<String, dynamic> body);
 

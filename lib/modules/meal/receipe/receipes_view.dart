@@ -163,7 +163,8 @@ class ReceipesView extends GetView<MealController> {
     final recipeCards = controller.filteredRecipes.map((recipe) =>
         RecipeCard(
           recipe: recipe,
-          onTap: () => RecipeDetailsDialog.show(context, recipe),
+          onTap: () =>
+              RecipeDetailsDialog.show(context, recipe),
           onEdit: () =>
               RecipeDialogs.showEditRecipeDialog(context, controller, recipe),
           onDelete: () =>

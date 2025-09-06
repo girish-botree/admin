@@ -48,14 +48,6 @@ class PlanView extends GetView<PlanController> {
             icon: Icon(Icons.refresh, color: context.theme.colorScheme.onSurface),
             tooltip: 'Refresh',
           ),
-          IconButton(
-            onPressed: () {
-              Get.toNamed(AppRoutes.planStatistics);
-            },
-            icon: Icon(
-                Icons.bar_chart, color: context.theme.colorScheme.onSurface),
-            tooltip: 'Statistics',
-          ),
         ],
       ),
       body: Obx(() {

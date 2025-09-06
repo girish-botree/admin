@@ -237,16 +237,64 @@ class CustomDisplays {
     );
   }
 
-  // Legacy method for backward compatibility - now uses toast
-  @Deprecated('Use showToast instead')
+  // Legacy method for backward compatibility - now uses toast with smart type detection
+  @Deprecated('Use showToast instead with explicit MessageType')
   static void showSnackBar({
     required String message,
     double fontSize = 16.0,
     int duration = 3000,
   }) {
+    // Smart detection of message type based on content
+    MessageType type = MessageType.info; // default
+
+    final lowerMessage = message.toLowerCase();
+
+    if (lowerMessage.contains('success') ||
+        lowerMessage.contains('updated') ||
+        lowerMessage.contains('deleted') ||
+        lowerMessage.contains('added') ||
+        lowerMessage.contains('created') ||
+        lowerMessage.contains('sent') ||
+        lowerMessage.contains('completed')) {
+      type = MessageType.success;
+    } else if (lowerMessage.contains('error') ||
+        lowerMessage.contains('failed') ||
+        lowerMessage.contains('fail') ||
+        lowerMessage.contains('unable') ||
+        lowerMessage.contains('cannot') ||
+        lowerMessage.contains('invalid') ||
+        lowerMessage.contains('denied')) {
+      type = MessageType.error;
+    }
+
     showToast(
       message: message,
+      type: type,
       duration: Duration(milliseconds: duration),
+    );
+  }
+
+  // Method specifically for success messages
+  static void showSuccessSnackBar({
+    required String message,
+    Duration duration = const Duration(seconds: 3),
+  }) {
+    showToast(
+      message: message,
+      type: MessageType.success,
+      duration: duration,
+    );
+  }
+
+  // Method specifically for error messages  
+  static void showErrorSnackBar({
+    required String message,
+    Duration duration = const Duration(seconds: 3),
+  }) {
+    showToast(
+      message: message,
+      type: MessageType.error,
+      duration: duration,
     );
   }
 }
@@ -290,18 +338,18 @@ class _ToastWidgetState extends State<_ToastWidget>
   }
 
   Color _getBackgroundColor(BuildContext context) {
-    final colorScheme = Theme
-        .of(context)
-        .colorScheme;
     switch (widget.type) {
       case MessageType.success:
-        return colorScheme.secondary; // use secondary for success
+        return Colors.green.shade600; // Use green for success
       case MessageType.error:
-        return colorScheme.error;
+        return Colors.red.shade600; // Use red for error
       case MessageType.warning:
-        return colorScheme.tertiary; // use tertiary for warning if present
+        return Colors.orange.shade600; // Keep orange for warning
       case MessageType.info:
-        return colorScheme.primary;
+        return Theme
+            .of(context)
+            .colorScheme
+            .onSurface; // Use onSurface for info
     }
   }
 
@@ -356,20 +404,24 @@ class _ToastWidgetState extends State<_ToastWidget>
               children: [
                 Icon(
                   _getIcon(),
-                  color: Theme
+                  color: widget.type == MessageType.info
+                      ? Theme
                       .of(context)
                       .colorScheme
-                      .onSecondary,
+                      .surfaceContainerLowest
+                      : Colors.white,
                   size: 20,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: AppText(
                     widget.message.tr,
-                    color: Theme
+                    color: widget.type == MessageType.info
+                        ? Theme
                         .of(context)
                         .colorScheme
-                        .onSecondary,
+                        .surfaceContainerLowest
+                        : Colors.white,
                     size: 14,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,

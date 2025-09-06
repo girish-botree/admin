@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../meal_controller.dart';
+import 'package:admin/utils/image_base64_util.dart';
 
 class RecipeDetailsDialog {
   static void show(BuildContext context, dynamic recipe) {
@@ -29,7 +30,7 @@ class RecipeDetailsDialog {
           throw Exception('Recipe ID is null or empty');
         }
 
-        final recipeResponse = await controller.getRecipeById(recipeId);
+        final recipeResponse = await controller.getRecipeDetails(recipeId);
         dynamic recipeData;
         if (recipeResponse is Map<String, dynamic>) {
           if (recipeResponse.containsKey('data')) {
@@ -56,10 +57,26 @@ class RecipeDetailsDialog {
             recipeIngredients.value = [];
           }
 
-          // Nutrition per serving
+          // Nutrition per serving - map the API structure to expected structure
           if (recipeData['nutritionPerServing'] != null) {
-            nutritionData.value =
-            Map<String, dynamic>.from(recipeData['nutritionPerServing'] as Map);
+            final apiNutrition = recipeData['nutritionPerServing'] as Map<
+                String,
+                dynamic>;
+
+            // Convert API structure (totalCalories) to expected structure (calories)
+            final normalizedNutrition = <String, dynamic>{
+              'calories': apiNutrition['totalCalories'] ?? 0,
+              'protein': apiNutrition['totalProtein'] ?? 0,
+              'carbohydrates': apiNutrition['totalCarbohydrates'] ?? 0,
+              'fat': apiNutrition['totalFat'] ?? 0,
+              'fiber': apiNutrition['totalFiber'] ?? 0,
+              'sugar': apiNutrition['totalSugar'] ?? 0,
+              'vitamins': apiNutrition['vitamins'] ?? {},
+              'minerals': apiNutrition['minerals'] ?? {},
+              'fatBreakdown': apiNutrition['fatBreakdown'] ?? {},
+            };
+
+            nutritionData.value = normalizedNutrition;
           }
         } else {
           recipeIngredients.value = [];
@@ -164,42 +181,17 @@ class RecipeDetailsDialog {
   }
 
   static Widget _buildPlaceholderImage(BuildContext context, dynamic recipe) {
-    final color = Colors.primaries[recipe['name']
-        .toString()
-        .length % Colors.primaries.length];
     final imageUrl = recipe['imageUrl']?.toString();
-
-    if (imageUrl != null && imageUrl.isNotEmpty) {
-      if (imageUrl.startsWith('data:image/') || _isBase64String(imageUrl)) {
-        try {
-          String base64String = imageUrl;
-          if (imageUrl.startsWith('data:image/')) {
-            base64String = imageUrl.split(',')[1];
-          }
-
-          final bytes = base64Decode(base64String);
-          return Image.memory(
-            bytes,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return _buildFallbackImage(context, color);
-            },
-          );
-        } catch (e) {
-          return _buildFallbackImage(context, color);
-        }
-      } else {
-        return Image.network(
-          imageUrl,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return _buildFallbackImage(context, color);
-          },
-        );
-      }
-    } else {
-      return _buildFallbackImage(context, color);
-    }
+    return ImageBase64Util.buildImage(
+      imageUrl,
+      fit: BoxFit.cover,
+      errorWidget: Container(
+        color: Colors.grey.withOpacity(0.3),
+        child: const Center(
+          child: Icon(Icons.restaurant, size: 48, color: Colors.grey),
+        ),
+      ),
+    );
   }
 
   static Widget _buildFallbackImage(BuildContext context, Color color) {
@@ -213,17 +205,6 @@ class RecipeDetailsDialog {
         ),
       ),
     );
-  }
-
-  static bool _isBase64String(String str) {
-    try {
-      final cleanStr = str.replaceAll(RegExp(r'\s+'), '');
-      if (cleanStr.length % 4 != 0) return false;
-      base64Decode(cleanStr);
-      return true;
-    } catch (e) {
-      return false;
-    }
   }
 }
 
@@ -240,7 +221,10 @@ class RecipeHeroSection extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          RecipeDetailsDialog._buildPlaceholderImage(context, recipe),
+          if (recipe['imageUrl'] != null && recipe['imageUrl']
+              .toString()
+              .isNotEmpty)
+            RecipeDetailsDialog._buildPlaceholderImage(context, recipe),
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -658,7 +642,8 @@ class RecipeIngredientsDetails extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            '${ingredient['quantity'] ?? 0}${ingredient['unit'] ?? 'g'}',
+                            '${(ingredient['quantity'] as num?)
+                                ?.toStringAsFixed(0) ?? '0'}g',
                             style: TextStyle(
                               color: context.theme.colorScheme
                                   .onSecondaryContainer,

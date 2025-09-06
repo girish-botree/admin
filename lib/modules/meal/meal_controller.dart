@@ -70,6 +70,7 @@ class MealController extends GetxController {
   final saturatedFatController = TextEditingController();
   final monoFatController = TextEditingController();
   final polyFatController = TextEditingController();
+  final instructionsController = TextEditingController();
   
   @override
   void onInit() {
@@ -167,6 +168,15 @@ class MealController extends GetxController {
       return response;
     } catch (e) {
       throw Exception('Failed to fetch recipe: $e');
+    }
+  }
+
+  Future<dynamic> getRecipeDetails(String recipeId) async {
+    try {
+      final response = await DioNetworkService.getRecipeDetails(recipeId);
+      return response;
+    } catch (e) {
+      throw Exception('Failed to fetch recipe details: $e');
     }
   }
 
@@ -415,6 +425,7 @@ class MealController extends GetxController {
     servingsController.text = '1';
     cuisineController.clear();
     selectedCuisine.value = '';
+    instructionsController.clear();
     resetFormErrors();
   }
   
@@ -434,6 +445,7 @@ class MealController extends GetxController {
     saturatedFatController.clear();
     monoFatController.clear();
     polyFatController.clear();
+    instructionsController.clear();
     resetFormErrors();
   }
   
@@ -444,7 +456,24 @@ class MealController extends GetxController {
     }
 
     nameController.text = (recipe['name'] as String?) ?? '';
-    descriptionController.text = (recipe['description'] as String?) ?? '';
+
+    // Parse description and instructions
+    String fullDescription = (recipe['description'] as String?) ?? '';
+    String description = '';
+    String instructions = '';
+
+    // Check if description contains preparation steps
+    if (fullDescription.contains('--- Preparation Steps ---')) {
+      final parts = fullDescription.split('--- Preparation Steps ---');
+      description = parts[0].trim();
+      instructions = parts.length > 1 ? parts[1].trim() : '';
+    } else {
+      description = fullDescription;
+    }
+
+    descriptionController.text = description;
+    instructionsController.text = instructions;
+
     servingsController.text = (recipe['servings']?.toString()) ?? '1';
     cuisineController.text = (recipe['cuisine'] as String?) ?? '';
     selectedCuisine.value = cuisineController.text;
@@ -583,17 +612,38 @@ class MealController extends GetxController {
   
   // Create recipe data from form
   Map<String, dynamic> createRecipeData(int dietaryCategory, List<dynamic> ingredients) {
+    // Combine description and instructions for the preparation steps
+    String fullDescription = descriptionController.text.trim();
+    if (instructionsController.text
+        .trim()
+        .isNotEmpty) {
+      if (fullDescription.isNotEmpty) {
+        fullDescription += '\n\n--- Preparation Steps ---\n';
+      }
+      fullDescription += instructionsController.text.trim();
+    }
+
     return {
       'name': nameController.text,
-      'description': descriptionController.text,
+      'description': fullDescription,
       'servings': int.tryParse(servingsController.text) ?? 1,
       'imageUrl': '',
       'dietaryCategory': dietaryCategory,
       'cuisine': cuisineController.text,
+      'calories': int.tryParse(caloriesController.text) ?? 0,
+      'protein': int.tryParse(proteinController.text) ?? 0,
+      'carbohydrates': int.tryParse(carbsController.text) ?? 0,
+      'fat': int.tryParse(fatController.text) ?? 0,
+      'fiber': int.tryParse(fiberController.text) ?? 0,
+      'sugar': int.tryParse(sugarController.text) ?? 0,
+      'vitamins': vitaminsController.text,
+      'minerals': mineralsController.text,
+      'fatBreakdown': '', // Can be filled from a separate field if needed
       'ingredients': ingredients.map((ingredient) => {
         'ingredientId': ingredient['ingredientId'],
         'quantity': ingredient['quantity']
       }).toList(),
+      'isActive': true, // Add isActive field
     };
   }
 
@@ -791,6 +841,7 @@ class MealController extends GetxController {
     saturatedFatController.dispose();
     monoFatController.dispose();
     polyFatController.dispose();
+    instructionsController.dispose(); // Dispose instructions controller
     recipeSearchController.dispose();
     ingredientSearchController.dispose();
     super.onClose();

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:admin/utils/image_base64_util.dart';
 
 class RecipeCard extends StatelessWidget {
   final dynamic recipe;
@@ -47,7 +47,22 @@ class RecipeCard extends StatelessWidget {
               children: [
                 // Background image
                 Positioned.fill(
-                  child: _buildPlaceholderImage(context, recipe),
+                  child: ImageBase64Util.buildImage(
+                    recipe['imageUrl']?.toString(),
+                    width: double.infinity,
+                    height: double.infinity,
+                    fit: BoxFit.cover,
+                    placeholder: Container(
+                      color: Colors.grey.withOpacity(0.1),
+                      child: const Center(
+                        child: Icon(
+                          Icons.restaurant,
+                          size: 40,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
                 // Improved gradient overlay for better text visibility
                 Positioned.fill(
@@ -169,138 +184,6 @@ class RecipeCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Widget _buildPlaceholderImage(BuildContext context, dynamic recipe) {
-    final color = Colors.primaries[recipe['name']
-        .toString()
-        .length % Colors.primaries.length];
-    final imageUrl = recipe['imageUrl']?.toString();
-
-    if (imageUrl != null && imageUrl.isNotEmpty) {
-      // Check if it's a file path (usually starting with file:// or /)  
-      if (imageUrl.startsWith('file://') || imageUrl.startsWith('/')) {
-        try {
-          final filePath = imageUrl.startsWith('file://')
-              ? imageUrl.substring(7)
-              : imageUrl;
-
-          return Image.file(
-            File(filePath),
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return _buildFallbackImage(context, color);
-            },
-          );
-        } catch (e) {
-          return _buildFallbackImage(context, color);
-        }
-      }
-      // Check if it's base64 data
-      else
-      if (imageUrl.startsWith('data:image/') || _isBase64String(imageUrl)) {
-        try {
-          // Handle data URL format (data:image/jpeg;base64,...)
-          String base64String = imageUrl;
-          if (imageUrl.startsWith('data:image/')) {
-            base64String = imageUrl.split(',')[1];
-          }
-
-          final bytes = base64Decode(base64String);
-          return Image.memory(
-            bytes,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return _buildFallbackImage(context, color);
-            },
-          );
-        } catch (e) {
-          return _buildFallbackImage(context, color);
-        }
-      }
-      // Handle regular network URL
-      else {
-        return Image.network(
-          imageUrl,
-          fit: BoxFit.cover,
-          cacheWidth: 800,
-          // Add caching for better performance
-          cacheHeight: 800,
-          errorBuilder: (context, error, stackTrace) {
-            return _buildFallbackImage(context, color);
-          },
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-            return Container(
-              color: color.withValues(alpha: 0.7),
-              child: Center(
-                child: CircularProgressIndicator(
-                  value: loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes!
-                      : null,
-                  color: Colors.white,
-                ),
-              ),
-            );
-          },
-        );
-      }
-    } else {
-      return _buildFallbackImage(context, color);
-    }
-  }
-
-  Widget _buildFallbackImage(BuildContext context, Color color) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            color.withValues(alpha: 0.7),
-            color.withValues(alpha: 0.9),
-          ],
-        ),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.restaurant,
-              size: 64,
-              color: Colors.white.withValues(alpha: 0.9),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '',
-              style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.9),
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Helper method to check if a string is base64
-  bool _isBase64String(String str) {
-    try {
-      // Remove any whitespace and check if it's valid base64
-      final cleanStr = str.replaceAll(RegExp(r'\s+'), '');
-      // Base64 strings should be divisible by 4 in length (with padding)
-      if (cleanStr.length % 4 != 0) return false;
-
-      // Try to decode - if it fails, it's not valid base64
-      base64Decode(cleanStr);
-      return true;
-    } catch (e) {
-      return false;
-    }
   }
 }
 

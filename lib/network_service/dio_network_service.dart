@@ -822,6 +822,78 @@ class DioNetworkService {
     }
   }
 
+  // Delivery Agent methods (Admin API endpoints)
+  static Future<dynamic> getAllDeliveryAgents({bool showLoader = true}) async {
+    try {
+      if (showLoader) ApiHelper.showLoader();
+      final response = await getData(
+          'api/admin/delivery-agents', showLoader: false);
+      if (showLoader) ApiHelper.dismissLoader();
+      return response;
+    } catch (error) {
+      if (showLoader) ApiHelper.dismissLoader();
+      CustomDisplays.showToast(
+        message: 'Failed to load delivery agents. Please try again later',
+        type: MessageType.error,
+      );
+      rethrow;
+    }
+  }
+
+  static Future<dynamic> createDeliveryAgent(Map<String, dynamic> data,
+      {bool showLoader = true}) async {
+    try {
+      if (showLoader) ApiHelper.showLoader();
+      final response = await postData(
+          data, 'api/admin/delivery-agents', showLoader: false);
+      if (showLoader) ApiHelper.dismissLoader();
+      return response;
+    } catch (error) {
+      if (showLoader) ApiHelper.dismissLoader();
+      CustomDisplays.showToast(
+        message: 'Failed to create delivery agent. Please try again later',
+        type: MessageType.error,
+      );
+      rethrow;
+    }
+  }
+
+  static Future<dynamic> updateDeliveryAgent(String id,
+      Map<String, dynamic> data, {bool showLoader = true}) async {
+    try {
+      if (showLoader) ApiHelper.showLoader();
+      final response = await putDataWithBody(
+          data, 'api/admin/delivery-agents/$id', showLoader: false);
+      if (showLoader) ApiHelper.dismissLoader();
+      return response;
+    } catch (error) {
+      if (showLoader) ApiHelper.dismissLoader();
+      CustomDisplays.showToast(
+        message: 'Failed to update delivery agent. Please try again later',
+        type: MessageType.error,
+      );
+      rethrow;
+    }
+  }
+
+  static Future<dynamic> deleteDeliveryAgent(String id,
+      {bool showLoader = true}) async {
+    try {
+      if (showLoader) ApiHelper.showLoader();
+      final response = await deleteData(
+          'api/admin/delivery-agents/$id', showLoader: false);
+      if (showLoader) ApiHelper.dismissLoader();
+      return response;
+    } catch (error) {
+      if (showLoader) ApiHelper.dismissLoader();
+      CustomDisplays.showToast(
+        message: 'Failed to delete delivery agent. Please try again later',
+        type: MessageType.error,
+      );
+      rethrow;
+    }
+  }
+
   // Recipe methods
   static Future<dynamic> getRecipes({
     bool showLoader = true,
@@ -882,7 +954,37 @@ class DioNetworkService {
       rethrow;
     }
   }
-  
+
+  static Future<dynamic> getRecipeDetails(String id, {
+    bool showLoader = true,
+  }) async {
+    try {
+      if (showLoader) {
+        ApiHelper.showLoader();
+      }
+
+      final response = await _apiClient.getRecipeDetails(id);
+
+      if (showLoader) {
+        ApiHelper.dismissLoader();
+      }
+
+      return response.data;
+    } catch (error) {
+      if (showLoader) {
+        ApiHelper.dismissLoader();
+      }
+
+
+      CustomDisplays.showToast(
+        message: 'Failed to load recipe details. Please try again later',
+        type: MessageType.error,
+      );
+
+      rethrow;
+    }
+  }
+
   static Future<dynamic> createRecipe(Map<String, dynamic> data, {bool showLoader = true}) async {
     try {
       if (showLoader) ApiHelper.showLoader();

@@ -76,7 +76,7 @@ class AdminBottomSheets {
       border: OutlineInputBorder(borderRadius: borderRadius, borderSide: borderSide),
       enabledBorder: OutlineInputBorder(borderRadius: borderRadius, borderSide: borderSide),
       focusedBorder: OutlineInputBorder(borderRadius: borderRadius, borderSide: BorderSide(color: onSurfaceColor)),
-      errorBorder: OutlineInputBorder(borderRadius: borderRadius, borderSide: BorderSide(color: Colors.red)),
+      errorBorder: OutlineInputBorder(borderRadius: borderRadius, borderSide: const BorderSide(color: Colors.red)),
       labelStyle: TextStyle(color: onSurfaceColor),
       fillColor: context.theme.colorScheme.surfaceContainerLowest,
       filled: true,
@@ -229,12 +229,12 @@ class AdminBottomSheets {
                                   style: ElevatedButton.styleFrom(
                                     foregroundColor: context.theme.colorScheme.onSurface,
                                     backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
-                                    padding: EdgeInsets.symmetric(vertical: 12),
+                                    padding: const EdgeInsets.symmetric(vertical: 12),
                                   ),
                                   onPressed: controller.isLoading.value
                                       ? null
                                       : () => controller.sendOtp(controller.emailController.text, userType),
-                                  child: Text('Send OTP'),
+                                  child: const Text('Send OTP'),
                                 )),
                               ),
                             ],
@@ -294,7 +294,7 @@ class AdminBottomSheets {
                                 onPressed: controller.isLoading.value
                                     ? null
                                     : () => controller.sendOtp(controller.emailController.text, userType),
-                                child: Text('Send OTP'),
+                                child: const Text('Send OTP'),
                               )),
                             ],
                           );
@@ -329,13 +329,86 @@ class AdminBottomSheets {
                     // Inline message for OTP status
                     Obx(() {
                       if (controller.isOtpSent.value) {
-                        return InlineMessage(
+                        return const InlineMessage(
                           message: 'OTP sent successfully! Check your email.',
                           type: MessageType.success,
                         );
                       }
                       return const SizedBox.shrink();
                     }),
+
+                    // Verify OTP Button - only show when OTP is sent but not verified
+                    Obx(() =>
+                    controller.isOtpSent.value &&
+                        !controller.isOtpVerified.value
+                        ? Column(
+                      children: [
+                        SizedBox(height: Responsive.responsiveValue(
+                          context,
+                          mobile: 12.0,
+                          tablet: 16.0,
+                          web: 20.0,
+                        )),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: context.theme.colorScheme
+                                  .onSurface,
+                              backgroundColor: context.theme.colorScheme
+                                  .surfaceContainerLowest,
+                              padding: EdgeInsets.symmetric(
+                                vertical: Responsive.responsiveValue(
+                                  context,
+                                  mobile: 12.0,
+                                  tablet: 16.0,
+                                  web: 20.0,
+                                ),
+                              ),
+                            ),
+                            onPressed: controller.isLoading.value
+                                ? null
+                                : () =>
+                                controller.verifyOtpOnly(
+                                    controller.otpController.text),
+                            child: controller.isLoading.value
+                                ? SizedBox(
+                              height: 20,
+                              width:
+                              20,
+                              child: CircularProgressIndicator(
+                                color: context.theme.colorScheme.onSurface,
+                                strokeWidth: 2,
+                              ),
+                            )
+                                : const Text('Verify OTP'),
+                          ),
+                        ),
+                      ],
+                    )
+                        : const SizedBox.shrink()),
+
+                    // Show OTP verified message
+                    Obx(() {
+                      if (controller.isOtpVerified.value) {
+                        return Column(
+                          children: [
+                            SizedBox(height: Responsive.responsiveValue(
+                              context,
+                              mobile: 12.0,
+                              tablet: 16.0,
+                              web: 20.0,
+                            )),
+                            const InlineMessage(
+                              message: 'OTP verified successfully! You can now complete registration.',
+                              type: MessageType.success,
+                            ),
+                          ],
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    }),
+
                     SizedBox(height: Responsive.responsiveValue(
                       context, 
                       mobile: 16.0, 
@@ -485,7 +558,7 @@ class AdminBottomSheets {
                                     .value,
                                 firstDate: DateTime(1950),
                                 lastDate: DateTime.now().subtract(
-                                    Duration(days: 18 * 365)),
+                                    const Duration(days: 18 * 365)),
                               );
                               if (picked != null) {
                                 controller.selectedDateOfBirth.value = picked;
@@ -538,7 +611,7 @@ class AdminBottomSheets {
                           // Profile Picture Section
                           Container(
                             width: double.infinity,
-                            padding: EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
@@ -556,7 +629,7 @@ class AdminBottomSheets {
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                SizedBox(height: 12),
+                                const SizedBox(height: 12),
                                 Row(
                                   children: [
                                     Obx(() =>
@@ -586,7 +659,7 @@ class AdminBottomSheets {
                                       ),
                                     ),
                                     ),
-                                    SizedBox(width: 12),
+                                    const SizedBox(width: 12),
                                     ElevatedButton(
                                       style: ElevatedButton.styleFrom(
                                         foregroundColor: context.theme
@@ -599,7 +672,7 @@ class AdminBottomSheets {
                                             context,
                                             isProfilePicture: true,
                                           ),
-                                      child: Text('Select Image'),
+                                      child: const Text('Select Image'),
                                     ),
                                   ],
                                 ),
@@ -617,7 +690,7 @@ class AdminBottomSheets {
                           // Documents Section
                           Container(
                             width: double.infinity,
-                            padding: EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
@@ -635,7 +708,7 @@ class AdminBottomSheets {
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                SizedBox(height: 12),
+                                const SizedBox(height: 12),
                                 Row(
                                   children: [
                                     Obx(() =>
@@ -665,7 +738,7 @@ class AdminBottomSheets {
                                       ),
                                     ),
                                     ),
-                                    SizedBox(width: 12),
+                                    const SizedBox(width: 12),
                                     ElevatedButton(
                                       style: ElevatedButton.styleFrom(
                                         foregroundColor: context.theme
@@ -678,7 +751,7 @@ class AdminBottomSheets {
                                             context,
                                             isProfilePicture: false,
                                           ),
-                                      child: Text('Select Document'),
+                                      child: const Text('Select Document'),
                                     ),
                                   ],
                                 ),
@@ -762,31 +835,31 @@ class AdminBottomSheets {
   // Helper method to create vehicle type dropdown items
   static List<DropdownItem> _getVehicleTypeItems() {
     return [
-      DropdownItem(
+      const DropdownItem(
         value: 'Bicycle',
         label: 'Bicycle',
         description: 'Eco-friendly short distance delivery',
         icon: '🚲',
       ),
-      DropdownItem(
+      const DropdownItem(
         value: 'Motorcycle',
         label: 'Motorcycle',
         description: 'Fast urban delivery',
         icon: '🏍️',
       ),
-      DropdownItem(
+      const DropdownItem(
         value: 'Car',
         label: 'Car',
         description: 'Comfortable delivery option',
         icon: '🚗',
       ),
-      DropdownItem(
+      const DropdownItem(
         value: 'Van',
         label: 'Van',
         description: 'Large capacity delivery',
         icon: '🚐',
       ),
-      DropdownItem(
+      const DropdownItem(
         value: 'Truck',
         label: 'Truck',
         description: 'Heavy duty delivery',

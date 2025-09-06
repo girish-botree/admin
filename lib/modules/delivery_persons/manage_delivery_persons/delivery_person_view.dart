@@ -9,285 +9,760 @@ import '../../../widgets/centered_dropdown.dart';
 import 'delivery_person_model.dart';
 
 class DeliveryPersonView extends GetView<DeliveryPersonController> {
-  const DeliveryPersonView({Key? key}) : super(key: key);
+  const DeliveryPersonView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.theme.colorScheme.surface,
+      backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
       appBar: AppBar(
         title: AppText.semiBold(
-          'Delivery Persons',
+          'Delivery Management',
           color: context.theme.colorScheme.onSurface,
-          size: 24,
+          size: 20,
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: context.theme.colorScheme.onSurface,
-      ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
-        child: Column(
-          children: [
-            // Search Bar
-            _buildSearchBar(context),
-            SizedBox(height: 16),
-
-            // Delivery Persons List
-            Expanded(
-              child: Obx(() {
-                if (controller.isLoading.value) {
-                  return Center(child: CircularProgressIndicator());
-                }
-
-                if (controller.filteredDeliveryPersons.isEmpty) {
-                  return _buildEmptyState(context);
-                }
-
-                return _buildDeliveryPersonsList(context);
-              }),
-            ),
-          ],
+        titleSpacing: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () => Get.back(),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => controller.fetchDeliveryPersons(),
-        icon: Icon(Icons.refresh),
-        label: Text('Refresh'),
-        backgroundColor: context.theme.colorScheme.primary,
-        foregroundColor: context.theme.colorScheme.onPrimary,
-      ),
+      body: _buildDeliveryPersonsView(context),
+      // floatingActionButton: FloatingActionButton.extended(
+      //   onPressed: () => _showAddPersonDialog(context),
+      //   icon: const Icon(Icons.add),
+      //   label: const Text('Add'),
+      //   backgroundColor: context.theme.colorScheme.primary,
+      //   foregroundColor: context.theme.colorScheme.onPrimary,
+      // ),
     );
   }
 
-  Widget _buildSearchBar(BuildContext context) {
-    return TextFormField(
-      controller: controller.searchController,
-      decoration: InputDecoration(
-        labelText: 'Search delivery persons...',
-        prefixIcon: Icon(Icons.search),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-            color: context.theme.colorScheme.outline.withValues(alpha: 0.3),
+  Widget _buildDeliveryPersonsView(BuildContext context) {
+    return Column(
+      children: [
+        // Search Bar with modern design
+        Container(
+          margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          child: SearchBar(
+            controller: controller.searchController,
+            hintText: 'Search delivery persons...',
+            leading: const Icon(Icons.search),
+            trailing: [
+              IconButton(
+                icon: const Icon(Icons.refresh),
+                onPressed: () => controller.fetchDeliveryAgents(),
+              ),
+            ],
+            onChanged: (value) => controller.searchDeliveryPersons(value),
+            elevation: const WidgetStatePropertyAll(1),
           ),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-            color: context.theme.colorScheme.primary,
-          ),
+
+        // Delivery Persons List
+        Expanded(
+          child: Obx(() {
+            if (controller.isLoading.value) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            // Use delivery agents instead of delivery persons
+            final itemsToShow = controller.isShowingAgents.value
+                ? controller.filteredDeliveryAgents
+                : controller.filteredDeliveryPersons;
+
+            if (itemsToShow.isEmpty) {
+              return _buildEmptyState(
+                context,
+                Icons.person_outline,
+                'No delivery agents found',
+                'Delivery agents will appear here when registered',
+              );
+            }
+
+            return ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: itemsToShow.length,
+              itemBuilder: (context, index) {
+                if (controller.isShowingAgents.value) {
+                  final agent = controller.filteredDeliveryAgents[index];
+                  return _buildExpandableAgentCard(context, agent, index);
+                } else {
+                  final person = controller.filteredDeliveryPersons[index];
+                  return _buildExpandablePersonCard(context, person, index);
+                }
+              },
+            );
+          }),
         ),
-      ),
-      onChanged: controller.searchDeliveryPersons,
+      ],
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
+  Widget _buildEmptyState(BuildContext context, IconData icon, String title,
+      String subtitle) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.local_shipping_outlined,
-            size: 64,
-            color: context.theme.colorScheme.outline,
-          ),
-          SizedBox(height: 16),
-          Text(
-            'No delivery persons found',
-            style: TextStyle(
-              fontSize: 18,
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: context.theme.colorScheme.surfaceContainerLowest,
+              borderRadius: BorderRadius.circular(32),
+            ),
+            child: Icon(
+              icon,
+              size: 48,
               color: context.theme.colorScheme.onSurface,
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 24),
           Text(
-            'Delivery persons will appear here when registered',
-            style: TextStyle(
-              fontSize: 14,
-              color: context.theme.colorScheme.outline,
+            title,
+            style: context.textTheme.headlineSmall?.copyWith(
+              color: context.theme.colorScheme.onSurface,
+              fontWeight: FontWeight.w600,
             ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            subtitle,
+            style: context.textTheme.bodyMedium?.copyWith(
+              color: context.theme.colorScheme.onSurface,
+            ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildDeliveryPersonsList(BuildContext context) {
-    return ListView.separated(
-      itemCount: controller.filteredDeliveryPersons.length,
-      separatorBuilder: (context, index) => SizedBox(height: 12),
-      itemBuilder: (context, index) {
-        final person = controller.filteredDeliveryPersons[index];
-        return _buildDeliveryPersonCard(context, person);
+  Widget _buildExpandablePersonCard(BuildContext context, DeliveryPerson person,
+      int index) {
+    return GetBuilder<DeliveryPersonController>(
+      id: 'person_$index',
+      builder: (controller) {
+        final isExpanded = controller.expandedPersonCards.contains(index);
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          child: Material(
+            color: context.theme.colorScheme.surfaceContainerLowest,
+            borderRadius: BorderRadius.circular(16),
+            elevation: 0,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () => controller.togglePersonCardExpansion(index),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    // Always visible header
+                    Row(
+                      children: [
+                        // Vehicle icon
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: context.theme.colorScheme
+                                .surfaceContainerLowest,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: context.theme.colorScheme.onSurface
+                                  .withOpacity(0.2),
+                            ),
+                          ),
+                          child: Icon(
+                            _getVehicleIcon(person.vehicleType),
+                            color: context.theme.colorScheme.onSurface,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+
+                        // Vehicle number (main identifier)
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                person.vehicleNumber,
+                                style: context.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: context.theme.colorScheme.onSurface,
+                                ),
+                              ),
+                              Text(
+                                '${person.vehicleType} • ${person.firstName}',
+                                style: context.textTheme.bodyMedium?.copyWith(
+                                  color: context.theme.colorScheme.onSurface,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Action menu
+                        PopupMenuButton<String>(
+                          icon: Icon(
+                            Icons.more_vert,
+                            color: context.theme.colorScheme.onSurface,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          onSelected: (value) {
+                            switch (value) {
+                              case 'edit':
+                                _showEditDialog(context, person);
+                                break;
+                              case 'delete':
+                                controller.showDeleteConfirmation(person);
+                                break;
+                            }
+                          },
+                          itemBuilder: (context) =>
+                          [
+                            const PopupMenuItem(
+                              value: 'edit',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.edit_outlined, size: 20),
+                                  SizedBox(width: 12),
+                                  Text('Edit'),
+                                ],
+                              ),
+                            ),
+                            const PopupMenuItem(
+                              value: 'delete',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.delete_outline, size: 20,
+                                      color: Colors.red),
+                                  SizedBox(width: 12),
+                                  Text('Delete',
+                                      style: TextStyle(color: Colors.red)),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        // Expand/Collapse icon
+                        AnimatedRotation(
+                          turns: isExpanded ? 0.5 : 0,
+                          duration: const Duration(milliseconds: 300),
+                          child: Icon(
+                            Icons.expand_more,
+                            color: context.theme.colorScheme.onSurface,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    // Expandable content
+                    AnimatedCrossFade(
+                      firstChild: const SizedBox.shrink(),
+                      secondChild: Column(
+                        children: [
+                          const SizedBox(height: 16),
+                          _buildPersonExpandedContent(context, person),
+                        ],
+                      ),
+                      crossFadeState: isExpanded
+                          ? CrossFadeState.showSecond
+                          : CrossFadeState.showFirst,
+                      duration: const Duration(milliseconds: 300),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
       },
     );
   }
 
-  Widget _buildDeliveryPersonCard(BuildContext context, DeliveryPerson person) {
-    return Card(
-      color: context.theme.colorScheme.surfaceContainerLowest,
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: context.theme.colorScheme.outline.withValues(alpha: 0.1),
-        ),
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header Row
-            Row(
-              children: [
-                // Profile Picture or Initial
-                CircleAvatar(
-                  radius: 24,
-                  backgroundColor: context.theme.colorScheme.primary
-                      .withValues(alpha: 0.1),
-                  backgroundImage: person.profilePictureUrl != null
-                      ? NetworkImage(person.profilePictureUrl!)
-                      : null,
-                  child: person.profilePictureUrl == null
-                      ? Text(
-                    person.firstName.isNotEmpty
-                        ? person.firstName[0].toUpperCase()
-                        : 'D',
-                    style: TextStyle(
-                      color: context.theme.colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
+  Widget _buildExpandableAgentCard(BuildContext context, DeliveryAgent agent,
+      int index) {
+    return GetBuilder<DeliveryPersonController>(
+      id: 'agent_$index',
+      builder: (controller) {
+        final isExpanded = controller.expandedAgentCards.contains(index);
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          child: Material(
+            color: context.theme.colorScheme.surfaceContainerLowest,
+            borderRadius: BorderRadius.circular(16),
+            elevation: 0,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () => controller.toggleAgentCardExpansion(index),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    // Always visible header
+                    Row(
+                      children: [
+                        // Vehicle icon
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: context.theme.colorScheme
+                                .surfaceContainerLowest,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: context.theme.colorScheme.onSurface
+                                  .withOpacity(0.2),
+                            ),
+                          ),
+                          child: Icon(
+                            _getVehicleIcon(agent.vehicleType),
+                            color: context.theme.colorScheme.onSurface,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+
+                        // Vehicle number and status
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                agent.vehicleNumber,
+                                style: context.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: context.theme.colorScheme.onSurface,
+                                ),
+                              ),
+                              Text(
+                                '${agent.vehicleType} • ${agent
+                                    .availabilityStatus}',
+                                style: context.textTheme.bodyMedium?.copyWith(
+                                  color: context.theme.colorScheme.onSurface,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Action menu
+                        PopupMenuButton<String>(
+                          icon: Icon(
+                            Icons.more_vert,
+                            color: context.theme.colorScheme.onSurface,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          onSelected: (value) {
+                            switch (value) {
+                              case 'edit':
+                                _showEditAgentDialog(context, agent);
+                                break;
+                              case 'delete':
+                                controller.showDeleteConfirmationForAgent(
+                                    agent);
+                                break;
+                            }
+                          },
+                          itemBuilder: (context) =>
+                          [
+                            const PopupMenuItem(
+                              value: 'edit',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.edit_outlined, size: 20),
+                                  SizedBox(width: 12),
+                                  Text('Edit'),
+                                ],
+                              ),
+                            ),
+                            const PopupMenuItem(
+                              value: 'delete',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.delete_outline, size: 20,
+                                      color: Colors.red),
+                                  SizedBox(width: 12),
+                                  Text('Delete',
+                                      style: TextStyle(color: Colors.red)),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        // Expand/Collapse icon
+                        AnimatedRotation(
+                          turns: isExpanded ? 0.5 : 0,
+                          duration: const Duration(milliseconds: 300),
+                          child: Icon(
+                            Icons.expand_more,
+                            color: context.theme.colorScheme.onSurface,
+                          ),
+                        ),
+                      ],
                     ),
-                  )
-                      : null,
-                ),
-                SizedBox(width: 12),
 
-                // Name and Email
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        person.fullName,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: context.theme.colorScheme.onSurface,
-                        ),
-                      ),
-                      Text(
-                        person.email,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: context.theme.colorScheme.outline,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Action Buttons
-                PopupMenuButton<String>(
-                  icon: Icon(
-                    Icons.more_vert,
-                    color: context.theme.colorScheme.outline,
-                  ),
-                  onSelected: (value) {
-                    switch (value) {
-                      case 'edit':
-                        _showEditDialog(context, person);
-                        break;
-                      case 'delete':
-                        controller.showDeleteConfirmation(person);
-                        break;
-                    }
-                  },
-                  itemBuilder: (context) =>
-                  [
-                    PopupMenuItem(
-                      value: 'edit',
-                      child: Row(
+                    // Expandable content
+                    AnimatedCrossFade(
+                      firstChild: const SizedBox.shrink(),
+                      secondChild: Column(
                         children: [
-                          Icon(Icons.edit, size: 20),
-                          SizedBox(width: 8),
-                          Text('Edit'),
+                          const SizedBox(height: 16),
+                          _buildAgentExpandedContent(context, agent),
                         ],
                       ),
-                    ),
-                    PopupMenuItem(
-                      value: 'delete',
-                      child: Row(
-                        children: [
-                          Icon(Icons.delete, size: 20, color: Colors.red),
-                          SizedBox(width: 8),
-                          Text('Delete', style: TextStyle(color: Colors.red)),
-                        ],
-                      ),
+                      crossFadeState: isExpanded
+                          ? CrossFadeState.showSecond
+                          : CrossFadeState.showFirst,
+                      duration: const Duration(milliseconds: 300),
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
-
-            SizedBox(height: 12),
-
-            // Details Grid
-            _buildDetailsGrid(context, person),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildDetailsGrid(BuildContext context, DeliveryPerson person) {
+  Widget _buildPersonExpandedContent(BuildContext context,
+      DeliveryPerson person) {
     return Column(
       children: [
+        // Profile section
         Row(
           children: [
-            Expanded(child: _buildDetailItem(
-                context, 'Phone', person.phoneNumber, Icons.phone)),
-            SizedBox(width: 16),
-            Expanded(child: _buildDetailItem(
-                context, 'Age', '${person.age} years', Icons.calendar_today)),
+            // Profile picture
+            CircleAvatar(
+              radius: 28,
+              backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
+              backgroundImage: person.profilePictureUrl != null
+                  ? NetworkImage(person.profilePictureUrl!)
+                  : null,
+              child: person.profilePictureUrl == null
+                  ? Text(
+                person.firstName.isNotEmpty
+                    ? person.firstName[0].toUpperCase()
+                    : 'D',
+                style: TextStyle(
+                  color: context.theme.colorScheme.onSurface,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              )
+                  : null,
+            ),
+            const SizedBox(width: 16),
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    person.fullName,
+                    style: context.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    person.email,
+                    style: context.textTheme.bodyMedium?.copyWith(
+                      color: context.theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 16),
+
+        // Contact & Personal Info
         Row(
           children: [
-            Expanded(child: _buildDetailItem(context, 'Vehicle',
-                '${person.vehicleType} - ${person.vehicleNumber}',
-                Icons.directions_car)),
-            SizedBox(width: 16),
-            Expanded(child: _buildDetailItem(
-                context, 'ID Number', person.identificationNumber,
-                Icons.badge)),
+            Expanded(
+              child: _buildInfoTile(
+                context,
+                'Phone',
+                person.phoneNumber,
+                Icons.phone_outlined,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildInfoTile(
+                context,
+                'Age',
+                '${person.age} years',
+                Icons.cake_outlined,
+              ),
+            ),
           ],
         ),
-        SizedBox(height: 12),
-        _buildDetailItem(context, 'Address', person.address, Icons.location_on),
-        SizedBox(height: 12),
-        _buildDetailItem(context, 'Emergency Contact', person.emergencyContact,
-            Icons.emergency),
+        const SizedBox(height: 12),
+
+        // Address
+        _buildInfoTile(
+          context,
+          'Address',
+          person.address,
+          Icons.location_on_outlined,
+        ),
+        const SizedBox(height: 12),
+
+        // Additional details
+        Row(
+          children: [
+            Expanded(
+              child: _buildInfoTile(
+                context,
+                'ID Number',
+                person.identificationNumber,
+                Icons.badge_outlined,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildInfoTile(
+                context,
+                'Emergency',
+                person.emergencyContact,
+                Icons.emergency_outlined,
+              ),
+            ),
+          ],
+        ),
+
+        // Action buttons
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () => _showEditDialog(context, person),
+                icon: const Icon(Icons.edit_outlined, size: 18),
+                label: const Text('Edit'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: FilledButton.icon(
+                onPressed: () => controller.showDeleteConfirmation(person),
+                icon: const Icon(Icons.delete_outline, size: 18),
+                label: const Text('Delete'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: Colors.red.shade100,
+                  foregroundColor: Colors.red.shade700,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
 
-  Widget _buildDetailItem(BuildContext context, String label, String value,
+  Widget _buildAgentExpandedContent(BuildContext context,
+      DeliveryAgent agent) {
+    return Column(
+      children: [
+        // Profile section
+        Row(
+          children: [
+            // Profile picture
+            CircleAvatar(
+              radius: 28,
+              backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
+              backgroundImage: agent.profilePictureUrl != null
+                  ? NetworkImage(agent.profilePictureUrl!)
+                  : null,
+              child: agent.profilePictureUrl == null
+                  ? Text(
+                agent.vehicleType.isNotEmpty
+                    ? agent.vehicleType[0].toUpperCase()
+                    : 'D',
+                style: TextStyle(
+                  color: context.theme.colorScheme.onSurface,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              )
+                  : null,
+            ),
+            const SizedBox(width: 16),
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    agent.name,
+                    style: context.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Status: ${agent.availabilityStatus}',
+                    style: context.textTheme.bodyMedium?.copyWith(
+                      color: context.theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+
+        // Contact & Capacity Info
+        Row(
+          children: [
+            Expanded(
+              child: _buildInfoTile(
+                context,
+                'Phone',
+                agent.phoneNumber,
+                Icons.phone_outlined,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildInfoTile(
+                context,
+                'Capacity',
+                '${agent.currentLoad}/${agent.maxCapacity}',
+                Icons.inventory_outlined,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+
+        // Address
+        _buildInfoTile(
+          context,
+          'Address',
+          agent.address,
+          Icons.location_on_outlined,
+        ),
+        const SizedBox(height: 12),
+
+        // Additional details
+        Row(
+          children: [
+            Expanded(
+              child: _buildInfoTile(
+                context,
+                'ID Number',
+                agent.identificationNumber,
+                Icons.badge_outlined,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildInfoTile(
+                context,
+                'Emergency',
+                agent.emergencyContact,
+                Icons.emergency_outlined,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+
+        // Ratings and joined date
+        Row(
+          children: [
+            Expanded(
+              child: _buildInfoTile(
+                context,
+                'Ratings',
+                agent.ratings?.toStringAsFixed(1) ?? 'No rating',
+                Icons.star_outline,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildInfoTile(
+                context,
+                'Joined',
+                '${agent.joinedOn.day}/${agent.joinedOn.month}/${agent.joinedOn
+                    .year}',
+                Icons.calendar_today,
+              ),
+            ),
+          ],
+        ),
+
+        // Action buttons
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () => _showEditAgentDialog(context, agent),
+                icon: const Icon(Icons.edit_outlined, size: 18),
+                label: const Text('Edit'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: FilledButton.icon(
+                onPressed: () =>
+                    controller.showDeleteConfirmationForAgent(agent),
+                icon: const Icon(Icons.delete_outline, size: 18),
+                label: const Text('Delete'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: Colors.red.shade100,
+                  foregroundColor: Colors.red.shade700,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInfoTile(BuildContext context, String label, String value,
       IconData icon) {
     return Container(
-      padding: EdgeInsets.all(12),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: context.theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(8),
+        color: context.theme.colorScheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: context.theme.colorScheme.outline.withValues(alpha: 0.1),
+          color: context.theme.colorScheme.onSurface.withOpacity(0.1),
         ),
       ),
       child: Column(
@@ -298,31 +773,45 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
               Icon(
                 icon,
                 size: 16,
-                color: context.theme.colorScheme.outline,
+                color: context.theme.colorScheme.onSurface,
               ),
-              SizedBox(width: 6),
+              const SizedBox(width: 6),
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: context.theme.colorScheme.outline,
+                style: context.textTheme.bodySmall?.copyWith(
+                  color: context.theme.colorScheme.onSurface,
                   fontWeight: FontWeight.w500,
                 ),
               ),
             ],
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 6),
           Text(
             value,
-            style: TextStyle(
-              fontSize: 14,
-              color: context.theme.colorScheme.onSurface,
+            style: context.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w500,
             ),
           ),
         ],
       ),
     );
+  }
+
+  IconData _getVehicleIcon(String vehicleType) {
+    switch (vehicleType.toLowerCase()) {
+      case 'bike':
+      case 'motorcycle':
+        return Icons.two_wheeler;
+      case 'car':
+        return Icons.directions_car;
+      case 'truck':
+      case 'van':
+        return Icons.local_shipping;
+      case 'bicycle':
+        return Icons.pedal_bike;
+      default:
+        return Icons.delivery_dining;
+    }
   }
 
   void _showEditDialog(BuildContext context, DeliveryPerson person) {
@@ -348,7 +837,7 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
                 .bottom,
           ),
           child: Container(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -362,7 +851,7 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
                       color: context.theme.colorScheme.onSurface,
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
                   // Edit Form
                   _buildEditForm(context, person),
@@ -372,6 +861,17 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
           ),
         );
       },
+    );
+  }
+
+  void _showEditAgentDialog(BuildContext context, DeliveryAgent agent) {
+    // TODO: Implement edit delivery agent dialog
+    Get.snackbar(
+      'Info',
+      'Edit delivery agent functionality coming soon',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.green.shade600,
+      colorText: Colors.white,
     );
   }
 
@@ -389,7 +889,7 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
                   style: TextStyle(color: context.theme.colorScheme.onSurface),
                 ),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Expanded(
                 child: TextFormField(
                   controller: controller.editLastNameController,
@@ -399,7 +899,7 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
               ),
             ],
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
 
           // Contact Fields
           TextFormField(
@@ -408,7 +908,7 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
             style: TextStyle(color: context.theme.colorScheme.onSurface),
             keyboardType: TextInputType.emailAddress,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
 
           TextFormField(
             controller: controller.editPhoneNumberController,
@@ -416,7 +916,7 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
             style: TextStyle(color: context.theme.colorScheme.onSurface),
             keyboardType: TextInputType.phone,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
 
           // Address
           TextFormField(
@@ -425,7 +925,7 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
             style: TextStyle(color: context.theme.colorScheme.onSurface),
             maxLines: 2,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
 
           // Identification Number
           TextFormField(
@@ -435,7 +935,7 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
             style: TextStyle(color: context.theme.colorScheme.onSurface),
             keyboardType: TextInputType.text,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
 
           // Vehicle Type Dropdown - Centered
           Obx(() => CenteredDropdown<String>(
@@ -450,7 +950,7 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
             hintText: 'Select vehicle type',
             enabled: true,
           )),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
 
           // Vehicle Number
           TextFormField(
@@ -458,7 +958,7 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
             decoration: _createInputDecoration(context, 'Vehicle Number'),
             style: TextStyle(color: context.theme.colorScheme.onSurface),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
 
           // Date of Birth Picker
           Obx(() =>
@@ -468,7 +968,7 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
                     context: context,
                     initialDate: controller.editSelectedDateOfBirth.value,
                     firstDate: DateTime(1950),
-                    lastDate: DateTime.now().subtract(Duration(days: 18 * 365)),
+                    lastDate: DateTime.now().subtract(const Duration(days: 18 * 365)),
                   );
                   if (picked != null) {
                     controller.editSelectedDateOfBirth.value = picked;
@@ -486,7 +986,7 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
                   ),
                 ),
               )),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
 
           // Emergency Contact
           TextFormField(
@@ -495,7 +995,7 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
             style: TextStyle(color: context.theme.colorScheme.onSurface),
             keyboardType: TextInputType.phone,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
 
           // Optional Fields
           TextFormField(
@@ -504,7 +1004,7 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
                 context, 'Profile Picture URL (Optional)'),
             style: TextStyle(color: context.theme.colorScheme.onSurface),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
 
           TextFormField(
             controller: controller.editDocumentsUrlController,
@@ -512,7 +1012,7 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
                 context, 'Documents URL (Optional)'),
             style: TextStyle(color: context.theme.colorScheme.onSurface),
           ),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
 
           // Action Buttons
           Row(
@@ -523,10 +1023,10 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
                     controller.clearEditForm();
                     Get.back<void>();
                   },
-                  child: Text('Cancel'),
+                  child: const Text('Cancel'),
                 ),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Expanded(
                 child: Obx(() =>
                     ElevatedButton(
@@ -546,7 +1046,7 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
                           color: context.theme.colorScheme.onPrimary,
                         ),
                       )
-                          : Text('Update'),
+                          : const Text('Update'),
                     )),
               ),
             ],
@@ -560,7 +1060,7 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
       String labelText) {
     final borderRadius = BorderRadius.circular(8);
     final onSurfaceColor = context.theme.colorScheme.onSurface;
-    final borderSide = BorderSide(color: onSurfaceColor.withValues(alpha: 0.3));
+    final borderSide = BorderSide(color: onSurfaceColor.withAlpha(30));
 
     return InputDecoration(
       labelText: labelText,
@@ -571,14 +1071,12 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
       focusedBorder: OutlineInputBorder(borderRadius: borderRadius,
           borderSide: BorderSide(color: onSurfaceColor)),
       errorBorder: OutlineInputBorder(borderRadius: borderRadius,
-          borderSide: BorderSide(color: Colors.red)),
+          borderSide: const BorderSide(color: Colors.red)),
       labelStyle: TextStyle(color: onSurfaceColor),
       fillColor: context.theme.colorScheme.surfaceContainerLowest,
       filled: true,
     );
   }
-
-
 
   List<DropdownMenuItem<String>> _buildSimpleVehicleTypeItems() {
     return (controller.vehicleTypes as List<String>).map<DropdownMenuItem<String>>((String vehicleType) {
@@ -587,5 +1085,16 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
         child: Text(vehicleType),
       );
     }).toList();
+  }
+
+  void _showAddPersonDialog(BuildContext context) {
+    // TODO: Implement add delivery person dialog
+    Get.snackbar(
+      'Info',
+      'Add delivery person functionality coming soon',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.green.shade600,
+      colorText: Colors.white,
+    );
   }
 }
