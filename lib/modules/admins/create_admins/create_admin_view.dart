@@ -162,6 +162,12 @@ class AdminBottomSheets {
                         if (value == null || value.isEmpty) {
                           return 'Please enter first name';
                         }
+                        if (value.length < 2) {
+                          return 'First name must be at least 2 characters';
+                        }
+                        if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+                          return 'First name should only contain letters';
+                        }
                         return null;
                       },
                     ),
@@ -178,6 +184,12 @@ class AdminBottomSheets {
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter last name';
+                        }
+                        if (value.length < 2) {
+                          return 'Last name must be at least 2 characters';
+                        }
+                        if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+                          return 'Last name should only contain letters';
                         }
                         return null;
                       },
@@ -204,7 +216,7 @@ class AdminBottomSheets {
                                     return 'Please enter an email address';
                                   }
                                   if (!GetUtils.isEmail(value)) {
-                                    return null; // Let inline message handle this
+                                    return 'Please enter a valid email address';
                                   }
                                   return null;
                                 },
@@ -252,7 +264,7 @@ class AdminBottomSheets {
                                       return 'Please enter an email address';
                                     }
                                     if (!GetUtils.isEmail(value)) {
-                                      return null; // Let inline message handle this
+                                      return 'Please enter a valid email address';
                                     }
                                     return null;
                                   },
@@ -421,11 +433,18 @@ class AdminBottomSheets {
                       decoration: _createInputDecoration(context, 'Password'),
                       style: TextStyle(color: context.theme.colorScheme.onSurface),
                       validator: (value) {
-                        // Basic validation
                         if (value == null || value.isEmpty) {
                           return 'Please enter a password';
                         }
-                        return null; // Let inline messages handle detailed validation
+                        if (value.length < 8) {
+                          return 'Password must be at least 8 characters';
+                        }
+                        if (!RegExp(
+                            r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]')
+                            .hasMatch(value)) {
+                          return 'Password must contain uppercase, lowercase, number and special character';
+                        }
+                        return null;
                       },
                       onChanged: (value) {
                         // Trigger validation state update for inline messages
@@ -456,6 +475,15 @@ class AdminBottomSheets {
                           if (value == null || value.isEmpty) {
                             return 'Please enter phone number';
                           }
+                          if (!RegExp(r'^\+?[1-9]\d{1,14}$').hasMatch(
+                              value.replaceAll(RegExp(r'[\s\-\(\)]'), ''))) {
+                            return 'Please enter a valid phone number';
+                          }
+                          if (value
+                              .replaceAll(RegExp(r'[\s\-\(\)\+]'), '')
+                              .length < 10) {
+                            return 'Phone number must be at least 10 digits';
+                          }
                           return null;
                         },
                       ),
@@ -477,6 +505,13 @@ class AdminBottomSheets {
                           if (value == null || value.isEmpty) {
                             return 'Please enter address';
                           }
+                          if (value.length < 10) {
+                            return 'Address must be at least 10 characters';
+                          }
+                          if (!RegExp(r'^[a-zA-Z0-9\s,.\-#/]+$').hasMatch(
+                              value)) {
+                            return 'Address contains invalid characters';
+                          }
                           return null;
                         },
                       ),
@@ -496,6 +531,12 @@ class AdminBottomSheets {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter identification number';
+                          }
+                          if (value.length < 6) {
+                            return 'Identification number must be at least 6 characters';
+                          }
+                          if (!RegExp(r'^[a-zA-Z0-9]+$').hasMatch(value)) {
+                            return 'Identification number should only contain letters and numbers';
                           }
                           return null;
                         },
@@ -537,6 +578,12 @@ class AdminBottomSheets {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter vehicle number';
+                          }
+                          if (value.length < 4) {
+                            return 'Vehicle number must be at least 4 characters';
+                          }
+                          if (!RegExp(r'^[a-zA-Z0-9\s\-]+$').hasMatch(value)) {
+                            return 'Vehicle number contains invalid characters';
                           }
                           return null;
                         },
@@ -594,6 +641,15 @@ class AdminBottomSheets {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter emergency contact';
+                          }
+                          if (!RegExp(r'^\+?[1-9]\d{1,14}$').hasMatch(
+                              value.replaceAll(RegExp(r'[\s\-\(\)]'), ''))) {
+                            return 'Please enter a valid emergency contact number';
+                          }
+                          if (value
+                              .replaceAll(RegExp(r'[\s\-\(\)\+]'), '')
+                              .length < 10) {
+                            return 'Emergency contact must be at least 10 digits';
                           }
                           return null;
                         },

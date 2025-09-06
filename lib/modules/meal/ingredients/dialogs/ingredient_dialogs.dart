@@ -986,13 +986,13 @@ class IngredientDialogs {
                           (double.tryParse(controller.fatController.text) ??
                               0.0))
                       ? Colors.grey
-                      : context.theme.colorScheme.primary,
+                      : context.theme.colorScheme.onSurface,
                   foregroundColor: (calculateTotalComposition() > 100.0 ||
                       calculateTotalFatBreakdown() >
                           (double.tryParse(controller.fatController.text) ??
                               0.0))
                       ? Colors.grey.shade600
-                      : context.theme.colorScheme.onPrimary,
+                      : context.theme.colorScheme.surfaceContainerLowest,
                   icon: Icon((calculateTotalComposition() > 100.0 ||
                       calculateTotalFatBreakdown() >
                           (double.tryParse(controller.fatController.text) ??

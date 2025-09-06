@@ -144,7 +144,7 @@ class PlanView extends GetView<PlanController> {
         calendarStyle: CalendarStyle(
           outsideDaysVisible: false,
           selectedDecoration: BoxDecoration(
-            color: context.theme.colorScheme.primary,
+            color: context.theme.colorScheme.primaryContainer,
             shape: BoxShape.circle,
           ),
           todayDecoration: BoxDecoration(

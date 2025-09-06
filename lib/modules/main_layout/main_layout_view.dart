@@ -31,7 +31,7 @@ class MainLayoutView extends GetView<MainLayoutController> {
           BottomNavigationBarItem(
             icon: (controller.currentIndex == 0
                 ? Assets.icons.icHomeFill
-                : Assets.icons.icHome).svg(
+                : Assets.icons.icHomeStroke).svg(
               width: 24,
               height: 24,
               colorFilter: ColorFilter.mode(
@@ -115,7 +115,7 @@ class MainLayoutView extends GetView<MainLayoutController> {
                 context,
                 icon: (controller.currentIndex == 0
                     ? Assets.icons.icHomeFill
-                    : Assets.icons.icHome).svg(
+                    : Assets.icons.icHomeStroke).svg(
                   width: 24,
                   height: 24,
                   colorFilter: ColorFilter.mode(

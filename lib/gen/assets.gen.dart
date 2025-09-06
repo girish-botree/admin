@@ -50,12 +50,13 @@ class $AssetsIconsGen {
   SvgGenImage get icHidePassword =>
       const SvgGenImage('assets/icons/ic_hide_password.svg');
 
-  /// File path: assets/icons/ic_home.svg
-  SvgGenImage get icHome => const SvgGenImage('assets/icons/ic_home.svg');
-
   /// File path: assets/icons/ic_home_fill.svg
   SvgGenImage get icHomeFill =>
       const SvgGenImage('assets/icons/ic_home_fill.svg');
+
+  /// File path: assets/icons/ic_home_stroke.svg
+  SvgGenImage get icHomeStroke =>
+      const SvgGenImage('assets/icons/ic_home_stroke.svg');
 
   /// File path: assets/icons/ic_ingredient.svg
   SvgGenImage get icIngredient =>
@@ -97,8 +98,8 @@ class $AssetsIconsGen {
         icDashboardFill,
         icEmail,
         icHidePassword,
-        icHome,
         icHomeFill,
+        icHomeStroke,
         icIngredient,
         icLock,
         icLogin,

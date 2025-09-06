@@ -427,7 +427,7 @@ class RecipeDialogs {
                       },
                       backgroundColor: hasValidationError
                           ? Colors.grey
-                          : dialogContext.theme.colorScheme.primary,
+                          : dialogContext.theme.colorScheme.onSurface,
                       foregroundColor: hasValidationError
                           ? Colors.grey.shade600
                           : dialogContext.theme.colorScheme.onPrimary,

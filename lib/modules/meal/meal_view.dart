@@ -18,6 +18,8 @@ class MealView extends GetView<MealController> {
           'Meals',
           color: context.theme.colorScheme.onSurface,
           size: 20,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
         ),
         backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
         elevation: 0,

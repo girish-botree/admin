@@ -11,11 +11,12 @@ class TabLogin extends GetView<LoginController> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        height: MediaQuery
+            .of(context)
+            .size
+            .height,
         decoration: BoxDecoration(
-          color: Theme
-              .of(context)
-              .colorScheme
-              .surfaceContainerLowest,
+          color: context.theme.colorScheme.surfaceContainerHighest,
         ),
         child: SafeArea(
           child: Responsive.isLandscape(context)
@@ -29,73 +30,120 @@ class TabLogin extends GetView<LoginController> {
   Widget _buildTabletLandscapeLayout(BuildContext context) {
     return Row(
       children: [
+        // Left side - Welcome section
         Expanded(
           flex: 5,
           child: Container(
-            color: Theme
-                .of(context)
-                .colorScheme
-                .surfaceContainerLowest,
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(32),
-              child: Container(
-                constraints: BoxConstraints(
-                  minHeight: MediaQuery
-                      .of(context)
-                      .size
-                      .height -
-                      MediaQuery
-                          .of(context)
-                          .padding
-                          .top -
-                      MediaQuery
-                          .of(context)
-                          .padding
-                          .bottom -
-                      64,
+            padding: const EdgeInsets.all(48),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // App title
+                AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 800),
+                  style: TextStyle(
+                    fontSize: 64,
+                    fontWeight: FontWeight.w900,
+                    color: context.theme.colorScheme.onSurface,
+                    letterSpacing: -1.5,
+                    height: 0.9,
+                  ),
+                  child: const Text('Elith'),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 800),
-                      curve: Curves.easeOutBack,
-                      child: _buildTabletCompactLogoSection(context),
+                const SizedBox(height: 24),
+
+                // Subtitle
+                AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 1000),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                    color: context.theme.colorScheme.onSurface.withOpacity(0.7),
+                    letterSpacing: 0.3,
+                    height: 1.4,
+                  ),
+                  child: const Text(
+                    'Transform your nutrition journey with our professional dashboard',
+                  ),
+                ),
+                const SizedBox(height: 48),
+
+                // Quote section
+                Container(
+                  padding: const EdgeInsets.all(32),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    color: context.theme.colorScheme.onSurface.withOpacity(
+                        0.05),
+                    border: Border.all(
+                      color: context.theme.colorScheme.onSurface.withOpacity(
+                          0.1),
+                      width: 1,
                     ),
-                    const SizedBox(height: 24),
-                  ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.restaurant_rounded,
+                        size: 32,
+                        color: context.theme.colorScheme.onSurface,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        '"Let food be thy medicine and medicine be thy food. A healthy outside starts from the inside."',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: context.theme.colorScheme.onSurface,
+                          letterSpacing: 0.3,
+                          height: 1.5,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        '— Hippocrates',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: context.theme.colorScheme.onSurface
+                              .withOpacity(0.7),
+                          letterSpacing: 0.5,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ),
+
+        // Right side - Login form
         Expanded(
-          flex: 6,
+          flex: 4,
           child: Container(
             margin: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Theme
-                  .of(context)
-                  .colorScheme
-                  .surfaceContainerLowest,
+              color: context.theme.colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(28),
               border: Border.all(
-                color: Theme
-                    .of(context)
-                    .colorScheme
-                    .onSurface
-                    .withAlpha(30),
+                color: context.theme.colorScheme.onSurface.withOpacity(0.1),
                 width: 1,
               ),
+              boxShadow: [
+                BoxShadow(
+                  offset: const Offset(0, 16),
+                  blurRadius: 48,
+                  color: context.theme.colorScheme.onSurface.withOpacity(0.1),
+                ),
+              ],
             ),
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(40),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 600),
-                curve: Curves.easeOut,
-                child: _buildTabletLoginForm(context),
-              ),
+              child: _buildTabletLoginForm(context),
             ),
           ),
         ),
@@ -104,138 +152,129 @@ class TabLogin extends GetView<LoginController> {
   }
 
   Widget _buildTabletPortraitLayout(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height * 0.45,
-            ),
-            color: Theme
-                .of(context)
-                .colorScheme
-                .surfaceContainerLowest,
+    return Column(
+      children: [
+        // Top section with title and quote
+        Expanded(
+          flex: 2,
+          child: Container(
             padding: const EdgeInsets.all(48),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
               children: [
-                AnimatedContainer(
+                // App title
+                AnimatedDefaultTextStyle(
                   duration: const Duration(milliseconds: 800),
-                  curve: Curves.easeOutBack,
-                  child: _buildTabletLogoSection(context),
+                  style: TextStyle(
+                    fontSize: 56,
+                    fontWeight: FontWeight.w900,
+                    color: context.theme.colorScheme.onSurface,
+                    letterSpacing: -1.2,
+                    height: 0.9,
+                  ),
+                  child: const Text('Elith'),
+                ),
+                const SizedBox(height: 24),
+
+                // Subtitle
+                AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 1000),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: context.theme.colorScheme.onSurface.withOpacity(0.7),
+                    letterSpacing: 0.3,
+                    height: 1.4,
+                  ),
+                  child: const Text(
+                    'Professional Nutrition Dashboard',
+                    textAlign: TextAlign.center,
+                  ),
                 ),
                 const SizedBox(height: 32),
+
+                // Quote section
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: context.theme.colorScheme.onSurface.withOpacity(
+                        0.05),
+                    border: Border.all(
+                      color: context.theme.colorScheme.onSurface.withOpacity(
+                          0.1),
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.restaurant_rounded,
+                        size: 28,
+                        color: context.theme.colorScheme.onSurface,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        '"Let food be thy medicine and medicine be thy food. A healthy outside starts from the inside."',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: context.theme.colorScheme.onSurface,
+                          letterSpacing: 0.3,
+                          height: 1.4,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        '— Hippocrates',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: context.theme.colorScheme.onSurface
+                              .withOpacity(0.7),
+                          letterSpacing: 0.5,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
-          Container(
+        ),
+
+        // Bottom section with login form
+        Expanded(
+          child: Container(
             margin: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-            padding: const EdgeInsets.all(48),
             decoration: BoxDecoration(
-              color: Theme
-                  .of(context)
-                  .colorScheme
-                  .surfaceContainerLowest,
+              color: context.theme.colorScheme.surfaceContainerHighest,
               borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(32)),
+                top: Radius.circular(32),
+              ),
               border: Border.all(
-                color: Theme
-                    .of(context)
-                    .colorScheme
-                    .onSurface
-                    .withAlpha(20),
+                color: context.theme.colorScheme.onSurface.withOpacity(0.1),
                 width: 1,
               ),
+              boxShadow: [
+                BoxShadow(
+                  offset: const Offset(0, -8),
+                  blurRadius: 32,
+                  color: context.theme.colorScheme.onSurface.withOpacity(0.1),
+                ),
+              ],
             ),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 600),
-              curve: Curves.easeOut,
-              child: _buildTabletLoginForm(context),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(48),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 600),
+                curve: Curves.easeOut,
+                child: _buildTabletLoginForm(context),
+              ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTabletLogoSection(BuildContext context) {
-    return Column(
-      children: [
-        Hero(
-          tag: 'app_logo',
-          child: buildLogoContainer(
-            height: 160,
-            width: 160,
-            borderRadius: 36,
-            iconSize: 80,
-          ),
-        ),
-        const SizedBox(height: 40),
-        AnimatedDefaultTextStyle(
-          duration: const Duration(milliseconds: 600),
-          style: TextStyle(
-            fontSize: 52,
-            fontWeight: FontWeight.w800,
-            color: context.theme.colorScheme.onSurface,
-            letterSpacing: -0.8,
-            height: 1.1,
-          ),
-          child: const Text('Elith Admin'),
-        ),
-        const SizedBox(height: 20),
-        AnimatedDefaultTextStyle(
-          duration: const Duration(milliseconds: 800),
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
-            color: context.theme.colorScheme.onSurface,
-            letterSpacing: 0.4,
-            height: 1.3,
-          ),
-          child: const Text('Professional Admin Dashboard'),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTabletCompactLogoSection(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Hero(
-          tag: 'app_logo',
-          child: buildLogoContainer(
-            height: 120,
-            width: 120,
-            borderRadius: 28,
-            iconSize: 60,
-          ),
-        ),
-        const SizedBox(height: 28),
-        AnimatedDefaultTextStyle(
-          duration: const Duration(milliseconds: 600),
-          style: TextStyle(
-            fontSize: 36,
-            fontWeight: FontWeight.w800,
-            color: context.theme.colorScheme.onSurface,
-            letterSpacing: -0.5,
-            height: 1.1,
-          ),
-          child: const Text('Elith Admin'),
-        ),
-        const SizedBox(height: 16),
-        AnimatedDefaultTextStyle(
-          duration: const Duration(milliseconds: 800),
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: context.theme.colorScheme.onSurface,
-            letterSpacing: 0.3,
-            height: 1.3,
-          ),
-          child: const Text('Professional Dashboard'),
         ),
       ],
     );

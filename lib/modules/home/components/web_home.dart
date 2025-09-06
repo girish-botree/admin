@@ -149,13 +149,20 @@ class WebHome extends GetView<HomeController> {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: context.theme.colorScheme.surfaceContainerLowest,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(
-                    Icons.admin_panel_settings_outlined,
-                    color: context.theme.colorScheme.onSurface,
-                    size: 24,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.network(
+                      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face',
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          Icon(
+                            Icons.admin_panel_settings_outlined,
+                            color: context.theme.colorScheme.onSurface,
+                            size: 24,
+                          ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 16),

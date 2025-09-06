@@ -128,7 +128,7 @@ class MealPlanFormDialog extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer,
+                  color: theme.colorScheme.primary,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Icon(
@@ -169,7 +169,7 @@ class MealPlanFormDialog extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: theme.colorScheme.primaryContainer,
+              color: theme.colorScheme.primary,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: theme.colorScheme.primary.withAlpha(50),
@@ -179,7 +179,7 @@ class MealPlanFormDialog extends StatelessWidget {
               children: [
                 Icon(
                   Icons.event,
-                  color: theme.colorScheme.primary,
+                  color: theme.colorScheme.surfaceContainerLowest,
                   size: 20,
                 ),
                 const SizedBox(width: 12),

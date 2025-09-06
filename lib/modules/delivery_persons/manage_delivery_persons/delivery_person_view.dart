@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'delivery_person_controller.dart';
 import '../../../widgets/centered_dropdown.dart';
 import 'delivery_person_model.dart';
+import '../../meal/shared/widgets/common_widgets.dart';
 
 class DeliveryPersonView extends GetView<DeliveryPersonController> {
   const DeliveryPersonView({super.key});
@@ -29,6 +30,13 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () => Get.back(),
         ),
+        actions: [
+          IconButton(
+            onPressed: () => controller.fetchDeliveryAgents(),
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Refresh',
+          ),
+        ],
       ),
       body: _buildDeliveryPersonsView(context),
       // floatingActionButton: FloatingActionButton.extended(
@@ -47,18 +55,14 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
         // Search Bar with modern design
         Container(
           margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-          child: SearchBar(
+          child: ModernSearchBar(
             controller: controller.searchController,
             hintText: 'Search delivery persons...',
-            leading: const Icon(Icons.search),
-            trailing: [
-              IconButton(
-                icon: const Icon(Icons.refresh),
-                onPressed: () => controller.fetchDeliveryAgents(),
-              ),
-            ],
             onChanged: (value) => controller.searchDeliveryPersons(value),
-            elevation: const WidgetStatePropertyAll(1),
+            onClear: () {
+              controller.searchController.clear();
+              controller.searchDeliveryPersons('');
+            },
           ),
         ),
 
@@ -552,36 +556,6 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
             ),
           ],
         ),
-
-        // Action buttons
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: () => _showEditDialog(context, person),
-                icon: const Icon(Icons.edit_outlined, size: 18),
-                label: const Text('Edit'),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: FilledButton.icon(
-                onPressed: () => controller.showDeleteConfirmation(person),
-                icon: const Icon(Icons.delete_outline, size: 18),
-                label: const Text('Delete'),
-                style: FilledButton.styleFrom(
-                  backgroundColor: Colors.red.shade100,
-                  foregroundColor: Colors.red.shade700,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-              ),
-            ),
-          ],
-        ),
       ],
     );
   }
@@ -719,37 +693,6 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
             ),
           ],
         ),
-
-        // Action buttons
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: () => _showEditAgentDialog(context, agent),
-                icon: const Icon(Icons.edit_outlined, size: 18),
-                label: const Text('Edit'),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: FilledButton.icon(
-                onPressed: () =>
-                    controller.showDeleteConfirmationForAgent(agent),
-                icon: const Icon(Icons.delete_outline, size: 18),
-                label: const Text('Delete'),
-                style: FilledButton.styleFrom(
-                  backgroundColor: Colors.red.shade100,
-                  foregroundColor: Colors.red.shade700,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-              ),
-            ),
-          ],
-        ),
       ],
     );
   }
@@ -865,13 +808,52 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
   }
 
   void _showEditAgentDialog(BuildContext context, DeliveryAgent agent) {
-    // TODO: Implement edit delivery agent dialog
-    Get.snackbar(
-      'Info',
-      'Edit delivery agent functionality coming soon',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.green.shade600,
-      colorText: Colors.white,
+    controller.loadDeliveryAgentForEdit(agent);
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
+      constraints: BoxConstraints(
+        maxWidth: Responsive.isWeb(context) ? 600 : double.infinity,
+        maxHeight: MediaQuery
+            .of(context)
+            .size
+            .height * 0.9,
+      ),
+      builder: (BuildContext context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery
+                .of(context)
+                .viewInsets
+                .bottom,
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Edit Delivery Agent',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: context.theme.colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Edit Form for Agent
+                  _buildAgentEditForm(context, agent),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -1033,6 +1015,99 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
                       onPressed: controller.isUpdating.value
                           ? null
                           : () => controller.updateDeliveryPerson(person.id),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: context.theme.colorScheme.primary,
+                        foregroundColor: context.theme.colorScheme.onPrimary,
+                      ),
+                      child: controller.isUpdating.value
+                          ? SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: context.theme.colorScheme.onPrimary,
+                        ),
+                      )
+                          : const Text('Update'),
+                    )),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAgentEditForm(BuildContext context, DeliveryAgent agent) {
+    return Form(
+      child: Column(
+        children: [
+          // Agent Name
+          TextFormField(
+            controller: controller.editAgentNameController,
+            decoration: _createInputDecoration(context, 'Agent Name'),
+            style: TextStyle(color: context.theme.colorScheme.onSurface),
+            readOnly: true,
+          ),
+          const SizedBox(height: 16),
+
+          // Phone Number
+          TextFormField(
+            controller: controller.editAgentPhoneController,
+            decoration: _createInputDecoration(context, 'Phone Number'),
+            style: TextStyle(color: context.theme.colorScheme.onSurface),
+            keyboardType: TextInputType.phone,
+          ),
+          const SizedBox(height: 16),
+
+          // Max Capacity
+          TextFormField(
+            controller: controller.editAgentMaxCapacityController,
+            decoration: _createInputDecoration(context, 'Max Capacity'),
+            style: TextStyle(color: context.theme.colorScheme.onSurface),
+            keyboardType: TextInputType.number,
+          ),
+          const SizedBox(height: 16),
+
+          // Availability Status Dropdown
+          Obx(() =>
+              CenteredDropdown<String>(
+                value: controller.editSelectedAvailabilityStatus.value,
+                items: ['ACTIVE', 'INACTIVE', 'BUSY'].map((status) =>
+                    DropdownMenuItem<String>(
+                      value: status,
+                      child: Text(status),
+                    ),
+                ).toList(),
+                onChanged: (String? newValue) {
+                  controller.editSelectedAvailabilityStatus.value =
+                      newValue ?? 'ACTIVE';
+                },
+                labelText: 'Availability Status',
+                hintText: 'Select status',
+                enabled: true,
+              )),
+          const SizedBox(height: 24),
+
+          // Action Buttons
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () {
+                    controller.clearAgentEditForm();
+                    Get.back<void>();
+                  },
+                  child: const Text('Cancel'),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Obx(() =>
+                    ElevatedButton(
+                      onPressed: controller.isUpdating.value
+                          ? null
+                          : () => controller.updateDeliveryAgent(agent.id),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: context.theme.colorScheme.primary,
                         foregroundColor: context.theme.colorScheme.onPrimary,

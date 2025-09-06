@@ -105,18 +105,10 @@ Widget buildEmailField({
           fontSize: fontSize * 0.95,
           fontWeight: FontWeight.w400,
         ),
-        prefixIcon: Container(
-          margin: const EdgeInsets.all(8),
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Get.context!.theme.colorScheme.onSurface.withAlpha(60),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            Icons.email_outlined,
-            color: Get.context!.theme.colorScheme.surfaceContainerLowest,
-            size: iconSize,
-          ),
+        prefixIcon: Icon(
+          Icons.email_outlined,
+          color: Get.context!.theme.colorScheme.onSurface,
+          size: iconSize,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadius),
@@ -201,43 +193,25 @@ Widget buildPasswordField({
               fontSize: fontSize * 0.95,
               fontWeight: FontWeight.w400,
             ),
-            prefixIcon: Container(
-              margin: const EdgeInsets.all(8),
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Get.context!.theme.colorScheme.onSurface.withAlpha(60),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                Icons.lock_outline,
-                color: Get.context!.theme.colorScheme.surfaceContainerLowest,
-                size: iconSize,
-              ),
+            prefixIcon: Icon(
+              Icons.lock_outline,
+              color: Get.context!.theme.colorScheme.onSurface,
+              size: iconSize,
             ),
             suffixIcon: Material(
               color: Colors.transparent,
               child: InkWell(
                 borderRadius: BorderRadius.circular(8),
                 onTap: toggleVisibility,
-                child: Container(
-                  margin: const EdgeInsets.all(8),
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Get.context!.theme.colorScheme.onSurface.withAlpha(
-                        80),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 200),
-                    child: Icon(
-                      isPasswordVisible.value
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
-                      key: ValueKey(isPasswordVisible.value),
-                      color: Get.context!.theme.colorScheme
-                          .surfaceContainerLowest,
-                      size: iconSize,
-                    ),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  child: Icon(
+                    isPasswordVisible.value
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                    key: ValueKey(isPasswordVisible.value),
+                    color: Get.context!.theme.colorScheme.onSurface,
+                    size: iconSize,
                   ),
                 ),
               ),
@@ -385,21 +359,13 @@ Widget buildErrorMessage({
                 color: Get.context!.theme.colorScheme.onSurface.withAlpha(100),
                 width: 1,
               ),
-                  ),
+            ),
             child: Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: Get.context!.theme.colorScheme.onSurface.withAlpha(
-                        20),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Icon(
-                    Icons.error_outline_rounded,
-                    color: Get.context!.theme.colorScheme.onSurface,
-                    size: iconSize,
-                  ),
+                Icon(
+                  Icons.error_outline_rounded,
+                  color: Get.context!.theme.colorScheme.onSurface,
+                  size: iconSize,
                 ),
                 SizedBox(width: fontSize * 0.7),
                 Expanded(

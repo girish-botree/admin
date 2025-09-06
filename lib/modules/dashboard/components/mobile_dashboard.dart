@@ -66,9 +66,8 @@ class MobileDashboard extends GetView<DashboardController> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                context.theme.colorScheme.primary,
-                context.theme.colorScheme.secondary,
-                context.theme.colorScheme.tertiary,
+                const Color(0xFF667EEA), // Soft blue
+                const Color(0xFF764BA2), // Muted purple
               ],
             ),
           ),
@@ -108,7 +107,7 @@ class MobileDashboard extends GetView<DashboardController> {
                   const SizedBox(height: 6),
                   AppText(
                     'Track your culinary journey',
-                    color: context.theme.colorScheme.onSurfaceVariant,
+                    color: context.theme.colorScheme.surfaceContainerLowest,
                     size: 16,
                     fontWeight: FontWeight.w400,
                   ),

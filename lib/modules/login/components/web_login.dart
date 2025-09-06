@@ -10,178 +10,196 @@ class WebLogin extends GetView<LoginController> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        height: MediaQuery
+            .of(context)
+            .size
+            .height,
         decoration: BoxDecoration(
-          color: Theme
-              .of(context)
-              .colorScheme
-              .surfaceContainerLowest,
+          color: context.theme.colorScheme.surfaceContainerHighest,
         ),
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(40),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 600),
-              curve: Curves.easeOutCubic,
-              child: Card(
-                elevation: 0,
-                shadowColor: Colors.transparent,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(28),
-                ),
+        child: SafeArea(
+          child: Row(
+            children: [
+              // Left side - Welcome section
+              Expanded(
+                flex: 6,
                 child: Container(
-                  width: 1100,
-                  height: 700,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(28),
-                    border: Border.all(
-                      color: Theme
-                          .of(context)
-                          .colorScheme
-                          .onSurface
-                          .withAlpha(20),
-                      width: 1,
-                    ),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(28),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          flex: 11,
-                          child: Container(
-                            color: Theme
-                                .of(context)
-                                .colorScheme
-                                .onSurface,
-                            child: Stack(
-                              children: [
-                                // Decorative background pattern
-                                Positioned(
-                                  top: -100,
-                                  right: -100,
-                                  child: Container(
-                                    width: 300,
-                                    height: 300,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Theme
-                                          .of(context)
-                                          .colorScheme
-                                          .surfaceContainerLowest
-                                          .withAlpha(10),
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: -150,
-                                  left: -150,
-                                  child: Container(
-                                    width: 400,
-                                    height: 400,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Theme
-                                          .of(context)
-                                          .colorScheme
-                                          .surfaceContainerLowest
-                                          .withAlpha(8),
-                                    ),
-                                  ),
-                                ),
-                                // Content
-                                Padding(
-                                  padding: const EdgeInsets.all(60),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      _buildWebLogoSection(),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
+                  padding: const EdgeInsets.all(64),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // App title
+                      AnimatedDefaultTextStyle(
+                        duration: const Duration(milliseconds: 800),
+                        style: TextStyle(
+                          fontSize: 80,
+                          fontWeight: FontWeight.w900,
+                          color: context.theme.colorScheme.onSurface,
+                          letterSpacing: -2.0,
+                          height: 0.9,
+                        ),
+                        child: const Text('Elith'),
+                      ),
+                      const SizedBox(height: 32),
+
+                      // Subtitle
+                      AnimatedDefaultTextStyle(
+                        duration: const Duration(milliseconds: 1000),
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w500,
+                          color: context.theme.colorScheme.onSurface
+                              .withOpacity(0.7),
+                          letterSpacing: 0.5,
+                          height: 1.4,
+                        ),
+                        child: const Text(
+                          'Transform your nutrition journey with our professional admin dashboard',
+                        ),
+                      ),
+                      const SizedBox(height: 64),
+
+                      // Quote section
+                      Container(
+                        constraints: const BoxConstraints(maxWidth: 500),
+                        padding: const EdgeInsets.all(40),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(28),
+                          color: context.theme.colorScheme.onSurface
+                              .withOpacity(0.05),
+                          border: Border.all(
+                            color: context.theme.colorScheme.onSurface
+                                .withOpacity(0.1),
+                            width: 1,
                           ),
                         ),
-                        Expanded(
-                          flex: 12,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Theme
-                                  .of(context)
-                                  .colorScheme
-                                  .surfaceContainerLowest,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.restaurant_rounded,
+                              size: 40,
+                              color: context.theme.colorScheme.onSurface,
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 60, vertical: 40),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Flexible(
-                                    child: SingleChildScrollView(
-                                      child: _buildWebLoginForm(),
-                                    ),
-                                  ),
-                                ],
+                            const SizedBox(height: 20),
+                            Text(
+                              '"Let food be thy medicine and medicine be thy food. A healthy outside starts from the inside."',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w600,
+                                color: context.theme.colorScheme.onSurface,
+                                letterSpacing: 0.3,
+                                height: 1.5,
                               ),
                             ),
-                          ),
+                            const SizedBox(height: 20),
+                            Text(
+                              '— Hippocrates',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: context.theme.colorScheme.onSurface
+                                    .withOpacity(0.7),
+                                letterSpacing: 0.5,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 48),
+
+                      // Feature highlights
+                      Wrap(
+                        spacing: 32,
+                        runSpacing: 16,
+                        children: [
+                          _buildFeatureItem(
+                              Icons.dashboard_rounded, 'Nutrition Dashboard'),
+                          _buildFeatureItem(Icons.health_and_safety_rounded,
+                              'Health Tracking'),
+                          _buildFeatureItem(
+                              Icons.analytics_rounded, 'Analytics'),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ),
+
+              // Right side - Login form
+              Expanded(
+                flex: 4,
+                child: Container(
+                  margin: const EdgeInsets.all(32),
+                  constraints: const BoxConstraints(maxWidth: 480),
+                  decoration: BoxDecoration(
+                    color: context.theme.colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(32),
+                    border: Border.all(
+                      color: context.theme.colorScheme.onSurface.withOpacity(
+                          0.1),
+                      width: 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        offset: const Offset(0, 20),
+                        blurRadius: 60,
+                        color: context.theme.colorScheme.onSurface.withOpacity(
+                            0.1),
+                      ),
+                    ],
+                  ),
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(48),
+                    child: _buildWebLoginForm(context),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildWebLogoSection() {
-    return Column(
+  Widget _buildFeatureItem(IconData icon, String text) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 800),
-          curve: Curves.elasticOut,
-          child: buildLogoContainer(
-            height: 180,
-            width: 180,
-            borderRadius: 42,
-            iconSize: 90,
+        Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Get.context!.theme.colorScheme.onSurface.withOpacity(0.1),
+            border: Border.all(
+              color: Get.context!.theme.colorScheme.onSurface.withOpacity(0.2),
+              width: 1,
+            ),
+          ),
+          child: Icon(
+            icon,
+            size: 18,
+            color: Get.context!.theme.colorScheme.onSurface,
           ),
         ),
-        const SizedBox(height: 48),
-        AnimatedDefaultTextStyle(
-          duration: const Duration(milliseconds: 600),
+        const SizedBox(width: 12),
+        Text(
+          text,
           style: TextStyle(
-            fontSize: 56,
-            fontWeight: FontWeight.w800,
-            color: Get.context!.theme.colorScheme.surfaceContainerLowest,
-            letterSpacing: -1.0,
-            height: 1.1,
-          ),
-          child: const Text('Elith Admin'),
-        ),
-        const SizedBox(height: 16),
-        AnimatedDefaultTextStyle(
-          duration: const Duration(milliseconds: 800),
-          style: TextStyle(
-            fontSize: 18,
+            fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: Get.context!.theme.colorScheme.surfaceContainerLowest
-                .withAlpha(180),
-            letterSpacing: 0.5,
-            height: 1.3,
+            color: Get.context!.theme.colorScheme.onSurface.withOpacity(0.7),
+            letterSpacing: 0.2,
           ),
-          child: const Text('Professional Admin Dashboard'),
         ),
       ],
     );
   }
 
-  Widget _buildWebLoginForm() {
+  Widget _buildWebLoginForm(BuildContext context) {
     return Form(
       key: controller.formKey,
       child: AnimatedContainer(
@@ -190,19 +208,15 @@ class WebLogin extends GetView<LoginController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            buildWelcomeText(
-              fontSize: 38,
-              subtitleFontSize: 18,
-            ),
-            const SizedBox(height: 48),
-
+            buildWelcomeText(fontSize: 32, subtitleFontSize: 18),
+            const SizedBox(height: 32),
             buildEmailField(
               controller: controller.emailController,
               validator: controller.validateEmail,
               onChanged: controller.clearError,
               fontSize: 18,
-              borderRadius: 16,
-              iconSize: 22,
+              borderRadius: 18,
+              iconSize: 24,
             ),
             const SizedBox(height: 24),
 
@@ -213,15 +227,15 @@ class WebLogin extends GetView<LoginController> {
               onChanged: controller.clearError,
               toggleVisibility: controller.togglePasswordVisibility,
               fontSize: 18,
-              borderRadius: 16,
-              iconSize: 22,
+              borderRadius: 18,
+              iconSize: 24,
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 28),
 
             buildErrorMessage(
               errorMessage: controller.errorMessage,
               fontSize: 16,
-              borderRadius: 12,
+              borderRadius: 14,
               iconSize: 24,
             ),
 
@@ -230,9 +244,9 @@ class WebLogin extends GetView<LoginController> {
               onPressed: controller.login,
               height: 56,
               fontSize: 18,
-              borderRadius: 16,
+              borderRadius: 18,
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 24),
 
             buildForgotPasswordButton(
               onPressed: controller.navigateToForgotPassword,
@@ -243,6 +257,4 @@ class WebLogin extends GetView<LoginController> {
       ),
     );
   }
-
-
 }

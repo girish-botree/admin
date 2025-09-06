@@ -47,6 +47,9 @@ class MealController extends GetxController {
   // Carousel state
   final currentCarouselIndex = 0.obs;
 
+  // PageView state
+  final currentPageIndex = 0.obs;
+
   // Validation state
   final nameError = RxString('');
   final descriptionError = RxString('');
@@ -1035,6 +1038,10 @@ class MealController extends GetxController {
 
   void updateCarouselIndex(int index) {
     currentCarouselIndex.value = index;
+  }
+
+  void updatePageIndex(int index) {
+    currentPageIndex.value = index;
   }
 
   // Add refresh method with proper loading state management

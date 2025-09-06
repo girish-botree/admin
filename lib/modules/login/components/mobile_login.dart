@@ -11,8 +11,12 @@ class MobileLogin extends GetView<LoginController> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        height: MediaQuery
+            .of(context)
+            .size
+            .height,
         decoration: BoxDecoration(
-          color: context.theme.colorScheme.surfaceContainerLowest,
+          color: context.theme.colorScheme.surfaceContainerHighest,
         ),
         child: SafeArea(
           child: Responsive.isLandscape(context)
@@ -24,37 +28,37 @@ class MobileLogin extends GetView<LoginController> {
   }
 
   Widget _buildMobilePortraitLayout(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Container(
-        constraints: BoxConstraints(
-          minHeight: MediaQuery
-              .of(context)
-              .size
-              .height -
-              MediaQuery.of(context).padding.top -
-              MediaQuery.of(context).padding.bottom,
+    return Column(
+      children: [
+        // Top section with Elith title
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+          child: _buildTopSection(context),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 40),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 800),
-              curve: Curves.easeOutBack,
-              child: _buildMobileLogoSection(context),
+
+        // Middle section with background and quote
+        Expanded(
+          flex: 2,
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 24),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              color: context.theme.colorScheme.onSurface.withOpacity(0.05),
+              border: Border.all(
+                color: context.theme.colorScheme.onSurface.withOpacity(0.1),
+                width: 1,
+              ),
             ),
-            const SizedBox(height: 60),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 600),
-              curve: Curves.easeOut,
-              child: _buildMobileGetStartedButton(context),
-            ),
-            const SizedBox(height: 40),
-          ],
+            child: _buildMiddleSection(context),
+          ),
         ),
-      ),
+
+        // Bottom section with Get Started button
+        Container(
+          padding: const EdgeInsets.all(24),
+          child: _buildBottomSection(context),
+        ),
+      ],
     );
   }
 
@@ -64,7 +68,9 @@ class MobileLogin extends GetView<LoginController> {
         Expanded(
           flex: 5,
           child: Container(
-            color: context.theme.colorScheme.surfaceContainerLowest,
+            decoration: BoxDecoration(
+              color: context.theme.colorScheme.surfaceContainerHighest,
+            ),
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(20),
               child: Container(
@@ -99,12 +105,19 @@ class MobileLogin extends GetView<LoginController> {
           child: Container(
             margin: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: context.theme.colorScheme.surfaceContainerLowest,
+              color: context.theme.colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
-                color: context.theme.colorScheme.onSurface.withAlpha(40),
+                color: context.theme.colorScheme.onSurface.withOpacity(0.1),
                 width: 1,
               ),
+              boxShadow: [
+                BoxShadow(
+                  offset: const Offset(0, 8),
+                  blurRadius: 32,
+                  color: context.theme.colorScheme.onSurface.withOpacity(0.1),
+                ),
+              ],
             ),
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
@@ -116,70 +129,38 @@ class MobileLogin extends GetView<LoginController> {
     );
   }
 
-  Widget _buildMobileLogoSection(BuildContext context) {
-    return Column(
-      children: [
-        Hero(
-          tag: 'app_logo',
-          child: buildLogoContainer(
-            height: 120,
-            width: 120,
-            borderRadius: 30,
-            iconSize: 60,
-          ),
-        ),
-        const SizedBox(height: 32),
-        AnimatedDefaultTextStyle(
-          duration: const Duration(milliseconds: 500),
-          style: TextStyle(
-            fontSize: 36,
-            fontWeight: FontWeight.w800,
-            color: context.theme.colorScheme.onSurface,
-            letterSpacing: -0.5,
-            height: 1.1,
-          ),
-          child: const Text('Elith Admin'),
-        ),
-        const SizedBox(height: 12),
-        AnimatedDefaultTextStyle(
-          duration: const Duration(milliseconds: 700),
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: context.theme.colorScheme.onSurface,
-            letterSpacing: 0.3,
-            height: 1.3,
-          ),
-          child: const Text('Professional Dashboard'),
-        ),
-      ],
-    );
-  }
-
   Widget _buildMobileCompactLogoSection(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Hero(
-          tag: 'app_logo',
-          child: buildLogoContainer(
-            height: 80,
-            width: 80,
-            borderRadius: 20,
-            iconSize: 40,
+        Container(
+          width: 80,
+          height: 80,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: context.theme.colorScheme.onSurface.withOpacity(0.1),
+            border: Border.all(
+              color: context.theme.colorScheme.onSurface.withOpacity(0.2),
+              width: 2,
+            ),
+          ),
+          child: Icon(
+            Icons.admin_panel_settings_rounded,
+            size: 40,
+            color: context.theme.colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 20),
         AnimatedDefaultTextStyle(
           duration: const Duration(milliseconds: 500),
           style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w800,
+            fontSize: 28,
+            fontWeight: FontWeight.w900,
             color: context.theme.colorScheme.onSurface,
-            letterSpacing: -0.3,
+            letterSpacing: -0.5,
             height: 1.1,
           ),
-          child: const Text('Elith Admin'),
+          child: const Text('Elith'),
         ),
         const SizedBox(height: 8),
         AnimatedDefaultTextStyle(
@@ -187,7 +168,7 @@ class MobileLogin extends GetView<LoginController> {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: context.theme.colorScheme.onSurface,
+            color: context.theme.colorScheme.onSurface.withOpacity(0.7),
             letterSpacing: 0.2,
             height: 1.3,
           ),
@@ -197,45 +178,217 @@ class MobileLogin extends GetView<LoginController> {
     );
   }
 
-  Widget _buildMobileGetStartedButton(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        onPressed: () => _showMobileLoginBottomSheet(context),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: context.theme.colorScheme.onSurface,
-          foregroundColor: context.theme.colorScheme.surfaceContainerLowest,
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(28),
+  Widget _buildTopSection(BuildContext context) {
+    return Column(
+      children: [
+        // App title "Elith"
+        AnimatedDefaultTextStyle(
+          duration: const Duration(milliseconds: 800),
+          style: TextStyle(
+            fontSize: 48,
+            fontWeight: FontWeight.w900,
+            color: context.theme.colorScheme.onSurface,
+            letterSpacing: -1.0,
+            height: 1.0,
           ),
-          elevation: 0,
-        ).copyWith(
-          overlayColor: WidgetStateProperty.all(
-            context.theme.colorScheme.surfaceContainerLowest.withAlpha(20),
-          ),
+          child: const Text('Elith'),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.login_rounded,
-              size: 20,
-              color: context.theme.colorScheme.surfaceContainerLowest,
-            ),
-            const SizedBox(width: 12),
-            Text(
-              'Get Started',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.5,
-                color: context.theme.colorScheme.surfaceContainerLowest,
+      ],
+    );
+  }
+
+  Widget _buildMiddleSection(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(32),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Decorative icon
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: context.theme.colorScheme.onSurface.withOpacity(0.1),
+              border: Border.all(
+                color: context.theme.colorScheme.onSurface.withOpacity(0.2),
+                width: 2,
               ),
             ),
-          ],
+            child: Icon(
+              Icons.restaurant_rounded,
+              size: 40,
+              color: context.theme.colorScheme.onSurface,
+            ),
+          ),
+          const SizedBox(height: 32),
+
+          // Inspiring quote
+          AnimatedDefaultTextStyle(
+            duration: const Duration(milliseconds: 1000),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: context.theme.colorScheme.onSurface,
+              letterSpacing: 0.3,
+              height: 1.4,
+            ),
+            child: const Text(
+              '"Let food be thy medicine and medicine be thy food. A healthy outside starts from the inside."',
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Quote attribution
+          AnimatedDefaultTextStyle(
+            duration: const Duration(milliseconds: 1200),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: context.theme.colorScheme.onSurface.withOpacity(0.7),
+              letterSpacing: 0.5,
+              fontStyle: FontStyle.italic,
+            ),
+            child: const Text(
+              '— Hippocrates',
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomSection(BuildContext context) {
+    return Column(
+      children: [
+        // Get Started Button
+        Container(
+          width: double.infinity,
+          height: 56,
+          child: ElevatedButton(
+            onPressed: () => _showMobileLoginBottomSheet(context),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.theme.colorScheme.onSurface,
+              foregroundColor: context.theme.colorScheme
+                  .surfaceContainerHighest,
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(28),
+              ),
+              elevation: 2,
+              shadowColor: context.theme.colorScheme.onSurface.withOpacity(
+                0.3,
+              ),
+            ).copyWith(
+              overlayColor: WidgetStateProperty.all(
+                    context.theme.colorScheme.surfaceContainerHighest
+                        .withOpacity(0.1),
+                  ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.rocket_launch_rounded,
+                  size: 24,
+                  color: context.theme.colorScheme.surfaceContainerHighest,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Get Started',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
+                    color: context.theme.colorScheme.surfaceContainerHighest,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Subtitle
+        Text(
+          'Transform your nutrition journey',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: context.theme.colorScheme.onSurface.withOpacity(0.7),
+            letterSpacing: 0.3,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+
+  void _showMobileLoginBottomSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      useSafeArea: true,
+      builder: (context) => Container(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: DraggableScrollableSheet(
+          initialChildSize: 0.75,
+          minChildSize: 0.4,
+          maxChildSize: 0.95,
+          expand: false,
+          builder: (context, scrollController) {
+            return Container(
+              decoration: BoxDecoration(
+                color: Get.context!.theme.colorScheme.surfaceContainerHighest,
+                borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(28)),
+                border: Border.all(
+                  color: Get.context!.theme.colorScheme.onSurface.withAlpha(30),
+                  width: 1,
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(top: 16),
+                    width: 48,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: context.theme.colorScheme.onSurface
+                          .withAlpha(60),
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      controller: scrollController,
+                      padding: const EdgeInsets.all(28),
+                      physics: const BouncingScrollPhysics(),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildMobileLoginForm(context),
+                          SizedBox(
+                            height: MediaQuery
+                                .of(context)
+                                .viewInsets
+                                .bottom > 0 ? 100 : 20,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
@@ -299,73 +452,6 @@ class MobileLogin extends GetView<LoginController> {
               fontSize: 14,
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  void _showMobileLoginBottomSheet(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      useSafeArea: true,
-      builder: (context) => Container(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: DraggableScrollableSheet(
-          initialChildSize: 0.75,
-          minChildSize: 0.4,
-          maxChildSize: 0.95,
-          expand: false,
-          builder: (context, scrollController) {
-            return Container(
-              decoration: BoxDecoration(
-                color: Get.context!.theme.colorScheme.surfaceContainerLowest,
-                borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(28)),
-                border: Border.all(
-                  color: Get.context!.theme.colorScheme.onSurface.withAlpha(30),
-                  width: 1,
-                ),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(top: 16),
-                    width: 48,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      color: context.theme.colorScheme.onSurface
-                          .withAlpha(60),
-                      borderRadius: BorderRadius.circular(3),
-                    ),
-                  ),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      controller: scrollController,
-                      padding: const EdgeInsets.all(28),
-                      physics: const BouncingScrollPhysics(),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _buildMobileLoginForm(context),
-                          SizedBox(
-                            height: MediaQuery
-                                .of(context)
-                                .viewInsets
-                                .bottom > 0 ? 100 : 20,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
         ),
       ),
     );

@@ -10,21 +10,32 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="refactor: add refresh flags and loading states to dashboard, meal, and plan controllers for better refresh handling and UI responsiveness">
-      <change afterPath="$PROJECT_DIR$/lib/generated/assets.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/icons/ic_home_stroke.svg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/icons/ic_dashboard.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/icons/ic_home.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/icons/ic_home_fill.svg" beforeDir="false" afterPath="$PROJECT_DIR$/assets/icons/ic_home_fill.svg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/gen/assets.gen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/gen/assets.gen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/admins/create_admins/create_admin_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/admins/create_admins/create_admin_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/components/mobile_dashboard.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/components/mobile_dashboard.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/dashboard_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/dashboard_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/delivery_persons/manage_delivery_persons/delivery_person_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/delivery_persons/manage_delivery_persons/delivery_person_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/home/components/tablet_home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/home/components/tablet_home.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/home/components/web_home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/home/components/web_home.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/login/components/common_login_widgets.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/login/components/common_login_widgets.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/login/components/mobile_login.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/login/components/mobile_login.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/login/components/tab_login.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/login/components/tab_login.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/login/components/web_login.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/login/components/web_login.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_view.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/meal/components/mobile_meal.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/components/mobile_meal.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/meal/components/tablet_meal.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/components/tablet_meal.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/meal/components/web_meal.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/components/web_meal.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/ingredients/dialogs/ingredient_dialogs.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/ingredients/dialogs/ingredient_dialogs.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/meal/meal_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/meal_controller.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/meal/meal_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/meal_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_dialog.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_dialog.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/plan/plan_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/plan_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/plan/widgets/meal_plan_form_dialog.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/widgets/meal_plan_form_dialog.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -79,27 +90,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Flutter.main.dart.executor&quot;: &quot;Debug&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/kabilan/Documents/GitHub/admin&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
-    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;,
-    &quot;vcs.patch.path&quot;: &quot;/Users/kabilan/Desktop&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Flutter.main.dart.executor": "Debug",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "SONARLINT_PRECOMMIT_ANALYSIS": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "main",
+    "io.flutter.reload.alreadyRun": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/kabilan/Documents/GitHub/admin",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "show.migrate.to.gradle.popup": "false",
+    "vcs.patch.path": "/Users/kabilan/Desktop"
   }
-}</component>
+}]]></component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="" />
@@ -276,7 +287,15 @@
       <option name="project" value="LOCAL" />
       <updated>1756719824331</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="refactor: add refresh flags and loading states to dashboard, meal, and plan controllers for better refresh handling and UI responsiveness">
+      <option name="closed" value="true" />
+      <created>1757183297987</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1757183297987</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -297,7 +316,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="b4_commit" />
     <MESSAGE value="update theme colors for login and dashboard components; add new admin creation pages; extend network service with additional API methods; integrate new meal module; improve splash navigation logic; enhance UI consistency across platforms." />
     <MESSAGE value="aug_4" />
     <MESSAGE value="patch_aug_10" />
@@ -322,6 +340,7 @@
     <MESSAGE value="refactor: improve dialog sections with expandable content and add required field indicator; update dropdown hint style for better accessibility" />
     <MESSAGE value="update ui components and state variables for better default expansion and performance optimization" />
     <MESSAGE value="add navigation routes for meal and plan statistics views and update UI components to include statistic access buttons and sections in meal and plan modules" />
-    <option name="LAST_COMMIT_MESSAGE" value="add navigation routes for meal and plan statistics views and update UI components to include statistic access buttons and sections in meal and plan modules" />
+    <MESSAGE value="refactor: add refresh flags and loading states to dashboard, meal, and plan controllers for better refresh handling and UI responsiveness" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor: add refresh flags and loading states to dashboard, meal, and plan controllers for better refresh handling and UI responsiveness" />
   </component>
 </project>
