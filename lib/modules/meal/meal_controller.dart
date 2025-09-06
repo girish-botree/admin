@@ -39,6 +39,9 @@ class MealController extends GetxController {
 
   // Shared state
   final isLoading = false.obs;
+  final isRefreshing = false.obs;
+  final isRecipesLoading = false.obs;
+  final isIngredientsLoading = false.obs;
   final error = ''.obs;
   
   // Validation state
@@ -49,6 +52,8 @@ class MealController extends GetxController {
   final proteinError = RxString('');
   final carbsError = RxString('');
   final fatError = RxString('');
+  final fiberError = RxString('');
+  final sugarError = RxString('');
   final quantityError = RxString('');
   
   // Form controllers
@@ -71,7 +76,20 @@ class MealController extends GetxController {
   final monoFatController = TextEditingController();
   final polyFatController = TextEditingController();
   final instructionsController = TextEditingController();
-  
+
+  // Observable nutrition values for real-time composition tracking
+  final caloriesValue = RxDouble(0.0);
+  final proteinValue = RxDouble(0.0);
+  final carbsValue = RxDouble(0.0);
+  final fatValue = RxDouble(0.0);
+  final fiberValue = RxDouble(0.0);
+  final sugarValue = RxDouble(0.0);
+
+  // Computed property for total nutrition composition (reactive)
+  double get totalComposition =>
+      proteinValue.value + carbsValue.value + fatValue.value +
+          fiberValue.value + sugarValue.value;
+
   @override
   void onInit() {
     super.onInit();
@@ -104,6 +122,26 @@ class MealController extends GetxController {
       selectedCuisine.value = cuisineController.text;
     });
 
+    // Listen to nutrition controllers for real-time composition tracking
+    caloriesController.addListener(() {
+      caloriesValue.value = double.tryParse(caloriesController.text) ?? 0.0;
+    });
+    proteinController.addListener(() {
+      proteinValue.value = double.tryParse(proteinController.text) ?? 0.0;
+    });
+    carbsController.addListener(() {
+      carbsValue.value = double.tryParse(carbsController.text) ?? 0.0;
+    });
+    fatController.addListener(() {
+      fatValue.value = double.tryParse(fatController.text) ?? 0.0;
+    });
+    fiberController.addListener(() {
+      fiberValue.value = double.tryParse(fiberController.text) ?? 0.0;
+    });
+    sugarController.addListener(() {
+      sugarValue.value = double.tryParse(sugarController.text) ?? 0.0;
+    });
+
     // Setup reactive listeners
     ever(recipeSearchQuery, (_) => updateFilteredRecipes());
     ever(ingredientSearchQuery, (_) => updateFilteredIngredients());
@@ -121,11 +159,21 @@ class MealController extends GetxController {
       updateFilteredIngredients();
     });
     ever(proteinRange, (_) => updateFilteredIngredients());
+
+    // Update main loading state based on individual loading states
+    ever(isRecipesLoading, (_) => _updateMainLoadingState());
+    ever(isIngredientsLoading, (_) => _updateMainLoadingState());
+  }
+
+  // Helper method to update main loading state
+  void _updateMainLoadingState() {
+    isLoading.value = isRecipesLoading.value || isIngredientsLoading.value ||
+        isRefreshing.value;
   }
 
   // Recipe methods
   Future<void> fetchRecipes() async {
-    isLoading.value = true;
+    isRecipesLoading.value = true;
     error.value = '';
     
     try {
@@ -140,7 +188,7 @@ class MealController extends GetxController {
     } catch (e) {
       error.value = e.toString();
     } finally {
-      isLoading.value = false;
+      isRecipesLoading.value = false;
     }
   }
 
@@ -181,7 +229,8 @@ class MealController extends GetxController {
   }
 
   Future<bool> createRecipe(Map<String, dynamic> data) async {
-    isLoading.value = true;
+    isRecipesLoading.value = true;
+    _updateMainLoadingState();
     error.value = '';
     
     try {
@@ -192,12 +241,14 @@ class MealController extends GetxController {
       error.value = e.toString();
       return false;
     } finally {
-      isLoading.value = false;
+      isRecipesLoading.value = false;
+      _updateMainLoadingState();
     }
   }
   
   Future<bool> updateRecipe(String id, Map<String, dynamic> data) async {
-    isLoading.value = true;
+    isRecipesLoading.value = true;
+    _updateMainLoadingState();
     error.value = '';
     
     try {
@@ -208,12 +259,14 @@ class MealController extends GetxController {
       error.value = e.toString();
       return false;
     } finally {
-      isLoading.value = false;
+      isRecipesLoading.value = false;
+      _updateMainLoadingState();
     }
   }
   
   Future<bool> deleteRecipe(String id) async {
-    isLoading.value = true;
+    isRecipesLoading.value = true;
+    _updateMainLoadingState();
     error.value = '';
     
     try {
@@ -224,13 +277,14 @@ class MealController extends GetxController {
       error.value = e.toString();
       return false;
     } finally {
-      isLoading.value = false;
+      isRecipesLoading.value = false;
+      _updateMainLoadingState();
     }
   }
   
   // Ingredient methods
   Future<void> fetchIngredients() async {
-    isLoading.value = true;
+    isIngredientsLoading.value = true;
     error.value = '';
     
     try {
@@ -245,12 +299,13 @@ class MealController extends GetxController {
     } catch (e) {
       error.value = e.toString();
     } finally {
-      isLoading.value = false;
+      isIngredientsLoading.value = false;
     }
   }
   
   Future<bool> createIngredient(Map<String, dynamic> data) async {
-    isLoading.value = true;
+    isIngredientsLoading.value = true;
+    _updateMainLoadingState();
     error.value = '';
     
     try {
@@ -261,12 +316,14 @@ class MealController extends GetxController {
       error.value = e.toString();
       return false;
     } finally {
-      isLoading.value = false;
+      isIngredientsLoading.value = false;
+      _updateMainLoadingState();
     }
   }
   
   Future<bool> updateIngredient(String id, Map<String, dynamic> data) async {
-    isLoading.value = true;
+    isIngredientsLoading.value = true;
+    _updateMainLoadingState();
     error.value = '';
     
     try {
@@ -277,12 +334,14 @@ class MealController extends GetxController {
       error.value = e.toString();
       return false;
     } finally {
-      isLoading.value = false;
+      isIngredientsLoading.value = false;
+      _updateMainLoadingState();
     }
   }
   
   Future<bool> deleteIngredient(String id) async {
-    isLoading.value = true;
+    isIngredientsLoading.value = true;
+    _updateMainLoadingState();
     error.value = '';
     
     try {
@@ -293,7 +352,8 @@ class MealController extends GetxController {
       error.value = e.toString();
       return false;
     } finally {
-      isLoading.value = false;
+      isIngredientsLoading.value = false;
+      _updateMainLoadingState();
     }
   }
   
@@ -340,13 +400,19 @@ class MealController extends GetxController {
   
   bool validateCalories(String value) {
     if (value.isEmpty) {
-      caloriesError.value = '';
-      return true; // Optional field
+      caloriesError.value = 'Calories is required for recipes';
+      return false;
     }
     try {
       final calories = int.parse(value);
       if (calories < 0) {
         caloriesError.value = 'Calories cannot be negative';
+        return false;
+      } else if (calories > 9000) {
+        caloriesError.value = 'Calories cannot exceed 9,000 per serving';
+        return false;
+      } else if (calories == 0) {
+        caloriesError.value = 'Calories must be greater than 0';
         return false;
       }
     } catch (e) {
@@ -360,13 +426,48 @@ class MealController extends GetxController {
   bool validateNutrient(String value, RxString errorState, String fieldName) {
     if (value.isEmpty) {
       errorState.value = '';
-      return true; // Optional field
+      return true; // Optional field for macronutrients
     }
     try {
       final nutrient = double.parse(value);
       if (nutrient < 0) {
         errorState.value = '$fieldName cannot be negative';
         return false;
+      }
+
+      // Specific validation for each nutrient type
+      switch (fieldName.toLowerCase()) {
+        case 'protein':
+          if (nutrient > 100.0) {
+            errorState.value = 'Protein cannot exceed 100g per 100g';
+            return false;
+          }
+          break;
+        case 'carbs':
+        case 'carbohydrates':
+          if (nutrient > 100.0) {
+            errorState.value = 'Carbohydrates cannot exceed 100g per 100g';
+            return false;
+          }
+          break;
+        case 'fat':
+          if (nutrient > 100.0) {
+            errorState.value = 'Fat cannot exceed 100g per 100g';
+            return false;
+          }
+          break;
+        case 'fiber':
+          if (nutrient > 50.0) {
+            errorState.value = 'Fiber cannot exceed 50g per 100g';
+            return false;
+          }
+          break;
+        case 'sugar':
+          if (nutrient > 100.0) {
+            errorState.value = 'Sugar cannot exceed 100g per 100g';
+            return false;
+          }
+          break;
       }
     } catch (e) {
       errorState.value = 'Please enter a valid number';
@@ -406,7 +507,51 @@ class MealController extends GetxController {
       return false;
     }
   }
-  
+
+  // New comprehensive composition validation method
+  bool validateNutritionComposition() {
+    double protein = double.tryParse(proteinController.text) ?? 0.0;
+    double carbs = double.tryParse(carbsController.text) ?? 0.0;
+    double fat = double.tryParse(fatController.text) ?? 0.0;
+    double fiber = double.tryParse(fiberController.text) ?? 0.0;
+    double sugar = double.tryParse(sugarController.text) ?? 0.0;
+
+    // Check total composition
+    double totalComposition = protein + carbs + fat + fiber + sugar;
+
+    if (totalComposition > 100.0) {
+      // Set specific errors for each field if composition exceeds 100g
+      if (protein > 0) proteinError.value = 'Total composition exceeds 100g';
+      if (carbs > 0) carbsError.value = 'Total composition exceeds 100g';
+      if (fat > 0) fatError.value = 'Total composition exceeds 100g';
+      return false;
+    }
+
+    // Additional logical validations
+    if (sugar > carbs && carbs > 0) {
+      carbsError.value = 'Sugar cannot exceed total carbohydrates';
+      return false;
+    }
+
+    if (fiber > carbs && carbs > 0) {
+      carbsError.value = 'Fiber cannot exceed total carbohydrates';
+      return false;
+    }
+
+    // Clear any composition-related errors if validation passes
+    if (proteinError.value.contains('Total composition exceeds')) {
+      proteinError.value = '';
+    }
+    if (carbsError.value.contains('Total composition exceeds')) {
+      carbsError.value = '';
+    }
+    if (fatError.value.contains('Total composition exceeds')) {
+      fatError.value = '';
+    }
+
+    return true;
+  }
+
   // Form handling methods
   void resetFormErrors() {
     nameError.value = '';
@@ -416,6 +561,8 @@ class MealController extends GetxController {
     proteinError.value = '';
     carbsError.value = '';
     fatError.value = '';
+    fiberError.value = '';
+    sugarError.value = '';
     quantityError.value = '';
   }
   
@@ -426,6 +573,25 @@ class MealController extends GetxController {
     cuisineController.clear();
     selectedCuisine.value = '';
     instructionsController.clear();
+    // Clear nutrition controllers
+    caloriesController.clear();
+    proteinController.clear();
+    carbsController.clear();
+    fatController.clear();
+    fiberController.clear();
+    sugarController.clear();
+    vitaminsController.clear();
+    mineralsController.clear();
+    saturatedFatController.clear();
+    monoFatController.clear();
+    polyFatController.clear();
+    // Reset observable nutrition values
+    caloriesValue.value = 0.0;
+    proteinValue.value = 0.0;
+    carbsValue.value = 0.0;
+    fatValue.value = 0.0;
+    fiberValue.value = 0.0;
+    sugarValue.value = 0.0;
     resetFormErrors();
   }
   
@@ -446,6 +612,13 @@ class MealController extends GetxController {
     monoFatController.clear();
     polyFatController.clear();
     instructionsController.clear();
+    // Reset observable nutrition values
+    caloriesValue.value = 0.0;
+    proteinValue.value = 0.0;
+    carbsValue.value = 0.0;
+    fatValue.value = 0.0;
+    fiberValue.value = 0.0;
+    sugarValue.value = 0.0;
     resetFormErrors();
   }
   
@@ -477,6 +650,29 @@ class MealController extends GetxController {
     servingsController.text = (recipe['servings']?.toString()) ?? '1';
     cuisineController.text = (recipe['cuisine'] as String?) ?? '';
     selectedCuisine.value = cuisineController.text;
+
+    // Set nutrition values and observable values
+    final calories = double.tryParse('${recipe['calories'] ?? 0}') ?? 0.0;
+    final protein = double.tryParse('${recipe['protein'] ?? 0}') ?? 0.0;
+    final carbs = double.tryParse('${recipe['carbohydrates'] ?? 0}') ?? 0.0;
+    final fat = double.tryParse('${recipe['fat'] ?? 0}') ?? 0.0;
+    final fiber = double.tryParse('${recipe['fiber'] ?? 0}') ?? 0.0;
+    final sugar = double.tryParse('${recipe['sugar'] ?? 0}') ?? 0.0;
+
+    caloriesController.text = calories.toInt().toString();
+    proteinController.text = protein.toInt().toString();
+    carbsController.text = carbs.toInt().toString();
+    fatController.text = fat.toInt().toString();
+    fiberController.text = fiber.toInt().toString();
+    sugarController.text = sugar.toInt().toString();
+
+    // Update observable values
+    caloriesValue.value = calories;
+    proteinValue.value = protein;
+    carbsValue.value = carbs;
+    fatValue.value = fat;
+    fiberValue.value = fiber;
+    sugarValue.value = sugar;
   }
   
   void setupIngredientForm(dynamic ingredient) {
@@ -549,7 +745,22 @@ class MealController extends GetxController {
     if (!validateName(nameController.text)) isValid = false;
     if (!validateDescription(descriptionController.text)) isValid = false;
     if (!validateServings(servingsController.text)) isValid = false;
-    
+
+    // Strict nutrition validation for recipes
+    if (!validateCalories(caloriesController.text)) isValid = false;
+    if (!validateNutrient(proteinController.text, proteinError, 'Protein'))
+      isValid = false;
+    if (!validateNutrient(carbsController.text, carbsError, 'Carbohydrates'))
+      isValid = false;
+    if (!validateNutrient(fatController.text, fatError, 'Fat')) isValid = false;
+    if (!validateNutrient(fiberController.text, fiberError, 'Fiber'))
+      isValid = false;
+    if (!validateNutrient(sugarController.text, sugarError, 'Sugar'))
+      isValid = false;
+
+    // Validate overall composition
+    if (!validateNutritionComposition()) isValid = false;
+
     return isValid;
   }
   
@@ -714,7 +925,7 @@ class MealController extends GetxController {
         filtered,
         ingredientSearchQuery.value,
         (ingredient) => [
-          ingredient['name'] as String? ?? 
+          ingredient['name'] as String? ??
             ingredient['ingredientName'] as String? ?? '',
           ingredient['description'] as String? ?? '',
           ingredient['category'] as String? ?? '',
@@ -816,6 +1027,28 @@ class MealController extends GetxController {
 
   void toggleFilterVisibility() {
     showFilters.value = !showFilters.value;
+  }
+
+  // Add refresh method with proper loading state management
+  Future<void> refreshData() async {
+    if (isRefreshing.value) return; // Prevent multiple refresh operations
+
+    isRefreshing.value = true;
+    _updateMainLoadingState();
+    error.value = '';
+
+    try {
+      await Future.wait([
+        fetchRecipes(),
+        fetchIngredients(),
+      ]);
+    } catch (e) {
+      error.value = e.toString();
+      rethrow; // Re-throw so UI can handle the error
+    } finally {
+      isRefreshing.value = false;
+      _updateMainLoadingState();
+    }
   }
 
   @override

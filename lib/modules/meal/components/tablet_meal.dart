@@ -4,7 +4,6 @@ import '../../../config/app_config.dart';
 import '../meal_controller.dart';
 import '../ingredients/ingredients_view.dart';
 import '../receipe/receipes_view.dart';
-import '../../../routes/app_routes.dart';
 
 class TabletMeal extends GetView<MealController> {
   const TabletMeal({super.key});
@@ -58,16 +57,6 @@ class TabletMeal extends GetView<MealController> {
                 ),
                 tooltip: 'Refresh',
               )),
-        ),
-        IconButton(
-          icon: Icon(
-            Icons.analytics_rounded,
-            color: context.theme.colorScheme.primary,
-            size: 28,
-          ),
-          onPressed: () {
-            Get.toNamed(AppRoutes.mealStatistics);
-          },
         ),
       ],
     );
@@ -149,10 +138,7 @@ class TabletMeal extends GetView<MealController> {
 
   Future<void> _handleRefresh() async {
     try {
-      await Future.wait([
-        controller.fetchRecipes(),
-        controller.fetchIngredients(),
-      ]);
+      await controller.refreshData();
     } catch (e) {
       Get.snackbar(
         'Error',

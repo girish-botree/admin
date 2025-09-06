@@ -4,6 +4,8 @@ import 'models/dashboard_stats.dart';
 
 class DashboardController extends GetxController
     with StateMixin<DashboardStats> {
+  final RxBool isRefreshing = false.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -111,11 +113,20 @@ class DashboardController extends GetxController
   }
 
   Future<void> refreshData() async {
-    await fetchDashboardData();
+    isRefreshing.value = true;
+    try {
+      await fetchDashboardData();
+    } catch (e) {
+      // handle refresh error
+    } finally {
+      isRefreshing.value = false;
+    }
   }
 
   // Getters for backward compatibility
   bool get isLoading => status.isLoading;
+
+  bool get isCurrentlyRefreshing => isRefreshing.value;
 
   int get totalRecipes => state?.totalRecipes ?? 0;
 

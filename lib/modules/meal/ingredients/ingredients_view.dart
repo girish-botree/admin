@@ -73,25 +73,30 @@ class IngredientsView extends GetView<MealController> {
 
             // Content
             Expanded(
-              child: Obx(() {
-                if (controller.isLoading.value) {
-                  return _buildShimmerLoading(context);
-                }
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  await controller.refreshData();
+                },
+                child: Obx(() {
+                  if (controller.isLoading.value) {
+                    return _buildShimmerLoading(context);
+                  }
 
-                if (controller.error.value.isNotEmpty) {
-                  return _buildErrorState(context);
-                }
+                  if (controller.error.value.isNotEmpty) {
+                    return _buildErrorState(context);
+                  }
 
-                if (controller.ingredients.isEmpty) {
-                  return _buildEmptyState(context);
-                }
+                  if (controller.ingredients.isEmpty) {
+                    return _buildEmptyState(context);
+                  }
 
-                if (controller.filteredIngredients.isEmpty) {
-                  return _buildNoResultsState(context);
-                }
+                  if (controller.filteredIngredients.isEmpty) {
+                    return _buildNoResultsState(context);
+                  }
 
-                return _buildIngredientGrid(context);
-              }),
+                  return _buildIngredientGrid(context);
+                }),
+              ),
             ),
           ],
         ),
@@ -112,7 +117,7 @@ class IngredientsView extends GetView<MealController> {
     return PreferredSize(
       preferredSize: const Size.fromHeight(kToolbarHeight),
       child: Obx(() =>
-          ModernAppBar(
+          StandardAppBar.withCount(
             title: 'Ingredients',
             itemCount: controller.filteredIngredients.length,
             itemLabel: 'items',
@@ -120,6 +125,11 @@ class IngredientsView extends GetView<MealController> {
             onDeleteAll: () =>
                 IngredientDialogs.showDeleteAllConfirmation(
                     context, controller),
+            showRefresh: true,
+            isLoading: controller.isLoading.value,
+            onRefresh: () async {
+              await controller.refreshData();
+            },
           )),
     );
   }
@@ -136,7 +146,7 @@ class IngredientsView extends GetView<MealController> {
     return ErrorStateWidget(
       title: 'Something went wrong',
       subtitle: 'Data not found, try restarting the app',
-      onRetry: () => controller.fetchIngredients(),
+      onRetry: () => controller.refreshData(),
     );
   }
 

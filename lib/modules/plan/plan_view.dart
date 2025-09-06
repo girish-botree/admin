@@ -38,16 +38,26 @@ class PlanView extends GetView<PlanController> {
         elevation: 0,
         centerTitle: false,
         actions: [
-          IconButton(
-            onPressed: () async {
-              // Force refresh with cache clearing
-              controller.clearCaches();
-              await controller.getMealPlans();
-              await controller.getMealPlansByDate();
+          Obx(() =>
+              IconButton(
+                onPressed: controller.isRefreshing.value ? null : () async {
+                  await controller.refreshData();
             },
-            icon: Icon(Icons.refresh, color: context.theme.colorScheme.onSurface),
+            icon: controller.isRefreshing.value
+                ? SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  context.theme.colorScheme.onSurface,
+                ),
+              ),
+            )
+                : Icon(
+                Icons.refresh, color: context.theme.colorScheme.onSurface),
             tooltip: 'Refresh',
-          ),
+          )),
         ],
       ),
       body: Obx(() {
@@ -58,9 +68,7 @@ class PlanView extends GetView<PlanController> {
 
         return RefreshIndicator(
           onRefresh: () async {
-            controller.clearCaches();
-            await controller.getMealPlans();
-            await controller.getMealPlansByDate();
+            await controller.refreshData();
           },
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(_defaultPadding),

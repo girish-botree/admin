@@ -4,7 +4,6 @@ import 'package:admin/modules/home/home_binding.dart';
 import 'package:admin/modules/home/home_view.dart';
 import 'package:admin/modules/meal/meal_binding.dart';
 import 'package:admin/modules/meal/meal_view.dart';
-import 'package:admin/modules/meal/meal_statistics_view.dart';
 import 'package:admin/modules/main_layout/main_layout_binding.dart';
 import 'package:admin/modules/main_layout/main_layout_view.dart';
 import 'package:admin/modules/plan/plan_binding.dart';
@@ -76,11 +75,6 @@ class AppPages {
         name: AppRoutes.deliveryPersons,
         page: () => const DeliveryPersonView(),
         binding: DeliveryPersonBinding(),
-        middlewares: [AuthMiddleware()]),
-    GetPage<void>(
-        name: AppRoutes.mealStatistics,
-        page: () => const MealStatisticsView(),
-        binding: MealBinding(),
         middlewares: [AuthMiddleware()]),
     GetPage<void>(
         name: AppRoutes.planStatistics,

@@ -120,28 +120,33 @@ class MobileDashboard extends GetView<DashboardController> {
       ),
       actions: [
         Container(
-          margin: const EdgeInsets.only(right: 8.0),
-          child: IconButton(
-            onPressed: () => controller.refreshData(),
-            icon: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: context.theme.colorScheme.surfaceContainerLowest
-                    .withAlpha(51),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: context.theme.colorScheme.surfaceContainerLowest
-                      .withAlpha(77),
-                ),
-              ),
-              child: Icon(
-                Icons.refresh_rounded,
-                color: context.theme.colorScheme.onSurfaceVariant,
-                size: 20,
-              ),
-            ),
-            tooltip: 'Refresh Data',
+          margin: const EdgeInsets.only(right: 20),
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.surfaceContainerLowest,
+            borderRadius: BorderRadius.circular(12),
           ),
+          child: Obx(() =>
+              IconButton(
+                onPressed: controller.isCurrentlyRefreshing ? null : () =>
+                    controller.refreshData(),
+                icon: controller.isCurrentlyRefreshing
+                    ? SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      context.theme.colorScheme.primary,
+                    ),
+                  ),
+                )
+                    : Icon(
+                  Icons.refresh_rounded,
+                  color: context.theme.colorScheme.primary,
+                  size: 28,
+                ),
+                tooltip: 'Refresh Data',
+              )),
         ),
       ],
     );
@@ -211,8 +216,20 @@ class MobileDashboard extends GetView<DashboardController> {
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
-              onPressed: () => controller.refreshData(),
-              icon: const Icon(Icons.refresh_rounded),
+              onPressed: controller.isCurrentlyRefreshing ? null : () =>
+                  controller.refreshData(),
+              icon: controller.isCurrentlyRefreshing
+                  ? SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    context.theme.colorScheme.onPrimary,
+                  ),
+                ),
+              )
+                  : const Icon(Icons.refresh_rounded),
               label: Text('try_again'.tr),
               style: ElevatedButton.styleFrom(
                 backgroundColor: context.theme.colorScheme.primary,
@@ -269,8 +286,20 @@ class MobileDashboard extends GetView<DashboardController> {
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
-              onPressed: () => controller.refreshData(),
-              icon: const Icon(Icons.refresh_rounded),
+              onPressed: controller.isCurrentlyRefreshing ? null : () =>
+                  controller.refreshData(),
+              icon: controller.isCurrentlyRefreshing
+                  ? SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    context.theme.colorScheme.onPrimary,
+                  ),
+                ),
+              )
+                  : const Icon(Icons.refresh_rounded),
               label: Text('refresh'.tr),
               style: ElevatedButton.styleFrom(
                 backgroundColor: context.theme.colorScheme.primary,

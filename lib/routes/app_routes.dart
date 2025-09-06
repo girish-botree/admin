@@ -12,7 +12,6 @@ class AppRoutes {
 
   // Statistics routes
   static const planStatistics = '/plan-statistics';
-  static const mealStatistics = '/meal-statistics';
 
   static const createAdmin = '/create-admin';
 }

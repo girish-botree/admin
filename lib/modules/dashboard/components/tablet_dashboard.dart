@@ -146,8 +146,10 @@ class TabletDashboard extends GetView<DashboardController> {
       actions: [
         Container(
           margin: const EdgeInsets.only(right: 16.0),
-          child: IconButton(
-            onPressed: () => controller.refreshData(),
+          child: Obx(() =>
+              IconButton(
+                onPressed: controller.isCurrentlyRefreshing ? null : () =>
+                    controller.refreshData(),
             icon: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -157,7 +159,21 @@ class TabletDashboard extends GetView<DashboardController> {
                   color: Theme.of(context).colorScheme.onSurface.withAlpha(100),
                 ),
               ),
-              child: Icon(
+              child: controller.isCurrentlyRefreshing
+                  ? SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Theme
+                        .of(context)
+                        .colorScheme
+                        .onPrimary,
+                  ),
+                ),
+              )
+                  : Icon(
                 Icons.refresh_rounded,
                 color: Theme
                     .of(context)
@@ -167,7 +183,7 @@ class TabletDashboard extends GetView<DashboardController> {
               ),
             ),
             tooltip: 'Refresh Data',
-          ),
+          )),
         ),
       ],
     );
@@ -253,9 +269,25 @@ class TabletDashboard extends GetView<DashboardController> {
               height: 1.5,
             ),
             const SizedBox(height: 32),
-            ElevatedButton.icon(
-              onPressed: () => controller.refreshData(),
-              icon: const Icon(Icons.refresh_rounded),
+            Obx(() =>
+                ElevatedButton.icon(
+              onPressed: controller.isCurrentlyRefreshing ? null : () =>
+                  controller.refreshData(),
+              icon: controller.isCurrentlyRefreshing
+                  ? SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Theme
+                        .of(context)
+                        .colorScheme
+                        .onPrimary,
+                  ),
+                ),
+              )
+                  : const Icon(Icons.refresh_rounded),
               label: Text('try_again'.tr),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
@@ -269,7 +301,7 @@ class TabletDashboard extends GetView<DashboardController> {
                 ),
                 elevation: 0,
               ),
-            ),
+            )),
           ],
         ),
       ),
@@ -315,9 +347,25 @@ class TabletDashboard extends GetView<DashboardController> {
               height: 1.5,
             ),
             const SizedBox(height: 32),
-            ElevatedButton.icon(
-              onPressed: () => controller.refreshData(),
-              icon: const Icon(Icons.refresh_rounded),
+            Obx(() =>
+                ElevatedButton.icon(
+              onPressed: controller.isCurrentlyRefreshing ? null : () =>
+                  controller.refreshData(),
+              icon: controller.isCurrentlyRefreshing
+                  ? SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Theme
+                        .of(context)
+                        .colorScheme
+                        .onPrimary,
+                  ),
+                ),
+              )
+                  : const Icon(Icons.refresh_rounded),
               label: Text('refresh'.tr),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
@@ -331,7 +379,7 @@ class TabletDashboard extends GetView<DashboardController> {
                 ),
                 elevation: 0,
               ),
-            ),
+            )),
           ],
         ),
       ),

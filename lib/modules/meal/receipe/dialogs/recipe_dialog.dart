@@ -91,19 +91,25 @@ class RecipeDialogs {
                                       ),
                                     ),
                                     const Spacer(),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: Colors.red.withOpacity(0.1),
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                      child: const Text(
-                                        'Required',
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.red,
+                                    Flexible(
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: Colors.red.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(
+                                              6),
+                                        ),
+                                        child: const FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Text(
+                                            'Required',
+                                            style: TextStyle(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.red,
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -153,7 +159,7 @@ class RecipeDialogs {
                           child: Column(
                             children: [
                               ListTile(
-                                leading: Icon(Icons.tune_rounded,
+                                leading: const Icon(Icons.tune_rounded,
                                     color: Colors.green),
                                 title: const Text(
                                   'Recipe Details',
@@ -244,7 +250,7 @@ class RecipeDialogs {
                           child: Column(
                             children: [
                               ListTile(
-                                leading: Icon(Icons.health_and_safety_outlined,
+                                leading: const Icon(Icons.health_and_safety_outlined,
                                     color: Colors.blue),
                                 title: const Text(
                                   'Nutrition Information',
@@ -289,7 +295,7 @@ class RecipeDialogs {
                           child: Column(
                             children: [
                               ListTile(
-                                leading: Icon(Icons.inventory_2_outlined,
+                                leading: const Icon(Icons.inventory_2_outlined,
                                     color: Colors.orange),
                                 title: const Text(
                                   'Ingredients',
@@ -332,7 +338,7 @@ class RecipeDialogs {
                           child: Column(
                             children: [
                               ListTile(
-                                leading: Icon(Icons.image_outlined,
+                                leading: const Icon(Icons.image_outlined,
                                     color: Colors.purple),
                                 title: const Text(
                                   'Recipe Image',
@@ -367,143 +373,81 @@ class RecipeDialogs {
                       ],
                     ),
                   ),
-                  floatingActionButton: FloatingActionButton.extended(
-                    onPressed: () async {
-                      // Check composition limit first (for nutrition section)
-                      double protein = double.tryParse(
-                          controller.proteinController.text) ?? 0.0;
-                      double carbs = double.tryParse(
-                          controller.carbsController.text) ?? 0.0;
-                      double fat = double.tryParse(
-                          controller.fatController.text) ?? 0.0;
-                      double fiber = double.tryParse(
-                          controller.fiberController.text) ?? 0.0;
-                      double sugar = double.tryParse(
-                          controller.sugarController.text) ?? 0.0;
-                      double totalComposition = protein + carbs + fat + fiber +
-                          sugar;
+                  floatingActionButton: Obx(() {
+                    final hasValidationError =
+                        controller.nameError.value.isNotEmpty ||
+                        controller.descriptionError.value.isNotEmpty ||
+                        controller.servingsError.value.isNotEmpty ||
+                        controller.caloriesError.value.isNotEmpty ||
+                        controller.proteinError.value.isNotEmpty ||
+                        controller.carbsError.value.isNotEmpty ||
+                        controller.fatError.value.isNotEmpty ||
+                        controller.fiberError.value.isNotEmpty ||
+                            controller.sugarError.value.isNotEmpty;
 
-                      if (totalComposition > 100.0) {
-                        Get.snackbar(
-                          'Validation Error',
-                          'Total nutrition composition cannot exceed 100g per 100g. Current total: ${totalComposition
-                              .toStringAsFixed(1)}g',
-                          backgroundColor: Colors.red.withOpacity(0.8),
-                          colorText: Colors.white,
-                          icon: const Icon(Icons.warning, color: Colors.white),
-                        );
-                        return;
-                      }
+                    return FloatingActionButton.extended(
+                      onPressed: () async {
+                        if (controller.validateRecipeForm()) {
+                          final data = controller.createRecipeData(
+                              dietaryCategory, ingredients);
 
-                      if (controller.validateRecipeForm()) {
-                        final data = controller.createRecipeData(
-                            dietaryCategory, ingredients);
+                          // Fill cuisine
+                          data['cuisine'] = selectedCuisine;
 
-                        // Fill cuisine
-                        data['cuisine'] = selectedCuisine;
-
-                        // Fill vitamins and minerals - Don't overwrite what was set in createRecipeData
-                        if (controller.vitaminsController.text.isNotEmpty) {
-                          data['vitamins'] = controller.vitaminsController.text;
-                        }
-                        if (controller.mineralsController.text.isNotEmpty) {
-                          data['minerals'] = controller.mineralsController.text;
-                        }
-
-                        if (image != null) {
-                          try {
-                            final base64String = await ImageBase64Util
-                                .processImageForUpload(image!);
-                            data['imageUrl'] = base64String;
-                          } catch (e) {
-                            Get.snackbar('Error',
-                                'Failed to process image: ${e.toString()}');
-                            return;
+                          // Fill vitamins and minerals
+                          if (controller.vitaminsController.text.isNotEmpty) {
+                            data['vitamins'] =
+                                controller.vitaminsController.text;
                           }
-                        }
-                        controller.createRecipe(data).then((success) {
-                          if (success) {
-                            isDialogActive = false;
-                            Get.back<void>();
-                            Get.snackbar(
-                                'Success', 'Recipe created successfully');
+                          if (controller.mineralsController.text.isNotEmpty) {
+                            data['minerals'] =
+                                controller.mineralsController.text;
                           }
-                        });
-                      }
-                    },
-                    backgroundColor: (() {
-                      double protein = double.tryParse(
-                          controller.proteinController.text) ?? 0.0;
-                      double carbs = double.tryParse(
-                          controller.carbsController.text) ?? 0.0;
-                      double fat = double.tryParse(
-                          controller.fatController.text) ?? 0.0;
-                      double fiber = double.tryParse(
-                          controller.fiberController.text) ?? 0.0;
-                      double sugar = double.tryParse(
-                          controller.sugarController.text) ?? 0.0;
-                      double totalComposition = protein + carbs + fat + fiber +
-                          sugar;
 
-                      return totalComposition > 100.0
+                          if (image != null) {
+                            try {
+                              final base64String = await ImageBase64Util
+                                  .processImageForUpload(image!);
+                              data['imageUrl'] = base64String;
+                            } catch (e) {
+                              Get.snackbar('Error',
+                                  'Failed to process image: ${e.toString()}');
+                              return;
+                            }
+                          }
+                          controller.createRecipe(data).then((success) {
+                            if (success) {
+                              isDialogActive = false;
+                              Get.back<void>();
+                              Get.snackbar(
+                                  'Success', 'Recipe created successfully');
+                            }
+                          });
+                        }
+                      },
+                      backgroundColor: hasValidationError
                           ? Colors.grey
-                          : dialogContext.theme.colorScheme.primary;
-                    })(),
-                    foregroundColor: (() {
-                      double protein = double.tryParse(
-                          controller.proteinController.text) ?? 0.0;
-                      double carbs = double.tryParse(
-                          controller.carbsController.text) ?? 0.0;
-                      double fat = double.tryParse(
-                          controller.fatController.text) ?? 0.0;
-                      double fiber = double.tryParse(
-                          controller.fiberController.text) ?? 0.0;
-                      double sugar = double.tryParse(
-                          controller.sugarController.text) ?? 0.0;
-                      double totalComposition = protein + carbs + fat + fiber +
-                          sugar;
-
-                      return totalComposition > 100.0
+                          : dialogContext.theme.colorScheme.primary,
+                      foregroundColor: hasValidationError
                           ? Colors.grey.shade600
-                          : dialogContext.theme.colorScheme.onPrimary;
-                    })(),
-                    icon: Icon((() {
-                      double protein = double.tryParse(
-                          controller.proteinController.text) ?? 0.0;
-                      double carbs = double.tryParse(
-                          controller.carbsController.text) ?? 0.0;
-                      double fat = double.tryParse(
-                          controller.fatController.text) ?? 0.0;
-                      double fiber = double.tryParse(
-                          controller.fiberController.text) ?? 0.0;
-                      double sugar = double.tryParse(
-                          controller.sugarController.text) ?? 0.0;
-                      double totalComposition = protein + carbs + fat + fiber +
-                          sugar;
-
-                      return totalComposition > 100.0
-                          ? Icons.block_rounded
-                          : Icons.check_rounded;
-                    })()),
-                    label: Text((() {
-                      double protein = double.tryParse(
-                          controller.proteinController.text) ?? 0.0;
-                      double carbs = double.tryParse(
-                          controller.carbsController.text) ?? 0.0;
-                      double fat = double.tryParse(
-                          controller.fatController.text) ?? 0.0;
-                      double fiber = double.tryParse(
-                          controller.fiberController.text) ?? 0.0;
-                      double sugar = double.tryParse(
-                          controller.sugarController.text) ?? 0.0;
-                      double totalComposition = protein + carbs + fat + fiber +
-                          sugar;
-
-                      return totalComposition > 100.0
-                          ? 'Invalid Composition'
-                          : 'Save Recipe';
-                    })()),
-                  ),
+                          : dialogContext.theme.colorScheme.onPrimary,
+                      icon: Icon(
+                        hasValidationError
+                            ? Icons.block_rounded
+                            : Icons.check_rounded,
+                      ),
+                      label: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 200),
+                        child: Text(
+                          hasValidationError
+                              ? 'Fix Errors'
+                              : 'Save Recipe',
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      ),
+                    );
+                  }),
                   floatingActionButtonLocation: FloatingActionButtonLocation
                       .centerFloat,
                 );
@@ -514,6 +458,20 @@ class RecipeDialogs {
       ),
     ).whenComplete(() {
       isDialogActive = false;
+      // Clear all form data and reset state when dialog is closed
+      controller.clearRecipeForm();
+      ingredients.clear();
+      selectedVitamins.clear();
+      selectedMinerals.clear();
+      selectedCuisine = '';
+      image = null;
+      dietaryCategory = 0;
+      // Reset expansion states to default
+      isBasicExpanded = true;
+      isDetailsExpanded = false;
+      isNutritionExpanded = false;
+      isIngredientsExpanded = false;
+      isImageExpanded = false;
     });
   }
 
@@ -706,12 +664,15 @@ class RecipeDialogs {
             color: Colors.red.shade600,
           ),
           const SizedBox(width: 8),
-          Text(
-            'Fields marked with * are required',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: Colors.red.shade700,
+          Flexible(
+            child: Text(
+              'Fields marked with * are required',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: Colors.red.shade700,
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
@@ -1114,6 +1075,10 @@ class RecipeImageSection extends StatelessWidget {
                     _pickImage(ImageSource.gallery, onImageChanged),
                 icon: const Icon(Icons.photo_library_outlined),
                 label: const Text('Gallery'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 12),
+                ),
               ),
             ),
             const SizedBox(width: 12),
@@ -1122,6 +1087,10 @@ class RecipeImageSection extends StatelessWidget {
                 onPressed: () => _pickImage(ImageSource.camera, onImageChanged),
                 icon: const Icon(Icons.camera_alt_outlined),
                 label: const Text('Camera'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 12),
+                ),
               ),
             ),
           ],
@@ -1709,11 +1678,17 @@ class RecipeEditImageSection extends StatelessWidget {
                   _pickImage(ImageSource.gallery, (pickedImage) =>
                       onImageChanged(pickedImage));
                 },
-                icon: const Icon(Icons.photo_library),
-                label: const Text('Gallery'),
+                icon: const Icon(Icons.photo_library, size: 18),
+                label: const Text(
+                  'Gallery',
+                  style: TextStyle(fontSize: 13),
+                  overflow: TextOverflow.ellipsis,
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: context.theme.colorScheme.primaryContainer,
                   foregroundColor: context.theme.colorScheme.onPrimaryContainer,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 10),
                 ),
               ),
             ),
@@ -1724,12 +1699,18 @@ class RecipeEditImageSection extends StatelessWidget {
                   _pickImage(ImageSource.camera, (pickedImage) =>
                       onImageChanged(pickedImage));
                 },
-                icon: const Icon(Icons.camera_alt),
-                label: const Text('Camera'),
+                icon: const Icon(Icons.camera_alt, size: 18),
+                label: const Text(
+                  'Camera',
+                  style: TextStyle(fontSize: 13),
+                  overflow: TextOverflow.ellipsis,
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: context.theme.colorScheme.secondaryContainer,
                   foregroundColor: context.theme.colorScheme
                       .onSecondaryContainer,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 10),
                 ),
               ),
             ),
@@ -2035,46 +2016,6 @@ class RecipeNutritionSection extends StatelessWidget {
     required this.onMineralsChanged,
   });
 
-  // Helper function to calculate total composition
-  double calculateTotalComposition() {
-    double protein = double.tryParse(controller.proteinController.text) ?? 0.0;
-    double carbs = double.tryParse(controller.carbsController.text) ?? 0.0;
-    double fat = double.tryParse(controller.fatController.text) ?? 0.0;
-    double fiber = double.tryParse(controller.fiberController.text) ?? 0.0;
-    double sugar = double.tryParse(controller.sugarController.text) ?? 0.0;
-    return protein + carbs + fat + fiber + sugar;
-  }
-
-  // Helper function to check if adding more would exceed limit
-  bool wouldExceedLimit(String currentValue, String newValue,
-      String fieldName) {
-    double current = double.tryParse(currentValue) ?? 0.0;
-    double proposed = double.tryParse(newValue) ?? 0.0;
-
-    // Calculate total without the current field
-    double protein = double.tryParse(controller.proteinController.text) ?? 0.0;
-    double carbs = double.tryParse(controller.carbsController.text) ?? 0.0;
-    double fat = double.tryParse(controller.fatController.text) ?? 0.0;
-    double fiber = double.tryParse(controller.fiberController.text) ?? 0.0;
-    double sugar = double.tryParse(controller.sugarController.text) ?? 0.0;
-
-    // For each field, subtract its current value and add the proposed value
-    switch (fieldName) {
-      case 'protein':
-        return (carbs + fat + fiber + sugar - protein + proposed) > 100.0;
-      case 'carbs':
-        return (protein + fat + fiber + sugar - carbs + proposed) > 100.0;
-      case 'fat':
-        return (protein + carbs + fiber + sugar - fat + proposed) > 100.0;
-      case 'fiber':
-        return (protein + carbs + fat + sugar - fiber + proposed) > 100.0;
-      case 'sugar':
-        return (protein + carbs + fat + fiber - sugar + proposed) > 100.0;
-      default:
-        return false;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -2083,117 +2024,120 @@ class RecipeNutritionSection extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           child: Column(
             children: [
-              // Composition Progress Meter
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: context.theme.colorScheme.surfaceContainerLowest,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: context.theme.colorScheme.outline.withOpacity(0.3),
+              // Composition Progress Meter - Fixed to use controller's reactive values
+              Obx(() {
+                final totalComposition = controller.totalComposition;
+                final isOverLimit = totalComposition > 100.0;
+
+                return Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: context.theme.colorScheme.surfaceContainerLowest,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isOverLimit
+                          ? Colors.red.withOpacity(0.3)
+                          : context.theme.colorScheme.outline.withOpacity(0.3),
+                    ),
                   ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.pie_chart_rounded,
-                          size: 20,
-                          color: context.theme.colorScheme.primary,
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Nutrition Composition Meter',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const Spacer(),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: calculateTotalComposition() > 100
-                                ? Colors.red.withOpacity(0.1)
-                                : Colors.green.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            '${calculateTotalComposition().toStringAsFixed(
-                                1)}g / 100g',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: calculateTotalComposition() > 100
-                                  ? Colors.red
-                                  : Colors.green,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    LinearProgressIndicator(
-                      value: (calculateTotalComposition() / 100).clamp(
-                          0.0, 1.0),
-                      backgroundColor: context.theme.colorScheme.outline
-                          .withOpacity(0.2),
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        calculateTotalComposition() > 100
-                            ? Colors.red
-                            : context.theme.colorScheme.primary,
-                      ),
-                      minHeight: 8,
-                    ),
-                    const SizedBox(height: 8),
-                    if (calculateTotalComposition() > 100)
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Row(
                         children: [
                           Icon(
-                            Icons.warning_rounded,
-                            size: 16,
-                            color: Colors.red,
+                            Icons.pie_chart_rounded,
+                            size: 20,
+                            color: isOverLimit
+                                ? Colors.red
+                                : context.theme.colorScheme.primary,
                           ),
-                          const SizedBox(width: 6),
-                          Expanded(
+                          const SizedBox(width: 8),
+                          const Flexible(
                             child: Text(
-                              'Total composition exceeds 100g. Please adjust values.',
+                              'Nutrition Composition',
                               style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.red,
-                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const Spacer(),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: isOverLimit
+                                  ? Colors.red.withOpacity(0.1)
+                                  : Colors.green.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              '${totalComposition.toStringAsFixed(1)}g / 100g',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: isOverLimit ? Colors.red : Colors.green,
                               ),
                             ),
                           ),
                         ],
-                      )
-                    else
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.check_circle_rounded,
-                            size: 16,
-                            color: Colors.green,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            'Remaining: ${(100 - calculateTotalComposition())
-                                .toStringAsFixed(1)}g',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.green,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
                       ),
-                  ],
-                ),
-              ),
+                      const SizedBox(height: 12),
+                      LinearProgressIndicator(
+                        value: (totalComposition / 100).clamp(0.0, 1.0),
+                        backgroundColor: context.theme.colorScheme.outline
+                            .withOpacity(0.2),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          isOverLimit ? Colors.red : context.theme.colorScheme
+                              .primary,
+                        ),
+                        minHeight: 8,
+                      ),
+                      const SizedBox(height: 8),
+                      if (isOverLimit)
+                        const Row(
+                          children: [
+                            Icon(Icons.warning_rounded, size: 16,
+                                color: Colors.red),
+                            SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                'Total composition exceeds 100g. Please adjust values.',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      else
+                        Row(
+                          children: [
+                            const Icon(Icons.check_circle_rounded, size: 16,
+                                color: Colors.green),
+                            const SizedBox(width: 6),
+                            Text(
+                              'Remaining: ${(100 - totalComposition)
+                                  .toStringAsFixed(1)}g',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.green,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                    ],
+                  ),
+                );
+              }),
               const SizedBox(height: 16),
+
+              // Calories field (required)
               Obx(() =>
                   RecipeValidatedTextField(
                     controller.caloriesController,
@@ -2204,8 +2148,11 @@ class RecipeNutritionSection extends StatelessWidget {
                     isRequired: true,
                     errorText: controller.caloriesError.value,
                     onChanged: controller.validateCalories,
+                    prefixIcon: Icons.local_fire_department_outlined,
                   )),
               const SizedBox(height: 12),
+
+              // Macronutrients row 1: Protein & Carbohydrates
               Row(
                 children: [
                   Expanded(
@@ -2214,21 +2161,20 @@ class RecipeNutritionSection extends StatelessWidget {
                           controller.proteinController,
                           'Protein (g)',
                           context,
-                          keyboardType: TextInputType.number,
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
                           inputFormatters: MealController
-                              .getIntegerInputFormatters(),
+                              .getNumberInputFormatters(),
                           errorText: controller.proteinError.value,
                           onChanged: (value) {
-                            if (wouldExceedLimit(controller.proteinController
-                                .text, value, 'protein')) {
-                              controller.proteinError.value =
-                              'Would exceed 100g total';
-                            } else {
-                              controller.validateNutrient(
-                                  value, controller.proteinError, 'Protein');
-                            }
-                            // refresh by triggering rebuild
+                            controller.validateNutrient(
+                                value, controller.proteinError, 'Protein');
+                            controller.validateNutritionComposition();
+                            // Update the observable value for reactive calculation
+                            controller.proteinValue.value =
+                                double.tryParse(value) ?? 0.0;
                           },
+                          prefixIcon: Icons.fitness_center_outlined,
                         )),
                   ),
                   const SizedBox(width: 12),
@@ -2236,30 +2182,28 @@ class RecipeNutritionSection extends StatelessWidget {
                     child: Obx(() =>
                         RecipeValidatedTextField(
                           controller.carbsController,
-                          'Carbohydrates (g)',
+                          'Carbs (g)',
                           context,
-                          keyboardType: TextInputType.number,
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
                           inputFormatters: MealController
-                              .getIntegerInputFormatters(),
+                              .getNumberInputFormatters(),
                           errorText: controller.carbsError.value,
                           onChanged: (value) {
-                            if (wouldExceedLimit(
-                                controller.carbsController.text,
-                                value, 'carbs')) {
-                              controller.carbsError.value =
-                              'Would exceed 100g total';
-                            } else {
-                              controller.validateNutrient(
-                                  value, controller.carbsError,
-                                  'Carbohydrates');
-                            }
-                            // refresh by triggering rebuild
+                            controller.validateNutrient(
+                                value, controller.carbsError, 'Carbohydrates');
+                            controller.validateNutritionComposition();
+                            controller.carbsValue.value =
+                                double.tryParse(value) ?? 0.0;
                           },
+                          prefixIcon: Icons.grain_outlined,
                         )),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
+
+              // Macronutrients row 2: Fat & Fiber
               Row(
                 children: [
                   Expanded(
@@ -2268,52 +2212,77 @@ class RecipeNutritionSection extends StatelessWidget {
                           controller.fatController,
                           'Fat (g)',
                           context,
-                          keyboardType: TextInputType.number,
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
                           inputFormatters: MealController
-                              .getIntegerInputFormatters(),
+                              .getNumberInputFormatters(),
                           errorText: controller.fatError.value,
                           onChanged: (value) {
-                            if (wouldExceedLimit(controller.fatController.text,
-                                value, 'fat')) {
-                              controller.fatError.value =
-                              'Would exceed 100g total';
-                            } else {
-                              controller.validateNutrient(
-                                  value, controller.fatError, 'Fat');
-                            }
-                            // refresh by triggering rebuild
+                            controller.validateNutrient(
+                                value, controller.fatError, 'Fat');
+                            controller.validateNutritionComposition();
+                            controller.fatValue.value =
+                                double.tryParse(value) ?? 0.0;
                           },
+                          prefixIcon: Icons.opacity_outlined,
                         )),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: RecipeTextField(
-                      controller.fiberController,
-                      'Fiber (g)',
-                      context,
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) =>
-                      {}, // no-op, state handled externally
-                    ),
+                    child: Obx(() =>
+                        RecipeValidatedTextField(
+                          controller.fiberController,
+                          'Fiber (g)',
+                          context,
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
+                          inputFormatters: MealController
+                              .getNumberInputFormatters(),
+                          errorText: controller.fiberError.value,
+                          onChanged: (value) {
+                            controller.validateNutrient(
+                                value, controller.fiberError, 'Fiber');
+                            controller.validateNutritionComposition();
+                            controller.fiberValue.value =
+                                double.tryParse(value) ?? 0.0;
+                          },
+                          prefixIcon: Icons.grass_outlined,
+                        )),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
+
+              // Sugar field
               Row(
                 children: [
                   Expanded(
-                    child: RecipeTextField(
-                      controller.sugarController,
-                      'Sugar (g)',
-                      context,
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) =>
-                      {}, // no-op, state handled externally
-                    ),
+                    child: Obx(() =>
+                        RecipeValidatedTextField(
+                          controller.sugarController,
+                          'Sugar (g)',
+                          context,
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
+                          inputFormatters: MealController
+                              .getNumberInputFormatters(),
+                          errorText: controller.sugarError.value,
+                          onChanged: (value) {
+                            controller.validateNutrient(
+                                value, controller.sugarError, 'Sugar');
+                            controller.validateNutritionComposition();
+                            controller.sugarValue.value =
+                                double.tryParse(value) ?? 0.0;
+                          },
+                          prefixIcon: Icons.cake_outlined,
+                        )),
                   ),
+                  const Expanded(child: SizedBox()), // Empty space for symmetry
                 ],
               ),
               const SizedBox(height: 16),
+
+              // Micronutrients section
               TypedMultiSelectDropdown(
                 dropdownType: DropdownType.vitamins,
                 selectedValues: selectedVitamins,

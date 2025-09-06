@@ -11,27 +11,20 @@
   <component name="ChangeListManager">
     <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="add navigation routes for meal and plan statistics views and update UI components to include statistic access buttons and sections in meal and plan modules">
       <change beforePath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/config/dropdown_data.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config/dropdown_data.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/admins/create_admins/create_admin_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/admins/create_admins/create_admin_controller.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/admins/create_admins/create_admin_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/admins/create_admins/create_admin_view.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/delivery_persons/manage_delivery_persons/delivery_person_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/delivery_persons/manage_delivery_persons/delivery_person_controller.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/delivery_persons/manage_delivery_persons/delivery_person_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/delivery_persons/manage_delivery_persons/delivery_person_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/delivery_persons/manage_delivery_persons/delivery_person_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/delivery_persons/manage_delivery_persons/delivery_person_view.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/home/components/mobile_home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/home/components/mobile_home.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/home/components/tablet_home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/home/components/tablet_home.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/home/components/web_home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/home/components/web_home.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/components/mobile_dashboard.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/components/mobile_dashboard.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/components/tablet_dashboard.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/components/tablet_dashboard.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/components/web_dashboard.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/components/web_dashboard.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/dashboard_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/dashboard_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/components/mobile_meal.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/components/mobile_meal.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/components/tablet_meal.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/components/tablet_meal.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/components/web_meal.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/components/web_meal.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/ingredients/ingredients_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/ingredients/ingredients_view.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/meal/meal_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/meal_controller.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_details_dialog.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_details_dialog.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_dialog.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_dialog.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/meal/receipe/receipes_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/receipes_view.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/meal/receipe/widgets/recipe_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/widgets/recipe_card.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/plan/plan_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/plan_controller.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/modules/plan/plan_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/plan_view.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/network_service/api_client.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/api_client.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/network_service/api_client.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/api_client.g.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/network_service/dio_network_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/dio_network_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/widgets/custom_displays.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/custom_displays.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

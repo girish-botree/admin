@@ -8,7 +8,6 @@ import '../../../widgets/loading_widgets.dart';
 import '../meal_controller.dart';
 import '../ingredients/ingredients_view.dart';
 import '../receipe/receipes_view.dart';
-import '../../../routes/app_routes.dart';
 
 class MobileMeal extends GetView<MealController> {
   const MobileMeal({super.key});
@@ -57,14 +56,6 @@ class MobileMeal extends GetView<MealController> {
                     ),
               tooltip: 'Refresh',
             )),
-        IconButton(
-          onPressed: _navigateToStatistics,
-          icon: Icon(
-            Icons.bar_chart,
-            color: context.theme.colorScheme.onSurface,
-          ),
-          tooltip: 'Statistics',
-        ),
       ],
     );
   }
@@ -125,10 +116,7 @@ class MobileMeal extends GetView<MealController> {
   Future<void> _handleRefresh() async {
     try {
       HapticFeedback.lightImpact();
-      await Future.wait([
-        controller.fetchRecipes(),
-        controller.fetchIngredients(),
-      ]);
+      await controller.refreshData();
     } catch (e) {
       Get.snackbar(
         'Error',
@@ -164,12 +152,6 @@ class MobileMeal extends GetView<MealController> {
           () => const IngredientsView(),
       transition: Transition.rightToLeftWithFade,
     );
-  }
-
-  void _navigateToStatistics() async {
-    HapticFeedback.selectionClick();
-
-    await Get.toNamed(AppRoutes.mealStatistics);
   }
 }
 

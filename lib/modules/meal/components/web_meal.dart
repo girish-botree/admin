@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../config/app_config.dart';
 import '../../../widgets/loading_widgets.dart';
-import '../../../routes/app_routes.dart';
 
 import '../meal_controller.dart';
 import '../ingredients/ingredients_view.dart';
@@ -53,22 +52,6 @@ class WebMeal extends GetView<MealController> {
                       ),
                 tooltip: 'Refresh',
               )),
-        ),
-        Container(
-          margin: const EdgeInsets.only(right: 24),
-          decoration: BoxDecoration(
-            color: context.theme.colorScheme.surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: IconButton(
-            onPressed: () => Get.toNamed(AppRoutes.mealStatistics),
-            icon: Icon(
-              Icons.analytics_rounded,
-              color: context.theme.colorScheme.primary,
-              size: 30,
-            ),
-            tooltip: 'Statistics',
-          ),
         ),
       ],
     );
@@ -150,10 +133,7 @@ class WebMeal extends GetView<MealController> {
 
   Future<void> _handleRefresh() async {
     try {
-      await Future.wait([
-        controller.fetchRecipes(),
-        controller.fetchIngredients(),
-      ]);
+      await controller.refreshData();
     } catch (e) {
       Get.snackbar(
         'Error',

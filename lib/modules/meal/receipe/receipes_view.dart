@@ -70,25 +70,30 @@ class ReceipesView extends GetView<MealController> {
 
             // Content
             Expanded(
-              child: Obx(() {
-                if (controller.isLoading.value) {
-                  return _buildShimmerLoading(context);
-                }
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  await controller.refreshData();
+                },
+                child: Obx(() {
+                  if (controller.isLoading.value) {
+                    return _buildShimmerLoading(context);
+                  }
 
-                if (controller.error.value.isNotEmpty) {
-                  return _buildErrorState(context, controller);
-                }
+                  if (controller.error.value.isNotEmpty) {
+                    return _buildErrorState(context, controller);
+                  }
 
-                if (controller.recipes.isEmpty) {
-                  return _buildEmptyState(context);
-                }
+                  if (controller.recipes.isEmpty) {
+                    return _buildEmptyState(context);
+                  }
 
-                if (controller.filteredRecipes.isEmpty) {
-                  return _buildNoResultsState(context);
-                }
+                  if (controller.filteredRecipes.isEmpty) {
+                    return _buildNoResultsState(context);
+                  }
 
-                return _buildRecipeGrid(context, controller);
-              }),
+                  return _buildRecipeGrid(context, controller);
+                }),
+              ),
             ),
           ],
         ),
@@ -108,13 +113,18 @@ class ReceipesView extends GetView<MealController> {
     return PreferredSize(
       preferredSize: const Size.fromHeight(kToolbarHeight),
       child: Obx(() =>
-          ModernAppBar(
+          StandardAppBar.withCount(
             title: 'Recipes',
             itemCount: controller.filteredRecipes.length,
             itemLabel: 'recipes',
             showDeleteAll: true,
             onDeleteAll: () =>
                 RecipeDialogs.showDeleteAllConfirmation(context, controller),
+            showRefresh: true,
+            isLoading: controller.isLoading.value,
+            onRefresh: () async {
+              await controller.refreshData();
+            },
           )),
     );
   }
@@ -130,7 +140,7 @@ class ReceipesView extends GetView<MealController> {
     return ErrorStateWidget(
       title: 'Something went wrong',
       subtitle: 'Unable to load recipes. Please try again.',
-      onRetry: () => controller.fetchRecipes(),
+      onRetry: () => controller.refreshData(),
     );
   }
 

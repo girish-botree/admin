@@ -231,22 +231,45 @@ class WebDashboard extends GetView<DashboardController> {
               height: 1.5,
             ),
             const SizedBox(height: 32),
-            ElevatedButton.icon(
-              onPressed: () => controller.refreshData(),
-              icon: const Icon(Icons.refresh_rounded),
-              label: Text('try_again'.tr),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 16,
+            Obx(() =>
+                ElevatedButton.icon(
+                  onPressed: controller.isCurrentlyRefreshing ? null : () =>
+                      controller.refreshData(),
+                  icon: controller.isCurrentlyRefreshing
+                      ? SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Theme
+                            .of(context)
+                            .colorScheme
+                            .onPrimary,
+                      ),
+                    ),
+                  )
+                      : const Icon(Icons.refresh_rounded),
+                  label: Text('try_again'.tr),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme
+                        .of(context)
+                        .colorScheme
+                        .primary,
+                    foregroundColor: Theme
+                        .of(context)
+                        .colorScheme
+                        .onPrimary,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 16,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 0,
-              ),
             ),
           ],
         ),

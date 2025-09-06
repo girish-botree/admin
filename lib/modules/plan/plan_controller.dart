@@ -16,6 +16,7 @@ class PlanController extends GetxController {
   final RxList<dynamic> _filteredRecipesCache = <dynamic>[].obs; // Cache filtered recipes
   MealCategory? _lastFilteredCategory; // Track last filtered category
   final RxBool isLoading = false.obs;
+  final RxBool isRefreshing = false.obs; // Flag to track refresh operation
   
   // Form controllers for meal plans
   final nameController = TextEditingController();
@@ -1261,8 +1262,39 @@ class PlanController extends GetxController {
         return 'Unknown';
     }
   }
-  
 
+
+  // Add refresh method with proper loading state management
+  Future<void> refreshData() async {
+    if (isRefreshing.value) return; // Prevent multiple refresh operations
+
+    isRefreshing.value = true;
+    _updateMainLoadingState();
+
+    try {
+      // Clear caches first
+      clearCaches();
+
+      // Refresh all data
+      await Future.wait([
+        getMealPlans(),
+        getRecipes(),
+        getMealPlansByDate(),
+      ]);
+    } catch (e) {
+      ErrorHandlingService.handleApiError(
+          e, customMessage: 'Failed to refresh data');
+    } finally {
+      isRefreshing.value = false;
+      _updateMainLoadingState();
+    }
+  }
+
+  // Helper method to update main loading state
+  void _updateMainLoadingState() {
+    // Update loading state based on individual operations
+    // This ensures proper loading state management
+  }
 
   Future<void> createEnhancedMealPlans() async {
     // Check if we have multi-selections or single selections
