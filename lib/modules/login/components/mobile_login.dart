@@ -1,6 +1,7 @@
 import 'package:admin/modules/login/components/common_login_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'dart:ui';
 import '../../../utils/responsive.dart';
 import '../login_controller.dart';
 
@@ -216,14 +217,14 @@ class MobileLogin extends GetView<LoginController> {
               ),
             ),
             child: Icon(
-              Icons.restaurant_rounded,
+              Icons.admin_panel_settings_rounded,
               size: 40,
               color: context.theme.colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 32),
 
-          // Inspiring quote
+          // Professional welcome message
           AnimatedDefaultTextStyle(
             duration: const Duration(milliseconds: 1000),
             style: TextStyle(
@@ -234,13 +235,13 @@ class MobileLogin extends GetView<LoginController> {
               height: 1.4,
             ),
             child: const Text(
-              '"Let food be thy medicine and medicine be thy food. A healthy outside starts from the inside."',
+              'Welcome to Elith — your comprehensive administrative dashboard designed to streamline operations and enhance productivity.',
               textAlign: TextAlign.center,
             ),
           ),
           const SizedBox(height: 16),
 
-          // Quote attribution
+          // Professional tagline
           AnimatedDefaultTextStyle(
             duration: const Duration(milliseconds: 1200),
             style: TextStyle(
@@ -251,10 +252,10 @@ class MobileLogin extends GetView<LoginController> {
               fontStyle: FontStyle.italic,
             ),
             child: const Text(
-              '— Hippocrates',
+              'Efficient. Reliable. Professional.',
               textAlign: TextAlign.center,
             ),
-          ),
+          )
         ],
       ),
     );
@@ -314,7 +315,7 @@ class MobileLogin extends GetView<LoginController> {
 
         // Subtitle
         Text(
-          'Transform your nutrition journey',
+          'Transform your operations with Elith.',
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -333,62 +334,72 @@ class MobileLogin extends GetView<LoginController> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       useSafeArea: true,
-      builder: (context) => Container(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: DraggableScrollableSheet(
-          initialChildSize: 0.75,
-          minChildSize: 0.4,
-          maxChildSize: 0.95,
-          expand: false,
-          builder: (context, scrollController) {
-            return Container(
-              decoration: BoxDecoration(
-                color: Get.context!.theme.colorScheme.surfaceContainerHighest,
-                borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(28)),
-                border: Border.all(
-                  color: Get.context!.theme.colorScheme.onSurface.withAlpha(30),
-                  width: 1,
-                ),
+      barrierColor: Colors.black.withOpacity(0.5),
+      builder: (context) =>
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+            child: Container(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery
+                    .of(context)
+                    .viewInsets
+                    .bottom,
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(top: 16),
-                    width: 48,
-                    height: 5,
+              child: DraggableScrollableSheet(
+                initialChildSize: 0.75,
+                minChildSize: 0.4,
+                maxChildSize: 0.95,
+                expand: false,
+                builder: (context, scrollController) {
+                  return Container(
                     decoration: BoxDecoration(
-                      color: context.theme.colorScheme.onSurface
-                          .withAlpha(60),
-                      borderRadius: BorderRadius.circular(3),
-                    ),
-                  ),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      controller: scrollController,
-                      padding: const EdgeInsets.all(28),
-                      physics: const BouncingScrollPhysics(),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _buildMobileLoginForm(context),
-                          SizedBox(
-                            height: MediaQuery
-                                .of(context)
-                                .viewInsets
-                                .bottom > 0 ? 100 : 20,
-                          ),
-                        ],
+                      color: Get.context!.theme.colorScheme
+                          .surfaceContainerHighest,
+                      borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(28)),
+                      border: Border.all(
+                        color: Get.context!.theme.colorScheme.onSurface
+                            .withAlpha(30),
+                        width: 1,
+                      ),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(top: 16),
+                      width: 48,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: context.theme.colorScheme.onSurface
+                            .withAlpha(60),
+                        borderRadius: BorderRadius.circular(3),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          },
+                    Expanded(
+                      child: SingleChildScrollView(
+                        controller: scrollController,
+                        padding: const EdgeInsets.all(28),
+                        physics: const BouncingScrollPhysics(),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildMobileLoginForm(context),
+                            SizedBox(
+                              height: MediaQuery
+                                  .of(context)
+                                  .viewInsets
+                                  .bottom > 0 ? 100 : 20,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

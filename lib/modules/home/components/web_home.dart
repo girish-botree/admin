@@ -171,7 +171,7 @@ class WebHome extends GetView<HomeController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AppText.semiBold(
-                        'Admin Management',
+                        'Delivery Management',
                         color: context.theme.colorScheme.onSurface,
                         size: 16,
                       ),

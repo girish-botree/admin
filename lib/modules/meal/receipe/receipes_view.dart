@@ -5,7 +5,7 @@ import 'widgets/recipe_card.dart';
 import 'widgets/recipe_shimmer.dart';
 import 'dialogs/recipe_dialog.dart';
 import '../shared/widgets/common_widgets.dart';
-import 'dialogs/recipe_details_dialog.dart';
+import 'screens/recipe_detail_screen.dart';
 
 class ReceipesView extends GetView<MealController> {
   const ReceipesView({super.key});
@@ -174,7 +174,11 @@ class ReceipesView extends GetView<MealController> {
         RecipeCard(
           recipe: recipe,
           onTap: () =>
-              RecipeDetailsDialog.show(context, recipe),
+              Get.to(
+                    () => RecipeDetailScreen(recipe: recipe),
+                transition: Transition.cupertino,
+                duration: const Duration(milliseconds: 300),
+              ),
           onEdit: () =>
               RecipeDialogs.showEditRecipeDialog(context, controller, recipe),
           onDelete: () =>

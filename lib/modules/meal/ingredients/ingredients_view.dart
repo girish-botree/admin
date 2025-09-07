@@ -5,6 +5,7 @@ import 'widgets/ingredient_card.dart';
 import 'widgets/ingredient_shimmer.dart';
 import 'dialogs/ingredient_dialogs.dart';
 import '../shared/widgets/common_widgets.dart';
+import 'screens/ingredient_detail_screen.dart';
 
 class IngredientsView extends GetView<MealController> {
   const IngredientsView({super.key});
@@ -180,7 +181,11 @@ class IngredientsView extends GetView<MealController> {
         IngredientCard(
           ingredient: ingredient,
           onTap: () =>
-              IngredientDialogs.showIngredientDetails(context, ingredient),
+              Get.to(
+                    () => IngredientDetailScreen(ingredient: ingredient),
+                transition: Transition.cupertino,
+                duration: const Duration(milliseconds: 300),
+              ),
           onEdit: () =>
               IngredientDialogs.showEditIngredientDialog(
                   context, controller, ingredient),

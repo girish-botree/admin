@@ -78,13 +78,13 @@ class WebLogin extends GetView<LoginController> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Icon(
-                              Icons.restaurant_rounded,
+                              Icons.admin_panel_settings_rounded,
                               size: 40,
                               color: context.theme.colorScheme.onSurface,
                             ),
                             const SizedBox(height: 20),
                             Text(
-                              '"Let food be thy medicine and medicine be thy food. A healthy outside starts from the inside."',
+                              'Welcome to Elith — your comprehensive administrative dashboard designed to streamline operations and enhance productivity.',
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.w600,
@@ -95,7 +95,7 @@ class WebLogin extends GetView<LoginController> {
                             ),
                             const SizedBox(height: 20),
                             Text(
-                              '— Hippocrates',
+                              'Efficient. Reliable. Professional.',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,

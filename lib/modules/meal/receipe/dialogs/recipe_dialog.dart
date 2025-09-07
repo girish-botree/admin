@@ -1045,7 +1045,15 @@ class RecipeImageSection extends StatelessWidget {
             height: 120,
             width: double.infinity,
             decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(0.1),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  context.theme.colorScheme.primaryContainer,
+                  context.theme.colorScheme.secondaryContainer,
+                  context.theme.colorScheme.tertiaryContainer,
+                ],
+              ),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: Colors.grey.withOpacity(0.3)),
             ),
@@ -1054,13 +1062,14 @@ class RecipeImageSection extends StatelessWidget {
               children: [
                 Icon(Icons.add_photo_alternate_outlined,
                     size: 32,
-                    color: Colors.grey.withOpacity(0.6)),
+                    color: context.theme.colorScheme.onPrimaryContainer),
                 const SizedBox(height: 8),
                 Text(
                   'Add Recipe Photo',
                   style: TextStyle(
-                    color: Colors.grey.withOpacity(0.7),
+                    color: context.theme.colorScheme.onPrimaryContainer,
                     fontSize: 14,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -1764,12 +1773,24 @@ class RecipeEditImageSection extends StatelessWidget {
                     width: double.infinity,
                     height: 180,
                   )
-                      : Center(
-                    child: Icon(
-                      Icons.image,
-                      size: 48,
-                      color: context.theme.colorScheme.onSurface.withValues(
-                          alpha: 0.2),
+                      : Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          context.theme.colorScheme.primaryContainer,
+                          context.theme.colorScheme.secondaryContainer,
+                          context.theme.colorScheme.tertiaryContainer,
+                        ],
+                      ),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Icons.image,
+                        size: 48,
+                        color: context.theme.colorScheme.onPrimaryContainer,
+                      ),
                     ),
                   ),
                 ),
@@ -1791,9 +1812,21 @@ class RecipeEditImageSection extends StatelessWidget {
 
   Widget _buildFallbackImage(BuildContext context) {
     return Container(
-      color: Colors.grey.withValues(alpha: 0.3),
-      child: const Center(
-        child: Icon(Icons.restaurant, size: 48, color: Colors.grey),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            context.theme.colorScheme.primaryContainer,
+            context.theme.colorScheme.secondaryContainer,
+            context.theme.colorScheme.tertiaryContainer,
+          ],
+        ),
+      ),
+      child: Center(
+        child: Icon(Icons.restaurant,
+            size: 48,
+            color: context.theme.colorScheme.onPrimaryContainer),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../config/app_config.dart';
+import '../../../config/app_text.dart';
 import '../../../gen/assets.gen.dart';
 import '../../../utils/responsive.dart';
 import '../../../widgets/loading_widgets.dart';
@@ -36,6 +37,15 @@ class MobileMeal extends GetView<MealController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 24),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: AppText.semiBold(
+            'Quick Actions',
+            size: 20,
+            color: context.theme.colorScheme.onSurface,
+          ),
+        ),
+        const SizedBox(height: 20),
         _buildActionCards(context),
         const SizedBox(height: 20),
         _buildCarouselIndicator(context),
