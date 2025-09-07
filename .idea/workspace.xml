@@ -9,10 +9,11 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="refactor: add refresh flags and loading states to controllers, update UI components for better responsiveness and consistency">
+    <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="refactor: enhance UI components with glassmorphism effects, update styling for consistency, and improve visual responsiveness across mobile, tablet, and web layouts">
       <change beforePath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/meal/receipe/screens/recipe_detail_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/screens/recipe_detail_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/components/mobile_dashboard.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/components/mobile_dashboard.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/dashboard_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/dashboard_view.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -288,7 +289,15 @@
       <option name="project" value="LOCAL" />
       <updated>1757219392812</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="refactor: enhance UI components with glassmorphism effects, update styling for consistency, and improve visual responsiveness across mobile, tablet, and web layouts">
+      <option name="closed" value="true" />
+      <created>1757220689677</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1757220689677</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -309,7 +318,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="aug_4" />
     <MESSAGE value="patch_aug_10" />
     <MESSAGE value="fix: update theme color references, add secure token storage, enhance splash animations, improve responsive layout, and refine login and dashboard components for better UX and security." />
     <MESSAGE value="add new dashboard widgets for ingredient usage radar and recipe trend chart" />
@@ -334,6 +342,7 @@
     <MESSAGE value="add navigation routes for meal and plan statistics views and update UI components to include statistic access buttons and sections in meal and plan modules" />
     <MESSAGE value="refactor: add refresh flags and loading states to dashboard, meal, and plan controllers for better refresh handling and UI responsiveness" />
     <MESSAGE value="refactor: add refresh flags and loading states to controllers, update UI components for better responsiveness and consistency" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor: add refresh flags and loading states to controllers, update UI components for better responsiveness and consistency" />
+    <MESSAGE value="refactor: enhance UI components with glassmorphism effects, update styling for consistency, and improve visual responsiveness across mobile, tablet, and web layouts" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor: enhance UI components with glassmorphism effects, update styling for consistency, and improve visual responsiveness across mobile, tablet, and web layouts" />
   </component>
 </project>
