@@ -299,15 +299,15 @@ class RecipeDetailScreen extends StatelessWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          RecipeDialogs.showEditRecipeDialog(context, controller, recipe);
-        },
-        backgroundColor: context.theme.colorScheme.primaryContainer,
-        foregroundColor: context.theme.colorScheme.onPrimaryContainer,
-        icon: const Icon(Icons.edit_rounded),
-        label: const Text('Edit Recipe'),
-      ),
+      // floatingActionButton: FloatingActionButton.extended(
+      //   onPressed: () {
+      //     RecipeDialogs.showEditRecipeDialog(context, controller, recipe);
+      //   },
+      //   backgroundColor: context.theme.colorScheme.primaryContainer,
+      //   foregroundColor: context.theme.colorScheme.onPrimaryContainer,
+      //   icon: const Icon(Icons.edit_rounded),
+      //   label: const Text('Edit Recipe'),
+      // ),
     );
   }
 
@@ -349,24 +349,38 @@ class RecipeDetailScreen extends StatelessWidget {
 
   Widget _buildInfoChip(IconData icon, String text, Color color) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(24),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.3),
-              width: 1,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.white.withOpacity(0.25),
+                Colors.white.withOpacity(0.10),
+              ],
             ),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.20),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              ),
+            ],
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(icon, size: 16, color: Colors.white),
-              const SizedBox(width: 6),
+              const SizedBox(width: 8),
               Text(
                 text,
                 style: const TextStyle(
@@ -384,19 +398,33 @@ class RecipeDetailScreen extends StatelessWidget {
 
   Widget _buildDescriptionSection(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(24),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.2),
-              width: 1,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                context.theme.colorScheme.surface.withOpacity(0.85),
+                context.theme.colorScheme.surface.withOpacity(0.65),
+              ],
             ),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.30),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -404,27 +432,41 @@ class RecipeDetailScreen extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: context.theme.colorScheme.primary.withValues(
-                          alpha: 0.8),
-                      borderRadius: BorderRadius.circular(12),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          context.theme.colorScheme.primary,
+                          context.theme.colorScheme.primary.withOpacity(0.8),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: context.theme.colorScheme.primary.withOpacity(
+                              0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: const Icon(
                         Icons.description_rounded, color: Colors.white,
                         size: 20),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 16),
                   const Text(
                     'About this recipe',
                     style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               Text(
                 recipe['description']?.toString() ?? '',
                 style: TextStyle(
@@ -444,150 +486,162 @@ class RecipeDetailScreen extends StatelessWidget {
       Map<String, dynamic>? nutrition) {
     if (nutrition == null) return const SizedBox.shrink();
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: context.theme.colorScheme.tertiaryContainer.withValues(
-                alpha: 0.2),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: context.theme.colorScheme.tertiary.withValues(alpha: 0.3),
-              width: 1,
-            ),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: context.theme.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: context.theme.colorScheme.tertiary.withValues(
-                          alpha: 0.8),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                        Icons.analytics_rounded, color: Colors.white, size: 20),
-                  ),
-                  const SizedBox(width: 12),
-                  const Text(
-                    'Nutrition per serving',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: context.theme.colorScheme.primary,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.analytics_rounded,
+                  color: context.theme.colorScheme.onPrimary,
+                  size: 20,
+                ),
               ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildNutrientCard(
-                      context,
-                      'Calories',
-                      '${nutrition['calories']?.toStringAsFixed(0) ?? '0'}',
-                      'kcal',
-                      Colors.orange,
-                      Icons.local_fire_department_rounded,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildNutrientCard(
-                      context,
-                      'Protein',
-                      '${nutrition['protein']?.toStringAsFixed(1) ?? '0'}',
-                      'g',
-                      Colors.red,
-                      Icons.fitness_center_rounded,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildNutrientCard(
-                      context,
-                      'Carbs',
-                      '${nutrition['carbohydrates']?.toStringAsFixed(1) ??
-                          '0'}',
-                      'g',
-                      Colors.blue,
-                      Icons.grain_rounded,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildNutrientCard(
-                      context,
-                      'Fat',
-                      '${nutrition['fat']?.toStringAsFixed(1) ?? '0'}',
-                      'g',
-                      Colors.green,
-                      Icons.opacity_rounded,
-                    ),
-                  ),
-                ],
+              const SizedBox(width: 12),
+              const Text(
+                'Nutrition per serving',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),
-        ),
+          const SizedBox(height: 20),
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 2,
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
+            childAspectRatio: 1.8,
+            children: [
+              _buildSimpleNutrientCard(
+                context,
+                'Calories',
+                '${nutrition['calories']?.toStringAsFixed(0) ?? '0'}',
+                'kcal',
+                Colors.orange.shade400,
+                Icons.local_fire_department_rounded,
+              ),
+              _buildSimpleNutrientCard(
+                context,
+                'Protein',
+                '${nutrition['protein']?.toStringAsFixed(1) ?? '0'}',
+                'g',
+                Colors.red.shade400,
+                Icons.fitness_center_rounded,
+              ),
+              _buildSimpleNutrientCard(
+                context,
+                'Carbs',
+                '${nutrition['carbohydrates']?.toStringAsFixed(1) ?? '0'}',
+                'g',
+                Colors.blue.shade400,
+                Icons.grain_rounded,
+              ),
+              _buildSimpleNutrientCard(
+                context,
+                'Fat',
+                '${nutrition['fat']?.toStringAsFixed(1) ?? '0'}',
+                'g',
+                Colors.green.shade400,
+                Icons.opacity_rounded,
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildNutrientCard(BuildContext context,
+  Widget _buildSimpleNutrientCard(BuildContext context,
       String label,
       String value,
       String unit,
       Color color,
       IconData icon,) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: color.withValues(alpha: 0.3),
-              width: 1,
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: context.theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: color.withOpacity(0.3),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: Colors.white, size: 16),
+          ),
+          const SizedBox(height: 4),
+          RichText(
+            text: TextSpan(
+              text: value,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: context.theme.colorScheme.onSurface,
+              ),
+              children: [
+                TextSpan(
+                  text: ' $unit',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.normal,
+                    color: context.theme.colorScheme.onSurface.withOpacity(0.6),
+                  ),
+                ),
+              ],
             ),
           ),
-          child: Column(
-            children: [
-              Icon(icon, color: color, size: 24),
-              const SizedBox(height: 8),
-              Text(
-                '$value $unit',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
-              ),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: context.theme.colorScheme.onSurface.withValues(
-                      alpha: 0.7),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
+          const SizedBox(height: 1),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10,
+              color: context.theme.colorScheme.onSurface.withOpacity(0.7),
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
           ),
-        ),
+        ],
       ),
     );
   }
@@ -598,19 +652,33 @@ class RecipeDetailScreen extends StatelessWidget {
       RxBool isLoadingIngredients,
       VoidCallback onRetry,) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(24),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.2),
-              width: 1,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                context.theme.colorScheme.surface.withOpacity(0.85),
+                context.theme.colorScheme.surface.withOpacity(0.65),
+              ],
             ),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.30),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -618,29 +686,43 @@ class RecipeDetailScreen extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.green.withValues(alpha: 0.8),
-                      borderRadius: BorderRadius.circular(12),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.green,
+                          Colors.green.withOpacity(0.8),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.green.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: const Icon(
                         Icons.inventory_2_rounded, color: Colors.white,
                         size: 20),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 16),
                   Obx(() =>
                       Text(
                         'Ingredients${recipeIngredients.isNotEmpty
                             ? ' (${recipeIngredients.length})'
                             : ''}',
                         style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
                         ),
                       )),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               Obx(() {
                 if (isLoadingIngredients.value) {
                   return const Center(child: CircularProgressIndicator());
@@ -658,49 +740,91 @@ class RecipeDetailScreen extends StatelessWidget {
                 return Column(
                   children: recipeIngredients.map((ingredient) =>
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(16),
                         child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
                           child: Container(
-                            margin: const EdgeInsets.only(bottom: 12),
-                            padding: const EdgeInsets.all(16),
+                            margin: const EdgeInsets.only(bottom: 16),
+                            padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color: Colors.green.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Colors.green.withValues(alpha: 0.3),
-                                width: 1,
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Colors.green.withOpacity(0.15),
+                                  Colors.green.withOpacity(0.08),
+                                ],
                               ),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: Colors.green.withOpacity(0.30),
+                                width: 1.5,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.green.withOpacity(0.1),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 6),
+                                ),
+                              ],
                             ),
                             child: Row(
                               children: [
                                 Container(
-                                  padding: const EdgeInsets.all(8),
+                                  padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                    color: Colors.green.withValues(alpha: 0.3),
-                                    borderRadius: BorderRadius.circular(8),
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        Colors.green.withOpacity(0.8),
+                                        Colors.green.withOpacity(0.6),
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.green.withOpacity(0.3),
+                                        blurRadius: 6,
+                                        offset: const Offset(0, 3),
+                                      ),
+                                    ],
                                   ),
                                   child: const Icon(
-                                      Icons.eco_rounded, color: Colors.green,
+                                      Icons.eco_rounded, color: Colors.white,
                                       size: 16),
                                 ),
-                                const SizedBox(width: 12),
+                                const SizedBox(width: 16),
                                 Expanded(
                                   child: Text(
                                     ingredient['name']?.toString() ??
                                         'Unknown Ingredient',
                                     style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
+                                      fontWeight: FontWeight.w600,
                                       fontSize: 16,
                                     ),
                                   ),
                                 ),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 6),
+                                      horizontal: 14, vertical: 8),
                                   decoration: BoxDecoration(
-                                    color: Colors.green.withValues(alpha: 0.8),
-                                    borderRadius: BorderRadius.circular(20),
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        Colors.green,
+                                        Colors.green.withOpacity(0.8),
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(24),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.green.withOpacity(0.3),
+                                        blurRadius: 6,
+                                        offset: const Offset(0, 3),
+                                      ),
+                                    ],
                                   ),
                                   child: Text(
                                     '${(ingredient['quantity'] as num?)
@@ -708,7 +832,7 @@ class RecipeDetailScreen extends StatelessWidget {
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 12,
-                                      fontWeight: FontWeight.w600,
+                                      fontWeight: FontWeight.w700,
                                     ),
                                   ),
                                 ),
@@ -731,19 +855,33 @@ class RecipeDetailScreen extends StatelessWidget {
     if (nutrition == null) return const SizedBox.shrink();
 
     return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(24),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.2),
-              width: 1,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                context.theme.colorScheme.surface.withOpacity(0.85),
+                context.theme.colorScheme.surface.withOpacity(0.65),
+              ],
             ),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.30),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -751,21 +889,35 @@ class RecipeDetailScreen extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.purple.withValues(alpha: 0.8),
-                      borderRadius: BorderRadius.circular(12),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.purple,
+                          Colors.purple.withOpacity(0.8),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.purple.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: const Icon(
                         Icons.health_and_safety_rounded, color: Colors.white,
                         size: 20),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 16),
                   const Text(
                     'Detailed nutrition',
                     style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ],
@@ -865,19 +1017,33 @@ class RecipeDetailScreen extends StatelessWidget {
         .isNotEmpty).toList();
 
     return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(24),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.2),
-              width: 1,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                context.theme.colorScheme.surface.withOpacity(0.85),
+                context.theme.colorScheme.surface.withOpacity(0.65),
+              ],
             ),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.30),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -885,38 +1051,66 @@ class RecipeDetailScreen extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.indigo.withValues(alpha: 0.8),
-                      borderRadius: BorderRadius.circular(12),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.indigo,
+                          Colors.indigo.withOpacity(0.8),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.indigo.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: const Icon(
                         Icons.format_list_numbered_rounded, color: Colors.white,
                         size: 20),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 16),
                   Text(
                     'Preparation steps (${steps.length})',
                     style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               ...List.generate(steps.length, (index) =>
                   Container(
-                    margin: const EdgeInsets.only(bottom: 16),
+                    margin: const EdgeInsets.only(bottom: 20),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          width: 32,
-                          height: 32,
+                          width: 36,
+                          height: 36,
                           decoration: BoxDecoration(
-                            color: Colors.indigo.withValues(alpha: 0.8),
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Colors.indigo,
+                                Colors.indigo.withOpacity(0.8),
+                              ],
+                            ),
                             shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.indigo.withOpacity(0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
                           ),
                           child: Center(
                             child: Text(
@@ -929,14 +1123,32 @@ class RecipeDetailScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 16),
                         Expanded(
-                          child: Text(
-                            steps[index].trim(),
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: context.theme.colorScheme.onSurface,
-                              height: 1.5,
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Colors.indigo.withOpacity(0.08),
+                                  Colors.indigo.withOpacity(0.04),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: Colors.indigo.withOpacity(0.20),
+                                width: 1,
+                              ),
+                            ),
+                            child: Text(
+                              steps[index].trim(),
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: context.theme.colorScheme.onSurface,
+                                height: 1.5,
+                              ),
                             ),
                           ),
                         ),
@@ -953,36 +1165,79 @@ class RecipeDetailScreen extends StatelessWidget {
   Widget _buildErrorCard(BuildContext context, String error,
       VoidCallback onRetry) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(16),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: Colors.red.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: Colors.red.withValues(alpha: 0.4),
-              width: 1,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.red.withOpacity(0.20),
+                Colors.red.withOpacity(0.10),
+              ],
             ),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: Colors.red.withOpacity(0.40),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.red.withOpacity(0.1),
+                blurRadius: 15,
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
           child: Column(
             children: [
-              const Icon(Icons.error_outline, color: Colors.red, size: 32),
-              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Colors.red,
+                      Colors.red.withOpacity(0.8),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.red.withOpacity(0.3),
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                    Icons.error_outline, color: Colors.white, size: 32),
+              ),
+              const SizedBox(height: 16),
               Text(
                 error,
-                style: const TextStyle(color: Colors.red),
+                style: const TextStyle(
+                    color: Colors.red, fontWeight: FontWeight.w600),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               ElevatedButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh),
                 label: const Text('Retry'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red.withValues(alpha: 0.8),
+                  backgroundColor: Colors.red,
                   foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  elevation: 6,
                 ),
               ),
             ],
@@ -994,26 +1249,63 @@ class RecipeDetailScreen extends StatelessWidget {
 
   Widget _buildEmptyCard(BuildContext context, String message) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(16),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
           padding: const EdgeInsets.all(32),
           decoration: BoxDecoration(
-            color: Colors.amber.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: Colors.amber.withValues(alpha: 0.4),
-              width: 1,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.amber.withOpacity(0.20),
+                Colors.amber.withOpacity(0.10),
+              ],
             ),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: Colors.amber.withOpacity(0.40),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.amber.withOpacity(0.1),
+                blurRadius: 15,
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
           child: Column(
             children: [
-              const Icon(Icons.info_outline, color: Colors.amber, size: 32),
-              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Colors.amber,
+                      Colors.amber.withOpacity(0.8),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.amber.withOpacity(0.3),
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                    Icons.info_outline, color: Colors.white, size: 32),
+              ),
+              const SizedBox(height: 16),
               Text(
                 message,
-                style: const TextStyle(color: Colors.amber),
+                style: const TextStyle(
+                    color: Colors.amber, fontWeight: FontWeight.w600),
                 textAlign: TextAlign.center,
               ),
             ],
