@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:glassmorphism/glassmorphism.dart';
 import '../../../config/app_config.dart' show AppText;
 import '../../../routes/app_routes.dart';
 import '../../../widgets/settings_widget.dart';
@@ -11,10 +12,23 @@ class TabletHome extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.theme.colorScheme.surface,
-      appBar: _buildTabletAppBar(context),
-      body: _buildTabletBody(context),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            context.theme.colorScheme.surfaceContainerLowest.withOpacity(0.3),
+            context.theme.colorScheme.surfaceContainerLowest.withOpacity(0.2),
+            context.theme.colorScheme.surfaceContainerLowest.withOpacity(0.1),
+          ],
+        ),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: _buildTabletAppBar(context),
+        body: _buildTabletBody(context),
+      ),
     );
   }
 
@@ -70,13 +84,32 @@ class TabletHome extends GetView<HomeController> {
     required String subtitle,
     bool isPrimary = false,
   }) {
-    return Container(
+    return GlassmorphicContainer(
       width: double.infinity,
+      height: 80,
       margin: const EdgeInsets.symmetric(vertical: 4.0),
+      blur: 10,
+      borderRadius: 12,
+      linearGradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          Colors.white.withOpacity(0.1),
+          Colors.white.withOpacity(0.1),
+        ],
+        stops: const [0.1, 1],
+      ),
+      border: 2,
+      borderGradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          context.theme.colorScheme.onSurface.withOpacity(0.5),
+          context.theme.colorScheme.onSurface.withOpacity(0.5),
+        ],
+      ),
       child: Material(
-        color: isPrimary
-            ? context.theme.colorScheme.onSurface
-            : context.theme.colorScheme.surfaceContainerLowest,
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           onTap: onTap,
@@ -132,11 +165,32 @@ class TabletHome extends GetView<HomeController> {
   }
 
   Widget _buildAdminManagementCard(BuildContext context) {
-    return Container(
+    return GlassmorphicContainer(
       width: double.infinity,
+      height: 80,
       margin: const EdgeInsets.symmetric(vertical: 4.0),
+      blur: 10,
+      borderRadius: 12,
+      linearGradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          Colors.white.withOpacity(0.1),
+          Colors.white.withOpacity(0.1),
+        ],
+        stops: const [0.1, 1],
+      ),
+      border: 2,
+      borderGradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          context.theme.colorScheme.onSurface.withOpacity(0.5),
+          context.theme.colorScheme.onSurface.withOpacity(0.5),
+        ],
+      ),
       child: Material(
-        color: context.theme.colorScheme.surfaceContainerLowest,
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           onTap: () => Get.toNamed<void>(AppRoutes.deliveryPersons),

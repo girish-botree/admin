@@ -32,195 +32,210 @@ class MealPlanDetailView extends GetView<PlanController> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.getMealPlansByDate();
     });
-    
-    return Scaffold(
-      appBar: AppBar(
-        title: AppText.bold(
-          'Meal Plans for ${_formatDate(selectedDate)}',
-          color: context.theme.colorScheme.onSurface,
-          size: 20,
+
+    return DefaultTabController(
+      length: 5, // Five meal categories
+      child: Scaffold(
+        appBar: AppBar(
+          title: AppText.bold(
+            'Meal Plans for ${_formatDate(selectedDate)}',
+            color: context.theme.colorScheme.onSurface,
+            size: 20,
+          ),
+          backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
+          elevation: 0,
+          centerTitle: false,
+          leading: IconButton(
+            onPressed: () => Get.back<void>(),
+            icon: Icon(
+                Icons.arrow_back, color: context.theme.colorScheme.onSurface),
+          ),
+          actions: [
+            IconButton(
+              onPressed: () async {
+                controller.clearCaches();
+                await controller.getMealPlans();
+                await controller.getMealPlansByDate();
+              },
+              icon: Icon(
+                  Icons.refresh, color: context.theme.colorScheme.onSurface),
+              tooltip: 'Refresh',
+            ),
+            if (!_hasNoMealsForDay())
+              IconButton(
+                onPressed: () {
+                  final context = Get.context;
+                  if (context != null) {
+                    _showDeleteAllConfirmation(context);
+                  }
+                },
+                icon: const Icon(
+                  Icons.delete_sweep,
+                  color: Colors.red,
+                  size: 24,
+                ),
+                tooltip: 'Delete all meals for this day',
+              ),
+          ],
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(48),
+            child: Container(
+              color: context.theme.colorScheme.surfaceContainerLowest,
+              child: TabBar(
+                isScrollable: true,
+                tabAlignment: TabAlignment.start,
+                indicatorColor: context.theme.colorScheme.primary,
+                indicatorWeight: 3,
+                labelColor: context.theme.colorScheme.primary,
+                unselectedLabelColor: context.theme.colorScheme.onSurface
+                    .withValues(alpha: 0.6),
+                labelStyle: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+                unselectedLabelStyle: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+                tabs: [
+                  _buildTab(
+                    icon: Icons.spa,
+                    label: 'Vegan',
+                    count: _getCategoryCount(MealCategory.vegan),
+                    color: const Color(0xFF009688),
+                  ),
+                  _buildTab(
+                    icon: Icons.eco,
+                    label: 'Vegetarian',
+                    count: _getCategoryCount(MealCategory.vegetarian),
+                    color: const Color(0xFF4CAF50),
+                  ),
+                  _buildTab(
+                    icon: Icons.egg,
+                    label: 'Eggitarian',
+                    count: _getCategoryCount(MealCategory.eggitarian),
+                    color: const Color(0xFFFFC107),
+                  ),
+                  _buildTab(
+                    icon: Icons.restaurant,
+                    label: 'Non-Veg',
+                    count: _getCategoryCount(MealCategory.nonVegetarian),
+                    color: const Color(0xFFFF9800),
+                  ),
+                  _buildTab(
+                    icon: Icons.more_horiz,
+                    label: 'Other',
+                    count: _getCategoryCount(MealCategory.other),
+                    color: const Color(0xFF9E9E9E),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
-        backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
-        elevation: 0,
-        centerTitle: false,
-        leading: IconButton(
-          onPressed: () => Get.back<void>(),
-          icon: Icon(Icons.arrow_back, color: context.theme.colorScheme.onSurface),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () async {
+        body: Obx(() {
+          if (controller.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          return RefreshIndicator(
+            onRefresh: () async {
               controller.clearCaches();
               await controller.getMealPlans();
               await controller.getMealPlansByDate();
             },
-            icon: Icon(Icons.refresh, color: context.theme.colorScheme.onSurface),
-            tooltip: 'Refresh',
-          ),
-          if (!_hasNoMealsForDay())
-            IconButton(
-              onPressed: () {
-                final context = Get.context;
-                if (context != null) {
-                  _showDeleteAllConfirmation(context);
-                }
-              },
-              icon: const Icon(
-                Icons.delete_sweep,
-                color: Colors.red,
-                size: 24,
-              ),
-              tooltip: 'Delete all meals for this day',
+            child: TabBarView(
+              children: [
+                _buildCategoryTab(
+                  category: MealCategory.vegan,
+                  title: 'Vegan Meals',
+                  icon: Icons.spa,
+                  color: const Color(0xFF009688),
+                  description: 'Plant-based meals with no animal products',
+                ),
+                _buildCategoryTab(
+                  category: MealCategory.vegetarian,
+                  title: 'Vegetarian Meals',
+                  icon: Icons.eco,
+                  color: const Color(0xFF4CAF50),
+                  description: 'Vegetarian meals with dairy products',
+                ),
+                _buildCategoryTab(
+                  category: MealCategory.eggitarian,
+                  title: 'Eggitarian Meals',
+                  icon: Icons.egg,
+                  color: const Color(0xFFFFC107),
+                  description: 'Vegetarian meals including eggs',
+                ),
+                _buildCategoryTab(
+                  category: MealCategory.nonVegetarian,
+                  title: 'Non-Vegetarian Meals',
+                  icon: Icons.restaurant,
+                  color: const Color(0xFFFF9800),
+                  description: 'Meals containing meat, fish, or poultry',
+                ),
+                _buildCategoryTab(
+                  category: MealCategory.other,
+                  title: 'Other Meals',
+                  icon: Icons.more_horiz,
+                  color: const Color(0xFF9E9E9E),
+                  description: 'Special diet or miscellaneous meals',
+                ),
+              ],
             ),
+          );
+        }),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _showCreateDialog,
+          backgroundColor: context.theme.colorScheme.primary,
+          child: const Icon(Icons.add, color: AppColor.white),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTab({
+    required IconData icon,
+    required String label,
+    required int count,
+    required Color color,
+  }) {
+    return Tab(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 18),
+          const SizedBox(width: 6),
+          Text(label),
+          if (count > 0) ...[
+            const SizedBox(width: 4),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                count.toString(),
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+              ),
+            ),
+          ],
         ],
       ),
-      body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        return RefreshIndicator(
-          onRefresh: () async {
-            controller.clearCaches();
-            await controller.getMealPlans();
-            await controller.getMealPlansByDate();
-          },
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(_defaultPadding),
-            child: Column(
-              children: [
-                // Check if any meals exist for the day
-                _hasNoMealsForDay()
-                    ? const EmptyStateWidget(
-                        icon: Icons.restaurant_menu_outlined,
-                        title: 'No meal plans found',
-                        subtitle: 'Create your first meal plan for this date',
-                      )
-                    : _buildCombinedView(),
-                const SizedBox(height: _spacingLarge),
-              ],
-            ),
-          ),
-        );
-      }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showCreateDialog,
-        backgroundColor: context.theme.colorScheme.onSurface,
-        child: const Icon(Icons.add, color: AppColor.white),
-      ),
     );
   }
 
-  Widget _buildCombinedView() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Section Header
-        Container(
-          padding: const EdgeInsets.all(16),
-          margin: const EdgeInsets.only(bottom: 16),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Get.theme.colorScheme.primary.withValues(alpha: 0.1),
-                Get.theme.colorScheme.primary.withValues(alpha: 0.05),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: Get.theme.colorScheme.primary.withValues(alpha: 0.2),
-              width: 1,
-            ),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Get.theme.colorScheme.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  Icons.category,
-                  color: Get.theme.colorScheme.primary,
-                  size: 20,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AppText.semiBold(
-                      'Meal Categories & Schedule',
-                      color: Get.theme.colorScheme.onSurface,
-                      size: 16,
-                    ),
-                    AppText.caption(
-                      'Organized by meal categories with time breakdown',
-                      color: Get.theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: Get.theme.colorScheme.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  Icons.schedule,
-                  color: Get.theme.colorScheme.primary,
-                  size: 16,
-                ),
-              ),
-            ],
-          ),
-        ),
-        
-        // Category-based sections with time period breakdown
-        _buildCategorySection(
-          category: MealCategory.vegan,
-          title: 'Vegan',
-          icon: Icons.spa,
-          color: const Color(0xFF009688),
-        ),
-        _buildCategorySection(
-          category: MealCategory.vegetarian,
-          title: 'Vegetarian',
-          icon: Icons.eco,
-          color: const Color(0xFF4CAF50),
-        ),
-        _buildCategorySection(
-          category: MealCategory.eggitarian,
-          title: 'Eggitarian',
-          icon: Icons.egg,
-          color: const Color(0xFFFFC107),
-        ),
-        _buildCategorySection(
-          category: MealCategory.nonVegetarian,
-          title: 'Non-Vegetarian',
-          icon: Icons.restaurant,
-          color: const Color(0xFFFF9800),
-        ),
-        _buildCategorySection(
-          category: MealCategory.other,
-          title: 'Other',
-          icon: Icons.more_horiz,
-          color: const Color(0xFF9E9E9E),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCategorySection({
+  Widget _buildCategoryTab({
     required MealCategory category,
     required String title,
     required IconData icon,
     required Color color,
+    required String description,
   }) {
     // Get all meal plan assignments for this category
     final categoryAssignments = controller.mealPlanAssignments.where((assignment) {
@@ -296,134 +311,253 @@ class MealPlanDetailView extends GetView<PlanController> {
     // Calculate total meals in this category
     final totalMeals = mealsByTime.values.fold<int>(0, (sum, meals) => sum + meals.length);
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      decoration: BoxDecoration(
-        color: Get.theme.colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: color.withValues(alpha: 0.3),
-          width: 2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: color.withValues(alpha: 0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(_defaultPadding),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Category Header
+          // Category Header Card
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(24),
+            margin: const EdgeInsets.only(bottom: 20),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  color.withValues(alpha: 0.15),
+                  color.withValues(alpha: 0.1),
                   color.withValues(alpha: 0.05),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: color.withValues(alpha: 0.3),
+                width: 1.5,
+              ),
             ),
-            child: Row(
+            child: Column(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: Icon(icon, color: color, size: 32),
+                ),
+                const SizedBox(height: 16),
+                AppText.bold(
+                  title,
+                  color: Get.theme.colorScheme.onSurface,
+                  size: 22,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                AppText.medium(
+                  description,
+                  color: Get.theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                  size: 14,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Icon(icon, color: color, size: 24),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      AppText.bold(
-                        title,
-                        color: Get.theme.colorScheme.onSurface,
-                        size: 18,
-                      ),
-                      AppText.caption(
-                        '$totalMeals ${totalMeals == 1 ? 'meal' : 'meals'} planned',
-                        color: Get.theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                      ),
-                    ],
+                  child: AppText.semiBold(
+                    '$totalMeals ${totalMeals == 1 ? 'meal' : 'meals'} planned',
+                    color: color,
+                    size: 12,
                   ),
-                ),
-                // Time period distribution indicator
-                Row(
-                  children: MealPeriod.values.map((period) {
-                    final periodMeals = mealsByTime[period] ?? [];
-                    if (periodMeals.isEmpty) return const SizedBox.shrink();
-                    
-                    return Container(
-                      margin: const EdgeInsets.only(left: 4),
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: _getTimePeriodColor(period),
-                        shape: BoxShape.circle,
-                      ),
-                    );
-                  }).toList(),
                 ),
               ],
             ),
           ),
-          
-          // Time Period Content
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: totalMeals == 0
-                ? _buildEmptyCategorySlot(title, color)
-                : _buildTimePeriods(mealsByTime, color),
-          ),
+
+          // Content
+          totalMeals == 0
+              ? _buildEmptyCategoryContent(title, color, icon)
+              : _buildTimePeriods(mealsByTime, color),
         ],
       ),
     );
   }
 
-  Widget _buildEmptyCategorySlot(String title, Color color) {
+  Widget _buildEmptyCategoryContent(String title, Color color, IconData icon) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(40),
+      decoration: BoxDecoration(
+        color: Get.theme.colorScheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: color.withValues(alpha: 0.2),
+          width: 1,
+        ),
+      ),
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.restaurant_menu_outlined,
-              size: 32,
+              size: 48,
               color: color.withValues(alpha: 0.6),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 20),
+          AppText.bold(
+            'No $title Yet',
+            color: Get.theme.colorScheme.onSurface.withValues(alpha: 0.8),
+            size: 18,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
           AppText.medium(
-            'No $title meals planned',
+            'Tap the + button to add your first\n$title to this day',
             color: Get.theme.colorScheme.onSurface.withValues(alpha: 0.6),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 4),
-          AppText.caption(
-            'Add some delicious $title meals to your plan',
-            color: Get.theme.colorScheme.onSurface.withValues(alpha: 0.5),
-            textAlign: TextAlign.center,
+          const SizedBox(height: 20),
+          ElevatedButton.icon(
+            onPressed: _showCreateDialog,
+            icon: const Icon(Icons.add, size: 18),
+            label: const Text('Add Meal'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: color,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(25),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            ),
           ),
         ],
       ),
     );
+  }
+
+  void _showCreateDialog() {
+    controller.clearForm();
+    Get.dialog<void>(MealPlanFormDialog(selectedDate: selectedDate));
+  }
+
+  void _showDeleteAllConfirmation(BuildContext context) {
+    Get.dialog<void>(
+      AlertDialog(
+        title: const Row(
+          children: [
+            Icon(
+              Icons.warning,
+              color: Colors.red,
+              size: 24,
+            ),
+            SizedBox(width: 8),
+            Text('Delete All Meals'),
+          ],
+        ),
+        content: Text(
+          'Are you sure you want to delete all meals for ${_formatDate(
+              selectedDate)}?\n\nThis action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back<void>(),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: context.theme.colorScheme.onSurface.withValues(
+                    alpha: 0.7),
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              Get.back<void>(); // Close dialog first
+              await controller.deleteAllMealPlansForDate(selectedDate);
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.red,
+            ),
+            child: const Text('Delete All'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteDialog(BuildContext context, MealPlan plan) {
+    Get.dialog<void>(
+      AlertDialog(
+        title: const Text('Delete Meal'),
+        content: Text('Are you sure you want to delete "${plan.name}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back<void>(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              if (plan.id != null && plan.id!.isNotEmpty) {
+                Get.back<void>();
+                await controller.deleteMealPlan(plan.id!);
+              }
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    return '${months[date.month - 1]} ${date.day}, ${date.year}';
+  }
+
+  bool _hasNoMealsForDay() {
+    final breakfastPlans = controller.getMealPlansForPeriod(
+        MealPeriod.breakfast);
+    final lunchPlans = controller.getMealPlansForPeriod(MealPeriod.lunch);
+    final dinnerPlans = controller.getMealPlansForPeriod(MealPeriod.dinner);
+    final snackPlans = controller.getMealPlansForPeriod(MealPeriod.snack);
+    return breakfastPlans.isEmpty && lunchPlans.isEmpty &&
+        dinnerPlans.isEmpty && snackPlans.isEmpty;
+  }
+
+  int _getCategoryCount(MealCategory category) {
+    final categoryAssignments = controller.mealPlanAssignments.where((
+        assignment) {
+      return assignment.category == category;
+    }).toList();
+    return categoryAssignments.length;
+  }
+
+  // Helper method to map MealCategory to FoodType
+  FoodType _mapCategoryToFoodType(MealCategory category) {
+    switch (category) {
+      case MealCategory.vegan:
+        return FoodType.vegan;
+      case MealCategory.vegetarian:
+        return FoodType.vegetarian;
+      case MealCategory.eggitarian:
+        return FoodType.eggitarian;
+      case MealCategory.nonVegetarian:
+        return FoodType.nonVegetarian;
+      case MealCategory.other:
+        return FoodType.other;
+    }
   }
 
   Widget _buildTimePeriods(
@@ -641,111 +775,6 @@ class MealPlanDetailView extends GetView<PlanController> {
     );
   }
 
-  void _showCreateDialog() {
-    controller.clearForm();
-    Get.dialog<void>(MealPlanFormDialog(selectedDate: selectedDate));
-  }
-
-  void _showDeleteAllConfirmation(BuildContext context) {
-    Get.dialog<void>(
-      AlertDialog(
-        title: const Row(
-          children: [
-            Icon(
-              Icons.warning,
-              color: Colors.red,
-              size: 24,
-            ),
-            SizedBox(width: 8),
-            Text('Delete All Meals'),
-          ],
-        ),
-        content: Text(
-          'Are you sure you want to delete all meals for ${_formatDate(selectedDate)}?\n\nThis action cannot be undone.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back<void>(),
-            child: Text(
-              'Cancel',
-              style: TextStyle(
-                color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () async {
-              Get.back<void>(); // Close dialog first
-              await controller.deleteAllMealPlansForDate(selectedDate);
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.red,
-            ),
-            child: const Text('Delete All'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showDeleteDialog(BuildContext context, MealPlan plan) {
-    Get.dialog<void>(
-      AlertDialog(
-        title: const Text('Delete Meal'),
-        content: Text('Are you sure you want to delete "${plan.name}"?'),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back<void>(),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              if (plan.id != null && plan.id!.isNotEmpty) {
-                Get.back<void>();
-                await controller.deleteMealPlan(plan.id!);
-              }
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _formatDate(DateTime date) {
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
-    return '${months[date.month - 1]} ${date.day}, ${date.year}';
-  }
-  
-  bool _hasNoMealsForDay() {
-    final breakfastPlans = controller.getMealPlansForPeriod(MealPeriod.breakfast);
-    final lunchPlans = controller.getMealPlansForPeriod(MealPeriod.lunch);
-    final dinnerPlans = controller.getMealPlansForPeriod(MealPeriod.dinner);
-    final snackPlans = controller.getMealPlansForPeriod(MealPeriod.snack);
-    return breakfastPlans.isEmpty && lunchPlans.isEmpty && dinnerPlans.isEmpty && snackPlans.isEmpty;
-  }
-
-  // Helper method to map MealCategory to FoodType
-  FoodType _mapCategoryToFoodType(MealCategory category) {
-    switch (category) {
-      case MealCategory.vegan:
-        return FoodType.vegan;
-      case MealCategory.vegetarian:
-        return FoodType.vegetarian;
-      case MealCategory.eggitarian:
-        return FoodType.eggitarian;
-      case MealCategory.nonVegetarian:
-        return FoodType.nonVegetarian;
-      case MealCategory.other:
-        return FoodType.other;
-    }
-  }
-
-  // Helper methods for time period styling
   Color _getTimePeriodColor(MealPeriod period) {
     switch (period) {
       case MealPeriod.breakfast:

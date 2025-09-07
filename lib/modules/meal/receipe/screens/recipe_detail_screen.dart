@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../meal_controller.dart';
@@ -90,30 +91,51 @@ class RecipeDetailScreen extends StatelessWidget {
             pinned: true,
             elevation: 0,
             backgroundColor: context.theme.colorScheme.surface,
-            leading: Container(
-              margin: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.5),
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                onPressed: () => Get.back(),
-                icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+            leading: ClipRRect(
+              borderRadius: BorderRadius.circular(25),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  margin: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: IconButton(
+                    onPressed: () => Get.back(),
+                    icon: const Icon(
+                        Icons.arrow_back_rounded, color: Colors.white),
+                  ),
+                ),
               ),
             ),
             actions: [
-              Container(
-                margin: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.5),
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  onPressed: () {
-                    RecipeDialogs.showEditRecipeDialog(
-                        context, controller, recipe);
-                  },
-                  icon: const Icon(Icons.edit_rounded, color: Colors.white),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(25),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    margin: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: IconButton(
+                      onPressed: () {
+                        RecipeDialogs.showEditRecipeDialog(
+                            context, controller, recipe);
+                      },
+                      icon: const Icon(Icons.edit_rounded, color: Colors.white),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -326,76 +348,94 @@ class RecipeDetailScreen extends StatelessWidget {
   }
 
   Widget _buildInfoChip(IconData icon, String text, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: color),
-          const SizedBox(width: 6),
-          Text(
-            text,
-            style: TextStyle(
-              color: color,
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.2),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.3),
+              width: 1,
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDescriptionSection(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: context.theme.colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: context.theme.colorScheme.outline.withValues(alpha: 0.1),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: context.theme.colorScheme.primary,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                    Icons.description_rounded, color: Colors.white, size: 20),
-              ),
-              const SizedBox(width: 12),
-              const Text(
-                'About this recipe',
-                style: TextStyle(
-                  fontSize: 18,
+              Icon(icon, size: 16, color: Colors.white),
+              const SizedBox(width: 6),
+              Text(
+                text,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          Text(
-            recipe['description']?.toString() ?? '',
-            style: TextStyle(
-              fontSize: 16,
-              color: context.theme.colorScheme.onSurface,
-              height: 1.6,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDescriptionSection(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.2),
+              width: 1,
             ),
           ),
-        ],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: context.theme.colorScheme.primary.withValues(
+                          alpha: 0.8),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                        Icons.description_rounded, color: Colors.white,
+                        size: 20),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    'About this recipe',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                recipe['description']?.toString() ?? '',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: context.theme.colorScheme.onSurface,
+                  height: 1.6,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -404,99 +444,102 @@ class RecipeDetailScreen extends StatelessWidget {
       Map<String, dynamic>? nutrition) {
     if (nutrition == null) return const SizedBox.shrink();
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            context.theme.colorScheme.tertiaryContainer.withValues(alpha: 0.3),
-            context.theme.colorScheme.tertiaryContainer.withValues(alpha: 0.1),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.tertiaryContainer.withValues(
+                alpha: 0.2),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: context.theme.colorScheme.tertiary.withValues(alpha: 0.3),
+              width: 1,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: context.theme.colorScheme.tertiary.withValues(
+                          alpha: 0.8),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                        Icons.analytics_rounded, color: Colors.white, size: 20),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    'Nutrition per serving',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildNutrientCard(
+                      context,
+                      'Calories',
+                      '${nutrition['calories']?.toStringAsFixed(0) ?? '0'}',
+                      'kcal',
+                      Colors.orange,
+                      Icons.local_fire_department_rounded,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildNutrientCard(
+                      context,
+                      'Protein',
+                      '${nutrition['protein']?.toStringAsFixed(1) ?? '0'}',
+                      'g',
+                      Colors.red,
+                      Icons.fitness_center_rounded,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildNutrientCard(
+                      context,
+                      'Carbs',
+                      '${nutrition['carbohydrates']?.toStringAsFixed(1) ??
+                          '0'}',
+                      'g',
+                      Colors.blue,
+                      Icons.grain_rounded,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildNutrientCard(
+                      context,
+                      'Fat',
+                      '${nutrition['fat']?.toStringAsFixed(1) ?? '0'}',
+                      'g',
+                      Colors.green,
+                      Icons.opacity_rounded,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: context.theme.colorScheme.tertiary.withValues(alpha: 0.2),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: context.theme.colorScheme.tertiary,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                    Icons.analytics_rounded, color: Colors.white, size: 20),
-              ),
-              const SizedBox(width: 12),
-              const Text(
-                'Nutrition per serving',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(
-                child: _buildNutrientCard(
-                  context,
-                  'Calories',
-                  '${nutrition['calories']?.toStringAsFixed(0) ?? '0'}',
-                  'kcal',
-                  Colors.orange,
-                  Icons.local_fire_department_rounded,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildNutrientCard(
-                  context,
-                  'Protein',
-                  '${nutrition['protein']?.toStringAsFixed(1) ?? '0'}',
-                  'g',
-                  Colors.red,
-                  Icons.fitness_center_rounded,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _buildNutrientCard(
-                  context,
-                  'Carbs',
-                  '${nutrition['carbohydrates']?.toStringAsFixed(1) ?? '0'}',
-                  'g',
-                  Colors.blue,
-                  Icons.grain_rounded,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildNutrientCard(
-                  context,
-                  'Fat',
-                  '${nutrition['fat']?.toStringAsFixed(1) ?? '0'}',
-                  'g',
-                  Colors.green,
-                  Icons.opacity_rounded,
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }
@@ -507,34 +550,44 @@ class RecipeDetailScreen extends StatelessWidget {
       String unit,
       Color color,
       IconData icon,) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withValues(alpha: 0.2)),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(height: 8),
-          Text(
-            '$value $unit',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: color,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: color.withValues(alpha: 0.3),
+              width: 1,
             ),
           ),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
-              fontWeight: FontWeight.w500,
-            ),
+          child: Column(
+            children: [
+              Icon(icon, color: color, size: 24),
+              const SizedBox(height: 8),
+              Text(
+                '$value $unit',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+              ),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: context.theme.colorScheme.onSurface.withValues(
+                      alpha: 0.7),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -544,113 +597,131 @@ class RecipeDetailScreen extends StatelessWidget {
       RxString ingredientsError,
       RxBool isLoadingIngredients,
       VoidCallback onRetry,) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: context.theme.colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: context.theme.colorScheme.outline.withValues(alpha: 0.1),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.2),
+              width: 1,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                    Icons.inventory_2_rounded, color: Colors.white, size: 20),
-              ),
-              const SizedBox(width: 12),
-              Obx(() =>
-                  Text(
-                    'Ingredients${recipeIngredients.isNotEmpty
-                        ? ' (${recipeIngredients.length})'
-                        : ''}',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.green.withValues(alpha: 0.8),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                  )),
+                    child: const Icon(
+                        Icons.inventory_2_rounded, color: Colors.white,
+                        size: 20),
+                  ),
+                  const SizedBox(width: 12),
+                  Obx(() =>
+                      Text(
+                        'Ingredients${recipeIngredients.isNotEmpty
+                            ? ' (${recipeIngredients.length})'
+                            : ''}',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      )),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Obx(() {
+                if (isLoadingIngredients.value) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (ingredientsError.value.isNotEmpty) {
+                  return _buildErrorCard(
+                      context, ingredientsError.value, onRetry);
+                }
+
+                if (recipeIngredients.isEmpty) {
+                  return _buildEmptyCard(context, 'No ingredients added yet');
+                }
+
+                return Column(
+                  children: recipeIngredients.map((ingredient) =>
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.green.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Colors.green.withValues(alpha: 0.3),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.green.withValues(alpha: 0.3),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Icon(
+                                      Icons.eco_rounded, color: Colors.green,
+                                      size: 16),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    ingredient['name']?.toString() ??
+                                        'Unknown Ingredient',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: Colors.green.withValues(alpha: 0.8),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    '${(ingredient['quantity'] as num?)
+                                        ?.toStringAsFixed(0) ?? '0'}g',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      )).toList(),
+                );
+              }),
             ],
           ),
-          const SizedBox(height: 16),
-          Obx(() {
-            if (isLoadingIngredients.value) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            if (ingredientsError.value.isNotEmpty) {
-              return _buildErrorCard(context, ingredientsError.value, onRetry);
-            }
-
-            if (recipeIngredients.isEmpty) {
-              return _buildEmptyCard(context, 'No ingredients added yet');
-            }
-
-            return Column(
-              children: recipeIngredients.map((ingredient) =>
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.green.withValues(alpha: 0.05),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.green.withValues(
-                          alpha: 0.2)),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.green.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                              Icons.eco_rounded, color: Colors.green, size: 16),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            ingredient['name']?.toString() ??
-                                'Unknown Ingredient',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: Colors.green,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            '${(ingredient['quantity'] as num?)
-                                ?.toStringAsFixed(0) ?? '0'}g',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )).toList(),
-            );
-          }),
-        ],
+        ),
       ),
     );
   }
@@ -659,79 +730,87 @@ class RecipeDetailScreen extends StatelessWidget {
       Map<String, dynamic>? nutrition) {
     if (nutrition == null) return const SizedBox.shrink();
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: context.theme.colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: context.theme.colorScheme.outline.withValues(alpha: 0.1),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.2),
+              width: 1,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.purple,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                    Icons.health_and_safety_rounded, color: Colors.white,
-                    size: 20),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.purple.withValues(alpha: 0.8),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                        Icons.health_and_safety_rounded, color: Colors.white,
+                        size: 20),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    'Detailed nutrition',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 12),
-              const Text(
-                'Detailed nutrition',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
+              const SizedBox(height: 16),
+              _buildNutrientRow(context, 'Fiber',
+                  '${nutrition['fiber']?.toStringAsFixed(1) ?? '0'}g',
+                  Colors.brown),
+              _buildNutrientRow(context, 'Sugar',
+                  '${nutrition['sugar']?.toStringAsFixed(1) ?? '0'}g',
+                  Colors.pink),
+
+              // Vitamins and minerals
+              if (nutrition['vitamins'] is Map &&
+                  (nutrition['vitamins'] as Map).isNotEmpty) ...[
+                const SizedBox(height: 16),
+                const Text(
+                  'Vitamins',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                 ),
-              ),
+                const SizedBox(height: 8),
+                ...((nutrition['vitamins'] as Map).entries.map((entry) =>
+                    _buildNutrientRow(
+                        context, _formatVitaminLabel(entry.key.toString()),
+                        '${(entry.value as num?)?.toStringAsFixed(1) ?? '0'}mg',
+                        Colors.orange))),
+              ],
+
+              if (nutrition['minerals'] is Map &&
+                  (nutrition['minerals'] as Map).isNotEmpty) ...[
+                const SizedBox(height: 16),
+                const Text(
+                  'Minerals',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                ),
+                const SizedBox(height: 8),
+                ...((nutrition['minerals'] as Map).entries.map((entry) =>
+                    _buildNutrientRow(
+                        context, _formatMineralLabel(entry.key.toString()),
+                        '${(entry.value as num?)?.toStringAsFixed(1) ?? '0'}mg',
+                        Colors.blue))),
+              ],
             ],
           ),
-          const SizedBox(height: 16),
-          _buildNutrientRow(context, 'Fiber',
-              '${nutrition['fiber']?.toStringAsFixed(1) ?? '0'}g',
-              Colors.brown),
-          _buildNutrientRow(context, 'Sugar',
-              '${nutrition['sugar']?.toStringAsFixed(1) ?? '0'}g', Colors.pink),
-
-          // Vitamins and minerals
-          if (nutrition['vitamins'] is Map &&
-              (nutrition['vitamins'] as Map).isNotEmpty) ...[
-            const SizedBox(height: 16),
-            const Text(
-              'Vitamins',
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            ...((nutrition['vitamins'] as Map).entries.map((entry) =>
-                _buildNutrientRow(
-                    context, _formatVitaminLabel(entry.key.toString()),
-                    '${(entry.value as num?)?.toStringAsFixed(1) ?? '0'}mg',
-                    Colors.orange))),
-          ],
-
-          if (nutrition['minerals'] is Map &&
-              (nutrition['minerals'] as Map).isNotEmpty) ...[
-            const SizedBox(height: 16),
-            const Text(
-              'Minerals',
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            ...((nutrition['minerals'] as Map).entries.map((entry) =>
-                _buildNutrientRow(
-                    context, _formatMineralLabel(entry.key.toString()),
-                    '${(entry.value as num?)?.toStringAsFixed(1) ?? '0'}mg',
-                    Colors.blue))),
-          ],
-        ],
+        ),
       ),
     );
   }
@@ -785,136 +864,161 @@ class RecipeDetailScreen extends StatelessWidget {
         .trim()
         .isNotEmpty).toList();
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: context.theme.colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: context.theme.colorScheme.outline.withValues(alpha: 0.1),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.indigo,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                    Icons.format_list_numbered_rounded, color: Colors.white,
-                    size: 20),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'Preparation steps (${steps.length})',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.2),
+              width: 1,
+            ),
           ),
-          const SizedBox(height: 16),
-          ...List.generate(steps.length, (index) =>
-              Container(
-                margin: const EdgeInsets.only(bottom: 16),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: Colors.indigo,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child: Text(
-                          '${index + 1}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.indigo.withValues(alpha: 0.8),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                        Icons.format_list_numbered_rounded, color: Colors.white,
+                        size: 20),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Preparation steps (${steps.length})',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              ...List.generate(steps.length, (index) =>
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: Colors.indigo.withValues(alpha: 0.8),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              '${index + 1}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        steps[index].trim(),
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: context.theme.colorScheme.onSurface,
-                          height: 1.5,
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            steps[index].trim(),
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: context.theme.colorScheme.onSurface,
+                              height: 1.5,
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              )),
-        ],
+                  )),
+            ],
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildErrorCard(BuildContext context, String error,
       VoidCallback onRetry) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.red.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
-      ),
-      child: Column(
-        children: [
-          const Icon(Icons.error_outline, color: Colors.red, size: 32),
-          const SizedBox(height: 12),
-          Text(
-            error,
-            style: const TextStyle(color: Colors.red),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 12),
-          ElevatedButton.icon(
-            onPressed: onRetry,
-            icon: const Icon(Icons.refresh),
-            label: const Text('Retry'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.red.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.red.withValues(alpha: 0.4),
+              width: 1,
             ),
           ),
-        ],
+          child: Column(
+            children: [
+              const Icon(Icons.error_outline, color: Colors.red, size: 32),
+              const SizedBox(height: 12),
+              Text(
+                error,
+                style: const TextStyle(color: Colors.red),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton.icon(
+                onPressed: onRetry,
+                icon: const Icon(Icons.refresh),
+                label: const Text('Retry'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red.withValues(alpha: 0.8),
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildEmptyCard(BuildContext context, String message) {
-    return Container(
-      padding: const EdgeInsets.all(32),
-      decoration: BoxDecoration(
-        color: Colors.amber.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.amber.withValues(alpha: 0.3)),
-      ),
-      child: Column(
-        children: [
-          const Icon(Icons.info_outline, color: Colors.amber, size: 32),
-          const SizedBox(height: 12),
-          Text(
-            message,
-            style: const TextStyle(color: Colors.amber),
-            textAlign: TextAlign.center,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: const EdgeInsets.all(32),
+          decoration: BoxDecoration(
+            color: Colors.amber.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.amber.withValues(alpha: 0.4),
+              width: 1,
+            ),
           ),
-        ],
+          child: Column(
+            children: [
+              const Icon(Icons.info_outline, color: Colors.amber, size: 32),
+              const SizedBox(height: 12),
+              Text(
+                message,
+                style: const TextStyle(color: Colors.amber),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

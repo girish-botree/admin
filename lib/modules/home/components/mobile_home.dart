@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:glassmorphism/glassmorphism.dart';
 import '../../../config/app_config.dart' show AppText;
 import '../../../routes/app_routes.dart';
 import '../../../widgets/settings_widget.dart';
@@ -11,10 +12,23 @@ class MobileHome extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.theme.colorScheme.surface,
-      appBar: _buildMobileAppBar(context),
-      body: _buildMobileBody(context),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            context.theme.colorScheme.surfaceContainerLowest.withOpacity(0.3),
+            context.theme.colorScheme.surfaceContainerLowest.withOpacity(0.2),
+            context.theme.colorScheme.surfaceContainerLowest.withOpacity(0.1),
+          ],
+        ),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: _buildMobileAppBar(context),
+        body: _buildMobileBody(context),
+      ),
     );
   }
 
@@ -70,14 +84,35 @@ class MobileHome extends GetView<HomeController> {
     required String subtitle,
     bool isPrimary = false,
   }) {
-    return Container(
+    return GlassmorphicContainer(
       width: double.infinity,
+      height: 80,
       margin: const EdgeInsets.symmetric(vertical: 4.0),
+      borderRadius: 12,
+      blur: 20,
+      border: 2,
+      linearGradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          Colors.white.withOpacity(0.2),
+          Colors.white.withOpacity(0.1),
+        ],
+        stops: const [
+          0.1,
+          1,
+        ],
+      ),
+      borderGradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          context.theme.colorScheme.onSurface.withOpacity(0.7),
+          context.theme.colorScheme.onSurface.withOpacity(0.2),
+        ],
+      ),
       child: Material(
-        color: isPrimary 
-          ? context.theme.colorScheme.onSurface
-            : context.theme.colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(12),
@@ -105,13 +140,14 @@ class MobileHome extends GetView<HomeController> {
                     children: [
                       AppText.semiBold(
                         title,
-                        color: context.theme.colorScheme.surfaceContainerLowest,
+                        color: context.theme.colorScheme.onSurface,
                         size: 16,
                       ),
                       const SizedBox(height: 4),
                       AppText(
                         subtitle,
-                        color: context.theme.colorScheme.surfaceContainerLowest.withValues(alpha: 0.7),
+                        color: context.theme.colorScheme.onSurface.withValues(
+                            alpha: 0.7),
                         size: 14,
                       ),
                     ],
@@ -131,12 +167,35 @@ class MobileHome extends GetView<HomeController> {
   }
 
   Widget _buildAdminManagementCard(BuildContext context) {
-    return Container(
+    return GlassmorphicContainer(
       width: double.infinity,
+      height: 80,
       margin: const EdgeInsets.symmetric(vertical: 4.0),
+      borderRadius: 12,
+      blur: 20,
+      border: 2,
+      linearGradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          Colors.white.withOpacity(0.2),
+          Colors.white.withOpacity(0.1),
+        ],
+        stops: const [
+          0.1,
+          1,
+        ],
+      ),
+      borderGradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          context.theme.colorScheme.onSurface.withOpacity(0.7),
+          context.theme.colorScheme.onSurface.withOpacity(0.2),
+        ],
+      ),
       child: Material(
-        color: context.theme.colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.transparent,
         child: InkWell(
           onTap: () => Get.toNamed<void>(AppRoutes.deliveryPersons),
           borderRadius: BorderRadius.circular(12),
@@ -170,8 +229,8 @@ class MobileHome extends GetView<HomeController> {
                       const SizedBox(height: 4),
                       AppText(
                         'Handle delivery person',
-                        color: context.theme.colorScheme.onSurface.withValues(alpha: 
-                            0.7),
+                        color: context.theme.colorScheme.onSurface.withValues(
+                            alpha: 0.7),
                         size: 14,
                       ),
                     ],
