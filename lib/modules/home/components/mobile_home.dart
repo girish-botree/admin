@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:glassmorphism/glassmorphism.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../config/app_config.dart' show AppText;
 import '../../../routes/app_routes.dart';
 import '../../../widgets/settings_widget.dart';
+import '../../../utils/image_utils.dart';
 import '../../admins/create_admins/create_admin_view.dart';
 import '../../meal/ingredients/ingredients_view.dart';
 import '../../meal/receipe/receipes_view.dart';
@@ -215,8 +217,7 @@ class MobileHome extends GetView<HomeController> {
                   borderRadius: BorderRadius.circular(4),
                   color: currentIndex == index
                       ? context.theme.colorScheme.primary
-                      : context.theme.colorScheme.primary.withValues(
-                      alpha: 0.3),
+                      : context.theme.colorScheme.primary.withAlpha(77),
                 ),
               );
             }),
@@ -474,34 +475,47 @@ class _MD3Card extends StatelessWidget {
               // Background Image
               Positioned.fill(
                 child: imageUrl.isNotEmpty
-                    ? Image.network(
-                  imageUrl,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    print('Error loading image: $error');
-                    return Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            gradientColors[0],
-                            gradientColors[1],
-                          ],
-                        ),
+                    ? SafeImageLoader.loadImage(
+                  imageUrl: imageUrl,
+                  placeholderWidget: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: gradientColors,
                       ),
-                    );
-                  },
+                    ),
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                      ),
+                    ),
+                        ),
+                  errorWidget: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: gradientColors,
+                      ),
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.image_not_supported_outlined,
+                        color: Colors.white70,
+                        size: 48,
+                      ),
+                    ),
+                        ),
+                  memCacheWidth: 800,
+                  maxHeightDiskCache: 1000,
                 )
                     : Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [
-                        gradientColors[0],
-                        gradientColors[1],
-                      ],
+                      colors: gradientColors,
                     ),
                   ),
                 ),

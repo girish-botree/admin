@@ -64,7 +64,7 @@ class ImageBase64Util {
     Widget? errorWidget,
   }) {
     if (imageData == null || imageData.isEmpty) {
-      return placeholder ?? _buildPlaceholderWidget(width, height);
+      return errorWidget ?? const SizedBox.shrink();
     }
 
     try {
@@ -77,7 +77,7 @@ class ImageBase64Util {
           width: width,
           height: height,
           errorBuilder: (context, error, stackTrace) =>
-          errorWidget ?? _buildErrorWidget(width, height),
+          errorWidget ?? const SizedBox.shrink(),
         );
       } else {
         // Assume it's a network URL
@@ -88,14 +88,14 @@ class ImageBase64Util {
           height: height,
           loadingBuilder: (context, child, loadingProgress) {
             if (loadingProgress == null) return child;
-            return placeholder ?? _buildPlaceholderWidget(width, height);
+            return placeholder ?? const SizedBox.shrink();
           },
           errorBuilder: (context, error, stackTrace) =>
-          errorWidget ?? _buildErrorWidget(width, height),
+          errorWidget ?? const SizedBox.shrink(),
         );
       }
     } catch (e) {
-      return errorWidget ?? _buildErrorWidget(width, height);
+      return errorWidget ?? const SizedBox.shrink();
     }
   }
 

@@ -4,6 +4,7 @@ import 'package:admin/utils/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:admin/widgets/circular_back_button.dart';
 import 'delivery_person_controller.dart';
 import '../../../widgets/centered_dropdown.dart';
 import 'delivery_person_model.dart';
@@ -26,10 +27,7 @@ class DeliveryPersonView extends GetView<DeliveryPersonController> {
         elevation: 0,
         foregroundColor: context.theme.colorScheme.onSurface,
         titleSpacing: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () => Get.back(),
-        ),
+        leading: CircularBackButton(),
         actions: [
           IconButton(
             onPressed: () => controller.fetchDeliveryAgents(),

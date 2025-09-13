@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import '../../config/app_config.dart' show AppText;
 import '../../utils/responsive.dart';
+import '../../widgets/circular_back_button.dart';
 import 'reports_controller.dart';
 
 class ReportsView extends StatelessWidget {
@@ -18,28 +19,24 @@ class ReportsView extends StatelessWidget {
       builder: (controller) {
         return Scaffold(
           appBar: AppBar(
+            elevation: 0,
+            centerTitle: false,
+            toolbarHeight: 56,
+            leading: CircularBackButton(),
             title: AppText.bold(
-              'Delivery Reports',
+              'Reports',
               color: context.theme.colorScheme.onSurface,
               size: 20,
             ),
             backgroundColor: context.theme.colorScheme.surface,
-            elevation: 0,
             foregroundColor: context.theme.colorScheme.onSurface,
-            centerTitle: false,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Get.back(),
-            ),
             actions: [
               IconButton(
                 icon: const Icon(Icons.refresh),
                 tooltip: 'Refresh Data',
                 onPressed: () {
                   controller.fetchAvailableDates();
-                  if (controller.selectedDate.value != null) {
-                    controller.loadReportData();
-                  }
+                  controller.refreshReportData();
                 },
               ),
               const SizedBox(width: 8),
@@ -114,51 +111,43 @@ class ReportsView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AppText.semiBold(
-              'Select Delivery Date & Meal Period',
-              color: context.theme.colorScheme.onSurface,
-              size: 18,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                AppText.semiBold(
+                  'Report Options',
+                  color: context.theme.colorScheme.onSurface,
+                  size: 18,
+                ),
+                Obx(() =>
+                    Row(
+                      children: [
+                        AppText('Date Range',
+                          size: 14,
+                          color: context.theme.colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: 8),
+                    Switch(
+                      value: controller.isDateRangeActive.value,
+                      onChanged: (value) => controller.toggleDateRangeMode(),
+                      activeColor: context.theme.colorScheme.primary,
+                    ),
+                  ],
+                )),
+              ],
             ),
             const SizedBox(height: 20),
-
-            // Date Selection
-            Obx(() {
-              final selectedDate = controller.selectedDate.value;
-              final formattedDate = selectedDate != null
-                  ? DateFormat('EEE, MMM d, yyyy').format(selectedDate)
-                  : 'Select a date';
-
-              return ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: context.theme.colorScheme.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    Icons.calendar_today,
-                    color: context.theme.colorScheme.primary,
-                  ),
-                ),
-                title: const AppText('Delivery Date', size: 14),
-                subtitle: AppText.semiBold(
-                  formattedDate,
-                  size: 16,
-                  color: context.theme.colorScheme.onSurface,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(
-                    color: context.theme.colorScheme.outlineVariant,
-                    width: 1,
-                  ),
-                ),
-                onTap: () => _showDatePicker(context, controller),
-              );
-            }),
-
+            const Divider(),
             const SizedBox(height: 16),
+
+            // Either show single date selector or date range selectors
+            Obx(() =>
+            controller.isDateRangeActive.value
+                ? _buildDateRangeSelector(context, controller)
+                : _buildSingleDateSelector(context, controller)
+            ),
+
+            const SizedBox(height: 24),
 
             // Meal Period Selection
             Obx(() {
@@ -196,10 +185,220 @@ class ReportsView extends StatelessWidget {
                 onTap: () => _showMealPeriodPicker(context, controller),
               );
             }),
+
+            const SizedBox(height: 24),
+
+            // Load report data button
+            SizedBox(
+              width: double.infinity,
+              child: Obx(() =>
+                  ElevatedButton.icon(
+                    onPressed: controller.isRefreshing.value ? null : () =>
+                        controller.refreshReportData(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: context.theme.colorScheme.primary,
+                  foregroundColor: context.theme.colorScheme.onPrimary,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                icon: controller.isRefreshing.value
+                    ? SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: context.theme.colorScheme.onPrimary,
+                  ),
+                )
+                    : const Icon(Icons.refresh),
+                label: AppText.semiBold(
+                  controller.isRefreshing.value
+                      ? 'Loading...'
+                      : 'Load Report Data',
+                  size: 16,
+                ),
+              )),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildSingleDateSelector(BuildContext context,
+      ReportsController controller) {
+    return Obx(() {
+      final selectedDate = controller.selectedDate.value;
+      final formattedDate = selectedDate != null
+          ? DateFormat('EEE, MMM d, yyyy').format(selectedDate)
+          : 'Select a date';
+
+      return ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.primary.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            Icons.calendar_today,
+            color: context.theme.colorScheme.primary,
+          ),
+        ),
+        title: const AppText('Delivery Date', size: 14),
+        subtitle: AppText.semiBold(
+          formattedDate,
+          size: 16,
+          color: context.theme.colorScheme.onSurface,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: context.theme.colorScheme.outlineVariant,
+            width: 1,
+          ),
+        ),
+        onTap: () => _showDatePicker(context, controller),
+      );
+    });
+  }
+
+  Widget _buildDateRangeSelector(BuildContext context,
+      ReportsController controller) {
+    return Column(
+      children: [
+        // Start Date
+        Obx(() {
+          final startDate = controller.startDate.value;
+          final formattedDate = startDate != null
+              ? DateFormat('EEE, MMM d, yyyy').format(startDate)
+              : 'Select start date';
+
+          return ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: context.theme.colorScheme.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                Icons.calendar_today,
+                color: context.theme.colorScheme.primary,
+              ),
+            ),
+            title: const AppText('Start Date', size: 14),
+            subtitle: AppText.semiBold(
+              formattedDate,
+              size: 16,
+              color: context.theme.colorScheme.onSurface,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(
+                color: context.theme.colorScheme.outlineVariant,
+                width: 1,
+              ),
+            ),
+            onTap: () => _showStartDatePicker(context, controller),
+          );
+        }),
+
+        const SizedBox(height: 16),
+
+        // End Date
+        Obx(() {
+          final endDate = controller.endDate.value;
+          final formattedDate = endDate != null
+              ? DateFormat('EEE, MMM d, yyyy').format(endDate)
+              : 'Select end date';
+
+          return ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: context.theme.colorScheme.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                Icons.event,
+                color: context.theme.colorScheme.primary,
+              ),
+            ),
+            title: const AppText('End Date', size: 14),
+            subtitle: AppText.semiBold(
+              formattedDate,
+              size: 16,
+              color: context.theme.colorScheme.onSurface,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(
+                color: context.theme.colorScheme.outlineVariant,
+                width: 1,
+              ),
+            ),
+            onTap: () => _showEndDateRangePicker(context, controller),
+          );
+        }),
+      ],
+    );
+  }
+
+}
+
+void _showEndDateRangePicker(BuildContext context,
+    ReportsController controller) {
+    final dates = controller.availableDates.map((dateStr) =>
+        DateTime.parse(dateStr)).toList();
+
+    if (dates.isEmpty) return;
+
+    // Find the earliest and latest dates for initial display
+    final DateTime firstDate = dates.reduce((a, b) => a.isBefore(b) ? a : b);
+    final DateTime lastDate = dates.reduce((a, b) => a.isAfter(b) ? a : b);
+
+    // Ensure end date is not before start date
+    final effectiveFirstDate = controller.startDate.value != null
+        ? controller.startDate.value!
+        : firstDate;
+
+    // Set initial date to either the currently selected end date (if it exists)
+    // or the start date (if set) or the last available date
+    final initialDate = controller.endDate.value != null
+        ? controller.endDate.value!
+        : (controller.startDate.value != null
+        ? controller.startDate.value!
+        : lastDate);
+
+    showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: effectiveFirstDate,
+      // Can't be before start date
+      lastDate: lastDate.add(const Duration(days: 30)),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: context.theme.colorScheme.primary,
+              onPrimary: context.theme.colorScheme.onPrimary,
+              surface: context.theme.colorScheme.surface,
+              onSurface: context.theme.colorScheme.onSurface,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    ).then((selectedDate) {
+      if (selectedDate != null) {
+        controller.endDate.value = selectedDate;
+      }
+    });
   }
 
   void _showDatePicker(BuildContext context, ReportsController controller) {
@@ -253,6 +452,103 @@ class ReportsView extends StatelessWidget {
         controller.selectedDate.value = selectedDate;
         // Load report data when date is selected
         controller.loadReportData();
+      }
+    });
+  }
+
+  void _showStartDatePicker(BuildContext context,
+      ReportsController controller) {
+    final dates = controller.availableDates.map((dateStr) =>
+        DateTime.parse(dateStr)).toList();
+
+    if (dates.isEmpty) return;
+
+    // Find the earliest and latest dates for initial display
+    final DateTime firstDate = dates.reduce((a, b) => a.isBefore(b) ? a : b);
+    final DateTime lastDate = dates.reduce((a, b) => a.isAfter(b) ? a : b);
+
+    // Set initial date to either the currently selected start date (if it exists)
+    // or the first available date
+    final initialDate = controller.startDate.value != null
+        ? controller.startDate.value!
+        : firstDate;
+
+    showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: firstDate.subtract(const Duration(days: 30)),
+      lastDate: lastDate,
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: context.theme.colorScheme.primary,
+              onPrimary: context.theme.colorScheme.onPrimary,
+              surface: context.theme.colorScheme.surface,
+              onSurface: context.theme.colorScheme.onSurface,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    ).then((selectedDate) {
+      if (selectedDate != null) {
+        controller.startDate.value = selectedDate;
+
+        // If end date is before start date, adjust it
+        if (controller.endDate.value != null &&
+            controller.endDate.value!.isBefore(selectedDate)) {
+          controller.endDate.value = selectedDate;
+        }
+      }
+    });
+  }
+
+  void _showEndDatePicker(BuildContext context, ReportsController controller) {
+    final dates = controller.availableDates.map((dateStr) =>
+        DateTime.parse(dateStr)).toList();
+
+    if (dates.isEmpty) return;
+
+    // Find the earliest and latest dates for initial display
+    final DateTime firstDate = dates.reduce((a, b) => a.isBefore(b) ? a : b);
+    final DateTime lastDate = dates.reduce((a, b) => a.isAfter(b) ? a : b);
+
+    // Ensure end date is not before start date
+    final effectiveFirstDate = controller.startDate.value != null
+        ? controller.startDate.value!
+        : firstDate;
+
+    // Set initial date to either the currently selected end date (if it exists)
+    // or the start date (if set) or the last available date
+    final initialDate = controller.endDate.value != null
+        ? controller.endDate.value!
+        : (controller.startDate.value != null
+        ? controller.startDate.value!
+        : lastDate);
+
+    showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: effectiveFirstDate,
+      // Can't be before start date
+      lastDate: lastDate.add(const Duration(days: 30)),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: context.theme.colorScheme.primary,
+              onPrimary: context.theme.colorScheme.onPrimary,
+              surface: context.theme.colorScheme.surface,
+              onSurface: context.theme.colorScheme.onSurface,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    ).then((selectedDate) {
+      if (selectedDate != null) {
+        controller.endDate.value = selectedDate;
       }
     });
   }
@@ -346,7 +642,10 @@ class ReportsView extends StatelessWidget {
       ReportsController controller) {
     return Obx(() {
       final isLoading = controller.isGeneratingExcel.value;
-      final canGenerate = controller.selectedDate.value != null;
+      final canGenerate = controller.isDateRangeActive.value
+          ? (controller.startDate.value != null &&
+          controller.endDate.value != null)
+          : controller.selectedDate.value != null;
       final hasDownloadedFile = controller.lastDownloadedFilePath.value
           .isNotEmpty;
 
@@ -379,7 +678,9 @@ class ReportsView extends StatelessWidget {
                   const SizedBox(width: 16),
                   Expanded(
                     child: AppText.semiBold(
-                      'Excel Report',
+                      controller.isDateRangeActive.value
+                          ? 'Excel Report (Date Range)'
+                          : 'Excel Report',
                       size: 18,
                       color: context.theme.colorScheme.onSurface,
                     ),
@@ -388,7 +689,9 @@ class ReportsView extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               AppText(
-                'Download a comprehensive Excel report with all delivery details for the selected date and meal period.',
+                controller.isDateRangeActive.value
+                    ? 'Download an Excel report with all delivery details for the selected date range and meal period.'
+                    : 'Download a comprehensive Excel report with all delivery details for the selected date and meal period.',
                 size: 14,
                 color: context.theme.colorScheme.onSurfaceVariant,
               ),
@@ -400,7 +703,14 @@ class ReportsView extends StatelessWidget {
                       onPressed: !canGenerate || isLoading
                           ? null
                           : () async {
-                        final result = await controller.generateExcelReport();
+                        final ExcelReportResult? result;
+                        if (controller.isDateRangeActive.value) {
+                          result =
+                          await controller.generateDateRangeExcelReport();
+                        } else {
+                          result = await controller.generateExcelReport();
+                        }
+
                         if (result != null && result.success &&
                             result.filePath != null) {
                           _showExcelDownloadSuccess(
@@ -415,8 +725,7 @@ class ReportsView extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         disabledBackgroundColor: context.theme.colorScheme
-                            .tertiary
-                            .withOpacity(0.3),
+                            .tertiary.withOpacity(0.3),
                         disabledForegroundColor: context.theme.colorScheme
                             .onTertiary.withOpacity(0.5),
                       ),
@@ -432,6 +741,134 @@ class ReportsView extends StatelessWidget {
                           : const Icon(Icons.file_download),
                       label: AppText.semiBold(
                         isLoading ? 'Generating...' : 'Generate Excel Report',
+                        size: 16,
+                      ),
+                    ),
+                  ),
+                  if (hasDownloadedFile) ...[
+                    const SizedBox(width: 12),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        controller.openExcelFile(
+                            controller.lastDownloadedFilePath.value);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: context.theme.colorScheme
+                            .primaryContainer,
+                        foregroundColor: context.theme.colorScheme
+                            .onPrimaryContainer,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      icon: const Icon(Icons.open_in_new),
+                      label: const AppText.semiBold(
+                        'View Excel',
+                        size: 16,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    });
+  }
+
+  Widget _buildDateRangeExcelButton(BuildContext context,
+      ReportsController controller) {
+    return Obx(() {
+      final isLoading = controller.isGeneratingExcel.value;
+      final canGenerate = controller.startDate.value != null &&
+          controller.endDate.value != null;
+      final hasDownloadedFile = controller.lastDownloadedFilePath.value
+          .isNotEmpty;
+
+      return Card(
+        elevation: 0,
+        color: context.theme.colorScheme.surfaceContainerLow,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: context.theme.colorScheme.tertiary.withOpacity(
+                          0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      Icons.file_download,
+                      color: context.theme.colorScheme.tertiary,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: AppText.semiBold(
+                      'Excel Report (Date Range)',
+                      size: 18,
+                      color: context.theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              AppText(
+                'Download an Excel report with all delivery details for the selected date range and meal period.',
+                size: 14,
+                color: context.theme.colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: !canGenerate || isLoading
+                          ? null
+                          : () async {
+                        final result = await controller
+                            .generateDateRangeExcelReport();
+                        if (result != null && result.success &&
+                            result.filePath != null) {
+                          _showExcelDownloadSuccess(
+                              context, result.filePath!, controller);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: context.theme.colorScheme.tertiary,
+                        foregroundColor: context.theme.colorScheme.onTertiary,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        disabledBackgroundColor: context.theme.colorScheme
+                            .tertiary.withOpacity(0.3),
+                        disabledForegroundColor: context.theme.colorScheme
+                            .onTertiary.withOpacity(0.5),
+                      ),
+                      icon: isLoading
+                          ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: context.theme.colorScheme.onTertiary,
+                        ),
+                      )
+                          : const Icon(Icons.file_download),
+                      label: AppText.semiBold(
+                        isLoading ? 'Generating...' : 'Generate Excel',
                         size: 16,
                       ),
                     ),
@@ -1280,4 +1717,4 @@ class ReportsView extends StatelessWidget {
       ],
     );
   }
-}
+

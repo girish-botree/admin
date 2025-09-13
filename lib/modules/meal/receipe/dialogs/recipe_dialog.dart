@@ -1809,7 +1809,7 @@ class RecipeEditImageSection extends StatelessWidget {
     return ImageBase64Util.buildImage(
       imageUrl,
       fit: BoxFit.cover,
-      errorWidget: _buildFallbackImage(context),
+      errorWidget: const SizedBox.shrink(),
     );
   }
 

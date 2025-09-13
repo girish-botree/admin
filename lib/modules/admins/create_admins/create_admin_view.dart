@@ -9,6 +9,7 @@ import 'package:admin/widgets/custom_displays.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../../widgets/circular_back_button.dart';
 
 class CreateAdminView extends StatelessWidget {
   const CreateAdminView({super.key});
@@ -26,11 +27,10 @@ class CreateAdminView extends StatelessWidget {
         title: Text('Register Admin',
             style: TextStyle(color: context.theme.colorScheme.onSurface)),
         backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
-        leading: IconButton(
-          icon: Icon(
-              Icons.arrow_back, color: context.theme.colorScheme.onSurface),
-          onPressed: () => Get.back(),
-        ),
+        leading: CircularBackButton(),
+        elevation: 0,
+        centerTitle: false,
+        toolbarHeight: 56,
       ),
       body: Container(
         decoration: BoxDecoration(

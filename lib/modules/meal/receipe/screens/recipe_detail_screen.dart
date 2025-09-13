@@ -317,34 +317,10 @@ class RecipeDetailScreen extends StatelessWidget {
       return ImageBase64Util.buildImage(
         imageUrl,
         fit: BoxFit.cover,
-        errorWidget: _buildFallbackImage(context),
+        errorWidget: const SizedBox.shrink(),
       );
     }
-    return _buildFallbackImage(context);
-  }
-
-  Widget _buildFallbackImage(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            context.theme.colorScheme.primaryContainer,
-            context.theme.colorScheme.secondaryContainer,
-            context.theme.colorScheme.tertiaryContainer,
-          ],
-        ),
-      ),
-      child: Center(
-        child: Icon(
-          Icons.restaurant_rounded,
-          size: 120,
-          color: context.theme.colorScheme.onPrimaryContainer.withValues(
-              alpha: 0.5),
-        ),
-      ),
-    );
+    return const SizedBox.shrink();
   }
 
   Widget _buildInfoChip(IconData icon, String text, Color color) {

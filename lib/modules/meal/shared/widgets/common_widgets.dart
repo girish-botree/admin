@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../utils/responsive.dart';
+import '../../../../widgets/circular_back_button.dart';
 
 /// Standardized app bar component used throughout the application
 /// Provides consistent styling, behavior, and performance optimizations
@@ -163,9 +164,9 @@ class StandardAppBar extends StatelessWidget implements PreferredSizeWidget {
     if (leading != null) {
       resolvedLeading = leading;
     } else if (showBackButton) {
-      resolvedLeading = _BackButton(
+      resolvedLeading = CircularBackButton(
         onPressed: onBackPressed ?? () => Get.back<void>(),
-      );
+      ).asAppBarLeading();
     }
 
     return AppBar(
@@ -232,39 +233,6 @@ class StandardAppBar extends StatelessWidget implements PreferredSizeWidget {
       height += bottomWidget!.preferredSize.height;
     }
     return Size.fromHeight(height);
-  }
-}
-
-/// Optimized back button widget with consistent styling
-class _BackButton extends StatelessWidget {
-  final VoidCallback onPressed;
-  
-  const _BackButton({required this.onPressed});
-  
-  @override
-  Widget build(BuildContext context) {
-    final theme = context.theme;
-    
-    return IconButton(
-      onPressed: onPressed,
-      icon: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerLowest,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(
-          Icons.arrow_back_ios_new,
-          size: Responsive.responsiveValue(
-            context,
-            mobile: 16.0,
-            tablet: 18.0,
-            web: 20.0,
-          ),
-          color: theme.colorScheme.onSurface,
-        ),
-      ),
-    );
   }
 }
 

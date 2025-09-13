@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../utils/responsive.dart';
+import 'circular_back_button.dart';
 
 /// A responsive scaffold that maintains a consistent UI across mobile, web, and tablet platforms.
 /// 
@@ -200,7 +201,8 @@ class ResponsivePage extends StatelessWidget {
       appBar: AppBar(
         title: Text(title),
         actions: actions,
-        automaticallyImplyLeading: showBackButton,
+        leading: showBackButton ? CircularBackButton().asAppBarLeading() : null,
+        automaticallyImplyLeading: false,
       ),
       body: scrollable
           ? SingleChildScrollView(child: body)

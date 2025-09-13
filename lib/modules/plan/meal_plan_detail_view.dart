@@ -8,6 +8,7 @@ import 'plan_controller.dart';
 import 'meal_plan_model.dart';
 import 'meal_plan_assignment_model.dart';
 import 'widgets/meal_plan_form_dialog.dart';
+import '../../widgets/circular_back_button.dart'; // Assuming this is where CircularBackButton is defined
 
 class MealPlanDetailView extends GetView<PlanController> {
   final DateTime selectedDate;
@@ -45,11 +46,7 @@ class MealPlanDetailView extends GetView<PlanController> {
           backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
           elevation: 0,
           centerTitle: false,
-          leading: IconButton(
-            onPressed: () => Get.back<void>(),
-            icon: Icon(
-                Icons.arrow_back, color: context.theme.colorScheme.onSurface),
-          ),
+          leading: CircularBackButton().asAppBarLeading(),
           actions: [
             IconButton(
               onPressed: () async {

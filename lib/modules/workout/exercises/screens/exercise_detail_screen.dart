@@ -149,7 +149,7 @@ class ExerciseDetailScreen extends StatelessWidget {
       width: double.infinity,
       height: 250,
       decoration: BoxDecoration(
-        color: context.theme.colorScheme.surfaceContainer,
+        color: context.theme.colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(20),
       ),
       child: ClipRRect(
@@ -161,46 +161,9 @@ class ExerciseDetailScreen extends StatelessWidget {
           width: double.infinity,
           height: double.infinity,
           errorBuilder: (context, error, stackTrace) =>
-              _buildImagePlaceholder(context),
+          const SizedBox.shrink(),
         )
-            : _buildImagePlaceholder(context),
-      ),
-    );
-  }
-
-  Widget _buildImagePlaceholder(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            context.theme.colorScheme.primary.withValues(alpha: 0.1),
-            context.theme.colorScheme.secondary.withValues(alpha: 0.1),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.fitness_center_rounded,
-            size: 64,
-            color: context.theme.colorScheme.primary.withValues(alpha: 0.6),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'No Image Available',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: context.theme.colorScheme.onSurface.withValues(alpha: 0.6),
-            ),
-          ),
-        ],
+            : const SizedBox.shrink(),
       ),
     );
   }

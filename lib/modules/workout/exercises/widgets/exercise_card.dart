@@ -124,35 +124,12 @@ class ExerciseCard extends StatelessWidget {
           fit: BoxFit.cover,
           width: double.infinity,
           height: double.infinity,
-          errorBuilder: (context, error, stackTrace) => _buildPlaceholder(),
+          errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
         ),
       );
     }
 
-    return _buildPlaceholder();
-  }
-
-  Widget _buildPlaceholder() {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Get.theme.colorScheme.primary.withValues(alpha: 0.1),
-            Get.theme.colorScheme.secondary.withValues(alpha: 0.1),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Icon(
-        Icons.fitness_center_rounded,
-        size: 40,
-        color: Get.theme.colorScheme.primary.withValues(alpha: 0.6),
-      ),
-    );
+    return const SizedBox.shrink();
   }
 
   Widget _buildDetailRow({

@@ -210,6 +210,12 @@ class ReportsController extends GetxController {
   // Property to store the path of the last downloaded Excel file
   final RxString lastDownloadedFilePath = ''.obs;
 
+  // Date range filtering
+  final Rx<DateTime?> startDate = Rx<DateTime?>(null);
+  final Rx<DateTime?> endDate = Rx<DateTime?>(null);
+  final RxBool isDateRangeActive = false.obs;
+  final RxBool isRefreshing = false.obs;
+
   // Computed properties
   ReportSummary get reportSummary {
     if (reportData.isEmpty || reportData['summary'] == null) {
@@ -279,6 +285,16 @@ class ReportsController extends GetxController {
       if (availableDates.isNotEmpty) {
         selectedDate.value = DateTime.parse(availableDates.first);
       }
+
+      // Set default date range with last 7 days if we have dates
+      if (availableDates.isNotEmpty) {
+        final latestDate = availableDates
+            .map((dateStr) => DateTime.parse(dateStr))
+            .reduce((a, b) => a.isAfter(b) ? a : b);
+
+        endDate.value = latestDate;
+        startDate.value = latestDate.subtract(const Duration(days: 7));
+      }
     } catch (e) {
       // Fallback to test dates if API call fails
       _provideFallbackDates();
@@ -323,7 +339,7 @@ class ReportsController extends GetxController {
 
       final requestBody = {
         "deliveryDate": formattedDate,
-        "mealPeriod": selectedMealPeriod.value
+        "mealPeriod": selectedMealPeriod.value,
       };
 
       debugPrint('Fetching report data with request: $requestBody');
@@ -444,6 +460,184 @@ class ReportsController extends GetxController {
       return ExcelReportResult(success: false, message: errorMessage);
     } finally {
       isGeneratingExcel.value = false;
+    }
+  }
+
+  Future<ExcelReportResult?> generateDateRangeExcelReport() async {
+    if (startDate.value == null || endDate.value == null) return null;
+
+    isGeneratingExcel.value = true;
+
+    try {
+      final formattedStartDate = DateFormat('yyyy-MM-dd').format(
+          startDate.value!);
+      final formattedEndDate = DateFormat('yyyy-MM-dd').format(endDate.value!);
+      final mealPeriods = ['Breakfast', 'Lunch', 'Dinner'];
+      final periodName = mealPeriods[selectedMealPeriod.value];
+      final fileName = "DeliveryReport_${formattedStartDate}_to_${formattedEndDate}_$periodName.xlsx";
+
+      await Future.delayed(const Duration(seconds: 2));
+
+      try {
+        final requestBody = {
+          "startDate": formattedStartDate,
+          "endDate": formattedEndDate,
+          "mealPeriod": selectedMealPeriod.value
+        };
+
+        final response = await DioNetworkService
+            .generateDeliveryReportExcelRange(
+          formattedStartDate,
+          formattedEndDate,
+          selectedMealPeriod.value,
+          showLoader: false,
+        );
+
+        if (response != null &&
+            response is Map<String, dynamic> &&
+            response['fileUrl'] != null) {
+          final filePath = response['fileUrl'].toString();
+          return ExcelReportResult(
+              success: true,
+              filePath: filePath,
+              fileName: fileName
+          );
+        }
+      } catch (apiError) {
+        debugPrint('API error: $apiError - using demo mode instead');
+      }
+
+      final directory = await getApplicationDocumentsDirectory();
+      final filePath = '${directory.path}/$fileName';
+
+      final file = File(filePath);
+      await file.writeAsString(
+          'This is a placeholder Excel file for date range report demonstration purposes.');
+
+      Get.snackbar(
+        'Demo Mode',
+        'A placeholder Excel file has been created for date range report at $filePath',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Get.theme.colorScheme.surfaceVariant,
+        colorText: Get.theme.colorScheme.onSurfaceVariant,
+        duration: const Duration(seconds: 3),
+      );
+
+      return ExcelReportResult(
+          success: true,
+          filePath: filePath,
+          fileName: fileName
+      );
+    } catch (e) {
+      final errorMessage = 'An error occurred while generating date range Excel report: ${e
+          .toString()}';
+      _showDownloadError(errorMessage);
+      return ExcelReportResult(success: false, message: errorMessage);
+    } finally {
+      isGeneratingExcel.value = false;
+    }
+  }
+
+  Future<void> loadDateRangeReportData() async {
+    if (startDate.value == null || endDate.value == null) return;
+
+    isLoadingReportData.value = true;
+    reportData.clear();
+
+    try {
+      final formattedStartDate = DateFormat('yyyy-MM-dd').format(
+          startDate.value!);
+      final formattedEndDate = DateFormat('yyyy-MM-dd').format(endDate.value!);
+
+      final requestBody = {
+        "startDate": formattedStartDate,
+        "endDate": formattedEndDate,
+        "mealPeriod": selectedMealPeriod.value
+      };
+
+      debugPrint('Fetching date range report data with request: $requestBody');
+
+      final response = await DioNetworkService.getDeliveryReportDateRangeData(
+        formattedStartDate,
+        formattedEndDate,
+        selectedMealPeriod.value,
+        showLoader: false,
+      );
+
+      if (response != null) {
+        if (response is Map<String, dynamic> &&
+            response['success'] == true &&
+            response['data'] != null) {
+          final Map<String, dynamic> reportDataMap = response['data'] as Map<
+              String,
+              dynamic>;
+          reportData.value = reportDataMap;
+          debugPrint(
+              'Date range report data loaded successfully with ${deliveries
+                  .length} deliveries');
+        } else {
+          final message = response is Map<String, dynamic> &&
+              response['message'] != null
+              ? response['message'].toString()
+              : 'Please try again.';
+
+          Get.snackbar(
+            'Error',
+            'Failed to load date range report data. $message',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Get.theme.colorScheme.error,
+            colorText: Get.theme.colorScheme.onError,
+          );
+        }
+      } else {
+        Get.snackbar(
+          'Error',
+          'Failed to load date range report data. Please try again.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Get.theme.colorScheme.error,
+          colorText: Get.theme.colorScheme.onError,
+        );
+      }
+    } catch (e) {
+      debugPrint('Error loading date range report data: $e');
+      Get.snackbar(
+        'Error',
+        'An error occurred while loading date range report data: ${e
+            .toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Get.theme.colorScheme.error,
+        colorText: Get.theme.colorScheme.onError,
+      );
+    } finally {
+      isLoadingReportData.value = false;
+    }
+  }
+
+  void toggleDateRangeMode() {
+    isDateRangeActive.value = !isDateRangeActive.value;
+    if (isDateRangeActive.value) {
+      // Switch to date range mode - load data if start and end dates are set
+      if (startDate.value != null && endDate.value != null) {
+        loadDateRangeReportData();
+      }
+    } else {
+      // Switch back to single date mode - load data if date is selected
+      if (selectedDate.value != null) {
+        loadReportData();
+      }
+    }
+  }
+
+  Future<void> refreshReportData() async {
+    isRefreshing.value = true;
+    try {
+      if (isDateRangeActive.value) {
+        await loadDateRangeReportData();
+      } else {
+        await loadReportData();
+      }
+    } finally {
+      isRefreshing.value = false;
     }
   }
 

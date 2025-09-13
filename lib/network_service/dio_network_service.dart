@@ -1277,6 +1277,57 @@ class DioNetworkService {
     }
   }
 
+  static Future<dynamic> getDeliveryReportDateRangeData(String startDate,
+      String endDate,
+      int mealPeriod,
+      {bool showLoader = true}) async {
+    try {
+      if (showLoader) ApiHelper.showLoader();
+
+      // API endpoint: POST /api/admin/AdminDeliveryReport/dateRangeData
+      final response = await _apiClient.post(
+        'api/admin/AdminDeliveryReport/dateRangeData',
+        {
+          'startDate': startDate,
+          'endDate': endDate,
+          'mealPeriod': mealPeriod,
+        },
+      );
+
+      if (showLoader) ApiHelper.dismissLoader();
+
+      // Log successful response
+      if (response.data != null && response.data is Map<String, dynamic>) {
+        final responseData = response.data as Map<String, dynamic>;
+        if (responseData['success'] == true && responseData['data'] != null) {
+          final reportData = responseData['data'] as Map<String, dynamic>;
+          final deliveriesCount = reportData['data'] != null ?
+          (reportData['data'] as List<dynamic>).length : 0;
+          final summary = reportData['summary'] as Map<String, dynamic>?;
+
+          print('Date range report data retrieved successfully:');
+          print('- Total deliveries: ${summary?['totalDeliveries'] ??
+              deliveriesCount}');
+          print('- Delivered: ${summary?['delivered'] ?? 'N/A'}');
+          print('- Pending: ${summary?['pending'] ?? 'N/A'}');
+        }
+      }
+
+      return response.data;
+    } catch (error) {
+      if (showLoader) ApiHelper.dismissLoader();
+
+      print('Error getting date range delivery report data: $error');
+
+      CustomDisplays.showToast(
+        message: 'Failed to load date range delivery report data. Please try again later',
+        type: MessageType.error,
+      );
+
+      rethrow;
+    }
+  }
+
   static Future<dynamic> generateDeliveryReportExcel(String deliveryDate,
       int mealPeriod, {bool showLoader = true}) async {
     try {
@@ -1321,6 +1372,58 @@ class DioNetworkService {
 
       CustomDisplays.showToast(
         message: 'Failed to generate Excel report. Please try again later',
+        type: MessageType.error,
+      );
+
+      rethrow;
+    }
+  }
+
+  static Future<dynamic> generateDeliveryReportExcelRange(String startDate,
+      String endDate,
+      int mealPeriod,
+      {bool showLoader = true}) async {
+    try {
+      if (showLoader) ApiHelper.showLoader();
+
+      print('Generating date range Excel report:');
+      print('- Start Date: $startDate');
+      print('- End Date: $endDate');
+      print('- Meal Period: $mealPeriod (${_getMealPeriodName(mealPeriod)})');
+
+      // API endpoint: POST /api/admin/AdminDeliveryReport/generate-excel-range
+      final response = await _apiClient.post(
+        'api/admin/AdminDeliveryReport/generate-excel-range',
+        {
+          'startDate': startDate,
+          'endDate': endDate,
+          'mealPeriod': mealPeriod,
+        },
+      );
+
+      if (showLoader) ApiHelper.dismissLoader();
+
+      print('Date range Excel generation response received');
+
+      if (response.data != null) {
+        if (response.data is Map<String, dynamic>) {
+          final responseData = response.data as Map<String, dynamic>;
+          if (responseData['fileUrl'] != null) {
+            print('Excel file URL: ${responseData['fileUrl']}');
+          } else if (responseData['fileName'] != null) {
+            print('Excel file name: ${responseData['fileName']}');
+          }
+        }
+      }
+
+      return response.data;
+    } catch (error) {
+      if (showLoader) ApiHelper.dismissLoader();
+
+      print('Error generating date range Excel report: $error');
+
+      CustomDisplays.showToast(
+        message: 'Failed to generate date range Excel report. Please try again later',
         type: MessageType.error,
       );
 

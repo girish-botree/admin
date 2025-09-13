@@ -11,14 +11,27 @@ import 'package:admin/config/auth_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:sqflite/sqflite.dart';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
+
+// Import for FFI (non-mobile platforms)
+import 'package:sqflite_common_ffi/sqflite_ffi.dart' if (dart.library.html) 'dart:html';
 
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize appropriate SQLite implementation based on platform
+  if (!kIsWeb && !Platform.isAndroid && !Platform.isIOS) {
+    // For desktop platforms (Windows, macOS, Linux)
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
+
   await GetStorage.init();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,

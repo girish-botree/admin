@@ -5,8 +5,14 @@
         <domain includeSubdomains="false">15.207.67.98</domain>
     </domain-config>
 
+    <!-- Add config for image hosting domains -->
+    <domain-config>
+        <domain includeSubdomains="true">images.unsplash.com</domain>
+        <domain includeSubdomains="true">unsplash.com</domain>
+    </domain-config>
+
     <!-- For development/testing: Allow cleartext traffic to all domains (remove in production) -->
-    <base-config cleartextTrafficPermitted="false">
+    <base-config cleartextTrafficPermitted="true">
         <trust-anchors>
             <!-- Trust default CAs -->
             <certificates src="system" />

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import '../../routes/app_routes.dart';
 import '../../network_service/dio_network_service.dart';
 import '../meal/meal_controller.dart';
@@ -36,6 +37,7 @@ class HomeController extends GetxController {
   void onInit() {
     super.onInit();
     _loadInitialData();
+    _testImageUrls(); // Test image URLs
   }
 
   @override
@@ -136,6 +138,35 @@ class HomeController extends GetxController {
 
   void updateManagementCardIndex(int index) {
     currentManagementCardIndex.value = index;
+  }
+
+  // Method to check if an image URL is valid
+  Future<bool> isImageUrlValid(String url) async {
+    try {
+      final response = await http.head(Uri.parse(url));
+      return response.statusCode >= 200 && response.statusCode < 300;
+    } catch (e) {
+      print('Error checking image URL: $e');
+      return false;
+    }
+  }
+
+  // Test image URLs to diagnose network image loading issues
+  Future<void> _testImageUrls() async {
+    final recipeUrl =
+        'https://images.unsplash.com/photo-1466637574441-749b8f19452f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80';
+    final ingredientsUrl =
+        'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80';
+    final exerciseUrl =
+        'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80';
+
+    final recipeValid = await isImageUrlValid(recipeUrl);
+    final ingredientsValid = await isImageUrlValid(ingredientsUrl);
+    final exerciseValid = await isImageUrlValid(exerciseUrl);
+
+    print('Recipe URL valid: $recipeValid');
+    print('Ingredients URL valid: $ingredientsValid');
+    print('Exercise URL valid: $exerciseValid');
   }
 
   void navigateToRecipes() async {

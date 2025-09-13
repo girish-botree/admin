@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../design_system/material_design_system.dart';
+import 'circular_back_button.dart';
 
 /// Enhanced Base Widgets
 /// Provides consistent Material Design styling and improved UX
@@ -76,13 +77,9 @@ class EnhancedBaseWidgets {
         ),
       ),
       actions: actions,
-      leading: leading ?? (showBackButton ? IconButton(
-        icon: Icon(
-          Icons.arrow_back_ios_new_rounded,
-          size: MaterialDesignSystem.iconSizeMedium,
-        ),
+      leading: leading ?? (showBackButton ? CircularBackButton(
         onPressed: onBackPressed ?? () => Navigator.of(context).pop(),
-      ) : null),
+      ).asAppBarLeading() : null),
       centerTitle: centerTitle,
       automaticallyImplyLeading: automaticallyImplyLeading,
       backgroundColor: backgroundColor ?? theme.colorScheme.surface,

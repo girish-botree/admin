@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../config/theme_controller.dart';
 import '../../language/language_controller.dart';
 import '../main_layout/main_layout_controller.dart';
+import '../../widgets/circular_back_button.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -38,14 +39,7 @@ class SettingsScreen extends StatelessWidget {
       backgroundColor: context.theme.colorScheme.background,
       surfaceTintColor: Colors.transparent,
       pinned: true,
-      leading: IconButton(
-        onPressed: () => Get.back<void>(),
-        icon: Icon(
-          Icons.arrow_back_ios_new,
-          size: 20,
-          color: context.theme.colorScheme.onBackground,
-        ),
-      ),
+      leading: const CircularBackButton(backgroundColor: null),
       title: Text(
         'settings'.tr,
         style: TextStyle(

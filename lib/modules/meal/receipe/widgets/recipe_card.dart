@@ -52,16 +52,7 @@ class RecipeCard extends StatelessWidget {
                     width: double.infinity,
                     height: double.infinity,
                     fit: BoxFit.cover,
-                    placeholder: Container(
-                      color: Colors.grey.withOpacity(0.1),
-                      child: const Center(
-                        child: Icon(
-                          Icons.restaurant,
-                          size: 40,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ),
+                    placeholder: const SizedBox.shrink(),
                   ),
                 ),
                 // Improved gradient overlay for better text visibility
