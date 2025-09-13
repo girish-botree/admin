@@ -24,19 +24,16 @@ class IngredientDialogs {
     bool isFatBreakdownExpanded = false;
     bool isAdditionalExpanded = false;
 
-    // Helper function to calculate total composition, including fat breakdown
+    // Helper function to calculate total composition, including fat
     double calculateTotalComposition() {
       double protein = double.tryParse(controller.proteinController.text) ??
           0.0;
       double carbs = double.tryParse(controller.carbsController.text) ?? 0.0;
       double fiber = double.tryParse(controller.fiberController.text) ?? 0.0;
       double sugar = double.tryParse(controller.sugarController.text) ?? 0.0;
-      double saturated = double.tryParse(
-          controller.saturatedFatController.text) ?? 0.0;
-      double mono = double.tryParse(controller.monoFatController.text) ?? 0.0;
-      double poly = double.tryParse(controller.polyFatController.text) ?? 0.0;
-      // For composition, we count all macro components: protein, carbs, fiber, sugar, and fat breakdown
-      return protein + carbs + fiber + sugar + saturated + mono + poly;
+      double fat = double.tryParse(controller.fatController.text) ?? 0.0;
+      // For composition, we count all macro components: protein, carbs, fiber, sugar, and fat
+      return protein + carbs + fiber + sugar + fat;
     }
 
     // Helper function to calculate total fat breakdown
@@ -61,37 +58,19 @@ class IngredientDialogs {
       double fiber = double.tryParse(controller.fiberController.text) ?? 0.0;
       double sugar = double.tryParse(controller.sugarController.text) ?? 0.0;
       double fat = double.tryParse(controller.fatController.text) ?? 0.0;
-      double saturated = double.tryParse(
-          controller.saturatedFatController.text) ?? 0.0;
-      double mono = double.tryParse(controller.monoFatController.text) ?? 0.0;
-      double poly = double.tryParse(controller.polyFatController.text) ?? 0.0;
 
       // For each field, subtract its current value and add the proposed value
       switch (fieldName) {
         case 'protein':
-          return (carbs + fiber + sugar + fat + saturated + mono + poly -
-              protein + proposed) > 100.0;
+          return (carbs + fiber + sugar + fat - protein + proposed) > 100.0;
         case 'carbs':
-          return (protein + fiber + sugar + fat + saturated + mono + poly -
-              carbs + proposed) > 100.0;
+          return (protein + fiber + sugar + fat - carbs + proposed) > 100.0;
         case 'fat':
-          return (protein + carbs + fiber + sugar + saturated + mono + poly -
-              fat + proposed) > 100.0;
+          return (protein + carbs + fiber + sugar - fat + proposed) > 100.0;
         case 'fiber':
-          return (protein + carbs + sugar + fat + saturated + mono + poly -
-              fiber + proposed) > 100.0;
+          return (protein + carbs + sugar + fat - fiber + proposed) > 100.0;
         case 'sugar':
-          return (protein + carbs + fiber + fat + saturated + mono + poly -
-              sugar + proposed) > 100.0;
-        case 'saturated':
-          return (protein + carbs + fiber + sugar + fat + mono + poly -
-              saturated + proposed) > 100.0;
-        case 'mono':
-          return (protein + carbs + fiber + sugar + fat + saturated + poly -
-              mono + proposed) > 100.0;
-        case 'poly':
-          return (protein + carbs + fiber + sugar + fat + saturated + mono -
-              poly + proposed) > 100.0;
+          return (protein + carbs + fiber + fat - sugar + proposed) > 100.0;
         default:
           return false;
       }

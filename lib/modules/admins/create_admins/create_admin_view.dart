@@ -10,6 +10,74 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+class CreateAdminView extends StatelessWidget {
+  const CreateAdminView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Auto-show the registration bottom sheet when view is loaded
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      AdminBottomSheets.showRegistrationBottomSheet(context, "admin");
+    });
+
+    // Use a scaffold with app bar as base UI
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Register Admin',
+            style: TextStyle(color: context.theme.colorScheme.onSurface)),
+        backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
+        leading: IconButton(
+          icon: Icon(
+              Icons.arrow_back, color: context.theme.colorScheme.onSurface),
+          onPressed: () => Get.back(),
+        ),
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              context.theme.colorScheme.surfaceContainerLowest.withOpacity(0.3),
+              context.theme.colorScheme.surfaceContainerLowest.withOpacity(0.2),
+              context.theme.colorScheme.surfaceContainerLowest.withOpacity(0.1),
+            ],
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.admin_panel_settings_outlined,
+                size: 64,
+                color: context.theme.colorScheme.onSurface.withOpacity(0.5),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Admin Registration',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: context.theme.colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Use the form to register a new admin',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: context.theme.colorScheme.onSurface.withOpacity(0.7),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class AdminBottomSheets {
   /// Shows bottom sheet with admin registration options
   static void showAdminOptionsBottomSheet(BuildContext context) {

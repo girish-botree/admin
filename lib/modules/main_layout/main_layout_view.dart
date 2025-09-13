@@ -59,19 +59,16 @@ class MainLayoutView extends GetView<MainLayoutController> {
             label: 'Plan',
           ),
           BottomNavigationBarItem(
-            icon: (controller.currentIndex == 2
-                ? Assets.icons.icMealFill
-                : Assets.icons.icMeal).svg(
-              width: 24,
-              height: 24,
-              colorFilter: ColorFilter.mode(
-                controller.currentIndex == 2
-                    ? context.theme.colorScheme.onSurface
-                    : context.theme.colorScheme.onSurfaceVariant,
-                BlendMode.srcIn,
-              ),
+            icon: Icon(
+              controller.currentIndex == 2
+                  ? Icons.point_of_sale
+                  : Icons.point_of_sale_outlined,
+              size: 24,
+              color: controller.currentIndex == 2
+                  ? context.theme.colorScheme.onSurface
+                  : context.theme.colorScheme.onSurfaceVariant,
             ),
-            label: 'Meal',
+            label: 'Sales',
           ),
           BottomNavigationBarItem(
             icon: (controller.currentIndex == 3
@@ -94,23 +91,23 @@ class MainLayoutView extends GetView<MainLayoutController> {
   }
 
   Widget _buildDrawer(BuildContext context) {
-    return Obx(() =>
-        Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              DrawerHeader(
-                decoration: BoxDecoration(
-                  color: context.theme.colorScheme.primary,
-                ),
-                child: Text(
-                  'Menu',
-                  style: TextStyle(
-                    color: context.theme.colorScheme.onPrimary,
-                    fontSize: 24,
-                  ),
-                ),
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(
+              color: context.theme.colorScheme.primary,
+            ),
+            child: Text(
+              'Menu',
+              style: TextStyle(
+                color: context.theme.colorScheme.onPrimary,
+                fontSize: 24,
               ),
+            ),
+          ),
+          Obx(() =>
               _buildDrawerItem(
                 context,
                 icon: (controller.currentIndex == 0
@@ -123,11 +120,12 @@ class MainLayoutView extends GetView<MainLayoutController> {
                         ? context.theme.colorScheme.primary
                         : context.theme.colorScheme.onSurfaceVariant,
                     BlendMode.srcIn,
-                  ),
-                ),
-                title: 'Home',
-                index: 0,
               ),
+            ),
+            title: 'Home',
+            index: 0,
+          )),
+          Obx(() =>
               _buildDrawerItem(
                 context,
                 icon: (controller.currentIndex == 1
@@ -140,28 +138,27 @@ class MainLayoutView extends GetView<MainLayoutController> {
                         ? context.theme.colorScheme.primary
                         : context.theme.colorScheme.onSurfaceVariant,
                     BlendMode.srcIn,
-                  ),
-                ),
-                title: 'Plan',
-                index: 1,
               ),
+            ),
+            title: 'Plan',
+            index: 1,
+          )),
+          Obx(() =>
               _buildDrawerItem(
                 context,
-                icon: (controller.currentIndex == 2
-                    ? Assets.icons.icMealFill
-                    : Assets.icons.icMeal).svg(
-                  width: 24,
-                  height: 24,
-                  colorFilter: ColorFilter.mode(
-                    controller.currentIndex == 2
-                        ? context.theme.colorScheme.primary
-                        : context.theme.colorScheme.onSurfaceVariant,
-                    BlendMode.srcIn,
-                  ),
+                icon: Icon(
+                  controller.currentIndex == 2
+                      ? Icons.point_of_sale
+                      : Icons.point_of_sale_outlined,
+                  size: 24,
+                  color: controller.currentIndex == 2
+                      ? context.theme.colorScheme.primary
+                      : context.theme.colorScheme.onSurfaceVariant,
                 ),
-                title: 'Meal',
+                title: 'Sales',
                 index: 2,
-              ),
+              )),
+          Obx(() =>
               _buildDrawerItem(
                 context,
                 icon: (controller.currentIndex == 3
@@ -174,14 +171,14 @@ class MainLayoutView extends GetView<MainLayoutController> {
                         ? context.theme.colorScheme.primary
                         : context.theme.colorScheme.onSurfaceVariant,
                     BlendMode.srcIn,
-                  ),
-                ),
-                title: 'Analytics',
-                index: 3,
               ),
-            ],
-          ),
-        ));
+            ),
+            title: 'Analytics',
+            index: 3,
+          )),
+        ],
+      ),
+    );
   }
 
   Widget _buildDrawerItem(BuildContext context, {
@@ -207,11 +204,40 @@ class MainLayoutView extends GetView<MainLayoutController> {
       case 1:
         return const PlanView();
       case 2:
-        return const MealView();
+        return _buildSalesView();
       case 3:
         return const DashboardView();
       default:
         return const HomeView(showBottomNav: false);
     }
+  }
+
+  Widget _buildSalesView() {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Sales'),
+        backgroundColor: Get.theme.colorScheme.surfaceContainerLowest,
+        elevation: 0,
+        centerTitle: false,
+      ),
+      body: const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.construction, size: 64, color: Colors.grey),
+            SizedBox(height: 16),
+            Text(
+              'Sales Module',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Coming Soon...',
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

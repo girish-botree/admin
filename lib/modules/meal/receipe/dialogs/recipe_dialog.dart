@@ -8,6 +8,7 @@ import 'package:admin/utils/image_base64_util.dart';
 import '../../meal_controller.dart';
 import '../../../../widgets/searchable_dropdown.dart';
 import '../../../../widgets/multi_select_dropdown.dart';
+import '../../../../widgets/image_upload_widget.dart';
 import '../../../../config/dropdown_data.dart';
 
 class RecipeDialogs {
@@ -16,7 +17,7 @@ class RecipeDialogs {
     controller.clearRecipeForm();
     int dietaryCategory = 0;
     final List<dynamic> ingredients = [];
-    File? image;
+    String? uploadedImageUrl;
     bool isDialogActive = true;
 
     // State variables for vitamins and minerals - moved outside StatefulBuilder
@@ -39,7 +40,6 @@ class RecipeDialogs {
             child: StatefulBuilder(
               builder: (dialogContext, setDialogState) {
                 if (!isDialogActive) return Container();
-
                 return Scaffold(
                   backgroundColor: dialogContext.theme.colorScheme.surface,
                   appBar: AppBar(
@@ -344,8 +344,8 @@ class RecipeDialogs {
                                   'Recipe Image',
                                   style: TextStyle(fontWeight: FontWeight.w600),
                                 ),
-                                subtitle: Text(image != null
-                                    ? 'Image selected'
+                                subtitle: Text(uploadedImageUrl != null
+                                    ? 'Image uploaded'
                                     : 'Optional photo'),
                                 trailing: Icon(
                                   isImageExpanded
@@ -360,10 +360,21 @@ class RecipeDialogs {
                                 const Divider(height: 1),
                                 Padding(
                                   padding: const EdgeInsets.all(20),
-                                  child: RecipeImageSection(
-                                    image: image,
-                                    onImageChanged: (File? newImage) =>
-                                        setDialogState(() => image = newImage),
+                                  child: ImageUploadWidget(
+                                    fileType: 'RecipeImage',
+                                    description: 'Recipe image for ${controller.nameController.text.isNotEmpty ? controller.nameController.text : 'new recipe'}',
+                                    currentImageUrl: uploadedImageUrl,
+                                    onImageUploaded: (String imageUrl) {
+                                      setDialogState(() {
+                                        uploadedImageUrl = imageUrl.isNotEmpty ? imageUrl : null;
+                                      });
+                                    },
+                                    onError: (String error) {
+                                      Get.snackbar('Upload Error', error);
+                                    },
+                                    label: 'Recipe Image',
+                                    hintText: 'Upload a photo of your recipe (JPG, PNG up to 10MB)',
+                                    height: 200,
                                   ),
                                 ),
                               ],
@@ -404,16 +415,8 @@ class RecipeDialogs {
                                 controller.mineralsController.text;
                           }
 
-                          if (image != null) {
-                            try {
-                              final base64String = await ImageBase64Util
-                                  .processImageForUpload(image!);
-                              data['imageUrl'] = base64String;
-                            } catch (e) {
-                              Get.snackbar('Error',
-                                  'Failed to process image: ${e.toString()}');
-                              return;
-                            }
+                          if (uploadedImageUrl != null && uploadedImageUrl!.isNotEmpty) {
+                            data['imageUrl'] = uploadedImageUrl;
                           }
                           controller.createRecipe(data).then((success) {
                             if (success) {
@@ -464,7 +467,7 @@ class RecipeDialogs {
       selectedVitamins.clear();
       selectedMinerals.clear();
       selectedCuisine = '';
-      image = null;
+      uploadedImageUrl = null;
       dietaryCategory = 0;
       // Reset expansion states to default
       isBasicExpanded = true;
@@ -686,7 +689,7 @@ class RecipeDialogs {
     int dietaryCategory = (recipe['dietaryCategory'] as int?) ?? 0;
     final List<dynamic> ingredients = recipe['ingredients'] != null ? List<
         dynamic>.from(recipe['ingredients'] as List) : [];
-    File? image = null;
+    String? uploadedImageUrl = recipe['imageUrl']?.toString();
     bool isDialogActive = true;
 
     // Setup nutrition controllers with existing data
@@ -818,13 +821,21 @@ class RecipeDialogs {
                     const SizedBox(height: 24),
 
                     // Image handling section
-                    RecipeEditImageSection(
-                      recipe: recipe,
-                      image: image,
-                      onImageChanged: (newImage) =>
-                          setState(() {
-                            image = newImage;
-                          }),
+                    ImageUploadWidget(
+                      fileType: 'RecipeImage',
+                      description: 'Recipe image for ${recipe['name'] ?? 'recipe'}',
+                      currentImageUrl: uploadedImageUrl,
+                      onImageUploaded: (String imageUrl) {
+                        setState(() {
+                          uploadedImageUrl = imageUrl.isNotEmpty ? imageUrl : null;
+                        });
+                      },
+                      onError: (String error) {
+                        Get.snackbar('Upload Error', error);
+                      },
+                      label: 'Recipe Image',
+                      hintText: 'Upload a photo of your recipe (JPG, PNG up to 10MB)',
+                      height: 200,
                     ),
                     const SizedBox(height: 32),
 
@@ -837,16 +848,8 @@ class RecipeDialogs {
                       final data = controller.createRecipeData(dietaryCategory,
                           ingredients);
 
-                      if (image != null) {
-                        try {
-                          final base64String = await ImageBase64Util
-                              .processImageForUpload(image!);
-                          data['imageUrl'] = base64String;
-                        } catch (e) {
-                          Get.snackbar('Error',
-                              'Failed to process image: ${e.toString()}');
-                          return;
-                        }
+                      if (uploadedImageUrl != null && uploadedImageUrl!.isNotEmpty) {
+                        data['imageUrl'] = uploadedImageUrl;
                       }
                       data['recipeId'] = recipe['recipeId'];
                       data['isActive'] = recipe['isActive'] ?? true;
@@ -994,12 +997,12 @@ class RecipeDialogs {
 
 // Simplified RecipeImageSection for better performance
 class RecipeImageSection extends StatelessWidget {
-  final File? image;
+  final File? imageFile;
   final void Function(File?) onImageChanged;
 
   const RecipeImageSection({
     super.key,
-    this.image,
+    this.imageFile,
     required this.onImageChanged,
   });
 
@@ -1007,7 +1010,7 @@ class RecipeImageSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (image != null)
+        if (imageFile != null)
           Container(
             height: 120,
             width: double.infinity,
@@ -1020,7 +1023,7 @@ class RecipeImageSection extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: Image.file(
-                    image!,
+                    imageFile!,
                     fit: BoxFit.cover,
                     width: double.infinity,
                     height: double.infinity,
@@ -1604,13 +1607,13 @@ class RecipeIngredientsSection extends StatelessWidget {
 
 class RecipeEditImageSection extends StatelessWidget {
   final dynamic recipe;
-  final File? image;
+  final File? imageFile;
   final void Function(File?) onImageChanged;
 
   const RecipeEditImageSection({
     super.key,
     required this.recipe,
-    required this.image,
+    required this.imageFile,
     required this.onImageChanged,
   });
 
@@ -1666,7 +1669,7 @@ class RecipeEditImageSection extends StatelessWidget {
           ),
 
         Text(
-          image == null ? (recipe['imageUrl'] != null &&
+          imageFile == null ? (recipe['imageUrl'] != null &&
               recipe['imageUrl']
                   .toString()
                   .isNotEmpty
@@ -1726,7 +1729,7 @@ class RecipeEditImageSection extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-        if (image != null)
+        if (imageFile != null)
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -1766,9 +1769,9 @@ class RecipeEditImageSection extends StatelessWidget {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: image != null
+                  child: imageFile != null
                       ? Image.file(
-                    image!,
+                    imageFile!,
                     fit: BoxFit.cover,
                     width: double.infinity,
                     height: 180,

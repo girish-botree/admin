@@ -157,16 +157,17 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
     setState(() => _isOpen = true);
     _animationController.forward();
 
+    // Remove auto-focus code
     // Auto-focus search and show keyboard if enabled
-    if (widget.showSearch) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _searchFocusNode.requestFocus();
-        // Explicitly show keyboard
-        Future.delayed(const Duration(milliseconds: 50), () {
-          SystemChannels.textInput.invokeMethod('TextInput.show');
-        });
-      });
-    }
+    // if (widget.showSearch) {
+    //   WidgetsBinding.instance.addPostFrameCallback((_) {
+    //     _searchFocusNode.requestFocus();
+    //     // Explicitly show keyboard
+    //     Future.delayed(const Duration(milliseconds: 50), () {
+    //       SystemChannels.textInput.invokeMethod('TextInput.show');
+    //     });
+    //   });
+    // }
   }
 
   void _closeDropdown() {
@@ -345,46 +346,52 @@ class _SearchableDropdownState<T> extends State<SearchableDropdown<T>>
           topRight: Radius.circular(16),
         ),
       ),
-      child: TextField(
-        controller: _searchController,
-        focusNode: _searchFocusNode,
-        style: theme.textTheme.bodyMedium?.copyWith(
-          color: theme.colorScheme.onSurface,
-        ),
-        decoration: InputDecoration(
-          hintText: 'Search...',
-          hintStyle: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+      child: GestureDetector(
+        onTap: () {
+          _searchFocusNode.requestFocus();
+          SystemChannels.textInput.invokeMethod('TextInput.show');
+        },
+        child: TextField(
+          controller: _searchController,
+          focusNode: _searchFocusNode,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurface,
           ),
-          prefixIcon: Icon(
-            Icons.search,
-            color: theme.colorScheme.primary,
-            size: 20,
-          ),
-          suffixIcon: _searchController.text.isNotEmpty
-              ? IconButton(
-            onPressed: () {
-              _searchController.clear();
-              _filterItems('', overlaySetState);
-            },
-            icon: Icon(
-              Icons.clear,
+          decoration: InputDecoration(
+            hintText: 'Search...',
+            hintStyle: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-              size: 18,
             ),
-          )
-              : null,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
+            prefixIcon: Icon(
+              Icons.search,
+              color: theme.colorScheme.primary,
+              size: 20,
+            ),
+            suffixIcon: _searchController.text.isNotEmpty
+                ? IconButton(
+              onPressed: () {
+                _searchController.clear();
+                _filterItems('', overlaySetState);
+              },
+              icon: Icon(
+                Icons.clear,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                size: 18,
+              ),
+            )
+                : null,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            filled: true,
+            fillColor: theme.colorScheme.surface,
+            contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16, vertical: 12),
+            isDense: true,
           ),
-          filled: true,
-          fillColor: theme.colorScheme.surface,
-          contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16, vertical: 12),
-          isDense: true,
+          onChanged: (query) => _filterItems(query, overlaySetState),
         ),
-        onChanged: (query) => _filterItems(query, overlaySetState),
       ),
     );
   }

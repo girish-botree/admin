@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../routes/app_routes.dart';
 import '../../network_service/dio_network_service.dart';
+import '../meal/meal_controller.dart';
 
 class HomeController extends GetxController {
   // Navigation state
@@ -13,7 +14,15 @@ class HomeController extends GetxController {
   
   // Dashboard data
   final RxMap<String, dynamic> _dashboardData = <String, dynamic>{}.obs;
-  
+
+  // Meal functionality - PageView for Recipe/Ingredient switching
+  final RxInt currentPageIndex = 0.obs;
+  final RxInt currentCarouselIndex = 0.obs;
+  final PageController pageController = PageController();
+
+  // Management card viewer
+  final RxInt currentManagementCardIndex = 0.obs;
+
   // Services
   // final AuthService _authService = AuthService.to;
 
@@ -111,6 +120,51 @@ class HomeController extends GetxController {
     }
   }
 
+  // Meal functionality methods
+  void updateCarouselIndex(int index) {
+    currentCarouselIndex.value = index;
+  }
+
+  void updatePageIndex(int index) {
+    currentPageIndex.value = index;
+    pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void updateManagementCardIndex(int index) {
+    currentManagementCardIndex.value = index;
+  }
+
+  void navigateToRecipes() async {
+    // Ensure meal controller is initialized
+    final mealController = Get.find<MealController>();
+
+    if (!mealController.isLoading.value) {
+      mealController.fetchRecipes();
+    }
+
+    await Get.toNamed<void>(AppRoutes.meal);
+  }
+
+  void navigateToIngredients() async {
+    // Ensure meal controller is initialized
+    final mealController = Get.find<MealController>();
+
+    if (!mealController.isLoading.value) {
+      mealController.fetchIngredients();
+    }
+
+    await Get.toNamed<void>(AppRoutes.meal);
+  }
+
+  void navigateToMealPage() {
+    // Switch to the meal page view (index 0 for recipes, 1 for ingredients)
+    updatePageIndex(0);
+  }
+
   /// Quick actions
   Future<void> createNewMealPlan() async {
     try {
@@ -123,7 +177,7 @@ class HomeController extends GetxController {
 
   Future<void> createNewRecipe() async {
     try {
-      Get.toNamed<void>(AppRoutes.meal);
+      navigateToRecipes();
       // Additional logic for creating recipe can be added here
     } catch (e) {
       // Error navigating to meals
@@ -200,4 +254,17 @@ class HomeController extends GetxController {
       );
     }
   }
-} 
+
+  @override
+  void onClose() {
+    pageController.dispose();
+    _currentIndex.close();
+    _isLoading.close();
+    _error.close();
+    _dashboardData.close();
+    currentPageIndex.close();
+    currentCarouselIndex.close();
+    currentManagementCardIndex.close();
+    super.onClose();
+  }
+}

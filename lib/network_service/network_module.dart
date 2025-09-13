@@ -1,6 +1,6 @@
-
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
@@ -50,9 +50,8 @@ class NetworkModule {
     );
 
     // Web-specific configuration
-    if (kIsWeb) {
-      // For web builds, we need to rely on the browser's CORS handling
-      // The server must have proper CORS headers configured
+    if (kDebugMode && !kIsWeb) {
+      _configureHttpClientForDebug(dio);
     }
 
     // Add interceptors
@@ -391,6 +390,31 @@ class NetworkModule {
   static void clearDio() {
     _dio?.close();
     _dio = null;
+  }
+
+  static void _configureHttpClientForDebug(Dio dio) {
+    if (!kIsWeb) {
+      final httpClientAdapter = dio.httpClientAdapter;
+      if (httpClientAdapter is IOHttpClientAdapter) {
+        httpClientAdapter.createHttpClient = () {
+          final client = HttpClient();
+
+          // For development: bypass certificate validation for specific hosts
+          client.badCertificateCallback = (cert, host, port) {
+            // Only bypass certificate validation for your development server
+            // WARNING: Never use this in production!
+            final developmentHosts = ['15.207.67.98'];
+            if (developmentHosts.contains(host)) {
+              debugPrint('WARNING: Bypassing certificate validation for development host: $host');
+              return true;
+            }
+            return false;
+          };
+
+          return client;
+        };
+      }
+    }
   }
 
   /// Get platform name for cross-platform compatibility

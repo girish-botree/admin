@@ -705,21 +705,21 @@ class DioNetworkService {
     }
   }
 
-   static Future<dynamic> registerDeliveryPerson(
+  static Future<dynamic> registerDeliveryPerson(
     String firstName,
     String lastName,
     String email,
     String otp,
-       String password,
-       String phoneNumber,
-       String address,
-       String identificationNumber,
-       String vehicleType,
-       String vehicleNumber,
-       DateTime dateOfBirth,
-       String emergencyContact, {
-         String? profilePictureUrl,
-         String? documentsUrl,
+      String password,
+      String phoneNumber,
+      String address,
+      String identificationNumber,
+      String vehicleType,
+      String vehicleNumber,
+      DateTime dateOfBirth,
+      String emergencyContact, {
+        String? profilePictureUrl,
+        String? documentsUrl,
     bool showLoader = true,
   }) async {
     try {
@@ -1113,45 +1113,164 @@ class DioNetworkService {
     }
   }
 
+  // Exercise methods
+  static Future<dynamic> getExercises({bool showLoader = true}) async {
+    try {
+      if (showLoader) ApiHelper.showLoader();
+      final response = await _apiClient.getExercises();
+      if (showLoader) ApiHelper.dismissLoader();
+      return response.data;
+    } catch (error) {
+      if (showLoader) ApiHelper.dismissLoader();
 
-  
+      CustomDisplays.showToast(
+        message: 'Failed to load exercises. Please try again later',
+        type: MessageType.error,
+      );
 
-  /// Logout
-  // static Future<dynamic> logout() async {
-  //   try {
-  //     ApiHelper.showLoader();
+      rethrow;
+    }
+  }
 
-  //     final response = await _apiClient.logout({});
+  static Future<dynamic> getExerciseById(String id,
+      {bool showLoader = true}) async {
+    try {
+      if (showLoader) ApiHelper.showLoader();
+      final response = await _apiClient.getExerciseById(id);
+      if (showLoader) ApiHelper.dismissLoader();
+      return response.data;
+    } catch (error) {
+      if (showLoader) ApiHelper.dismissLoader();
 
-  //     // Clear local storage
-  //     await _sharedPreference.remove(AppConstants.bearerToken);
+      CustomDisplays.showToast(
+        message: 'Failed to load exercise. Please try again later',
+        type: MessageType.error,
+      );
 
-  //     ApiHelper.dismissLoader();
+      rethrow;
+    }
+  }
 
-  //     return response.data;
-  //   } catch (error) {
-  //     ApiHelper.dismissLoader();
-  //     CommonUtils.debugLog(error.toString());
-  //     rethrow;
-  //   }
-  // }
+  static Future<dynamic> createExercise(Map<String, dynamic> data,
+      {bool showLoader = true}) async {
+    try {
+      if (showLoader) ApiHelper.showLoader();
+      final response = await _apiClient.createExercise(data);
+      if (showLoader) ApiHelper.dismissLoader();
+      return response.data;
+    } catch (error) {
+      if (showLoader) ApiHelper.dismissLoader();
 
-  // /// Get User Profile
-  // static Future<dynamic> getProfile() async {
-  //   try {
-  //     ApiHelper.showLoader();
+      CustomDisplays.showToast(
+        message: 'Failed to create exercise. Please try again later',
+        type: MessageType.error,
+      );
 
-  //     final response = await _apiClient.getProfile();
+      rethrow;
+    }
+  }
 
-  //     ApiHelper.dismissLoader();
+  static Future<dynamic> updateExercise(String id, Map<String, dynamic> data,
+      {bool showLoader = true}) async {
+    try {
+      if (showLoader) ApiHelper.showLoader();
+      final response = await _apiClient.updateExercise(id, data);
+      if (showLoader) ApiHelper.dismissLoader();
+      return response.data;
+    } catch (error) {
+      if (showLoader) ApiHelper.dismissLoader();
 
-  //     return response.data;
-  //   } catch (error) {
-  //     ApiHelper.dismissLoader();
-  //     CommonUtils.debugLog(error.toString());
-  //     rethrow;
-  //   }
-  // }
+      CustomDisplays.showToast(
+        message: 'Failed to update exercise. Please try again later',
+        type: MessageType.error,
+      );
+
+      rethrow;
+    }
+  }
+
+  static Future<dynamic> deleteExercise(String id,
+      {bool showLoader = true}) async {
+    try {
+      if (showLoader) ApiHelper.showLoader();
+      final response = await _apiClient.deleteExercise(id);
+      if (showLoader) ApiHelper.dismissLoader();
+      return response.data;
+    } catch (error) {
+      if (showLoader) ApiHelper.dismissLoader();
+
+      CustomDisplays.showToast(
+        message: 'Failed to delete exercise. Please try again later',
+        type: MessageType.error,
+      );
+
+      rethrow;
+    }
+  }
+
+  // Delivery Report methods
+  static Future<dynamic> getDeliveryReportAvailableDates(
+      {bool showLoader = true}) async {
+    try {
+      if (showLoader) ApiHelper.showLoader();
+      final response = await _apiClient.getDeliveryReportAvailableDates();
+      if (showLoader) ApiHelper.dismissLoader();
+      return response.data;
+    } catch (error) {
+      if (showLoader) ApiHelper.dismissLoader();
+
+      CustomDisplays.showToast(
+        message: 'Failed to load available delivery dates. Please try again later',
+        type: MessageType.error,
+      );
+
+      rethrow;
+    }
+  }
+
+  static Future<dynamic> getDeliveryReportData(String deliveryDate,
+      int mealPeriod, {bool showLoader = true}) async {
+    try {
+      if (showLoader) ApiHelper.showLoader();
+      final response = await _apiClient.getDeliveryReportData({
+        'deliveryDate': deliveryDate,
+        'mealPeriod': mealPeriod,
+      });
+      if (showLoader) ApiHelper.dismissLoader();
+      return response.data;
+    } catch (error) {
+      if (showLoader) ApiHelper.dismissLoader();
+
+      CustomDisplays.showToast(
+        message: 'Failed to load delivery report data. Please try again later',
+        type: MessageType.error,
+      );
+
+      rethrow;
+    }
+  }
+
+  static Future<dynamic> generateDeliveryReportExcel(String deliveryDate,
+      int mealPeriod, {bool showLoader = true}) async {
+    try {
+      if (showLoader) ApiHelper.showLoader();
+      final response = await _apiClient.generateDeliveryReportExcel({
+        'deliveryDate': deliveryDate,
+        'mealPeriod': mealPeriod,
+      });
+      if (showLoader) ApiHelper.dismissLoader();
+      return response.data;
+    } catch (error) {
+      if (showLoader) ApiHelper.dismissLoader();
+
+      CustomDisplays.showToast(
+        message: 'Failed to generate Excel report. Please try again later',
+        type: MessageType.error,
+      );
+
+      rethrow;
+    }
+  }
 
   /// Utility Methods
 

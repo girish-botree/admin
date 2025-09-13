@@ -22,6 +22,10 @@ import '../language/language_binding.dart';
 import '../modules/splash/splash_binding.dart';
 import '../modules/splash/splash_view.dart';
 import 'app_routes.dart';
+import 'package:admin/modules/reports/reports_binding.dart';
+import 'package:admin/modules/reports/reports_view.dart';
+import 'package:admin/modules/admins/create_admins/create_admin_binding.dart';
+import 'package:admin/modules/admins/create_admins/create_admin_view.dart';
 
 class AppPages {
   AppPages._();
@@ -80,6 +84,16 @@ class AppPages {
         name: AppRoutes.planStatistics,
         page: () => const PlanStatisticsView(),
         binding: PlanBinding(),
+        middlewares: [AuthMiddleware()]),
+    GetPage<void>(
+        name: AppRoutes.reports,
+        page: () => const ReportsView(),
+        binding: ReportsBinding(),
+        middlewares: [AuthMiddleware()]),
+    GetPage<void>(
+        name: AppRoutes.createAdmin,
+        page: () => const CreateAdminView(),
+        binding: CreateAdminBinding(),
         middlewares: [AuthMiddleware()]),
   ];
 }

@@ -9,8 +9,57 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="refactor: improve dashboard UI with glassmorphism effects and responsive styling across devices">
-      <change beforePath="$PROJECT_DIR$/lib/modules/meal/receipe/screens/recipe_detail_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/screens/recipe_detail_screen.dart" afterDir="false" />
+    <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="refactor: improve dashboard UI with glassmorphism effects and responsive styling across devices 1">
+      <change afterPath="$PROJECT_DIR$/IMAGE_UPLOAD_IMPLEMENTATION.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/xml/network_security_config.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/reports/reports_binding.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/reports/reports_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/reports/reports_view.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/workout/exercises/exercise_binding.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/workout/exercises/exercise_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/workout/exercises/screens/exercise_detail_screen.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/workout/exercises/screens/exercises_view.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/workout/exercises/widgets/exercise_card.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/workout/exercises/widgets/exercise_dialogs.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/modules/workout/exercises/widgets/exercise_shimmer.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/services/file_upload_service.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/utils/network_utils.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/utils/safe_getx_widget.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/widgets/image_upload_widget.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/widgets/placeholder_image_widget.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/Runner/Info.plist" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Runner/Info.plist" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/admins/create_admins/create_admin_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/admins/create_admins/create_admin_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/dashboard_cards.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/dashboard_cards.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/dashboard/dashboard_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/dashboard/dashboard_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/delivery_management/delivery_management_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/delivery_management/delivery_management_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/delivery_management/delivery_management_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/delivery_management/delivery_management_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/home/components/mobile_home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/home/components/mobile_home.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/home/components/tablet_home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/home/components/tablet_home.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/home/components/web_home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/home/components/web_home.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/home/home_binding.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/home/home_binding.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/home/home_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/home/home_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/home/home_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/home/home_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/main_layout/main_layout_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/ingredients/dialogs/ingredient_dialogs.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/ingredients/dialogs/ingredient_dialogs.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_dialog.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/meal/receipe/dialogs/recipe_dialog.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/plan/plan_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/plan_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/plan/plan_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/plan/plan_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/network_service/api_client.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/api_client.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/network_service/api_client.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/api_client.g.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/network_service/app_url_config.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/app_url_config.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/network_service/dio_network_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/dio_network_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/network_service/network_module.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/network_module.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/routes/app_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/routes/app_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/routes/app_routes.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/routes/app_routes.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/widgets/multi_select_dropdown.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/multi_select_dropdown.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/widgets/profile_widget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/profile_widget.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/widgets/searchable_dropdown.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/searchable_dropdown.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,27 +114,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Flutter.main.dart.executor": "Debug",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "SONARLINT_PRECOMMIT_ANALYSIS": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "main",
-    "io.flutter.reload.alreadyRun": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/kabilan/Documents/GitHub/admin",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "show.migrate.to.gradle.popup": "false",
-    "vcs.patch.path": "/Users/kabilan/Desktop"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Flutter.main.dart.executor&quot;: &quot;Debug&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/kabilan/Documents/GitHub/admin&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;,
+    &quot;vcs.patch.path&quot;: &quot;/Users/kabilan/Desktop&quot;
   }
-}]]></component>
+}</component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="" />
@@ -302,7 +351,15 @@
       <option name="project" value="LOCAL" />
       <updated>1757222087763</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="refactor: improve dashboard UI with glassmorphism effects and responsive styling across devices 1">
+      <option name="closed" value="true" />
+      <created>1757223021768</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1757223021768</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -323,7 +380,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="fix: update theme color references, add secure token storage, enhance splash animations, improve responsive layout, and refine login and dashboard components for better UX and security." />
     <MESSAGE value="add new dashboard widgets for ingredient usage radar and recipe trend chart" />
     <MESSAGE value="fixes in settings" />
     <MESSAGE value="fix: improve login flow with internet connectivity check and enhance theme selection UI in settings" />
@@ -348,6 +404,7 @@
     <MESSAGE value="refactor: add refresh flags and loading states to controllers, update UI components for better responsiveness and consistency" />
     <MESSAGE value="refactor: enhance UI components with glassmorphism effects, update styling for consistency, and improve visual responsiveness across mobile, tablet, and web layouts" />
     <MESSAGE value="refactor: improve dashboard UI with glassmorphism effects and responsive styling across devices" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor: improve dashboard UI with glassmorphism effects and responsive styling across devices" />
+    <MESSAGE value="refactor: improve dashboard UI with glassmorphism effects and responsive styling across devices 1" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor: improve dashboard UI with glassmorphism effects and responsive styling across devices 1" />
   </component>
 </project>

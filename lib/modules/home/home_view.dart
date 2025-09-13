@@ -7,17 +7,21 @@ import 'components/mobile_home.dart';
 import 'components/tablet_home.dart';
 import 'components/web_home.dart';
 
-class HomeView extends GetView<HomeController> {
-
+class HomeView extends StatelessWidget {
   const HomeView({super.key, this.showBottomNav = true});
   final bool showBottomNav;
 
   @override
   Widget build(BuildContext context) {
-    return const Responsive(
-      mobile: MobileHome(),
-      tablet: TabletHome(),
-      web: WebHome(),
+    return GetBuilder<HomeController>(
+      init: HomeController(), // Ensure controller is initialized
+      builder: (controller) {
+        return const Responsive(
+          mobile: MobileHome(),
+          tablet: TabletHome(),
+          web: WebHome(),
+        );
+      },
     );
   }
 }

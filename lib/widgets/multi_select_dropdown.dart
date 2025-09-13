@@ -143,16 +143,17 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown>
     if (mounted) setState(() => _isOpen = true);
     _animationController.forward();
 
+    // Remove auto-focus code
     // Auto-focus search and show keyboard if enabled
-    if (widget.showSearch) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _searchFocusNode.requestFocus();
-        // Explicitly show keyboard
-        Future.delayed(const Duration(milliseconds: 50), () {
-          SystemChannels.textInput.invokeMethod('TextInput.show');
-        });
-      });
-    }
+    // if (widget.showSearch) {
+    //   WidgetsBinding.instance.addPostFrameCallback((_) {
+    //     _searchFocusNode.requestFocus();
+    //     // Explicitly show keyboard
+    //     Future.delayed(const Duration(milliseconds: 50), () {
+    //       SystemChannels.textInput.invokeMethod('TextInput.show');
+    //     });
+    //   });
+    // }
   }
 
   void _closeDropdown() {
@@ -690,51 +691,57 @@ class _DropdownMenuState extends State<_DropdownMenu> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
       ),
-      child: TextField(
-        controller: widget.searchController,
-        focusNode: widget.searchFocusNode,
-        style: theme.textTheme.bodyMedium?.copyWith(
-          color: theme.colorScheme.onSurface,
+      child: GestureDetector(
+        onTap: () {
+          widget.searchFocusNode.requestFocus();
+          SystemChannels.textInput.invokeMethod('TextInput.show');
+        },
+        child: TextField(
+          controller: widget.searchController,
+          focusNode: widget.searchFocusNode,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurface,
+          ),
+          decoration: InputDecoration(
+            hintText: 'Search items...',
+            hintStyle: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
+            prefixIcon: Icon(
+              Icons.search,
+              color: theme.colorScheme.primary,
+              size: 20,
+            ),
+            suffixIcon: ValueListenableBuilder<TextEditingValue>(
+              valueListenable: widget.searchController,
+              builder: (context, value, child) {
+                return value.text.isNotEmpty
+                    ? IconButton(
+                  onPressed: () {
+                    widget.searchController.clear();
+                    widget.onSearch('');
+                  },
+                  icon: Icon(
+                    Icons.clear,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                    size: 18,
+                  ),
+                )
+                    : const SizedBox.shrink();
+              },
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            filled: true,
+            fillColor: theme.colorScheme.surface,
+            contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16, vertical: 12),
+            isDense: true,
+          ),
+          onChanged: widget.onSearch,
         ),
-        decoration: InputDecoration(
-          hintText: 'Search items...',
-          hintStyle: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-          ),
-          prefixIcon: Icon(
-            Icons.search,
-            color: theme.colorScheme.primary,
-            size: 20,
-          ),
-          suffixIcon: ValueListenableBuilder<TextEditingValue>(
-            valueListenable: widget.searchController,
-            builder: (context, value, child) {
-              return value.text.isNotEmpty
-                  ? IconButton(
-                onPressed: () {
-                  widget.searchController.clear();
-                  widget.onSearch('');
-                },
-                icon: Icon(
-                  Icons.clear,
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                  size: 18,
-                ),
-              )
-                  : const SizedBox.shrink();
-            },
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
-          ),
-          filled: true,
-          fillColor: theme.colorScheme.surface,
-          contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16, vertical: 12),
-          isDense: true,
-        ),
-        onChanged: widget.onSearch,
       ),
     );
   }

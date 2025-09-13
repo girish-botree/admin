@@ -1,7 +1,5 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:retrofit/retrofit.dart';
 
 
@@ -76,6 +74,24 @@ abstract class ApiClient {
   @DELETE('${AppUrl.ingredients}/{id}')
   Future<HttpResponse<dynamic>> deleteIngredient(@Path('id') String id);
 
+  // Exercise endpoints
+  @GET(AppUrl.exercises)
+  Future<HttpResponse<dynamic>> getExercises();
+
+  @GET('${AppUrl.exercises}/{id}')
+  Future<HttpResponse<dynamic>> getExerciseById(@Path('id') String id);
+
+  @POST(AppUrl.adminExercises)
+  Future<HttpResponse<dynamic>> createExercise(
+      @Body() Map<String, dynamic> body);
+
+  @PUT('${AppUrl.adminExercises}/{id}')
+  Future<HttpResponse<dynamic>> updateExercise(@Path('id') String id,
+      @Body() Map<String, dynamic> body);
+
+  @DELETE('${AppUrl.adminExercises}/{id}')
+  Future<HttpResponse<dynamic>> deleteExercise(@Path('id') String id);
+
   // Admin meal plan endpoints
 
   @GET(AppUrl.getAdminMealPlan)
@@ -96,7 +112,26 @@ abstract class ApiClient {
   @DELETE('${AppUrl.adminMealPlan}/{id}')
   Future<HttpResponse<dynamic>> deleteMealPlan(@Path('id') String id);
 
+  // Admin Delivery Report endpoints
+  @GET(AppUrl.adminDeliveryReportAvailableDates)
+  Future<HttpResponse<dynamic>> getDeliveryReportAvailableDates();
 
+  @POST(AppUrl.adminDeliveryReportData)
+  Future<HttpResponse<dynamic>> getDeliveryReportData(
+      @Body() Map<String, dynamic> body);
+
+  @POST(AppUrl.adminDeliveryReportGenerateExcel)
+  Future<HttpResponse<dynamic>> generateDeliveryReportExcel(
+      @Body() Map<String, dynamic> body);
+
+  // File upload endpoints
+  @POST(AppUrl.fileUpload)
+  @MultiPart()
+  Future<HttpResponse<dynamic>> uploadFile(
+    @Part() File file,
+    @Part() String fileType,
+    @Part() String? description,
+  );
 
   // @POST(AppUrl.logout)
   // Future<HttpResponse<dynamic>> logout(@Body() Map<String, dynamic> body);

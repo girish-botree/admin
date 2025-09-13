@@ -9,9 +9,9 @@ class AppUrl {
   );
 
   // Alternative URLs for different environments
-  static const String devBaseUrl = 'https://elithapi-606254752351.asia-south1.run.app/';
-  static const String stagingBaseUrl = 'https://elithapi-606254752351.asia-south1.run.app/';
-  static const String prodBaseUrl = 'https://elithapi-606254752351.asia-south1.run.app/';
+  static const String devBaseUrl = 'https://15.207.67.98/';
+  static const String stagingBaseUrl = 'https://15.207.67.98/';
+  static const String prodBaseUrl = 'https://15.207.67.98/';
 
   // Get base URL based on environment
   static String getBaseUrl() {
@@ -48,11 +48,22 @@ class AppUrl {
   static const String ingredients = 'api/Admin/ingredients';
   static const String ingredient = 'api/Admin/ingredient';
 
+  // Exercise endpoints
+  static const String exercises = 'api/workout/exercises';
+  static const String adminExercises = 'api/admin/workout/exercises';
+
+  // File upload endpoints
+  static const String fileUpload = 'api/FileUpload/upload';
+
   // Admin meal plan
   static const String getAdminMealPlan = '/api/MealPlan';
   static const String adminMealPlan = '/api/admin/AdminMealPlan';
   static const String adminMealPlanByDate = '/api/MealPlan/date';
 
+  // Admin delivery report endpoints
+  static const String adminDeliveryReportAvailableDates = 'api/admin/AdminDeliveryReport/available-dates';
+  static const String adminDeliveryReportData = 'api/admin/AdminDeliveryReport/data';
+  static const String adminDeliveryReportGenerateExcel = 'api/admin/AdminDeliveryReport/generate-excel';
 
   // Add more endpoints as needed
   static const String users = 'api/users';

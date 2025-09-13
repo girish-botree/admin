@@ -18,6 +18,14 @@ class MainLayoutController extends GetxController {
     _loadUserData();
   }
 
+  @override
+  void onClose() {
+    // Properly dispose of reactive variables
+    _currentIndex.close();
+    userEmail.close();
+    super.onClose();
+  }
+
   void changePage(int index) {
     _currentIndex.value = index;
   }

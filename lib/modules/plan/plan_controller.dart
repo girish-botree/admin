@@ -74,6 +74,36 @@ class PlanController extends GetxController {
 
   @override
   void onClose() {
+    // Dispose of text controllers
+    nameController.dispose();
+    descriptionController.dispose();
+    priceController.dispose();
+    imageUrlController.dispose();
+
+    // Dispose of reactive variables
+    mealPlans.close();
+    mealPlanAssignments.close();
+    recipes.close();
+    _filteredRecipesCache.close();
+    isLoading.close();
+    isRefreshing.close();
+    isActive.close();
+    selectedRecipeId.close();
+    selectedMealDate.close();
+    selectedPeriod.close();
+    selectedCategory.close();
+    selectedBmiCategory.close();
+    selectedRecipeIds.close();
+    showMultiSelection.close();
+    selectedMealCount.close();
+    selectedMealRecipeIds.close();
+    selectedCalendarDate.close();
+    focusedDay.close();
+    showDietTypeSelection.close();
+    selectedDietType.close();
+    selectedMealRecipes.close();
+    viewByCategory.close();
+
     super.onClose();
   }
 

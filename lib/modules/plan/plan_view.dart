@@ -38,8 +38,13 @@ class PlanView extends GetView<PlanController> {
         elevation: 0,
         centerTitle: false,
         actions: [
-          Obx(() =>
-              IconButton(
+          Obx(() {
+            // Add null safety check
+            if (!Get.isRegistered<PlanController>()) {
+              return const SizedBox.shrink();
+            }
+
+            return IconButton(
                 onPressed: controller.isRefreshing.value ? null : () async {
                   await controller.refreshData();
             },
@@ -57,10 +62,16 @@ class PlanView extends GetView<PlanController> {
                 : Icon(
                 Icons.refresh, color: context.theme.colorScheme.onSurface),
             tooltip: 'Refresh',
-          )),
+            );
+          }),
         ],
       ),
       body: Obx(() {
+        // Add null safety check
+        if (!Get.isRegistered<PlanController>()) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
         if (controller.isLoading.value) {
           return const MealPlanLoading();
         }
