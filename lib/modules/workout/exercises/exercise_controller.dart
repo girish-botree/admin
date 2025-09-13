@@ -29,6 +29,7 @@ class ExerciseController extends GetxController {
   final isLoading = false.obs;
   final isRefreshing = false.obs;
   final error = ''.obs;
+  final isImageUploading = false.obs;
 
   // Form controllers
   final nameController = TextEditingController();
@@ -100,10 +101,26 @@ class ExerciseController extends GetxController {
     error.value = '';
 
     try {
-      await DioNetworkService.createExercise(data, showLoader: false);
+      print('Creating exercise with data: $data');
+
+      // Validate that required fields are not empty
+      if (data['name'] == null || data['name']
+          .toString()
+          .isEmpty) {
+        print('Error: Exercise name is required');
+        error.value = 'Exercise name is required';
+        return false;
+      }
+
+      final response = await DioNetworkService.createExercise(
+          data, showLoader: false);
+      print('Create exercise response: $response');
+
+      // Refresh the exercises list
       await fetchExercises();
       return true;
     } catch (e) {
+      print('Error creating exercise: $e');
       error.value = e.toString();
       return false;
     } finally {
@@ -286,6 +303,16 @@ class ExerciseController extends GetxController {
       }
     }
 
+    // Prioritize the uploadedImageUrl parameter, then the controller's imageUrl field
+    final String imageUrl = uploadedImageUrl != null &&
+        uploadedImageUrl.isNotEmpty
+        ? uploadedImageUrl
+        : imageUrlController.text.trim();
+
+    print('Creating exercise data with image URL: $imageUrl');
+    print('- uploadedImageUrl parameter: $uploadedImageUrl');
+    print('- imageUrlController value: ${imageUrlController.text}');
+
     return {
       'name': nameController.text.trim(),
       'description': descriptionController.text.trim(),
@@ -293,7 +320,7 @@ class ExerciseController extends GetxController {
       'equipment': equipmentController.text.trim(),
       'difficulty': int.tryParse(difficultyController.text) ?? 1,
       'instructionData': instructionData,
-      'imageUrl': uploadedImageUrl ?? imageUrlController.text.trim(),
+      'imageUrl': imageUrl,
       'videoUrl': videoUrlController.text.trim(),
     };
   }
@@ -419,6 +446,26 @@ class ExerciseController extends GetxController {
     } finally {
       isRefreshing.value = false;
     }
+  }
+
+  // Wait for image upload to complete
+  Future<bool> waitForImageUpload() async {
+    // If image is not currently uploading, return true immediately
+    if (!isImageUploading.value) {
+      return true;
+    }
+
+    // Wait for up to 30 seconds for the upload to complete
+    int attempts = 0;
+    const maxAttempts = 60; // 30 seconds (500ms * 60)
+
+    while (isImageUploading.value && attempts < maxAttempts) {
+      await Future.delayed(const Duration(milliseconds: 500));
+      attempts++;
+    }
+
+    // Return true if upload completed successfully (no longer uploading)
+    return !isImageUploading.value;
   }
 
   @override

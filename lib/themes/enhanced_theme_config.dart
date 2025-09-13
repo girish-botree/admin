@@ -473,7 +473,246 @@ class EnhancedThemeConfig {
       size: MaterialDesignSystem.iconSizeMedium,
     ),
   );
-  
+
+  // MARK: - Green Theme
+  static ThemeData get greenTheme =>
+      ThemeData(
+        useMaterial3: true,
+        colorScheme: _greenColorScheme,
+        fontFamily: MaterialDesignSystem.fontFamily,
+        scaffoldBackgroundColor: _greenColorScheme.surfaceContainerLowest,
+
+        // App Bar Theme
+        appBarTheme: AppBarTheme(
+          backgroundColor: _greenColorScheme.surface,
+          foregroundColor: _greenColorScheme.onSurface,
+          elevation: 0,
+          centerTitle: true,
+          titleTextStyle: TextStyle(
+            fontSize: 20,
+            fontWeight: MaterialDesignSystem.fontWeightSemiBold,
+            color: _greenColorScheme.onSurface,
+            fontFamily: MaterialDesignSystem.fontFamily,
+          ),
+          iconTheme: IconThemeData(
+            color: _greenColorScheme.onSurface,
+            size: MaterialDesignSystem.iconSizeLarge,
+          ),
+        ),
+
+        // Card Theme
+        cardTheme: CardThemeData(
+          color: _greenColorScheme.surface,
+          elevation: MaterialDesignSystem.elevation2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(MaterialDesignSystem.radius16),
+          ),
+          margin: const EdgeInsets.all(MaterialDesignSystem.spacing8),
+        ),
+
+        // Elevated Button Theme
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: _greenColorScheme.primary,
+            foregroundColor: _greenColorScheme.onPrimary,
+            elevation: MaterialDesignSystem.elevation2,
+            padding: const EdgeInsets.symmetric(
+              horizontal: MaterialDesignSystem.spacing24,
+              vertical: MaterialDesignSystem.spacing12,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(
+                  MaterialDesignSystem.radius12),
+            ),
+            textStyle: TextStyle(
+              fontSize: 16,
+              fontWeight: MaterialDesignSystem.fontWeightMedium,
+              fontFamily: MaterialDesignSystem.fontFamily,
+            ),
+          ),
+        ),
+
+        // Outlined Button Theme
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            foregroundColor: _greenColorScheme.primary,
+            side: BorderSide(
+              color: _greenColorScheme.primary,
+              width: 1.5,
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: MaterialDesignSystem.spacing24,
+              vertical: MaterialDesignSystem.spacing12,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(
+                  MaterialDesignSystem.radius12),
+            ),
+            textStyle: TextStyle(
+              fontSize: 16,
+              fontWeight: MaterialDesignSystem.fontWeightMedium,
+              fontFamily: MaterialDesignSystem.fontFamily,
+            ),
+          ),
+        ),
+
+        // Text Button Theme
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            foregroundColor: _greenColorScheme.primary,
+            padding: const EdgeInsets.symmetric(
+              horizontal: MaterialDesignSystem.spacing16,
+              vertical: MaterialDesignSystem.spacing8,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(MaterialDesignSystem.radius8),
+            ),
+            textStyle: TextStyle(
+              fontSize: 16,
+              fontWeight: MaterialDesignSystem.fontWeightMedium,
+              fontFamily: MaterialDesignSystem.fontFamily,
+            ),
+          ),
+        ),
+
+        // Input Decoration Theme
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: _greenColorScheme.surfaceContainerLow,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(MaterialDesignSystem.radius12),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(MaterialDesignSystem.radius12),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(MaterialDesignSystem.radius12),
+            borderSide: BorderSide(
+              color: _greenColorScheme.primary,
+              width: 2,
+            ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(MaterialDesignSystem.radius12),
+            borderSide: BorderSide(
+              color: _greenColorScheme.error,
+              width: 2,
+            ),
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: MaterialDesignSystem.spacing16,
+            vertical: MaterialDesignSystem.spacing12,
+          ),
+          hintStyle: TextStyle(
+            color: _greenColorScheme.onSurface.withValues(alpha: 0.6),
+            fontSize: 16,
+            fontFamily: MaterialDesignSystem.fontFamily,
+          ),
+          labelStyle: TextStyle(
+            color: _greenColorScheme.onSurface,
+            fontSize: 16,
+            fontFamily: MaterialDesignSystem.fontFamily,
+          ),
+        ),
+
+        // Floating Action Button Theme
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
+          backgroundColor: _greenColorScheme.primary,
+          foregroundColor: _greenColorScheme.onPrimary,
+          elevation: MaterialDesignSystem.elevation4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(MaterialDesignSystem.radius16),
+          ),
+        ),
+
+        // Bottom Navigation Bar Theme
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          backgroundColor: _greenColorScheme.surface,
+          selectedItemColor: _greenColorScheme.primary,
+          unselectedItemColor: _greenColorScheme.onSurface.withValues(
+              alpha: 0.6),
+          type: BottomNavigationBarType.fixed,
+          elevation: MaterialDesignSystem.elevation8,
+          selectedLabelStyle: TextStyle(
+            fontSize: 12,
+            fontWeight: MaterialDesignSystem.fontWeightMedium,
+            fontFamily: MaterialDesignSystem.fontFamily,
+          ),
+          unselectedLabelStyle: TextStyle(
+            fontSize: 12,
+            fontWeight: MaterialDesignSystem.fontWeightRegular,
+            fontFamily: MaterialDesignSystem.fontFamily,
+          ),
+        ),
+
+        // Dialog Theme
+        dialogTheme: DialogThemeData(
+          backgroundColor: _greenColorScheme.surface,
+          elevation: MaterialDesignSystem.elevation8,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(MaterialDesignSystem.radius20),
+          ),
+          titleTextStyle: TextStyle(
+            fontSize: 20,
+            fontWeight: MaterialDesignSystem.fontWeightSemiBold,
+            color: _greenColorScheme.onSurface,
+            fontFamily: MaterialDesignSystem.fontFamily,
+          ),
+          contentTextStyle: TextStyle(
+            fontSize: 16,
+            fontWeight: MaterialDesignSystem.fontWeightRegular,
+            color: _greenColorScheme.onSurface,
+            fontFamily: MaterialDesignSystem.fontFamily,
+          ),
+        ),
+
+        // Bottom Sheet Theme
+        bottomSheetTheme: BottomSheetThemeData(
+          backgroundColor: _greenColorScheme.surface,
+          elevation: MaterialDesignSystem.elevation8,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(MaterialDesignSystem.radius20),
+            ),
+          ),
+        ),
+
+        // Snackbar Theme
+        snackBarTheme: SnackBarThemeData(
+          backgroundColor: _greenColorScheme.surfaceContainerHigh,
+          contentTextStyle: TextStyle(
+            color: _greenColorScheme.onSurface,
+            fontSize: 16,
+            fontFamily: MaterialDesignSystem.fontFamily,
+          ),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(MaterialDesignSystem.radius12),
+          ),
+        ),
+
+        // Divider Theme
+        dividerTheme: DividerThemeData(
+          color: _greenColorScheme.outline.withValues(alpha: 0.2),
+          thickness: 1,
+          space: 1,
+        ),
+
+        // Icon Theme
+        iconTheme: IconThemeData(
+          color: _greenColorScheme.onSurface,
+          size: MaterialDesignSystem.iconSizeMedium,
+        ),
+
+        // Primary Icon Theme
+        primaryIconTheme: IconThemeData(
+          color: _greenColorScheme.primary,
+          size: MaterialDesignSystem.iconSizeMedium,
+        ),
+      );
+
   // MARK: - Color Schemes
   static const ColorScheme _lightColorScheme = ColorScheme(
     brightness: Brightness.light,
@@ -548,6 +787,55 @@ class EnhancedThemeConfig {
     surfaceContainerHigh: Color(0xFF2A2A2A),
     surfaceContainerHighest: Color(0xFF303030),
   );
+
+  static const ColorScheme _greenColorScheme = ColorScheme(
+    brightness: Brightness.light,
+    primary: Color(0xFF2E7D32),
+    // Deep Green
+    onPrimary: Colors.white,
+    primaryContainer: Color(0xFF4CAF50),
+    // Medium Green
+    onPrimaryContainer: Colors.white,
+    secondary: Color(0xFF00695C),
+    // Teal Green
+    onSecondary: Colors.white,
+    secondaryContainer: Color(0xFF26A69A),
+    // Light Teal
+    onSecondaryContainer: Colors.white,
+    tertiary: Color(0xFF558B2F),
+    // Lime Green
+    onTertiary: Colors.white,
+    tertiaryContainer: Color(0xFF8BC34A),
+    // Lime
+    onTertiaryContainer: Colors.white,
+    error: MaterialDesignSystem.errorRed,
+    onError: Colors.white,
+    errorContainer: Color(0xFFFFEBEE),
+    onErrorContainer: MaterialDesignSystem.errorRed,
+    surface: Color(0xFFFAFBF8),
+    // Very Light Green-tinted White
+    onSurface: Color(0xFF1A1A1A),
+    surfaceVariant: Color(0xFFF0F4F0),
+    // Light Green-tinted Gray
+    onSurfaceVariant: Color(0xFF424242),
+    outline: Color(0xFFCEDFCE),
+    // Light Green-tinted Border
+    outlineVariant: Color(0xFFE7F0E7),
+    // Very Light Green-tinted Border
+    shadow: Color(0xFF000000),
+    scrim: Color(0xFF000000),
+    inverseSurface: Color(0xFF1B5E20),
+    // Dark Green
+    onInverseSurface: Color(0xFFFAFBF8),
+    inversePrimary: Color(0xFFA5D6A7),
+    // Light Green
+    surfaceTint: Color(0xFF2E7D32),
+    surfaceContainerLowest: Colors.white,
+    surfaceContainerLow: Color(0xFFF5F8F5),
+    surfaceContainer: Color(0xFFEDF3ED),
+    surfaceContainerHigh: Color(0xFFE3EBE3),
+    surfaceContainerHighest: Color(0xFFD9E4D9),
+  );
   
   // MARK: - Theme Utilities
   static ThemeData getThemeForMode(ThemeMode mode) {
@@ -567,5 +855,10 @@ class EnhancedThemeConfig {
   
   static ColorScheme getColorSchemeForMode(ThemeMode mode) {
     return getThemeForMode(mode).colorScheme;
+  }
+
+  // Green theme utility
+  static ThemeData getGreenTheme() {
+    return greenTheme;
   }
 }

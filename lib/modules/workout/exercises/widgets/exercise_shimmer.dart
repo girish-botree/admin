@@ -85,47 +85,19 @@ class ExerciseShimmerCard extends StatelessWidget {
               ),
               const SizedBox(height: 12),
 
-              // Exercise details shimmer
+              // Exercise details shimmer - limit to just one row to save space
               _buildShimmerDetailRow(),
               const SizedBox(height: 8),
-              _buildShimmerDetailRow(),
-              const SizedBox(height: 8),
-              _buildShimmerDetailRow(),
-              const SizedBox(height: 12),
 
-              // Description shimmer
-              Column(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    height: 12,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
+              // Use Expanded for the description to take remaining space
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
                   ),
-                  const SizedBox(height: 6),
-                  Container(
-                    width: double.infinity,
-                    height: 12,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Container(
-                    width: MediaQuery
-                        .of(context)
-                        .size
-                        .width * 0.7,
-                    height: 12,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ],
           ),

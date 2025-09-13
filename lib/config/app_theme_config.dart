@@ -2,10 +2,12 @@ import 'package:admin/themes/yellow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../themes/blue_theme.dart';
+import '../themes/green_theme.dart';
 
 enum ThemeConfig {
   themeBlue,
   themeYellow,
+  themeGreen,
 }
 
 class ThemeUtil {
@@ -16,6 +18,8 @@ class ThemeUtil {
         return BlueTheme().light();
       case ThemeConfig.themeYellow:
         return YellowTheme().light();
+      case ThemeConfig.themeGreen:
+        return MaterialTheme(ThemeData().textTheme).light();
     }
   }
 
@@ -25,6 +29,8 @@ class ThemeUtil {
         return BlueTheme().dark();
       case ThemeConfig.themeYellow:
         return YellowTheme().dark();
+      case ThemeConfig.themeGreen:
+        return MaterialTheme(ThemeData().textTheme).dark();
     }
   }
 }

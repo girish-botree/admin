@@ -9,6 +9,7 @@ class ImageUploadWidget extends StatefulWidget {
   final String? currentImageUrl;
   final void Function(String)? onImageUploaded;
   final void Function(String)? onError;
+  final void Function()? onUploadStart;
   final String? label;
   final String? hintText;
   final double? width;
@@ -24,6 +25,7 @@ class ImageUploadWidget extends StatefulWidget {
     this.currentImageUrl,
     this.onImageUploaded,
     this.onError,
+    this.onUploadStart,
     this.label,
     this.hintText,
     this.width,
@@ -357,6 +359,7 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
   }
 
   Future<void> _showImagePicker() async {
+    widget.onUploadStart?.call();
     setState(() {
       _isUploading = true;
       _errorMessage = null;
@@ -420,6 +423,7 @@ class CompactImageUploadWidget extends StatelessWidget {
   final String? currentImageUrl;
   final void Function(String)? onImageUploaded;
   final void Function(String)? onError;
+  final void Function()? onUploadStart;
   final double size;
   final bool showRemoveButton;
 
@@ -430,6 +434,7 @@ class CompactImageUploadWidget extends StatelessWidget {
     this.currentImageUrl,
     this.onImageUploaded,
     this.onError,
+    this.onUploadStart,
     this.size = 80,
     this.showRemoveButton = true,
   });
@@ -442,6 +447,7 @@ class CompactImageUploadWidget extends StatelessWidget {
       currentImageUrl: currentImageUrl,
       onImageUploaded: onImageUploaded,
       onError: onError,
+      onUploadStart: onUploadStart,
       width: size,
       height: size,
       showRemoveButton: showRemoveButton,

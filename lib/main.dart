@@ -37,8 +37,9 @@ Future<void> main() async {
 
   // Initialize the network service
   NetworkService.initialize();
-  
 
+  // Apply green theme
+  Get.find<ThemeController>().setGreenTheme();
   
   runApp(const MyApp());
   configLoading();
@@ -61,7 +62,9 @@ class MyApp extends StatelessWidget {
         title: 'Admin App',
         initialRoute: AppPages.initial,
         getPages: AppPages.routes,
-        theme: EnhancedThemeConfig.lightTheme,
+        theme: themeController.isGreenTheme
+            ? EnhancedThemeConfig.greenTheme
+            : EnhancedThemeConfig.lightTheme,
         darkTheme: kIsWeb ? null : EnhancedThemeConfig.darkTheme,
         themeMode: themeController.themeMode.value,
         translations: AppTranslations(),

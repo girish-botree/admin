@@ -9,12 +9,29 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="refactor: enhance dashboard UI with glassmorphism effects, improve responsiveness, and add new report and exercise endpoints for better user experience and functionality">
+    <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="Generating...">
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/xml/file_paths.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/themes/green_theme.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ChatHistory_schema_v2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/home/components/mobile_home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/home/components/mobile_home.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/home/components/tablet_home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/home/components/tablet_home.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/home/components/web_home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/home/components/web_home.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/config/app_theme_config.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config/app_theme_config.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/config/theme_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config/theme_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/reports/reports_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/reports/reports_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/reports/reports_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/reports/reports_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/workout/exercises/exercise_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/workout/exercises/exercise_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/workout/exercises/screens/exercises_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/workout/exercises/screens/exercises_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/workout/exercises/widgets/exercise_dialogs.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/workout/exercises/widgets/exercise_dialogs.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/modules/workout/exercises/widgets/exercise_shimmer.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/workout/exercises/widgets/exercise_shimmer.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/network_service/dio_network_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/dio_network_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/services/file_upload_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/services/file_upload_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/themes/blue_theme.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/themes/blue_theme.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/themes/enhanced_theme_config.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/themes/enhanced_theme_config.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/widgets/image_upload_widget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/image_upload_widget.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,27 +86,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Flutter.main.dart.executor&quot;: &quot;Debug&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/kabilan/Documents/GitHub/admin&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;,
-    &quot;vcs.patch.path&quot;: &quot;/Users/kabilan/Desktop&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Flutter.main.dart.executor": "Debug",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "SONARLINT_PRECOMMIT_ANALYSIS": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "main",
+    "io.flutter.reload.alreadyRun": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/kabilan/Documents/GitHub/admin/lib/themes",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "show.migrate.to.gradle.popup": "false",
+    "vcs.patch.path": "/Users/kabilan/Desktop"
   }
-}</component>
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/lib/themes" />
+    </key>
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="" />
@@ -322,7 +344,15 @@
       <option name="project" value="LOCAL" />
       <updated>1757749769889</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="refactor: enhance dashboard UI with glassmorphism effects, improve responsiveness, and add new report and exercise endpoints for better user experience and functionality">
+      <option name="closed" value="true" />
+      <created>1757753137155</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1757753137155</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -350,7 +380,6 @@
     <MESSAGE value="add confirmation dialogs for bulk deletions and enhance ingredient and recipe management modules" />
     <MESSAGE value="refactor: enhance ingredient and recipe dialogs with vitamin/mineral selection and JSON validation, improve recipe dropdown UI, and update related controllers for better data handling" />
     <MESSAGE value="bn" />
-    <MESSAGE value="Generating..." />
     <MESSAGE value="Dropdown issues" />
     <MESSAGE value="bug fixes1" />
     <MESSAGE value="bug fixes2" />
@@ -368,6 +397,7 @@
     <MESSAGE value="refactor: improve dashboard UI with glassmorphism effects and responsive styling across devices" />
     <MESSAGE value="refactor: improve dashboard UI with glassmorphism effects and responsive styling across devices 1" />
     <MESSAGE value="refactor: enhance dashboard UI with glassmorphism effects, improve responsiveness, and add new report and exercise endpoints for better user experience and functionality" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor: enhance dashboard UI with glassmorphism effects, improve responsiveness, and add new report and exercise endpoints for better user experience and functionality" />
+    <MESSAGE value="Generating..." />
+    <option name="LAST_COMMIT_MESSAGE" value="Generating..." />
   </component>
 </project>

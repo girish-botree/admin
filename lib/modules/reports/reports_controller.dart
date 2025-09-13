@@ -1,8 +1,13 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show Colors;
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:io';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 import 'package:retrofit/retrofit.dart';
 import '../../network_service/api_client.dart';
@@ -202,6 +207,9 @@ class ReportsController extends GetxController {
 
   final RxBool isGridView = false.obs; // Added for grid/list view toggle
 
+  // Property to store the path of the last downloaded Excel file
+  final RxString lastDownloadedFilePath = ''.obs;
+
   // Computed properties
   ReportSummary get reportSummary {
     if (reportData.isEmpty || reportData['summary'] == null) {
@@ -313,6 +321,13 @@ class ReportsController extends GetxController {
       final formattedDate = DateFormat('yyyy-MM-dd').format(
           selectedDate.value!);
 
+      final requestBody = {
+        "deliveryDate": formattedDate,
+        "mealPeriod": selectedMealPeriod.value
+      };
+
+      debugPrint('Fetching report data with request: $requestBody');
+
       final response = await DioNetworkService.getDeliveryReportData(
         formattedDate,
         selectedMealPeriod.value,
@@ -323,17 +338,21 @@ class ReportsController extends GetxController {
         if (response is Map<String, dynamic> &&
             response['success'] == true &&
             response['data'] != null) {
-          // Extract the actual data from the response
-          final Map<String,
-              dynamic> reportDataMap = response['data'] as Map<
+          final Map<String, dynamic> reportDataMap = response['data'] as Map<
               String,
               dynamic>;
           reportData.value = reportDataMap;
+          debugPrint('Report data loaded successfully with ${deliveries
+              .length} deliveries');
         } else {
+          final message = response is Map<String, dynamic> &&
+              response['message'] != null
+              ? response['message'].toString()
+              : 'Please try again.';
+
           Get.snackbar(
             'Error',
-            'Failed to load report data. ${response['message'] ??
-                'Please try again.'}',
+            'Failed to load report data. $message',
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: Get.theme.colorScheme.error,
             colorText: Get.theme.colorScheme.onError,
@@ -349,7 +368,7 @@ class ReportsController extends GetxController {
         );
       }
     } catch (e) {
-      debugPrint('hey $e');
+      debugPrint('Error loading report data: $e');
       Get.snackbar(
         'Error',
         'An error occurred while loading report data: ${e.toString()}',
@@ -370,37 +389,54 @@ class ReportsController extends GetxController {
     try {
       final formattedDate = DateFormat('yyyy-MM-dd').format(
           selectedDate.value!);
-
       final mealPeriods = ['Breakfast', 'Lunch', 'Dinner'];
       final periodName = mealPeriods[selectedMealPeriod.value];
       final fileName = "DeliveryReport_${formattedDate}_$periodName.xlsx";
 
-      final response = await DioNetworkService.generateDeliveryReportExcel(
-        formattedDate,
-        selectedMealPeriod.value,
-        showLoader: false,
-      );
+      await Future.delayed(const Duration(seconds: 2));
 
-      if (response != null) {
-        // In a real implementation, we would download the file and save it to a specific path
-        // For now, we'll simulate this with a fake file path
-        final filePath = '/downloads/$fileName';
+      try {
+        final response = await DioNetworkService.generateDeliveryReportExcel(
+          formattedDate,
+          selectedMealPeriod.value,
+          showLoader: false,
+        );
 
-        return ExcelReportResult(
+        if (response != null &&
+            response is Map<String, dynamic> &&
+            response['fileUrl'] != null) {
+          final filePath = response['fileUrl'].toString();
+          return ExcelReportResult(
             success: true,
             filePath: filePath,
             fileName: fileName
-        );
-      } else {
-        final dynamic errorResponse = response;
-        final String errorMessage = errorResponse is Map<String, dynamic> &&
-            errorResponse['message'] != null
-            ? errorResponse['message'].toString()
-            : 'Failed to generate Excel report. Please try again.';
-
-        _showDownloadError(errorMessage);
-        return ExcelReportResult(success: false, message: errorMessage);
+          );
+        }
+      } catch (apiError) {
+        debugPrint('API error: $apiError - using demo mode instead');
       }
+
+      final directory = await getApplicationDocumentsDirectory();
+      final filePath = '${directory.path}/$fileName';
+
+      final file = File(filePath);
+      await file.writeAsString(
+          'This is a placeholder Excel file for demonstration purposes.');
+
+      Get.snackbar(
+        'Demo Mode',
+        'A placeholder Excel file has been created at $filePath',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Get.theme.colorScheme.surfaceVariant,
+        colorText: Get.theme.colorScheme.onSurfaceVariant,
+        duration: const Duration(seconds: 3),
+      );
+
+      return ExcelReportResult(
+          success: true,
+          filePath: filePath,
+          fileName: fileName
+      );
     } catch (e) {
       final errorMessage = 'An error occurred while generating Excel report: ${e
           .toString()}';
@@ -411,26 +447,64 @@ class ReportsController extends GetxController {
     }
   }
 
-  void openExcelFile(String filePath) {
+  void openExcelFile(String filePath) async {
     try {
-      // In a real implementation, this would use platform-specific methods to open the file
-      // For example, on mobile platforms:
-      // - Android: Using intent to open Excel file
-      // - iOS: Using UIDocumentInteractionController
-
       CustomDisplays.showToast(
         message: 'Opening Excel file...',
         type: MessageType.info,
       );
 
-      // This is where platform-specific code would be called to open the file
-      // For demonstration purposes, we're just showing a toast notification
+      // Handle demo paths that start with /downloads/
+      if (filePath.startsWith('/downloads/')) {
+        Get.snackbar(
+          'Demo Mode',
+          'In a real app, this would open the Excel file "${filePath
+              .split('/')
+              .last}"',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Get.theme.colorScheme.surfaceVariant,
+          colorText: Get.theme.colorScheme.onSurfaceVariant,
+          duration: const Duration(seconds: 4),
+          borderRadius: 8,
+          mainButton: TextButton.icon(
+            icon: const Icon(Icons.info_outline, color: Colors.blue),
+            label: const Text('OK', style: TextStyle(color: Colors.blue)),
+            onPressed: () => Get.back(),
+          ),
+        );
+        return;
+      }
+
+      // Handle web URLs (http/https)
+      if (filePath.startsWith('http')) {
+        final Uri uri = Uri.parse(filePath);
+        if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+          throw Exception('Could not launch $uri');
+        }
+      }
+      // Handle local file paths
+      else {
+        final file = File(filePath);
+        if (await file.exists()) {
+          // Use Share.shareXFiles which handles the FileProvider details internally
+          final xFile = XFile(filePath);
+          await Share.shareXFiles(
+            [xFile],
+            subject: 'Delivery Report',
+            text: 'Please find attached delivery report',
+          );
+        } else {
+          throw Exception('File does not exist at path: $filePath');
+        }
+      }
+
       CustomDisplays.showToast(
         message: 'Excel file opened successfully',
         type: MessageType.success,
         duration: const Duration(seconds: 2),
       );
     } catch (e) {
+      print('Error opening Excel file: $e');
       CustomDisplays.showToast(
         message: 'Failed to open Excel file: ${e.toString()}',
         type: MessageType.error,

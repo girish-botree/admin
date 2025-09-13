@@ -128,12 +128,11 @@ class ExercisesView extends GetView<ExerciseController> {
         color: Get.context!.theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Get.context!.theme.colorScheme.outline.withValues(alpha: 0.1),
+          color: Get.context!.theme.colorScheme.outline.withOpacity(0.1),
         ),
         boxShadow: [
           BoxShadow(
-            color: Get.context!.theme.colorScheme.shadow.withValues(
-                alpha: 0.08),
+            color: Get.context!.theme.colorScheme.shadow.withOpacity(0.08),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -188,16 +187,14 @@ class ExercisesView extends GetView<ExerciseController> {
                 selected: isSelected,
                 onSelected: (_) => controller.selectedMuscleGroup.value = group,
                 selectedColor: Get.context!.theme.colorScheme.primary
-                    .withValues(alpha: 0.2),
+                    .withOpacity(0.2),
                 checkmarkColor: Get.context!.theme.colorScheme.primary,
                 backgroundColor: Get.context!.theme.colorScheme
                     .surfaceContainer,
                 side: BorderSide(
                   color: isSelected
-                      ? Get.context!.theme.colorScheme.primary.withValues(
-                      alpha: 0.3)
-                      : Get.context!.theme.colorScheme.outline.withValues(
-                      alpha: 0.2),
+                      ? Get.context!.theme.colorScheme.primary.withOpacity(0.3)
+                      : Get.context!.theme.colorScheme.outline.withOpacity(0.2),
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
@@ -229,16 +226,14 @@ class ExercisesView extends GetView<ExerciseController> {
                 onSelected: (_) =>
                 controller.selectedEquipment.value = equipment,
                 selectedColor: Get.context!.theme.colorScheme.primary
-                    .withValues(alpha: 0.2),
+                    .withOpacity(0.2),
                 checkmarkColor: Get.context!.theme.colorScheme.primary,
                 backgroundColor: Get.context!.theme.colorScheme
                     .surfaceContainer,
                 side: BorderSide(
                   color: isSelected
-                      ? Get.context!.theme.colorScheme.primary.withValues(
-                      alpha: 0.3)
-                      : Get.context!.theme.colorScheme.outline.withValues(
-                      alpha: 0.2),
+                      ? Get.context!.theme.colorScheme.primary.withOpacity(0.3)
+                      : Get.context!.theme.colorScheme.outline.withOpacity(0.2),
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
@@ -270,7 +265,7 @@ class ExercisesView extends GetView<ExerciseController> {
                 controller.difficultyRange.value = values,
                 activeColor: Get.context!.theme.colorScheme.primary,
                 inactiveColor: Get.context!.theme.colorScheme.outline
-                    .withValues(alpha: 0.3),
+                    .withOpacity(0.3),
               )),
         ],
       ),

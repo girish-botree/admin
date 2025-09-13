@@ -83,6 +83,8 @@ class ExerciseDialogs {
                         _buildExerciseForm(context, controller, uploadedImageUrl, (String imageUrl) {
                           setState(() {
                             uploadedImageUrl = imageUrl.isNotEmpty ? imageUrl : null;
+                            // When image URL is updated, also update the controller's image URL field
+                            controller.imageUrlController.text = imageUrl;
                           });
                         }),
                       ],
@@ -203,9 +205,18 @@ class ExerciseDialogs {
           fileType: 'ExerciseImage',
           description: 'Exercise image for ${controller.nameController.text.isNotEmpty ? controller.nameController.text : 'new exercise'}',
           currentImageUrl: uploadedImageUrl,
-          onImageUploaded: onImageUploaded,
+          onUploadStart: () {
+            controller.isImageUploading.value = true;
+          },
+          onImageUploaded: (String imageUrl) {
+            uploadedImageUrl = imageUrl.isNotEmpty ? imageUrl : null;
+            // When image URL is updated, also update the controller's image URL field
+            controller.imageUrlController.text = imageUrl;
+            controller.isImageUploading.value = false;
+          },
           onError: (String error) {
             Get.snackbar('Upload Error', error);
+            controller.isImageUploading.value = false;
           },
           label: 'Exercise Image',
           hintText: 'Upload a photo of the exercise (JPG, PNG up to 10MB)',
@@ -267,15 +278,15 @@ class ExerciseDialogs {
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: Get.context!.theme.colorScheme.outline.withValues(
-                    alpha: 0.3),
+                color: Get.context!.theme.colorScheme.outline.withAlpha(
+                    76),
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: Get.context!.theme.colorScheme.outline.withValues(
-                    alpha: 0.3),
+                color: Get.context!.theme.colorScheme.outline.withAlpha(
+                    76),
               ),
             ),
             focusedBorder: OutlineInputBorder(
@@ -317,17 +328,53 @@ class ExerciseDialogs {
       return;
     }
 
+    // Always make sure the imageUrl is taken from the most recent controller field unless an uploaded URL is explicitly given
+    String? imageUrlToUse = uploadedImageUrl ??
+        controller.imageUrlController.text;
+    if (imageUrlToUse != null && imageUrlToUse.isEmpty) {
+      imageUrlToUse = null;
+    }
+
     try {
-      // Get the uploaded image URL from the form state
-      final data = controller.createExerciseData(uploadedImageUrl: uploadedImageUrl);
+      // Wait for any ongoing image upload to complete
+      if (controller.isImageUploading.value) {
+        // Show a loading indicator
+        Get.snackbar(
+          'Please wait',
+          'Waiting for image upload to complete...',
+          duration: const Duration(seconds: 2),
+          snackPosition: SnackPosition.BOTTOM,
+        );
+
+        // Wait for upload to complete
+        final uploadCompleted = await controller.waitForImageUpload();
+        if (!uploadCompleted) {
+          _showErrorSnackbar('Image upload timed out. Please try again.');
+          return;
+        }
+
+        // Refresh the image URL after upload completes
+        imageUrlToUse = controller.imageUrlController.text;
+        if (imageUrlToUse.isEmpty) {
+          imageUrlToUse = null;
+        }
+      }
+
+      final data = controller.createExerciseData(
+          uploadedImageUrl: imageUrlToUse);
+
+      print('Attempting to create exercise with data: ${data.toString()}');
+      print('Image URL being used: ${data['imageUrl']}');
+
       final success = await controller.createExercise(data);
 
       if (success) {
+        // Only close the dialog if creation succeeded
         Get.back<void>();
         Get.snackbar(
           'Success',
           'Exercise added successfully',
-          backgroundColor: Colors.green.withValues(alpha: 0.1),
+          backgroundColor: Colors.green.withOpacity(0.1),
           colorText: Colors.green,
           icon: const Icon(Icons.check_circle, color: Colors.green),
           duration: const Duration(seconds: 3),
@@ -336,10 +383,32 @@ class ExerciseDialogs {
           borderRadius: 12,
         );
       } else {
-        _showErrorSnackbar('Failed to add exercise');
+        // Do not close dialog on failure
+        _showErrorSnackbar(
+          'Failed to add exercise. Please check your network connection and try again.',
+        );
       }
     } catch (e) {
-      _showErrorSnackbar('An error occurred while adding exercise');
+      print('Error adding exercise: $e');
+      String errorMessage = 'An error occurred while adding exercise';
+
+      if (e.toString().contains('SocketException') ||
+          e.toString().contains('Connection refused') ||
+          e.toString().contains('Network is unreachable')) {
+        errorMessage =
+        'Network error. Please check your internet connection and try again.';
+      } else if (e.toString().contains('500')) {
+        errorMessage =
+        'Server error. Please try again later or contact support.';
+      } else if (e.toString().contains('400') || e.toString().contains('422')) {
+        errorMessage =
+        'Invalid data. Please check your form input and try again.';
+      } else if (e.toString().contains('401') || e.toString().contains('403')) {
+        errorMessage =
+        'You don\'t have permission to add exercises. Please log in again.';
+      }
+
+      _showErrorSnackbar(errorMessage);
     }
   }
 
@@ -351,7 +420,39 @@ class ExerciseDialogs {
     }
 
     try {
-      final data = controller.createExerciseData(uploadedImageUrl: uploadedImageUrl);
+      // Always make sure the imageUrl is taken from the most recent controller field unless an uploaded URL is explicitly given
+      String? imageUrlToUse = uploadedImageUrl ??
+          controller.imageUrlController.text;
+      if (imageUrlToUse != null && imageUrlToUse.isEmpty) {
+        imageUrlToUse = null;
+      }
+
+      // Wait for any ongoing image upload to complete
+      if (controller.isImageUploading.value) {
+        // Show a loading indicator
+        Get.snackbar(
+          'Please wait',
+          'Waiting for image upload to complete...',
+          duration: const Duration(seconds: 2),
+          snackPosition: SnackPosition.BOTTOM,
+        );
+
+        // Wait for upload to complete
+        final uploadCompleted = await controller.waitForImageUpload();
+        if (!uploadCompleted) {
+          _showErrorSnackbar('Image upload timed out. Please try again.');
+          return;
+        }
+
+        // Refresh the image URL after upload completes
+        imageUrlToUse = controller.imageUrlController.text;
+        if (imageUrlToUse.isEmpty) {
+          imageUrlToUse = null;
+        }
+      }
+
+      final data = controller.createExerciseData(
+          uploadedImageUrl: imageUrlToUse);
       final exerciseId = exercise['exerciseId']?.toString() ??
           exercise['id']?.toString();
 
@@ -360,6 +461,11 @@ class ExerciseDialogs {
         return;
       }
 
+      // For debugging purposes, print the data being sent
+      print('Attempting to update exercise with ID: $exerciseId');
+      print('Update data: ${data.toString()}');
+      print('Image URL being used: ${data['imageUrl']}');
+
       final success = await controller.updateExercise(exerciseId, data);
 
       if (success) {
@@ -367,7 +473,7 @@ class ExerciseDialogs {
         Get.snackbar(
           'Success',
           'Exercise updated successfully',
-          backgroundColor: Colors.green.withValues(alpha: 0.1),
+          backgroundColor: Colors.green.withOpacity(0.1),
           colorText: Colors.green,
           icon: const Icon(Icons.check_circle, color: Colors.green),
           duration: const Duration(seconds: 3),
@@ -379,6 +485,7 @@ class ExerciseDialogs {
         _showErrorSnackbar('Failed to update exercise');
       }
     } catch (e) {
+      print('Error updating exercise: $e');
       _showErrorSnackbar('An error occurred while updating exercise');
     }
   }
@@ -462,7 +569,7 @@ class ExerciseDialogs {
         Get.snackbar(
           'Success',
           'Exercise deleted successfully',
-          backgroundColor: Colors.green.withValues(alpha: 0.1),
+          backgroundColor: Colors.green.withOpacity(0.1),
           colorText: Colors.green,
           icon: const Icon(Icons.check_circle, color: Colors.green),
           duration: const Duration(seconds: 3),
@@ -501,7 +608,7 @@ class ExerciseDialogs {
         Get.snackbar(
           'Success',
           'All exercises deleted successfully',
-          backgroundColor: Colors.green.withValues(alpha: 0.1),
+          backgroundColor: Colors.green.withOpacity(0.1),
           colorText: Colors.green,
           icon: const Icon(Icons.check_circle, color: Colors.green),
           duration: const Duration(seconds: 3),
@@ -521,7 +628,7 @@ class ExerciseDialogs {
     Get.snackbar(
       'Error',
       message,
-      backgroundColor: Colors.red.withValues(alpha: 0.1),
+      backgroundColor: Colors.red.withOpacity(0.1),
       colorText: Colors.red,
       icon: const Icon(Icons.error, color: Colors.red),
       duration: const Duration(seconds: 4),

@@ -2,7 +2,7 @@ import 'package:admin/themes/theme_data_extention.dart';
 import 'package:flutter/material.dart';
 
 
-const kFontFamily = "";
+const kFontFamily = '';
 
 class BlueTheme {
   static ColorScheme lightScheme() => const ColorScheme(

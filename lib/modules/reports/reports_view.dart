@@ -141,7 +141,7 @@ class ReportsView extends StatelessWidget {
                     color: context.theme.colorScheme.primary,
                   ),
                 ),
-                title: AppText('Delivery Date', size: 14),
+                title: const AppText('Delivery Date', size: 14),
                 subtitle: AppText.semiBold(
                   formattedDate,
                   size: 16,
@@ -180,7 +180,7 @@ class ReportsView extends StatelessWidget {
                     color: context.theme.colorScheme.secondary,
                   ),
                 ),
-                title: AppText('Meal Period', size: 14),
+                title: const AppText('Meal Period', size: 14),
                 subtitle: AppText.semiBold(
                   mealPeriodText,
                   size: 16,
@@ -208,69 +208,53 @@ class ReportsView extends StatelessWidget {
 
     if (dates.isEmpty) return;
 
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: context.theme.colorScheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) =>
-          Container(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                AppText.semiBold(
-                  'Select Delivery Date',
-                  size: 18,
-                  color: context.theme.colorScheme.onSurface,
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: ListView.builder(
-                itemCount: dates.length,
-                itemBuilder: (context, index) {
-                  final date = dates[index];
-                  final formattedDate = DateFormat('EEE, MMM d, yyyy').format(
-                      date);
-
-                  return ListTile(
-                    title: AppText.semiBold(
-                      formattedDate,
-                      color: controller.selectedDate.value == date
-                          ? context.theme.colorScheme.primary
-                          : context.theme.colorScheme.onSurface,
-                    ),
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: controller.selectedDate.value == date
-                            ? context.theme.colorScheme.primary.withOpacity(0.1)
-                            : context.theme.colorScheme.surfaceContainerLow,
-                        shape: BoxShape.circle,
-                      ),
-                      child: controller.selectedDate.value == date
-                          ? Icon(
-                        Icons.check_circle,
-                        color: context.theme.colorScheme.primary,
-                      )
-                          : Icon(
-                        Icons.calendar_today,
-                        color: context.theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    onTap: () {
-                      controller.selectedDate.value = date;
-                      Get.back();
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
+    // Convert dates to a Set for easier lookup
+    final availableDatesSet = Set<DateTime>.from(
+        dates.map((date) => DateTime(date.year, date.month, date.day))
     );
+
+    // Find the earliest and latest dates for initial display
+    final DateTime firstDate = dates.reduce((a, b) => a.isBefore(b) ? a : b);
+    final DateTime lastDate = dates.reduce((a, b) => a.isAfter(b) ? a : b);
+
+    // Set initial date to either the currently selected date (if it exists)
+    // or the first available date
+    final initialDate = controller.selectedDate.value != null
+        ? controller.selectedDate.value!
+        : dates.first;
+
+    showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: firstDate.subtract(const Duration(days: 30)),
+      // Allow scrolling to previous month
+      lastDate: lastDate.add(const Duration(days: 30)),
+      // Allow scrolling to next month
+      selectableDayPredicate: (DateTime day) {
+        // Only enable dates that are in our available dates list
+        final dayWithoutTime = DateTime(day.year, day.month, day.day);
+        return availableDatesSet.contains(dayWithoutTime);
+      },
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: context.theme.colorScheme.primary,
+              onPrimary: context.theme.colorScheme.onPrimary,
+              surface: context.theme.colorScheme.surface,
+              onSurface: context.theme.colorScheme.onSurface,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    ).then((selectedDate) {
+      if (selectedDate != null) {
+        controller.selectedDate.value = selectedDate;
+        // Load report data when date is selected
+        controller.loadReportData();
+      }
+    });
   }
 
   void _showMealPeriodPicker(BuildContext context,
@@ -329,11 +313,33 @@ class ReportsView extends StatelessWidget {
                       Get.back();
                     },
                   );
-                }).toList(),
+                }),
               ],
             ),
           ),
     );
+  }
+
+  void _showExcelDownloadSuccess(BuildContext context, String filePath,
+      ReportsController controller) {
+    // Format the selected date for display
+    final dateStr = controller.selectedDate.value != null
+        ? DateFormat('MMM d, yyyy').format(controller.selectedDate.value!)
+        : '';
+
+    // Get the meal period name
+    final mealPeriods = {0: 'Breakfast', 1: 'Lunch', 2: 'Dinner'};
+    final mealPeriodStr = mealPeriods[controller.selectedMealPeriod.value] ??
+        '';
+
+    // Check if this is a demo file (starting with /downloads/)
+    final bool isDemoFile = filePath.startsWith('/downloads/');
+    final String fileName = filePath
+        .split('/')
+        .last;
+
+    // Store the file path in the controller for later use
+    controller.lastDownloadedFilePath.value = filePath;
   }
 
   Widget _buildGenerateReportButton(BuildContext context,
@@ -341,6 +347,8 @@ class ReportsView extends StatelessWidget {
     return Obx(() {
       final isLoading = controller.isGeneratingExcel.value;
       final canGenerate = controller.selectedDate.value != null;
+      final hasDownloadedFile = controller.lastDownloadedFilePath.value
+          .isNotEmpty;
 
       return Card(
         elevation: 0,
@@ -385,77 +393,80 @@ class ReportsView extends StatelessWidget {
                 color: context.theme.colorScheme.onSurfaceVariant,
               ),
               const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: !canGenerate || isLoading
-                      ? null
-                      : () async {
-                    final result = await controller.generateExcelReport();
-                    if (result != null && result.success &&
-                        result.filePath != null) {
-                      _showExcelDownloadSuccess(
-                          context, result.filePath!, controller);
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: context.theme.colorScheme.tertiary,
-                    foregroundColor: context.theme.colorScheme.onTertiary,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: !canGenerate || isLoading
+                          ? null
+                          : () async {
+                        final result = await controller.generateExcelReport();
+                        if (result != null && result.success &&
+                            result.filePath != null) {
+                          _showExcelDownloadSuccess(
+                              context, result.filePath!, controller);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: context.theme.colorScheme.tertiary,
+                        foregroundColor: context.theme.colorScheme.onTertiary,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        disabledBackgroundColor: context.theme.colorScheme
+                            .tertiary
+                            .withOpacity(0.3),
+                        disabledForegroundColor: context.theme.colorScheme
+                            .onTertiary.withOpacity(0.5),
+                      ),
+                      icon: isLoading
+                          ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: context.theme.colorScheme.onTertiary,
+                        ),
+                      )
+                          : const Icon(Icons.file_download),
+                      label: AppText.semiBold(
+                        isLoading ? 'Generating...' : 'Generate Excel Report',
+                        size: 16,
+                      ),
                     ),
-                    disabledBackgroundColor: context.theme.colorScheme.tertiary
-                        .withOpacity(0.3),
-                    disabledForegroundColor: context.theme.colorScheme
-                        .onTertiary.withOpacity(0.5),
                   ),
-                  icon: isLoading
-                      ? SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: context.theme.colorScheme.onTertiary,
+                  if (hasDownloadedFile) ...[
+                    const SizedBox(width: 12),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        controller.openExcelFile(
+                            controller.lastDownloadedFilePath.value);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: context.theme.colorScheme
+                            .primaryContainer,
+                        foregroundColor: context.theme.colorScheme
+                            .onPrimaryContainer,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      icon: const Icon(Icons.open_in_new),
+                      label: const AppText.semiBold(
+                        'View Excel',
+                        size: 16,
+                      ),
                     ),
-                  )
-                      : const Icon(Icons.file_download),
-                  label: AppText.semiBold(
-                    isLoading ? 'Generating...' : 'Generate Excel Report',
-                    size: 16,
-                  ),
-                ),
+                  ],
+                ],
               ),
             ],
           ),
         ),
       );
     });
-  }
-
-  void _showExcelDownloadSuccess(BuildContext context, String filePath,
-      ReportsController controller) {
-    Get.snackbar(
-      'Download Complete',
-      'Excel report has been downloaded successfully',
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: Colors.green.shade100,
-      colorText: Colors.green.shade800,
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(16),
-      borderRadius: 12,
-      duration: const Duration(seconds: 5),
-      isDismissible: true,
-      icon: const Icon(Icons.check_circle, color: Colors.green),
-      mainButton: TextButton.icon(
-        icon: const Icon(Icons.open_in_new, color: Colors.green),
-        label: const Text('Open', style: TextStyle(color: Colors.green)),
-        onPressed: () {
-          // Open the Excel file using platform-specific methods
-          controller.openExcelFile(filePath);
-        },
-      ),
-    );
   }
 
   Widget _buildReportDataSection(BuildContext context,
@@ -518,7 +529,7 @@ class ReportsView extends StatelessWidget {
                       ),
                     ),
                     icon: const Icon(Icons.visibility),
-                    label: AppText.semiBold(
+                    label: const AppText.semiBold(
                       'View Report Data',
                       size: 16,
                     ),
@@ -894,7 +905,7 @@ class ReportsView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppText.semiBold('Nutrition Information', size: 14),
+          const AppText.semiBold('Nutrition Information', size: 14),
           const SizedBox(height: 8),
           Responsive(
             mobile: Column(
@@ -1122,7 +1133,7 @@ class ReportsView extends StatelessWidget {
                     alignment: Alignment.centerRight,
                     child: TextButton.icon(
                       icon: const Icon(Icons.info_outline, size: 16),
-                      label: AppText('Details', size: 12),
+                      label: const AppText('Details', size: 12),
                       style: TextButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 4),

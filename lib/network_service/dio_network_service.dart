@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
-
+import 'package:flutter/foundation.dart';
 
 import '../config/auth_service.dart';
 import '../config/common_utils.dart';
@@ -1232,14 +1232,41 @@ class DioNetworkService {
       int mealPeriod, {bool showLoader = true}) async {
     try {
       if (showLoader) ApiHelper.showLoader();
+
+      print('Sending request to get delivery report data:');
+      print('- Date: $deliveryDate');
+      print('- Meal Period: $mealPeriod (${_getMealPeriodName(mealPeriod)})');
+
+      // API endpoint: POST /api/admin/AdminDeliveryReport/data
       final response = await _apiClient.getDeliveryReportData({
         'deliveryDate': deliveryDate,
         'mealPeriod': mealPeriod,
       });
+
       if (showLoader) ApiHelper.dismissLoader();
+
+      // Log successful response
+      if (response.data != null && response.data is Map<String, dynamic>) {
+        final responseData = response.data as Map<String, dynamic>;
+        if (responseData['success'] == true && responseData['data'] != null) {
+          final reportData = responseData['data'] as Map<String, dynamic>;
+          final deliveriesCount = reportData['data'] != null ?
+          (reportData['data'] as List<dynamic>).length : 0;
+          final summary = reportData['summary'] as Map<String, dynamic>?;
+
+          print('Report data retrieved successfully:');
+          print('- Total deliveries: ${summary?['totalDeliveries'] ??
+              deliveriesCount}');
+          print('- Delivered: ${summary?['delivered'] ?? 'N/A'}');
+          print('- Pending: ${summary?['pending'] ?? 'N/A'}');
+        }
+      }
+
       return response.data;
     } catch (error) {
       if (showLoader) ApiHelper.dismissLoader();
+
+      print('Error getting delivery report data: $error');
 
       CustomDisplays.showToast(
         message: 'Failed to load delivery report data. Please try again later',
@@ -1254,14 +1281,43 @@ class DioNetworkService {
       int mealPeriod, {bool showLoader = true}) async {
     try {
       if (showLoader) ApiHelper.showLoader();
+
+      print('Generating Excel report:');
+      print('- Date: $deliveryDate');
+      print('- Meal Period: $mealPeriod (${_getMealPeriodName(mealPeriod)})');
+
+      // API endpoint: POST /api/admin/AdminDeliveryReport/generate-excel
       final response = await _apiClient.generateDeliveryReportExcel({
         'deliveryDate': deliveryDate,
         'mealPeriod': mealPeriod,
       });
+
       if (showLoader) ApiHelper.dismissLoader();
+
+      // For Excel file download, we should receive a binary response or a download URL
+      print('Excel generation response received');
+
+      // The API might return different response formats:  
+      // 1. Binary data directly (blob)  
+      // 2. A URL to download the file  
+      // 3. A JSON response with file info
+
+      if (response.data != null) {
+        if (response.data is Map<String, dynamic>) {
+          final responseData = response.data as Map<String, dynamic>;
+          if (responseData['fileUrl'] != null) {
+            print('Excel file URL: ${responseData['fileUrl']}');
+          } else if (responseData['fileName'] != null) {
+            print('Excel file name: ${responseData['fileName']}');
+          }
+        }
+      }
+
       return response.data;
     } catch (error) {
       if (showLoader) ApiHelper.dismissLoader();
+
+      print('Error generating Excel report: $error');
 
       CustomDisplays.showToast(
         message: 'Failed to generate Excel report. Please try again later',
@@ -1269,6 +1325,20 @@ class DioNetworkService {
       );
 
       rethrow;
+    }
+  }
+
+  // Helper method to get meal period name
+  static String _getMealPeriodName(int mealPeriod) {
+    switch (mealPeriod) {
+      case 0:
+        return 'Breakfast';
+      case 1:
+        return 'Lunch';
+      case 2:
+        return 'Dinner';
+      default:
+        return 'Unknown';
     }
   }
 
