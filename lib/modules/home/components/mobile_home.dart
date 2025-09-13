@@ -31,9 +31,9 @@ class MobileHome extends GetView<HomeController> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            context.theme.colorScheme.surfaceContainerLowest.withOpacity(0.3),
-            context.theme.colorScheme.surfaceContainerLowest.withOpacity(0.2),
-            context.theme.colorScheme.surfaceContainerLowest.withOpacity(0.1),
+            context.theme.colorScheme.surfaceContainerLowest,
+            context.theme.colorScheme.surfaceContainerLowest.withOpacity(0.7),
+            context.theme.colorScheme.surfaceContainerLowest.withOpacity(0.5),
           ],
         ),
       ),
@@ -67,7 +67,7 @@ class MobileHome extends GetView<HomeController> {
 
   Widget _buildMobileBody(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -90,6 +90,7 @@ class MobileHome extends GetView<HomeController> {
             children: [
               // Admin Management Card
               Expanded(
+                flex: 1,
                 child: _buildSquareCard(
                   context: context,
                   onTap: () =>
@@ -101,10 +102,11 @@ class MobileHome extends GetView<HomeController> {
                 ),
               ),
 
-              const SizedBox(width: 12),
+              const SizedBox(width: 16),
 
               // Reports Card
               Expanded(
+                flex: 1,
                 child: _buildSquareCard(
                   context: context,
                   onTap: () => Get.toNamed<void>(AppRoutes.reports),
@@ -155,7 +157,7 @@ class MobileHome extends GetView<HomeController> {
                     imageUrl: 'https://images.unsplash.com/photo-1466637574441-749b8f19452f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
                     gradientColors: [
                       context.theme.colorScheme.primary,
-                      context.theme.colorScheme.primaryContainer,
+                      context.theme.colorScheme.primary.withOpacity(0.7),
                     ],
                     icon: Icons.restaurant_menu_rounded,
                   ),
@@ -169,7 +171,7 @@ class MobileHome extends GetView<HomeController> {
                     imageUrl: 'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
                     gradientColors: [
                       context.theme.colorScheme.tertiary,
-                      context.theme.colorScheme.tertiaryContainer,
+                      context.theme.colorScheme.tertiary.withOpacity(0.7),
                     ],
                     icon: Icons.inventory_2_rounded,
                   ),
@@ -183,7 +185,7 @@ class MobileHome extends GetView<HomeController> {
                     imageUrl: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
                     gradientColors: [
                       context.theme.colorScheme.secondary,
-                      context.theme.colorScheme.secondaryContainer,
+                      context.theme.colorScheme.secondary.withOpacity(0.7),
                     ],
                     icon: Icons.fitness_center_rounded,
                   ),
@@ -299,6 +301,67 @@ class MobileHome extends GetView<HomeController> {
     }
   }
 
+  Widget _buildDeliveryManagementCard(BuildContext context) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      color: context.theme.colorScheme.surfaceContainerLowest,
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      child: InkWell(
+        onTap: () => Get.toNamed<void>(AppRoutes.deliveryPersons),
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: context.theme.colorScheme.surfaceContainerLowest,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.delivery_dining,
+                  color: context.theme.colorScheme.onSurface,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AppText.semiBold(
+                      'Delivery Management',
+                      color: context.theme.colorScheme.onSurface,
+                      size: 16,
+                    ),
+                    const SizedBox(height: 4),
+                    AppText(
+                      'Manage delivery personnel',
+                      color: context.theme.colorScheme.onSurface
+                          .withOpacity(0.8),
+                      size: 14,
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 16,
+                color: context.theme.colorScheme.onSurface,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildSquareCard({
     required BuildContext context,
     required VoidCallback onTap,
@@ -307,157 +370,67 @@ class MobileHome extends GetView<HomeController> {
     required String subtitle,
     bool isPrimary = false,
   }) {
-    return GlassmorphicContainer(
-      width: double.infinity,
-      height: 136,
-      margin: const EdgeInsets.symmetric(vertical: 4.0),
-      borderRadius: 12,
-      blur: 20,
-      border: 2,
-      linearGradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          Colors.white.withOpacity(0.2),
-          Colors.white.withOpacity(0.1),
-        ],
-        stops: const [
-          0.1,
-          1,
-        ],
-      ),
-      borderGradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          context.theme.colorScheme.onSurface.withOpacity(0.7),
-          context.theme.colorScheme.onSurface.withOpacity(0.2),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: SingleChildScrollView(
-              physics: const NeverScrollableScrollPhysics(),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: context.theme.colorScheme.surfaceContainerLowest,
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Icon(
-                      icon,
-                      color: context.theme.colorScheme.onSurface,
-                      size: 20,
-                    ),
-                  ),
-                  const SizedBox(height: 9),
-                  AppText.semiBold(
-                    title,
-                    color: context.theme.colorScheme.onSurface,
-                    size: 14,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 4),
-                  AppText(
-                    subtitle,
-                    color: context.theme.colorScheme.onSurface.withValues(
-                        alpha: 0.7),
-                    size: 12,
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+    final colorScheme = context.theme.colorScheme;
+    final containerColor = isPrimary
+        ? colorScheme.surfaceContainerHigh
+        : colorScheme.surfaceContainerHigh;
+    final iconColor = isPrimary
+        ? colorScheme.primary
+        : colorScheme.primary;
+    final textColor = colorScheme.onSurface;
 
-  Widget _buildDeliveryManagementCard(BuildContext context) {
-    return GlassmorphicContainer(
-      width: double.infinity,
-      height: 80,
+    return Card(
+      elevation: 2,
+      shadowColor: Colors.black.withOpacity(0.1),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      color: containerColor,
       margin: const EdgeInsets.symmetric(vertical: 4.0),
-      borderRadius: 12,
-      blur: 20,
-      border: 2,
-      linearGradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          Colors.white.withOpacity(0.2),
-          Colors.white.withOpacity(0.1),
-        ],
-        stops: const [
-          0.1,
-          1,
-        ],
-      ),
-      borderGradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          context.theme.colorScheme.onSurface.withOpacity(0.7),
-          context.theme.colorScheme.onSurface.withOpacity(0.2),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: context.theme.colorScheme.surfaceContainerLowest,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.delivery_dining,
-                  color: context.theme.colorScheme.onSurface,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: InkWell(
-                  onTap: () => Get.toNamed<void>(AppRoutes.deliveryPersons),
-                  borderRadius: BorderRadius.circular(8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      AppText.semiBold(
-                        'Delivery Management',
-                        color: context.theme.colorScheme.onSurface,
-                        size: 16,
-                      ),
-                      const SizedBox(height: 4),
-                      AppText(
-                        'Manage delivery personnel',
-                        color: context.theme.colorScheme.onSurface.withValues(
-                            alpha: 0.7),
-                        size: 14,
-                      ),
-                    ],
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: AspectRatio(
+          aspectRatio: 1, // Make it perfectly square
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: iconColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: iconColor,
+                    size: 28,
                   ),
                 ),
-              ),
-              // Removed add button as requested
-            ],
+                const SizedBox(height: 16),
+                AppText.semiBold(
+                  title,
+                  color: textColor,
+                  size: 16,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Flexible(
+                  child: AppText(
+                    subtitle,
+                    color: textColor.withOpacity(0.7),
+                    size: 13,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -503,7 +476,7 @@ class _MD3Card extends StatelessWidget {
                 child: imageUrl.isNotEmpty
                     ? Image.network(
                   imageUrl,
-                      fit: BoxFit.cover,
+                  fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     print('Error loading image: $error');
                     return Container(
@@ -511,23 +484,27 @@ class _MD3Card extends StatelessWidget {
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: gradientColors.map((c) =>
-                              c.withValues(alpha: 0.8)).toList(),
+                          colors: [
+                            gradientColors[0],
+                            gradientColors[1],
+                          ],
                         ),
                       ),
                     );
                   },
-                    )
+                )
                     : Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: gradientColors.map((c) =>
-                          c.withValues(alpha: 0.8)).toList(),
+                      colors: [
+                        gradientColors[0],
+                        gradientColors[1],
+                      ],
                     ),
                   ),
-                    ),
+                ),
               ),
               // Gradient Overlay
               Positioned.fill(
@@ -538,10 +515,10 @@ class _MD3Card extends StatelessWidget {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        Colors.black.withValues(alpha: 0.3),
-                        Colors.black.withValues(alpha: 0.7),
+                        Colors.black.withOpacity(0.3),
+                        Colors.black.withOpacity(0.6),
                       ],
-                      stops: const [0.0, 0.6, 1.0],
+                      stops: const [0.0, 0.5, 1.0],
                     ),
                   ),
                 ),
@@ -561,10 +538,12 @@ class _MD3Card extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.15),
+                              color: context.theme.colorScheme
+                                  .surfaceContainerLowest.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.3),
+                                color: context.theme.colorScheme
+                                    .surfaceContainerLowest.withOpacity(0.3),
                                 width: 1,
                               ),
                             ),
@@ -576,7 +555,7 @@ class _MD3Card extends StatelessWidget {
                           ),
                           Icon(
                             Icons.arrow_forward_rounded,
-                            color: Colors.white.withValues(alpha: 0.8),
+                            color: Colors.white.withOpacity(0.8),
                             size: 22,
                           ),
                         ],
@@ -596,10 +575,10 @@ class _MD3Card extends StatelessWidget {
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
                                   shadows: [
-                                    const Shadow(
+                                    Shadow(
                                       offset: Offset(0, 1),
                                       blurRadius: 3,
-                                      color: Colors.black54,
+                                      color: Colors.black.withOpacity(0.5),
                                     ),
                                   ],
                                 ),
@@ -612,12 +591,12 @@ class _MD3Card extends StatelessWidget {
                               child: Text(
                                 subtitle,
                                 style: context.textTheme.bodyMedium?.copyWith(
-                                  color: Colors.white.withValues(alpha: 0.9),
+                                  color: Colors.white.withOpacity(0.9),
                                   shadows: [
-                                    const Shadow(
+                                    Shadow(
                                       offset: Offset(0, 1),
                                       blurRadius: 2,
-                                      color: Colors.black45,
+                                      color: Colors.black.withOpacity(0.5),
                                     ),
                                   ],
                                 ),

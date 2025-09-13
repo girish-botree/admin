@@ -16,10 +16,13 @@ class HomeView extends StatelessWidget {
     return GetBuilder<HomeController>(
       init: HomeController(), // Ensure controller is initialized
       builder: (controller) {
-        return const Responsive(
-          mobile: MobileHome(),
-          tablet: TabletHome(),
-          web: WebHome(),
+        return Container(
+          color: Theme.of(context).colorScheme.surfaceContainerLowest,
+          child: const Responsive(
+            mobile: MobileHome(),
+            tablet: TabletHome(),
+            web: WebHome(),
+          ),
         );
       },
     );

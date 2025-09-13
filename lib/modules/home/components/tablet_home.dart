@@ -31,9 +31,9 @@ class TabletHome extends GetView<HomeController> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            context.theme.colorScheme.surfaceContainerLowest.withOpacity(0.3),
-            context.theme.colorScheme.surfaceContainerLowest.withOpacity(0.2),
-            context.theme.colorScheme.surfaceContainerLowest.withOpacity(0.1),
+            context.theme.colorScheme.surfaceContainerLowest,
+            context.theme.colorScheme.surfaceContainerLowest.withOpacity(0.7),
+            context.theme.colorScheme.surfaceContainerLowest.withOpacity(0.5),
           ],
         ),
       ),
@@ -90,6 +90,7 @@ class TabletHome extends GetView<HomeController> {
             children: [
               // Admin Management Card
               Expanded(
+                flex: 1,
                 child: _buildTabletCard(
                   context: context,
                   onTap: () => Get.toNamed<void>(AppRoutes.createAdmin),
@@ -103,10 +104,11 @@ class TabletHome extends GetView<HomeController> {
                 ),
               ),
 
-              const SizedBox(width: 16),
+              const SizedBox(width: 20),
 
               // Reports Card
               Expanded(
+                flex: 1,
                 child: _buildTabletCard(
                   context: context,
                   onTap: () => Get.toNamed<void>(AppRoutes.reports),
@@ -160,7 +162,7 @@ class TabletHome extends GetView<HomeController> {
                     imageUrl: 'https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=800&h=600&fit=crop&crop=center',
                     gradientColors: [
                       context.theme.colorScheme.primary,
-                      context.theme.colorScheme.primaryContainer,
+                      context.theme.colorScheme.primary.withOpacity(0.7),
                     ],
                     icon: Icons.restaurant_menu_rounded,
                   ),
@@ -174,7 +176,7 @@ class TabletHome extends GetView<HomeController> {
                     imageUrl: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=800&h=600&fit=crop&crop=center',
                     gradientColors: [
                       context.theme.colorScheme.tertiary,
-                      context.theme.colorScheme.tertiaryContainer,
+                      context.theme.colorScheme.tertiary.withOpacity(0.7),
                     ],
                     icon: Icons.inventory_2_rounded,
                   ),
@@ -188,7 +190,7 @@ class TabletHome extends GetView<HomeController> {
                     imageUrl: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&h=600&fit=crop&crop=center',
                     gradientColors: [
                       context.theme.colorScheme.secondary,
-                      context.theme.colorScheme.secondaryContainer,
+                      context.theme.colorScheme.secondary.withOpacity(0.7),
                     ],
                     icon: Icons.fitness_center_rounded,
                   ),
@@ -314,63 +316,98 @@ class TabletHome extends GetView<HomeController> {
     double height = 100,
     bool isSquare = false,
   }) {
-    return GlassmorphicContainer(
-      width: double.infinity,
-      height: height,
-      margin: const EdgeInsets.symmetric(vertical: 6.0),
-      borderRadius: 16,
-      blur: 25,
-      border: 2,
-      linearGradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          Colors.white.withOpacity(0.2),
-          Colors.white.withOpacity(0.1),
-        ],
-        stops: const [
-          0.1,
-          1,
-        ],
+    final colorScheme = context.theme.colorScheme;
+    final containerColor = colorScheme.surfaceContainerLowest;
+    final iconColor = colorScheme.primary;
+    final textColor = colorScheme.onSurface;
+
+    return Card(
+      elevation: 2,
+      shadowColor: Colors.black.withOpacity(0.1),
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-      borderGradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          context.theme.colorScheme.onSurface.withOpacity(0.7),
-          context.theme.colorScheme.onSurface.withOpacity(0.2),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
+      color: containerColor,
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      child: InkWell(
+        onTap: onTap,
+        child: isSquare
+            ? AspectRatio(
+          aspectRatio: 1,
           child: Padding(
             padding: const EdgeInsets.all(20.0),
-            child: isSquare
-                ? _buildSquareCardContent(context, icon, title, subtitle)
-                : _buildWideCardContent(context, icon, title, subtitle),
+            child: _buildSquareCardContent(
+                context, icon, title, subtitle, iconColor, textColor),
+          ),
+        )
+            : SizedBox(
+          height: height,
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: _buildWideCardContent(
+                context, icon, title, subtitle, iconColor, textColor),
           ),
         ),
       ),
     );
   }
 
+  Widget _buildSquareCardContent(BuildContext context, IconData icon,
+      String title, String subtitle, Color iconColor, Color textColor) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          width: 80,
+          height: 80,
+          decoration: BoxDecoration(
+            color: iconColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Icon(
+            icon,
+            color: iconColor,
+            size: 36,
+          ),
+        ),
+        const SizedBox(height: 20),
+        AppText.semiBold(
+          title,
+          color: textColor,
+          size: 18,
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 10),
+        Flexible(
+          child: AppText(
+            subtitle,
+            color: textColor.withOpacity(0.7),
+            size: 16,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildWideCardContent(BuildContext context, IconData icon,
-      String title, String subtitle) {
+      String title, String subtitle, Color iconColor, Color textColor) {
     return Row(
       children: [
         Container(
           width: 56,
           height: 56,
           decoration: BoxDecoration(
-            color: context.theme.colorScheme.surfaceContainerLowest,
+            color: iconColor,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Icon(
             icon,
-            color: context.theme.colorScheme.onSurface,
+            color: context.theme.colorScheme.onSecondary,
             size: 28,
           ),
         ),
@@ -382,14 +419,13 @@ class TabletHome extends GetView<HomeController> {
             children: [
               AppText.semiBold(
                 title,
-                color: context.theme.colorScheme.onSurface,
+                color: textColor,
                 size: 18,
               ),
               const SizedBox(height: 6),
               AppText(
                 subtitle,
-                color: context.theme.colorScheme.onSurface.withValues(
-                    alpha: 0.7),
+                color: textColor.withOpacity(0.8),
                 size: 16,
               ),
             ],
@@ -397,139 +433,70 @@ class TabletHome extends GetView<HomeController> {
         ),
         Icon(
           Icons.arrow_forward_ios,
-          color: context.theme.colorScheme.onSurface.withValues(alpha: 0.5),
+          color: textColor.withOpacity(0.5),
           size: 20,
         ),
       ],
     );
   }
 
-  Widget _buildSquareCardContent(BuildContext context, IconData icon,
-      String title, String subtitle) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          width: 70,
-          height: 70,
-          decoration: BoxDecoration(
-            color: context.theme.colorScheme.surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Icon(
-            icon,
-            color: context.theme.colorScheme.onSurface,
-            size: 36,
-          ),
-        ),
-        const SizedBox(height: 16),
-        AppText.semiBold(
-          title,
-          color: context.theme.colorScheme.onSurface,
-          size: 18,
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 8),
-        AppText(
-          subtitle,
-          color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
-          size: 16,
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
-  }
-
   Widget _buildDeliveryManagementCard(BuildContext context) {
-    return GlassmorphicContainer(
-      width: double.infinity,
-      height: 120,
-      margin: const EdgeInsets.symmetric(vertical: 6.0),
-      borderRadius: 16,
-      blur: 25,
-      border: 2,
-      linearGradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          Colors.white.withOpacity(0.2),
-          Colors.white.withOpacity(0.1),
-        ],
-        stops: const [
-          0.1,
-          1,
-        ],
+    return Card(
+      elevation: 0,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-      borderGradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          context.theme.colorScheme.onSurface.withOpacity(0.7),
-          context.theme.colorScheme.onSurface.withOpacity(0.2),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => Get.toNamed<void>(AppRoutes.deliveryPersons),
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Row(
-              children: [
-                Container(
-                  width: 70,
-                  height: 70,
-                  decoration: BoxDecoration(
-                    color: context.theme.colorScheme.surfaceContainerLowest,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Icon(
-                    Icons.delivery_dining,
-                    color: context.theme.colorScheme.onSurface,
-                    size: 36,
-                  ),
+      color: context.theme.colorScheme.surfaceContainerLowest,
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      child: InkWell(
+        onTap: () => Get.toNamed<void>(AppRoutes.deliveryPersons),
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Row(
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: context.theme.colorScheme.surfaceContainerLowest
+                      .withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                const SizedBox(width: 24),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      AppText.semiBold(
-                        'Delivery Management',
-                        color: context.theme.colorScheme.onSurface,
-                        size: 20,
-                      ),
-                      const SizedBox(height: 8),
-                      AppText(
-                        'Manage delivery personnel and track deliveries in your system',
-                        color: context.theme.colorScheme.onSurface.withValues(
-                            alpha: 0.7),
-                        size: 16,
-                      ),
-                    ],
-                  ),
+                child: Icon(
+                  Icons.delivery_dining,
+                  color: context.theme.colorScheme.onSurface,
+                  size: 32,
                 ),
-                GestureDetector(
-                  onTap: () =>
-                      AdminBottomSheets.showAdminOptionsBottomSheet(context),
-                  child: Container(
-                    padding: const EdgeInsets.all(12.0),
-                    decoration: BoxDecoration(
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AppText.semiBold(
+                      'Delivery Management',
                       color: context.theme.colorScheme.onSurface,
-                      borderRadius: BorderRadius.circular(12),
+                      size: 18,
                     ),
-                    child: Icon(
-                      Icons.add,
-                      color: context.theme.colorScheme.surfaceContainerLowest,
-                      size: 28,
+                    const SizedBox(height: 6),
+                    AppText(
+                      'Manage delivery personnel and track deliveries',
+                      color: context.theme.colorScheme.onSurface
+                          .withOpacity(0.8),
+                      size: 14,
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 20,
+                color: context.theme.colorScheme.onSurface,
+              ),
+            ],
           ),
         ),
       ),
@@ -581,8 +548,10 @@ class _MD3Card extends StatelessWidget {
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: gradientColors.map((c) =>
-                              c.withValues(alpha: 0.8)).toList(),
+                          colors: [
+                            gradientColors[0],
+                            gradientColors[1],
+                          ],
                         ),
                       ),
                     );
@@ -594,8 +563,10 @@ class _MD3Card extends StatelessWidget {
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: gradientColors.map((c) =>
-                              c.withValues(alpha: 0.8)).toList(),
+                          colors: [
+                            gradientColors[0],
+                            gradientColors[1],
+                          ],
                         ),
                       ),
                       child: const Center(
@@ -614,10 +585,10 @@ class _MD3Card extends StatelessWidget {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        Colors.black.withValues(alpha: 0.3),
-                        Colors.black.withValues(alpha: 0.7),
+                        Colors.black.withOpacity(0.3),
+                        Colors.black.withOpacity(0.6),
                       ],
-                      stops: const [0.0, 0.6, 1.0],
+                      stops: const [0.0, 0.5, 1.0],
                     ),
                   ),
                 ),
@@ -637,10 +608,12 @@ class _MD3Card extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.15),
+                              color: context.theme.colorScheme
+                                  .surfaceContainerLowest.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.3),
+                                color: context.theme.colorScheme
+                                    .surfaceContainerLowest.withOpacity(0.3),
                                 width: 1,
                               ),
                             ),
@@ -652,7 +625,7 @@ class _MD3Card extends StatelessWidget {
                           ),
                           Icon(
                             Icons.arrow_forward_rounded,
-                            color: Colors.white.withValues(alpha: 0.8),
+                            color: Colors.white.withOpacity(0.8),
                             size: 26,
                           ),
                         ],
@@ -672,10 +645,10 @@ class _MD3Card extends StatelessWidget {
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
                                   shadows: [
-                                    const Shadow(
+                                    Shadow(
                                       offset: Offset(0, 1),
                                       blurRadius: 3,
-                                      color: Colors.black54,
+                                      color: Colors.black.withOpacity(0.5),
                                     ),
                                   ],
                                 ),
@@ -688,12 +661,12 @@ class _MD3Card extends StatelessWidget {
                               child: Text(
                                 subtitle,
                                 style: context.textTheme.bodyLarge?.copyWith(
-                                  color: Colors.white.withValues(alpha: 0.9),
+                                  color: Colors.white.withOpacity(0.9),
                                   shadows: [
-                                    const Shadow(
+                                    Shadow(
                                       offset: Offset(0, 1),
                                       blurRadius: 2,
-                                      color: Colors.black45,
+                                      color: Colors.black.withOpacity(0.5),
                                     ),
                                   ],
                                 ),
