@@ -137,7 +137,7 @@ class WebHome extends GetView<HomeController> {
                   onTap: () => _navigateToRecipes(context),
                   title: 'Recipes',
                   subtitle: 'Discover & manage your cooking recipes',
-                  imageUrl: 'https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=800&h=600&fit=crop&crop=center',
+                  assetImagePath: 'assets/images/recipe.jpg',
                   gradientColors: [
                     context.theme.colorScheme.primary,
                     context.theme.colorScheme.primary.withOpacity(0.7),
@@ -151,7 +151,7 @@ class WebHome extends GetView<HomeController> {
                   onTap: () => _navigateToIngredients(context),
                   title: 'Ingredients',
                   subtitle: 'Track & organize your food ingredients',
-                  imageUrl: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=800&h=600&fit=crop&crop=center',
+                  assetImagePath: 'assets/images/ingredients.jpg',
                   gradientColors: [
                     context.theme.colorScheme.tertiary,
                     context.theme.colorScheme.tertiary.withOpacity(0.7),
@@ -165,7 +165,7 @@ class WebHome extends GetView<HomeController> {
                   onTap: () => _navigateToExercises(context),
                   title: 'Exercises',
                   subtitle: 'Manage your workout exercises library',
-                  imageUrl: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&h=600&fit=crop&crop=center',
+                  assetImagePath: 'assets/images/exercise.jpg',
                   gradientColors: [
                     context.theme.colorScheme.secondary,
                     context.theme.colorScheme.secondary.withOpacity(0.7),
@@ -472,7 +472,8 @@ class _MD3Card extends StatelessWidget {
   final VoidCallback onTap;
   final String title;
   final String subtitle;
-  final String imageUrl;
+  final String? imageUrl;
+  final String? assetImagePath;
   final List<Color> gradientColors;
   final IconData icon;
 
@@ -480,7 +481,8 @@ class _MD3Card extends StatelessWidget {
     required this.onTap,
     required this.title,
     required this.subtitle,
-    required this.imageUrl,
+    this.imageUrl,
+    this.assetImagePath,
     required this.gradientColors,
     required this.icon,
   });
@@ -503,8 +505,14 @@ class _MD3Card extends StatelessWidget {
             children: [
               // Background Image
               Positioned.fill(
-                child: Image.network(
-                  imageUrl,
+                child: assetImagePath != null
+                    ? Image.asset(
+                  assetImagePath!,
+                  fit: BoxFit.cover,
+                )
+                    : (imageUrl != null
+                    ? Image.network(
+                  imageUrl!,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
@@ -538,7 +546,16 @@ class _MD3Card extends StatelessWidget {
                       ),
                     );
                   },
-                ),
+                )
+                    : Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: gradientColors,
+                    ),
+                  ),
+                )),
               ),
               // Gradient Overlay
               Positioned.fill(

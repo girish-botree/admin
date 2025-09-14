@@ -156,7 +156,8 @@ class MobileHome extends GetView<HomeController> {
                     onTap: () => _navigateToRecipes(context),
                     title: 'Recipes',
                     subtitle: 'Discover & manage your cooking recipes',
-                    imageUrl: 'https://images.unsplash.com/photo-1466637574441-749b8f19452f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+                    imageUrl: '',
+                    assetImagePath: 'assets/images/recipe.jpg',
                     gradientColors: [
                       context.theme.colorScheme.primary,
                       context.theme.colorScheme.primary.withOpacity(0.7),
@@ -170,7 +171,8 @@ class MobileHome extends GetView<HomeController> {
                     onTap: () => _navigateToIngredients(context),
                     title: 'Ingredients',
                     subtitle: 'Track & organize your food ingredients',
-                    imageUrl: 'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+                    imageUrl: '',
+                    assetImagePath: 'assets/images/ingredients.jpg',
                     gradientColors: [
                       context.theme.colorScheme.tertiary,
                       context.theme.colorScheme.tertiary.withOpacity(0.7),
@@ -184,7 +186,8 @@ class MobileHome extends GetView<HomeController> {
                     onTap: () => _navigateToExercises(context),
                     title: 'Exercises',
                     subtitle: 'Manage your workout exercises library',
-                    imageUrl: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+                    imageUrl: '',
+                    assetImagePath: 'assets/images/exercise.jpg',
                     gradientColors: [
                       context.theme.colorScheme.secondary,
                       context.theme.colorScheme.secondary.withOpacity(0.7),
@@ -444,6 +447,7 @@ class _MD3Card extends StatelessWidget {
   final String title;
   final String subtitle;
   final String imageUrl;
+  final String? assetImagePath;
   final List<Color> gradientColors;
   final IconData icon;
 
@@ -452,6 +456,7 @@ class _MD3Card extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.imageUrl,
+    this.assetImagePath,
     required this.gradientColors,
     required this.icon,
   });
@@ -474,7 +479,12 @@ class _MD3Card extends StatelessWidget {
             children: [
               // Background Image
               Positioned.fill(
-                child: imageUrl.isNotEmpty
+                child: assetImagePath != null
+                    ? Image.asset(
+                  assetImagePath!,
+                  fit: BoxFit.cover,
+                )
+                    : (imageUrl.isNotEmpty
                     ? SafeImageLoader.loadImage(
                   imageUrl: imageUrl,
                   placeholderWidget: Container(
@@ -490,7 +500,7 @@ class _MD3Card extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ),
-                        ),
+                  ),
                   errorWidget: Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -506,7 +516,7 @@ class _MD3Card extends StatelessWidget {
                         size: 48,
                       ),
                     ),
-                        ),
+                  ),
                   memCacheWidth: 800,
                   maxHeightDiskCache: 1000,
                 )
@@ -518,7 +528,7 @@ class _MD3Card extends StatelessWidget {
                       colors: gradientColors,
                     ),
                   ),
-                ),
+                )),
               ),
               // Gradient Overlay
               Positioned.fill(

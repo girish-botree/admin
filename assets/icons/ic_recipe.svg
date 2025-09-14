@@ -5,7 +5,9 @@
 
 <defs>
 
-<style>.b{fill:none;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;}</style>
+    <style type="text/css">
+        .b{fill:none;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;}
+    </style>
 
 </defs>
 

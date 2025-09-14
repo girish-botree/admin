@@ -92,6 +92,7 @@ flutter:
     - assets/icons/
     - assets/fonts/
     - assets/language/
+    - assets/images/
     - assets/language/english.json
     - assets/language/tamil.json
     - assets/language/hindi.json

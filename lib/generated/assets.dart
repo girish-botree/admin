@@ -9,10 +9,12 @@ class Assets {
   static const String fontsPoppinsMedium = 'assets/fonts/PoppinsMedium.ttf';
   static const String fontsPoppinsRegular = 'assets/fonts/PoppinsRegular.ttf';
   static const String fontsPoppinsSemiBold = 'assets/fonts/PoppinsSemiBold.ttf';
+  static const String iconsIcDashbaordStroke = 'assets/icons/ic_dashbaord_stroke.svg';
+  static const String iconsIcDashboardFill = 'assets/icons/ic_dashboard_fill.svg';
   static const String iconsIcEmail = 'assets/icons/ic_email.svg';
   static const String iconsIcHidePassword = 'assets/icons/ic_hide_password.svg';
-  static const String iconsIcHome = 'assets/icons/ic_home.svg';
   static const String iconsIcHomeFill = 'assets/icons/ic_home_fill.svg';
+  static const String iconsIcHomeStroke = 'assets/icons/ic_home_stroke.svg';
   static const String iconsIcIngredient = 'assets/icons/ic_ingredient.svg';
   static const String iconsIcLock = 'assets/icons/ic_lock.svg';
   static const String iconsIcLogin = 'assets/icons/ic_login.svg';
@@ -23,6 +25,9 @@ class Assets {
   static const String iconsIcPlanFill = 'assets/icons/ic_plan_fill.svg';
   static const String iconsIcRecipe = 'assets/icons/ic_recipe.svg';
   static const String iconsIcSettings = 'assets/icons/ic_settings.svg';
+  static const String imagesExercise = 'assets/images/exercise.jpg';
+  static const String imagesIngredients = 'assets/images/ingredients.jpg';
+  static const String imagesRecipe = 'assets/images/recipe.jpg';
   static const String languageEnglish = 'assets/language/english.json';
   static const String languageHindi = 'assets/language/hindi.json';
   static const String languageTamil = 'assets/language/tamil.json';
