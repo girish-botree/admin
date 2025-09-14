@@ -1,6 +1,114 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+class ExerciseImageCard extends StatelessWidget {
+  const ExerciseImageCard({
+    super.key,
+    required this.exercise,
+    this.onTap,
+  });
+
+  final dynamic exercise;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.theme;
+
+    return Card(
+      elevation: 0,
+      margin: EdgeInsets.zero,
+      color: theme.colorScheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: theme.colorScheme.outline.withValues(alpha: 0.08),
+          width: 1,
+        ),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image
+            Expanded(
+              child: _buildExerciseImage(theme),
+            ),
+            // Name
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                (exercise['name'] as String?) ?? 'Unknown Exercise',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.onSurface,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExerciseImage(ThemeData theme) {
+    final imageUrl = exercise['imageUrl'] as String?;
+
+    if (imageUrl != null && imageUrl.isNotEmpty) {
+      return AspectRatio(
+        aspectRatio: 1.0,
+        child: ClipRRect(
+          borderRadius: BorderRadius.only(
+            topLeft: const Radius.circular(16),
+            topRight: const Radius.circular(16),
+            bottomLeft: Radius.zero,
+            bottomRight: Radius.zero,
+          ),
+          child: Image.network(
+            imageUrl,
+            fit: BoxFit.cover,
+            width: double.infinity,
+            height: double.infinity,
+            errorBuilder: (context, error, stackTrace) =>
+                _buildPlaceholder(theme),
+          ),
+        ),
+      );
+    }
+
+    return AspectRatio(
+      aspectRatio: 1.0,
+      child: _buildPlaceholder(theme),
+    );
+  }
+
+  Widget _buildPlaceholder(ThemeData theme) {
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainer,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+          bottomLeft: Radius.zero,
+          bottomRight: Radius.zero,
+        ),
+      ),
+      child: Center(
+        child: Icon(
+          Icons.fitness_center,
+          size: 40,
+          color: theme.colorScheme.onSurface.withOpacity(0.3),
+        ),
+      ),
+    );
+  }
+}
+
 class ExerciseCard extends StatelessWidget {
   const ExerciseCard({
     super.key,

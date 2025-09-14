@@ -315,7 +315,7 @@ class ExercisesView extends GetView<ExerciseController> {
 
   Widget _buildExerciseGrid(BuildContext context) {
     final exerciseCards = controller.filteredExercises.map((exercise) =>
-        ExerciseCard(
+        ExerciseImageCard(
           exercise: exercise,
           onTap: () =>
               Get.to<void>(
@@ -323,12 +323,6 @@ class ExercisesView extends GetView<ExerciseController> {
                 transition: Transition.cupertino,
                 duration: const Duration(milliseconds: 300),
               ),
-          onEdit: () =>
-              ExerciseDialogs.showEditExerciseDialog(
-                  context, controller, exercise),
-          onDelete: () =>
-              ExerciseDialogs.showDeleteConfirmation(
-                  context, exercise, controller),
         )
     ).toList();
 
