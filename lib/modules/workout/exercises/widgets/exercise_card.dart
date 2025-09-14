@@ -59,14 +59,15 @@ class ExerciseCard extends StatelessWidget {
               const SizedBox(height: 12),
 
               // Exercise image or placeholder
-              Container(
-                width: double.infinity,
-                height: 120,
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainer,
-                  borderRadius: BorderRadius.circular(12),
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainer,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: _buildExerciseImage(),
                 ),
-                child: _buildExerciseImage(),
               ),
               const SizedBox(height: 12),
 

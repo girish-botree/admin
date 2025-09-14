@@ -77,7 +77,7 @@ class ExerciseShimmerCard extends StatelessWidget {
               // Exercise image placeholder
               Container(
                 width: double.infinity,
-                height: 120,
+                height: 60,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
@@ -89,14 +89,13 @@ class ExerciseShimmerCard extends StatelessWidget {
               _buildShimmerDetailRow(),
               const SizedBox(height: 8),
 
-              // Use Expanded for the description to take remaining space
-              Expanded(
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
+              // Shorter container for description
+              Container(
+                width: double.infinity,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(4),
                 ),
               ),
             ],
