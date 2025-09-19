@@ -39,14 +39,26 @@ class FileUploadService {
         _showProgressDialog();
       }
 
-      // For debugging
-      print('Attempting to upload file: ${file.path}');
-      print('File type: $fileType');
-      print('Description: $description');
-      print('File exists: ${await file.exists()}');
-      print('File size: ${await file.length()} bytes');
+      // Enhanced logging for file upload
+      debugPrint('=== FILE UPLOAD REQUEST STARTED ===');
+      debugPrint('📁 File Path: ${file.path}');
+      debugPrint('📝 File Type: $fileType');
+      debugPrint('📋 Description: ${description ?? 'None'}');
+      debugPrint('✅ File Exists: ${await file.exists()}');
+      debugPrint('📊 File Size: ${await file.length()} bytes (${_formatFileSize(await file.length())})');
+      debugPrint('🌐 Upload URL: ${_apiClient.toString()}');
+      debugPrint('⚡ Request Starting at: ${DateTime.now().toIso8601String()}');
+      
+      // Log file details
+      if (await file.exists()) {
+        final fileName = file.path.split('/').last;
+        final fileExtension = fileName.split('.').last.toLowerCase();
+        debugPrint('📄 File Name: $fileName');
+        debugPrint('🔧 File Extension: $fileExtension');
+      }
 
       // Make the upload request with progress tracking
+      // Log the exact parameters being sent to the API\n      debugPrint('🚀 === API CALL PARAMETERS ===');\n      debugPrint('📤 API Endpoint: api/FileUpload/upload');\n      debugPrint('📋 HTTP Method: POST');\n      debugPrint('📦 Form Data Parameters:');\n      debugPrint('   📄 file: ${file.path} (${await file.length()} bytes)');\n      debugPrint('   📝 fileType: \"$fileType\"');\n      debugPrint('   📋 description: \"${description ?? 'null'}\"');\n      debugPrint('🚀 === STARTING API CALL ===');
       final response = await _apiClient.uploadFile(
         file,
         fileType,
@@ -58,18 +70,31 @@ class FileUploadService {
         Get.back<void>();
       }
 
-      // Parse response
-      print('Upload response: ${response.data}');
+      // Enhanced response logging
+      debugPrint('=== FILE UPLOAD RESPONSE RECEIVED ===');
+      debugPrint('📊 Status Code: ${response.response.statusCode}');
+      debugPrint('📋 Headers: ${response.response.headers}');
+      debugPrint('📄 Response Data: ${response.data}');
+      debugPrint('⏱️ Response Time: ${DateTime.now().toIso8601String()}');
 
       if (response.data != null && response.data['success'] == true) {
         final fileUrl = response.data['data']['fileUrl'] as String?;
         if (fileUrl != null) {
-          print('File uploaded successfully: $fileUrl');
+          debugPrint('✅ FILE UPLOAD SUCCESS!');
+          debugPrint('🔗 File URL: $fileUrl');
+          debugPrint('=== FILE UPLOAD COMPLETED SUCCESSFULLY ===');
           return FileUploadResult.success(fileUrl);
+        } else {
+          debugPrint('❌ Upload failed: File URL not found in response');
+          debugPrint('📄 Full response data: ${response.data}');
         }
+      } else {
+        debugPrint('❌ Upload failed: Invalid response format');
+        debugPrint('📄 Response success flag: ${response.data?['success']}');
+        debugPrint('📄 Full response: ${response.data}');
       }
 
-      print('Upload failed: Invalid response format');
+      debugPrint('=== FILE UPLOAD FAILED ===');
       return FileUploadResult.error('Upload failed: Invalid response');
     } catch (e) {
       // Hide progress dialog on error
@@ -77,19 +102,36 @@ class FileUploadService {
         Get.back<void>();
       }
 
+      // Enhanced error logging
+      debugPrint('=== FILE UPLOAD ERROR ===');
+      debugPrint('❌ Error Type: ${e.runtimeType}');
+      debugPrint('❌ Error Message: ${e.toString()}');
+      
       String errorMessage = 'Upload failed';
       if (e is dio.DioException) {
+        debugPrint('🌐 DioException Details:');
+        debugPrint('   - Type: ${e.type}');
+        debugPrint('   - Message: ${e.message}');
+        debugPrint('   - Response Status: ${e.response?.statusCode}');
+        debugPrint('   - Response Data: ${e.response?.data}');
+        debugPrint('   - Request Path: ${e.requestOptions.path}');
+        debugPrint('   - Request Method: ${e.requestOptions.method}');
+        debugPrint('   - Request Headers: ${e.requestOptions.headers}');
+        
         switch (e.type) {
           case dio.DioExceptionType.connectionTimeout:
           case dio.DioExceptionType.receiveTimeout:
           case dio.DioExceptionType.sendTimeout:
             errorMessage = 'Upload timeout. Please check your connection.';
+            debugPrint('⏰ Timeout Error: ${e.type}');
             break;
           case dio.DioExceptionType.connectionError:
             errorMessage = 'No internet connection. Please try again.';
+            debugPrint('🌐 Connection Error');
             break;
           case dio.DioExceptionType.badResponse:
             final statusCode = e.response?.statusCode;
+            debugPrint('📊 Bad Response - Status Code: $statusCode');
             if (statusCode == 413) {
               errorMessage = 'File too large. Please choose a smaller file.';
             } else if (statusCode == 415) {
@@ -100,11 +142,23 @@ class FileUploadService {
             break;
           default:
             errorMessage = 'Upload failed. Please try again.';
+            debugPrint('❓ Unknown DioException type: ${e.type}');
         }
+      } else {
+        debugPrint('❌ Non-Dio Exception: ${e.toString()}');
       }
-
+      
+      debugPrint('=== FILE UPLOAD ERROR END ===');
       return FileUploadResult.error(errorMessage);
     }
+  }
+  
+  /// Format file size for human-readable display
+  String _formatFileSize(int bytes) {
+    if (bytes < 1024) return '$bytes B';
+    if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
+    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 
   /// Pick and upload an image

@@ -9,10 +9,12 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="add network image validation and fallback handling; update main.dart for platform-specific sqflite initialization; enhance report controller with date range report generation and download features; replace back buttons with circular back button widget; improve image loading error handling in recipe and ingredient screens; update UI for reports with date range toggle and excel download; include new utils and widgets for consistent styling and functionality.">
-      <change beforePath="$PROJECT_DIR$/lib/modules/workout/exercises/screens/exercises_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/workout/exercises/screens/exercises_view.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/workout/exercises/widgets/exercise_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/workout/exercises/widgets/exercise_card.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/modules/workout/exercises/widgets/exercise_shimmer.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/modules/workout/exercises/widgets/exercise_shimmer.dart" afterDir="false" />
+    <list default="true" id="d0344348-6be8-4cbe-957a-61bfe2f07d3a" name="Changes" comment="certificate bypass22">
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/src/main/res/xml/network_security_config.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/res/xml/network_security_config.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/Runner/Info.plist" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Runner/Info.plist" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/network_service/network_module.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/network_service/network_module.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../exercise_controller.dart';
-import '../../../../widgets/image_upload_widget.dart';
+import '../../../../widgets/deferred_image_upload_widget.dart';
+import '../../../../services/deferred_upload_helper.dart';
+import '../../../../services/deferred_upload_service.dart';
 
 class ExerciseDialogs {
   static void showAddExerciseDialog(BuildContext context,
@@ -12,7 +14,7 @@ class ExerciseDialogs {
       controller: controller,
       title: 'Add New Exercise',
       actionText: 'Add Exercise',
-      onSubmit: (String? imageUrl) => _handleAddExercise(context, controller, imageUrl),
+      onSubmit: (DeferredImageResult? selectedImage) => _handleAddExercise(context, controller, selectedImage),
     );
   }
 
@@ -26,7 +28,7 @@ class ExerciseDialogs {
       controller: controller,
       title: 'Edit Exercise',
       actionText: 'Update Exercise',
-      onSubmit: (String? imageUrl) => _handleEditExercise(context, controller, exercise, imageUrl),
+      onSubmit: (DeferredImageResult? selectedImage) => _handleEditExercise(context, controller, exercise, selectedImage),
       initialImageUrl: initialImageUrl,
     );
   }
@@ -36,10 +38,10 @@ class ExerciseDialogs {
     required ExerciseController controller,
     required String title,
     required String actionText,
-    required void Function(String?) onSubmit,
+    required void Function(DeferredImageResult?) onSubmit,
     String? initialImageUrl,
   }) {
-    String? uploadedImageUrl = initialImageUrl;
+    DeferredImageResult? selectedImage;
     Get.dialog<void>(
       Dialog(
         shape: RoundedRectangleBorder(
@@ -80,11 +82,9 @@ class ExerciseDialogs {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        _buildExerciseForm(context, controller, uploadedImageUrl, (String imageUrl) {
+                        _buildExerciseForm(context, controller, selectedImage, (DeferredImageResult imageResult) {
                           setState(() {
-                            uploadedImageUrl = imageUrl.isNotEmpty ? imageUrl : null;
-                            // When image URL is updated, also update the controller's image URL field
-                            controller.imageUrlController.text = imageUrl;
+                            selectedImage = imageResult;
                           });
                         }),
                       ],
@@ -111,7 +111,7 @@ class ExerciseDialogs {
                     const SizedBox(width: 16),
                     Expanded(
                       child: FilledButton(
-                        onPressed: () => onSubmit(uploadedImageUrl),
+                        onPressed: () => onSubmit(selectedImage),
                         style: FilledButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
@@ -134,7 +134,7 @@ class ExerciseDialogs {
   }
 
   static Widget _buildExerciseForm(BuildContext context,
-      ExerciseController controller, String? uploadedImageUrl, void Function(String) onImageUploaded) {
+      ExerciseController controller, DeferredImageResult? selectedImage, void Function(DeferredImageResult) onImageSelected) {
     return Column(
       children: [
         // Exercise name
@@ -201,25 +201,18 @@ class ExerciseDialogs {
         const SizedBox(height: 16),
 
         // Image upload
-        ImageUploadWidget(
+        DeferredImageUploadWidget(
           fileType: 'ExerciseImage',
           description: 'Exercise image for ${controller.nameController.text.isNotEmpty ? controller.nameController.text : 'new exercise'}',
-          currentImageUrl: uploadedImageUrl,
-          onUploadStart: () {
-            controller.isImageUploading.value = true;
-          },
-          onImageUploaded: (String imageUrl) {
-            uploadedImageUrl = imageUrl.isNotEmpty ? imageUrl : null;
-            // When image URL is updated, also update the controller's image URL field
-            controller.imageUrlController.text = imageUrl;
-            controller.isImageUploading.value = false;
+          initialImage: selectedImage,
+          onImageSelected: (DeferredImageResult imageResult) {
+            onImageSelected(imageResult);
           },
           onError: (String error) {
             Get.snackbar('Upload Error', error);
-            controller.isImageUploading.value = false;
           },
           label: 'Exercise Image',
-          hintText: 'Upload a photo of the exercise (JPG, PNG up to 10MB)',
+          hintText: 'Select a photo of the exercise (JPG, PNG up to 10MB)',
           height: 200,
         ),
         const SizedBox(height: 16),
@@ -323,170 +316,51 @@ class ExerciseDialogs {
   }
 
   static Future<void> _handleAddExercise(BuildContext context,
-      ExerciseController controller, String? uploadedImageUrl) async {
+      ExerciseController controller, DeferredImageResult? selectedImage) async {
     if (!controller.validateExerciseForm()) {
       return;
     }
 
-    // Always make sure the imageUrl is taken from the most recent controller field unless an uploaded URL is explicitly given
-    String? imageUrlToUse = uploadedImageUrl ??
-        controller.imageUrlController.text;
-    if (imageUrlToUse != null && imageUrlToUse.isEmpty) {
-      imageUrlToUse = null;
-    }
+    final uploadHelper = DeferredUploadHelper();
+    
+    final success = await uploadHelper.uploadExerciseImageThenSave(
+      saveExercise: (String? imageUrl) async {
+        final data = controller.createExerciseData(uploadedImageUrl: imageUrl);
+        return await controller.createExercise(data);
+      },
+      selectedImage: selectedImage ?? DeferredImageResult.cancelled(),
+    );
 
-    try {
-      // Wait for any ongoing image upload to complete
-      if (controller.isImageUploading.value) {
-        // Show a loading indicator
-        Get.snackbar(
-          'Please wait',
-          'Waiting for image upload to complete...',
-          duration: const Duration(seconds: 2),
-          snackPosition: SnackPosition.BOTTOM,
-        );
-
-        // Wait for upload to complete
-        final uploadCompleted = await controller.waitForImageUpload();
-        if (!uploadCompleted) {
-          _showErrorSnackbar('Image upload timed out. Please try again.');
-          return;
-        }
-
-        // Refresh the image URL after upload completes
-        imageUrlToUse = controller.imageUrlController.text;
-        if (imageUrlToUse.isEmpty) {
-          imageUrlToUse = null;
-        }
-      }
-
-      final data = controller.createExerciseData(
-          uploadedImageUrl: imageUrlToUse);
-
-      print('Attempting to create exercise with data: ${data.toString()}');
-      print('Image URL being used: ${data['imageUrl']}');
-
-      final success = await controller.createExercise(data);
-
-      if (success) {
-        // Only close the dialog if creation succeeded
-        Get.back<void>();
-        Get.snackbar(
-          'Success',
-          'Exercise added successfully',
-          backgroundColor: Colors.green.withOpacity(0.1),
-          colorText: Colors.green,
-          icon: const Icon(Icons.check_circle, color: Colors.green),
-          duration: const Duration(seconds: 3),
-          snackPosition: SnackPosition.BOTTOM,
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-        );
-      } else {
-        // Do not close dialog on failure
-        _showErrorSnackbar(
-          'Failed to add exercise. Please check your network connection and try again.',
-        );
-      }
-    } catch (e) {
-      print('Error adding exercise: $e');
-      String errorMessage = 'An error occurred while adding exercise';
-
-      if (e.toString().contains('SocketException') ||
-          e.toString().contains('Connection refused') ||
-          e.toString().contains('Network is unreachable')) {
-        errorMessage =
-        'Network error. Please check your internet connection and try again.';
-      } else if (e.toString().contains('500')) {
-        errorMessage =
-        'Server error. Please try again later or contact support.';
-      } else if (e.toString().contains('400') || e.toString().contains('422')) {
-        errorMessage =
-        'Invalid data. Please check your form input and try again.';
-      } else if (e.toString().contains('401') || e.toString().contains('403')) {
-        errorMessage =
-        'You don\'t have permission to add exercises. Please log in again.';
-      }
-
-      _showErrorSnackbar(errorMessage);
+    if (success) {
+      Get.back<void>();
     }
   }
 
   static Future<void> _handleEditExercise(BuildContext context,
       ExerciseController controller,
-      dynamic exercise, String? uploadedImageUrl) async {
+      dynamic exercise, DeferredImageResult? selectedImage) async {
     if (!controller.validateExerciseForm()) {
       return;
     }
 
-    try {
-      // Always make sure the imageUrl is taken from the most recent controller field unless an uploaded URL is explicitly given
-      String? imageUrlToUse = uploadedImageUrl ??
-          controller.imageUrlController.text;
-      if (imageUrlToUse != null && imageUrlToUse.isEmpty) {
-        imageUrlToUse = null;
-      }
+    final exerciseId = exercise['exerciseId']?.toString() ?? exercise['id']?.toString();
+    if (exerciseId == null) {
+      _showErrorSnackbar('Exercise ID not found');
+      return;
+    }
 
-      // Wait for any ongoing image upload to complete
-      if (controller.isImageUploading.value) {
-        // Show a loading indicator
-        Get.snackbar(
-          'Please wait',
-          'Waiting for image upload to complete...',
-          duration: const Duration(seconds: 2),
-          snackPosition: SnackPosition.BOTTOM,
-        );
+    final uploadHelper = DeferredUploadHelper();
+    
+    final success = await uploadHelper.uploadExerciseImageThenSave(
+      saveExercise: (String? imageUrl) async {
+        final data = controller.createExerciseData(uploadedImageUrl: imageUrl);
+        return await controller.updateExercise(exerciseId, data);
+      },
+      selectedImage: selectedImage ?? DeferredImageResult.cancelled(),
+    );
 
-        // Wait for upload to complete
-        final uploadCompleted = await controller.waitForImageUpload();
-        if (!uploadCompleted) {
-          _showErrorSnackbar('Image upload timed out. Please try again.');
-          return;
-        }
-
-        // Refresh the image URL after upload completes
-        imageUrlToUse = controller.imageUrlController.text;
-        if (imageUrlToUse.isEmpty) {
-          imageUrlToUse = null;
-        }
-      }
-
-      final data = controller.createExerciseData(
-          uploadedImageUrl: imageUrlToUse);
-      final exerciseId = exercise['exerciseId']?.toString() ??
-          exercise['id']?.toString();
-
-      if (exerciseId == null) {
-        _showErrorSnackbar('Exercise ID not found');
-        return;
-      }
-
-      // For debugging purposes, print the data being sent
-      print('Attempting to update exercise with ID: $exerciseId');
-      print('Update data: ${data.toString()}');
-      print('Image URL being used: ${data['imageUrl']}');
-
-      final success = await controller.updateExercise(exerciseId, data);
-
-      if (success) {
-        Get.back<void>();
-        Get.snackbar(
-          'Success',
-          'Exercise updated successfully',
-          backgroundColor: Colors.green.withOpacity(0.1),
-          colorText: Colors.green,
-          icon: const Icon(Icons.check_circle, color: Colors.green),
-          duration: const Duration(seconds: 3),
-          snackPosition: SnackPosition.BOTTOM,
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-        );
-      } else {
-        _showErrorSnackbar('Failed to update exercise');
-      }
-    } catch (e) {
-      print('Error updating exercise: $e');
-      _showErrorSnackbar('An error occurred while updating exercise');
+    if (success) {
+      Get.back<void>();
     }
   }
 
@@ -569,7 +443,7 @@ class ExerciseDialogs {
         Get.snackbar(
           'Success',
           'Exercise deleted successfully',
-          backgroundColor: Colors.green.withOpacity(0.1),
+          backgroundColor: Colors.green.withValues(alpha: 0.1),
           colorText: Colors.green,
           icon: const Icon(Icons.check_circle, color: Colors.green),
           duration: const Duration(seconds: 3),
@@ -608,7 +482,7 @@ class ExerciseDialogs {
         Get.snackbar(
           'Success',
           'All exercises deleted successfully',
-          backgroundColor: Colors.green.withOpacity(0.1),
+          backgroundColor: Colors.green.withValues(alpha: 0.1),
           colorText: Colors.green,
           icon: const Icon(Icons.check_circle, color: Colors.green),
           duration: const Duration(seconds: 3),
@@ -628,7 +502,7 @@ class ExerciseDialogs {
     Get.snackbar(
       'Error',
       message,
-      backgroundColor: Colors.red.withOpacity(0.1),
+      backgroundColor: Colors.red.withValues(alpha: 0.1),
       colorText: Colors.red,
       icon: const Icon(Icons.error, color: Colors.red),
       duration: const Duration(seconds: 4),

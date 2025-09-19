@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
+    <!-- Configuration for trusted server with certificate issues -->
     <domain-config cleartextTrafficPermitted="true">
-        <!-- Allow connections to your development server IP -->
+        <!-- Allow connections to your trusted server IP -->
         <domain includeSubdomains="false">15.207.67.98</domain>
+        <trust-anchors>
+            <!-- Trust system CAs -->
+            <certificates src="system"/>
+            <!-- Trust user-added CAs for this domain -->
+            <certificates src="user"/>
+        </trust-anchors>
     </domain-config>
 
     <!-- Add config for image hosting domains -->
@@ -11,15 +18,15 @@
         <domain includeSubdomains="true">unsplash.com</domain>
     </domain-config>
 
-    <!-- For development/testing: Allow cleartext traffic to all domains (remove in production) -->
+    <!-- Base configuration for all other domains -->
     <base-config cleartextTrafficPermitted="true">
         <trust-anchors>
-            <!-- Trust default CAs -->
+            <!-- Trust default system CAs -->
             <certificates src="system" />
         </trust-anchors>
     </base-config>
 
-    <!-- Development configuration: Trust user-added CAs for debugging -->
+    <!-- Debug configuration: Trust user-added CAs for debugging -->
     <debug-overrides>
         <trust-anchors>
             <certificates src="system" />

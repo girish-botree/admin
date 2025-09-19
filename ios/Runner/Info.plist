@@ -51,10 +51,10 @@
 	<string>This app requires access to the photo library to upload recipe images.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app requires access to the camera to take recipe photos.</string>
-	<!-- App Transport Security Settings for Development -->
+	<!-- App Transport Security Settings -->
     	<key>NSAppTransportSecurity</key>
     	<dict>
-    		<!-- Allow connections to specific IP address -->
+            <!-- Allow connections to specific trusted server IP -->
     		<key>NSExceptionDomains</key>
     		<dict>
     			<key>15.207.67.98</key>
@@ -64,6 +64,12 @@
     				<key>NSExceptionMinimumTLSVersion</key>
     				<string>TLSv1.0</string>
     				<key>NSExceptionRequiresForwardSecrecy</key>
+                    <false/>
+                    <key>NSThirdPartyExceptionAllowsInsecureHTTPLoads</key>
+                    <true/>
+                    <key>NSThirdPartyExceptionMinimumTLSVersion</key>
+                    <string>TLSv1.0</string>
+                    <key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
     				<false/>
     			</dict>
     		</dict>

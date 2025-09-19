@@ -8,7 +8,9 @@ import 'package:admin/utils/image_base64_util.dart';
 import '../../meal_controller.dart';
 import '../../../../widgets/searchable_dropdown.dart';
 import '../../../../widgets/multi_select_dropdown.dart';
-import '../../../../widgets/image_upload_widget.dart';
+import '../../../../widgets/deferred_image_upload_widget.dart';
+import '../../../../services/deferred_upload_helper.dart';
+import '../../../../services/deferred_upload_service.dart';
 import '../../../../config/dropdown_data.dart';
 
 class RecipeDialogs {
@@ -17,7 +19,7 @@ class RecipeDialogs {
     controller.clearRecipeForm();
     int dietaryCategory = 0;
     final List<dynamic> ingredients = [];
-    String? uploadedImageUrl;
+    DeferredImageResult selectedImage = DeferredImageResult.cancelled();
     bool isDialogActive = true;
 
     // State variables for vitamins and minerals - moved outside StatefulBuilder
@@ -26,7 +28,6 @@ class RecipeDialogs {
     String selectedCuisine = '';
 
     // Simplified state variables for better performance
-    bool isBasicExpanded = true;
     bool isDetailsExpanded = false;
     bool isNutritionExpanded = false;
     bool isIngredientsExpanded = false;
@@ -96,7 +97,7 @@ class RecipeDialogs {
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 8, vertical: 4),
                                         decoration: BoxDecoration(
-                                          color: Colors.red.withOpacity(0.1),
+                                          color: Colors.red.withValues(alpha: 0.1),
                                           borderRadius: BorderRadius.circular(
                                               6),
                                         ),
@@ -344,8 +345,8 @@ class RecipeDialogs {
                                   'Recipe Image',
                                   style: TextStyle(fontWeight: FontWeight.w600),
                                 ),
-                                subtitle: Text(uploadedImageUrl != null
-                                    ? 'Image uploaded'
+                                subtitle: Text(selectedImage.isSelected
+                                    ? 'Image selected'
                                     : 'Optional photo'),
                                 trailing: Icon(
                                   isImageExpanded
@@ -360,20 +361,20 @@ class RecipeDialogs {
                                 const Divider(height: 1),
                                 Padding(
                                   padding: const EdgeInsets.all(20),
-                                  child: ImageUploadWidget(
+                                  child: DeferredImageUploadWidget(
                                     fileType: 'RecipeImage',
                                     description: 'Recipe image for ${controller.nameController.text.isNotEmpty ? controller.nameController.text : 'new recipe'}',
-                                    currentImageUrl: uploadedImageUrl,
-                                    onImageUploaded: (String imageUrl) {
+                                    initialImage: selectedImage,
+                                    onImageSelected: (DeferredImageResult imageResult) {
                                       setDialogState(() {
-                                        uploadedImageUrl = imageUrl.isNotEmpty ? imageUrl : null;
+                                        selectedImage = imageResult;
                                       });
                                     },
                                     onError: (String error) {
                                       Get.snackbar('Upload Error', error);
                                     },
                                     label: 'Recipe Image',
-                                    hintText: 'Upload a photo of your recipe (JPG, PNG up to 10MB)',
+                                    hintText: 'Select a photo of your recipe (JPG, PNG up to 10MB)',
                                     height: 200,
                                   ),
                                 ),
@@ -399,33 +400,39 @@ class RecipeDialogs {
                     return FloatingActionButton.extended(
                       onPressed: () async {
                         if (controller.validateRecipeForm()) {
-                          final data = controller.createRecipeData(
-                              dietaryCategory, ingredients);
+                          final uploadHelper = DeferredUploadHelper();
+                          
+                          final success = await uploadHelper.uploadRecipeImageThenSave(
+                            saveRecipe: (String? imageUrl) async {
+                              final data = controller.createRecipeData(
+                                  dietaryCategory, ingredients);
 
-                          // Fill cuisine
-                          data['cuisine'] = selectedCuisine;
+                              // Fill cuisine
+                              data['cuisine'] = selectedCuisine;
 
-                          // Fill vitamins and minerals
-                          if (controller.vitaminsController.text.isNotEmpty) {
-                            data['vitamins'] =
-                                controller.vitaminsController.text;
-                          }
-                          if (controller.mineralsController.text.isNotEmpty) {
-                            data['minerals'] =
-                                controller.mineralsController.text;
-                          }
+                              // Fill vitamins and minerals
+                              if (controller.vitaminsController.text.isNotEmpty) {
+                                data['vitamins'] =
+                                    controller.vitaminsController.text;
+                              }
+                              if (controller.mineralsController.text.isNotEmpty) {
+                                data['minerals'] =
+                                    controller.mineralsController.text;
+                              }
 
-                          if (uploadedImageUrl != null && uploadedImageUrl!.isNotEmpty) {
-                            data['imageUrl'] = uploadedImageUrl;
+                              if (imageUrl != null && imageUrl.isNotEmpty) {
+                                data['imageUrl'] = imageUrl;
+                              }
+                              
+                              return await controller.createRecipe(data);
+                            },
+                            selectedImage: selectedImage,
+                          );
+
+                          if (success) {
+                            isDialogActive = false;
+                            Get.back<void>();
                           }
-                          controller.createRecipe(data).then((success) {
-                            if (success) {
-                              isDialogActive = false;
-                              Get.back<void>();
-                              Get.snackbar(
-                                  'Success', 'Recipe created successfully');
-                            }
-                          });
                         }
                       },
                       backgroundColor: hasValidationError
@@ -467,10 +474,9 @@ class RecipeDialogs {
       selectedVitamins.clear();
       selectedMinerals.clear();
       selectedCuisine = '';
-      uploadedImageUrl = null;
+      selectedImage = DeferredImageResult.cancelled();
       dietaryCategory = 0;
       // Reset expansion states to default
-      isBasicExpanded = true;
       isDetailsExpanded = false;
       isNutritionExpanded = false;
       isIngredientsExpanded = false;
@@ -478,210 +484,6 @@ class RecipeDialogs {
     });
   }
 
-  // Helper method to build collapsible recipe form sections
-  static Widget _buildCollapsibleRecipeSection({
-    required BuildContext context,
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required Color iconColor,
-    required bool isExpanded,
-    required VoidCallback onToggle,
-    required List<Widget> children,
-    bool isRequired = false,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: context.theme.colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isExpanded
-              ? iconColor.withValues(alpha: 0.3)
-              : context.theme.colorScheme.outline.withValues(alpha: 0.08),
-          width: isExpanded ? 2 : 1,
-        ),
-        // Simplified shadow during animation for better performance
-        boxShadow: isExpanded ? [
-          BoxShadow(
-            color: iconColor.withValues(alpha: 0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 3),
-          ),
-        ] : null,
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onToggle,
-          borderRadius: BorderRadius.circular(20),
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: iconColor.withValues(
-                            alpha: isExpanded ? 0.2 : 0.12),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: iconColor.withValues(alpha: isExpanded
-                              ? 0.4
-                              : 0.2),
-                          width: 1,
-                        ),
-                      ),
-                      child: Icon(
-                        icon,
-                        size: 28,
-                        color: iconColor,
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  title,
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w700,
-                                    color: context.theme.colorScheme.onSurface,
-                                    letterSpacing: -0.3,
-                                  ),
-                                ),
-                              ),
-                              if (isRequired)
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: Colors.red.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(
-                                      color: Colors.red.withValues(alpha: 0.3),
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'Required',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.red.shade700,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            subtitle,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: context.theme.colorScheme.onSurface
-                                  .withValues(alpha: 0.65),
-                              letterSpacing: 0,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    AnimatedRotation(
-                      turns: isExpanded ? 0.5 : 0.0,
-                      duration: const Duration(milliseconds: 200),
-                      // Reduced from 300ms
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: context.theme.colorScheme.surfaceContainer,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Icon(
-                          Icons.expand_more_rounded,
-                          size: 24,
-                          color: context.theme.colorScheme.onSurface.withValues(
-                              alpha: 0.7),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                // Optimized animation for better performance
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  // Reduced from 400ms
-                  curve: Curves.easeOut,
-                  // Changed curve for smoother animation
-                  height: isExpanded ? null : 0,
-                  child: isExpanded
-                      ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 24),
-                      Divider(
-                        color: iconColor.withValues(alpha: 0.2),
-                        thickness: 1,
-                      ),
-                      const SizedBox(height: 24),
-                      ...children,
-                    ],
-                  )
-                      : null,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Helper method to build required field indicator
-  static Widget _buildRequiredFieldIndicator(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.red.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.red.withValues(alpha: 0.2),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.star_rounded,
-            size: 16,
-            color: Colors.red.shade600,
-          ),
-          const SizedBox(width: 8),
-          Flexible(
-            child: Text(
-              'Fields marked with * are required',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-                color: Colors.red.shade700,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   static void showEditRecipeDialog(BuildContext context,
       MealController controller, dynamic recipe) {
@@ -689,7 +491,7 @@ class RecipeDialogs {
     int dietaryCategory = (recipe['dietaryCategory'] as int?) ?? 0;
     final List<dynamic> ingredients = recipe['ingredients'] != null ? List<
         dynamic>.from(recipe['ingredients'] as List) : [];
-    String? uploadedImageUrl = recipe['imageUrl']?.toString();
+    DeferredImageResult selectedImage = DeferredImageResult.cancelled();
     bool isDialogActive = true;
 
     // Setup nutrition controllers with existing data
@@ -701,15 +503,7 @@ class RecipeDialogs {
     controller.sugarController.text = '${recipe['sugar'] ?? 0}';
     controller.vitaminsController.text = recipe['vitamins']?.toString() ?? '';
     controller.mineralsController.text = recipe['minerals']?.toString() ?? '';
-    // Parse fatBreakdown if it exists
-    String fatBreakdownText = '';
-    try {
-      if (recipe['fatBreakdown'] != null) {
-        fatBreakdownText = recipe['fatBreakdown'].toString();
-      }
-    } catch (e) {
-      fatBreakdownText = '';
-    }
+    // Setup nutrition values from existing recipe
 
     Get.dialog<void>(
       Dialog(
@@ -821,20 +615,20 @@ class RecipeDialogs {
                     const SizedBox(height: 24),
 
                     // Image handling section
-                    ImageUploadWidget(
+                    DeferredImageUploadWidget(
                       fileType: 'RecipeImage',
                       description: 'Recipe image for ${recipe['name'] ?? 'recipe'}',
-                      currentImageUrl: uploadedImageUrl,
-                      onImageUploaded: (String imageUrl) {
+                      initialImage: selectedImage,
+                      onImageSelected: (DeferredImageResult imageResult) {
                         setState(() {
-                          uploadedImageUrl = imageUrl.isNotEmpty ? imageUrl : null;
+                          selectedImage = imageResult;
                         });
                       },
                       onError: (String error) {
                         Get.snackbar('Upload Error', error);
                       },
                       label: 'Recipe Image',
-                      hintText: 'Upload a photo of your recipe (JPG, PNG up to 10MB)',
+                      hintText: 'Select a photo of your recipe (JPG, PNG up to 10MB)',
                       height: 200,
                     ),
                     const SizedBox(height: 32),
@@ -845,27 +639,31 @@ class RecipeDialogs {
                         return;
                       }
 
-                      final data = controller.createRecipeData(dietaryCategory,
-                          ingredients);
+                      final uploadHelper = DeferredUploadHelper();
+                      
+                      final success = await uploadHelper.uploadRecipeImageThenSave(
+                        saveRecipe: (String? imageUrl) async {
+                          final data = controller.createRecipeData(dietaryCategory,
+                              ingredients);
 
-                      if (uploadedImageUrl != null && uploadedImageUrl!.isNotEmpty) {
-                        data['imageUrl'] = uploadedImageUrl;
+                          if (imageUrl != null && imageUrl.isNotEmpty) {
+                            data['imageUrl'] = imageUrl;
+                          }
+                          data['recipeId'] = recipe['recipeId'];
+                          data['isActive'] = recipe['isActive'] ?? true;
+                          data['createdBy'] = recipe['createdBy'];
+                          data['createdOn'] = recipe['createdOn'];
+
+                          return await controller.updateRecipe(
+                              recipe['recipeId']?.toString() ?? '', data);
+                        },
+                        selectedImage: selectedImage,
+                      );
+
+                      if (success) {
+                        isDialogActive = false;
+                        Get.back<void>();
                       }
-                      data['recipeId'] = recipe['recipeId'];
-                      data['isActive'] = recipe['isActive'] ?? true;
-                      data['createdBy'] = recipe['createdBy'];
-                      data['createdOn'] = recipe['createdOn'];
-
-                      controller.updateRecipe(
-                          recipe['recipeId']?.toString() ?? '', data).then((
-                          success) {
-                        if (success) {
-                          isDialogActive = false;
-                          Get.back<void>();
-                          Get.snackbar(
-                              'Success', 'Recipe updated successfully');
-                        }
-                      });
                     }),
                   ],
                 ),
@@ -892,15 +690,13 @@ class RecipeDialogs {
               ? recipe['name'].toString()
               : 'this recipe'}"?',
           style: TextStyle(
-              color: context.theme.colorScheme.onSurface.withValues(
-                  alpha: 0.8)),
+              color: context.theme.colorScheme.onSurface.withValues(alpha: 0.8)),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back<void>(),
             style: TextButton.styleFrom(
-              foregroundColor: context.theme.colorScheme.onSurface.withValues(
-                  alpha: 0.8),
+              foregroundColor: context.theme.colorScheme.onSurface.withValues(alpha: 0.8),
             ),
             child: const Text('Cancel'),
           ),
@@ -940,15 +736,13 @@ class RecipeDialogs {
         content: Text(
           'Are you sure you want to delete ALL recipes? This action cannot be undone.',
           style: TextStyle(
-              color: context.theme.colorScheme.onSurface.withValues(
-                  alpha: 0.8)),
+              color: context.theme.colorScheme.onSurface.withValues(alpha: 0.8)),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back<void>(),
             style: TextButton.styleFrom(
-              foregroundColor: context.theme.colorScheme.onSurface.withValues(
-                  alpha: 0.8),
+              foregroundColor: context.theme.colorScheme.onSurface.withValues(alpha: 0.8),
             ),
             child: const Text('Cancel'),
           ),
@@ -1016,7 +810,7 @@ class RecipeImageSection extends StatelessWidget {
             width: double.infinity,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.grey.withOpacity(0.3)),
+              border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
             ),
             child: Stack(
               children: [
@@ -1058,7 +852,7 @@ class RecipeImageSection extends StatelessWidget {
                 ],
               ),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.grey.withOpacity(0.3)),
+              border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -1321,7 +1115,7 @@ class RecipeIngredientsSection extends StatelessWidget {
               color: context.theme.colorScheme.surfaceContainerLowest,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: context.theme.colorScheme.outline.withOpacity(0.3),
+                color: context.theme.colorScheme.outline.withValues(alpha: 0.3),
               ),
             ),
             child: Column(
@@ -1329,20 +1123,20 @@ class RecipeIngredientsSection extends StatelessWidget {
                 Icon(
                   Icons.inventory_2_outlined,
                   size: 32,
-                  color: context.theme.colorScheme.onSurface.withOpacity(0.6),
+                  color: context.theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'No ingredients added yet',
                   style: context.theme.textTheme.bodyMedium?.copyWith(
-                    color: context.theme.colorScheme.onSurface.withOpacity(0.7),
+                    color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'Add ingredients to make your recipe complete',
                   style: context.theme.textTheme.bodySmall?.copyWith(
-                    color: context.theme.colorScheme.onSurface.withOpacity(0.6),
+                    color: context.theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -1363,7 +1157,7 @@ class RecipeIngredientsSection extends StatelessWidget {
                 child: ListTile(
                   leading: CircleAvatar(
                     backgroundColor: context.theme.colorScheme.primary
-                        .withOpacity(0.1),
+                        .withValues(alpha: 0.1),
                     child: Icon(
                       Icons.eco,
                       color: context.theme.colorScheme.primary,
@@ -1387,7 +1181,7 @@ class RecipeIngredientsSection extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 12,
                           color: context.theme.colorScheme.onSurface
-                              .withOpacity(0.5),
+                              .withValues(alpha: 0.5),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -1457,7 +1251,7 @@ class RecipeIngredientsSection extends StatelessWidget {
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                        border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Obx(() {
@@ -1655,8 +1449,7 @@ class RecipeEditImageSection extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: context.theme.colorScheme.primary.withValues(
-                        alpha: 0.15),
+                    color: context.theme.colorScheme.primary.withValues(alpha: 0.15),
                   ),
                 ),
                 child: ClipRRect(
@@ -1762,8 +1555,7 @@ class RecipeEditImageSection extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: context.theme.colorScheme.primary.withValues(
-                        alpha: 0.15),
+                    color: context.theme.colorScheme.primary.withValues(alpha: 0.15),
                   ),
                   color: Colors.black12,
                 ),
@@ -1813,37 +1605,6 @@ class RecipeEditImageSection extends StatelessWidget {
     );
   }
 
-  Widget _buildFallbackImage(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            context.theme.colorScheme.primaryContainer,
-            context.theme.colorScheme.secondaryContainer,
-            context.theme.colorScheme.tertiaryContainer,
-          ],
-        ),
-      ),
-      child: Center(
-        child: Icon(Icons.restaurant,
-            size: 48,
-            color: context.theme.colorScheme.onPrimaryContainer),
-      ),
-    );
-  }
-
-  bool _isBase64String(String str) {
-    try {
-      final cleanStr = str.replaceAll(RegExp(r'\s+'), '');
-      if (cleanStr.length % 4 != 0) return false;
-      base64Decode(cleanStr);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
 
   Future<void> _pickImage(ImageSource source, void Function(File?) callback) async {
     final picker = ImagePicker();
@@ -1889,9 +1650,9 @@ class RecipeValidatedTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     try {
-      controller.text; // Test if controller is valid
+      controller.text;
     } catch (e) {
-      return Container(); // Return empty container if controller is disposed
+      return Container();
     }
 
     return TextField(
@@ -1905,39 +1666,39 @@ class RecipeValidatedTextField extends StatelessWidget {
         labelText: label,
         prefixIcon: prefixIcon != null
             ? Icon(prefixIcon,
-            color: context.theme.colorScheme.onSurface.withOpacity(0.7))
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7))
             : null,
         errorText: errorText?.isNotEmpty == true ? errorText : null,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(
-            color: context.theme.colorScheme.outline.withOpacity(0.3),
+            color: context.theme.colorScheme.outline.withValues(alpha: 0.3),
             width: 1,
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(
-            color: context.theme.colorScheme.outline.withOpacity(0.2),
+            color: context.theme.colorScheme.outline.withValues(alpha: 0.2),
             width: 1,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(
-            color: context.theme.colorScheme.primary.withOpacity(0.6),
+            color: context.theme.colorScheme.primary.withValues(alpha: 0.6),
             width: 2,
           ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(
-            color: Colors.red.withOpacity(0.6),
+            color: Colors.red.withValues(alpha: 0.6),
             width: 1,
           ),
         ),
         filled: true,
-        fillColor: context.theme.colorScheme.surface.withOpacity(0.5),
+        fillColor: context.theme.colorScheme.surface.withValues(alpha: 0.5),
         contentPadding: const EdgeInsets.symmetric(
             horizontal: 12, vertical: 12),
       ),
@@ -1981,34 +1742,34 @@ class RecipeTextField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(
-            color: context.theme.colorScheme.onSurface.withOpacity(0.7)),
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7)),
         prefixIcon: prefixIcon != null
             ? Icon(prefixIcon,
-            color: context.theme.colorScheme.onSurface.withOpacity(0.7))
+            color: context.theme.colorScheme.onSurface.withValues(alpha: 0.7))
             : null,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(
-            color: context.theme.colorScheme.outline.withOpacity(0.3),
+            color: context.theme.colorScheme.outline.withValues(alpha: 0.3),
             width: 1,
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(
-            color: context.theme.colorScheme.outline.withOpacity(0.2),
+            color: context.theme.colorScheme.outline.withValues(alpha: 0.2),
             width: 1,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(
-            color: context.theme.colorScheme.primary.withOpacity(0.6),
+            color: context.theme.colorScheme.primary.withValues(alpha: 0.6),
             width: 2,
           ),
         ),
         filled: true,
-        fillColor: context.theme.colorScheme.surface.withOpacity(0.5),
+        fillColor: context.theme.colorScheme.surface.withValues(alpha: 0.5),
         contentPadding: const EdgeInsets.symmetric(
             horizontal: 12, vertical: 12),
       ),
@@ -2072,8 +1833,8 @@ class RecipeNutritionSection extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isOverLimit
-                          ? Colors.red.withOpacity(0.3)
-                          : context.theme.colorScheme.outline.withOpacity(0.3),
+                          ? Colors.red.withValues(alpha: 0.3)
+                          : context.theme.colorScheme.outline.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Column(
@@ -2105,8 +1866,8 @@ class RecipeNutritionSection extends StatelessWidget {
                                 horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
                               color: isOverLimit
-                                  ? Colors.red.withOpacity(0.1)
-                                  : Colors.green.withOpacity(0.1),
+                                  ? Colors.red.withValues(alpha: 0.1)
+                                  : Colors.green.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
@@ -2124,7 +1885,7 @@ class RecipeNutritionSection extends StatelessWidget {
                       LinearProgressIndicator(
                         value: (totalComposition / 100).clamp(0.0, 1.0),
                         backgroundColor: context.theme.colorScheme.outline
-                            .withOpacity(0.2),
+                            .withValues(alpha: 0.2),
                         valueColor: AlwaysStoppedAnimation<Color>(
                           isOverLimit ? Colors.red : context.theme.colorScheme
                               .primary,
@@ -2382,8 +2143,7 @@ class RecipeDialogActions extends StatelessWidget {
         TextButton(
           onPressed: () => Get.back<void>(),
           style: TextButton.styleFrom(
-            foregroundColor: context.theme.colorScheme.onSurface.withValues(
-                alpha: 0.8),
+            foregroundColor: context.theme.colorScheme.onSurface.withValues(alpha: 0.8),
           ),
           child: const Text('Cancel'),
         ),

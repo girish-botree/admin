@@ -49,9 +49,9 @@ class NetworkModule {
       },
     );
 
-    // Web-specific configuration
-    if (kDebugMode && !kIsWeb) {
-      _configureHttpClientForDebug(dio);
+    // Configure HttpClient for handling certificate issues
+    if (!kIsWeb) {
+      _configureHttpClient(dio);
     }
 
     // Add interceptors
@@ -392,23 +392,27 @@ class NetworkModule {
     _dio = null;
   }
 
-  static void _configureHttpClientForDebug(Dio dio) {
+  /// Configure HttpClient to handle certificate issues for specific hosts
+  static void _configureHttpClient(Dio dio) {
     if (!kIsWeb) {
       final httpClientAdapter = dio.httpClientAdapter;
       if (httpClientAdapter is IOHttpClientAdapter) {
         httpClientAdapter.createHttpClient = () {
           final client = HttpClient();
 
-          // For development: bypass certificate validation for specific hosts
+          // Define hosts that need certificate bypass
+          // Note: Only include hosts that you control and trust
+          final trustedHosts = ['15.207.67.98'];
+
           client.badCertificateCallback = (cert, host, port) {
-            // Only bypass certificate validation for your development server
-            // WARNING: Never use this in production!
-            final developmentHosts = ['15.207.67.98'];
-            if (developmentHosts.contains(host)) {
-              debugPrint('WARNING: Bypassing certificate validation for development host: $host');
-              return true;
+            // Only bypass certificate validation for trusted hosts
+            if (trustedHosts.contains(host)) {
+              if (kDebugMode) {
+                debugPrint('INFO: Bypassing certificate validation for trusted host: $host');
+              }
+              return true; // Allow the request for trusted hosts
             }
-            return false;
+            return false; // Reject for all other hosts
           };
 
           return client;
