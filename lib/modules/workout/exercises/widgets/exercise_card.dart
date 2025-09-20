@@ -19,6 +19,7 @@ class ExerciseImageCard extends StatelessWidget {
       elevation: 0,
       margin: EdgeInsets.zero,
       color: theme.colorScheme.surface,
+      clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
@@ -28,27 +29,22 @@ class ExerciseImageCard extends StatelessWidget {
       ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
           children: [
-            // Image
-            Expanded(
+            // Full-size image background
+            Positioned.fill(
               child: _buildExerciseImage(theme),
             ),
-            // Name
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Text(
-                (exercise['name'] as String?) ?? 'Unknown Exercise',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: theme.colorScheme.onSurface,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
+            // Gradient overlay
+            Positioned.fill(
+              child: _buildGradientOverlay(),
+            ),
+            // Exercise name on top of the gradient
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: _buildExerciseName(theme),
             ),
           ],
         ),
@@ -60,30 +56,60 @@ class ExerciseImageCard extends StatelessWidget {
     final imageUrl = exercise['imageUrl'] as String?;
 
     if (imageUrl != null && imageUrl.isNotEmpty) {
-      return AspectRatio(
-        aspectRatio: 1.0,
-        child: ClipRRect(
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16),
-            topRight: const Radius.circular(16),
-            bottomLeft: Radius.zero,
-            bottomRight: Radius.zero,
-          ),
-          child: Image.network(
-            imageUrl,
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: double.infinity,
-            errorBuilder: (context, error, stackTrace) =>
-                _buildPlaceholder(theme),
-          ),
-        ),
+      return Image.network(
+        imageUrl,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+        errorBuilder: (context, error, stackTrace) =>
+            _buildPlaceholder(theme),
       );
     }
 
-    return AspectRatio(
-      aspectRatio: 1.0,
-      child: _buildPlaceholder(theme),
+    return _buildPlaceholder(theme);
+  }
+
+  Widget _buildGradientOverlay() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.transparent,
+            Colors.transparent,
+            Colors.transparent,
+            Colors.black.withOpacity(0.1),
+            Colors.black.withOpacity(0.5),
+            Colors.black.withOpacity(0.7),
+          ],
+          stops: const [0.0, 0.5, 0.6, 0.7, 0.8, 1.0],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExerciseName(ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
+      child: Text(
+        (exercise['name'] as String?) ?? 'Unknown Exercise',
+        style: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: Colors.white,
+          shadows: [
+            Shadow(
+              offset: Offset(0, 1),
+              blurRadius: 2,
+              color: Colors.black38,
+            ),
+          ],
+        ),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
+      ),
     );
   }
 
@@ -91,12 +117,6 @@ class ExerciseImageCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainer,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
-          bottomLeft: Radius.zero,
-          bottomRight: Radius.zero,
-        ),
       ),
       child: Center(
         child: Icon(

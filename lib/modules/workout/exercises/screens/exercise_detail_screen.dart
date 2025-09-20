@@ -3,11 +3,127 @@ import 'package:get/get.dart';
 import '../widgets/exercise_dialogs.dart';
 import '../exercise_controller.dart';
 import '../../../meal/shared/widgets/common_widgets.dart';
+import 'package:video_player/video_player.dart';
+import 'package:chewie/chewie.dart';
+import 'package:flutter/services.dart' show MissingPluginException;
 
-class ExerciseDetailScreen extends StatelessWidget {
+class ExerciseDetailScreen extends StatefulWidget {
   const ExerciseDetailScreen({super.key, required this.exercise});
 
   final dynamic exercise;
+
+  @override
+  State<ExerciseDetailScreen> createState() => _ExerciseDetailScreenState();
+}
+
+class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
+  VideoPlayerController? _videoPlayerController;
+  ChewieController? _chewieController;
+  bool _videoInitialized = false;
+  bool _videoError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeVideoPlayer();
+  }
+
+  @override
+  void dispose() {
+    _videoPlayerController?.dispose();
+    _chewieController?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _initializeVideoPlayer() async {
+    final videoUrl = widget.exercise['videoUrl'] as String?;
+    if (videoUrl == null || videoUrl.isEmpty) return;
+
+    // Debug logging for video URL
+    debugPrint('Attempting to load video from URL: $videoUrl');
+
+    try {
+      // Check if the URL is well-formed
+      bool validURL = Uri.tryParse(videoUrl)?.hasScheme ?? false;
+
+      // Check if this is a YouTube URL
+      bool isYouTubeUrl = videoUrl.contains('youtube.com') ||
+          videoUrl.contains('youtu.be');
+
+      if (isYouTubeUrl) {
+        debugPrint(
+            '⚠️ YouTube URLs not directly supported - requires youtube_player_flutter package');
+        // The video_player package doesn't support YouTube URLs directly
+        // For YouTube URLs, you'd need to use youtube_player_flutter or similar package
+        setState(() {
+          _videoError = true;
+        });
+        return;
+      }
+
+      // Use a test video URL if the provided one is invalid
+      final videoSourceUrl = validURL ? videoUrl :
+      'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4';
+
+      if (!validURL) {
+        debugPrint('Invalid URL detected, falling back to test video URL');
+      }
+
+      _videoPlayerController = VideoPlayerController.network(videoSourceUrl);
+      await _videoPlayerController!.initialize();
+
+      _chewieController = ChewieController(
+        videoPlayerController: _videoPlayerController!,
+        aspectRatio: _videoPlayerController!.value.aspectRatio,
+        autoPlay: false,
+        looping: false,
+        placeholder: Center(
+          child: CircularProgressIndicator(
+            color: Get.theme.colorScheme.primary,
+          ),
+        ),
+        errorBuilder: (context, errorMessage) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.error_outline_rounded,
+                  color: Get.theme.colorScheme.error,
+                  size: 32,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Error loading video',
+                  style: TextStyle(
+                    color: Get.theme.colorScheme.error,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+
+      if (mounted) {
+        setState(() {
+          _videoInitialized = true;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _videoError = true;
+        });
+      }
+      debugPrint('Video player error: $e');
+      // More detailed error information
+      if (e is MissingPluginException) {
+        debugPrint('MissingPluginException: ${e}');
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +132,7 @@ class ExerciseDetailScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: context.theme.colorScheme.surfaceContainerLowest,
       appBar: StandardAppBar.detail(
-        title: (exercise['name'] as String?) ?? 'Exercise Details',
+        title: (widget.exercise['name'] as String?) ?? 'Exercise Details',
         actions: [
           PopupMenuButton<String>(
             icon: Container(
@@ -39,11 +155,11 @@ class ExerciseDetailScreen extends StatelessWidget {
               switch (value) {
                 case 'edit':
                   ExerciseDialogs.showEditExerciseDialog(
-                      context, controller, exercise);
+                      context, controller, widget.exercise);
                   break;
                 case 'delete':
                   ExerciseDialogs.showDeleteConfirmation(
-                      context, exercise, controller);
+                      context, widget.exercise, controller);
                   break;
               }
             },
@@ -131,8 +247,8 @@ class ExerciseDetailScreen extends StatelessWidget {
             _buildInstructions(context),
 
             // Video section (if available)
-            if (exercise['videoUrl'] != null &&
-                (exercise['videoUrl'] as String).isNotEmpty) ...[
+            if (widget.exercise['videoUrl'] != null &&
+                (widget.exercise['videoUrl'] as String).isNotEmpty) ...[
               const SizedBox(height: 24),
               _buildVideoSection(context),
             ],
@@ -143,7 +259,7 @@ class ExerciseDetailScreen extends StatelessWidget {
   }
 
   Widget _buildExerciseImage(BuildContext context) {
-    final imageUrl = exercise['imageUrl'] as String?;
+    final imageUrl = widget.exercise['imageUrl'] as String?;
 
     return Container(
       width: double.infinity,
@@ -173,7 +289,7 @@ class ExerciseDetailScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          (exercise['name'] as String?) ?? 'Unknown Exercise',
+          (widget.exercise['name'] as String?) ?? 'Unknown Exercise',
           style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.w700,
@@ -191,7 +307,7 @@ class ExerciseDetailScreen extends StatelessWidget {
   }
 
   Widget _buildDifficultyChip(BuildContext context) {
-    final difficulty = (exercise['difficulty'] as num?)?.toInt() ?? 1;
+    final difficulty = (widget.exercise['difficulty'] as num?)?.toInt() ?? 1;
     final difficultyText = _getDifficultyText(difficulty);
     final difficultyColor = _getDifficultyColor(difficulty, context.theme);
 
@@ -251,22 +367,23 @@ class ExerciseDetailScreen extends StatelessWidget {
           _buildDetailRow(
             icon: Icons.fitness_center_rounded,
             label: 'Muscle Group',
-            value: (exercise['muscleGroup'] as String?) ?? 'Unknown',
+            value: (widget.exercise['muscleGroup'] as String?) ?? 'Unknown',
             context: context,
           ),
           const SizedBox(height: 12),
           _buildDetailRow(
             icon: Icons.sports_gymnastics_rounded,
             label: 'Equipment',
-            value: (exercise['equipment'] as String?) ?? 'Unknown',
+            value: (widget.exercise['equipment'] as String?) ?? 'Unknown',
             context: context,
           ),
           const SizedBox(height: 12),
           _buildDetailRow(
             icon: Icons.signal_cellular_alt,
             label: 'Difficulty Level',
-            value: '${exercise['difficulty'] ?? 1}/5 (${_getDifficultyText(
-                (exercise['difficulty'] as num?)?.toInt() ?? 1)})',
+            value: '${widget.exercise['difficulty'] ??
+                1}/5 (${_getDifficultyText(
+                (widget.exercise['difficulty'] as num?)?.toInt() ?? 1)})',
             context: context,
           ),
         ],
@@ -275,7 +392,7 @@ class ExerciseDetailScreen extends StatelessWidget {
   }
 
   Widget _buildDescription(BuildContext context) {
-    final description = exercise['description'] as String?;
+    final description = widget.exercise['description'] as String?;
     if (description == null || description.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -326,7 +443,7 @@ class ExerciseDetailScreen extends StatelessWidget {
   }
 
   Widget _buildInstructions(BuildContext context) {
-    final instructionData = exercise['instructionData'];
+    final instructionData = widget.exercise['instructionData'];
     if (instructionData == null) {
       return const SizedBox.shrink();
     }
@@ -436,7 +553,7 @@ class ExerciseDetailScreen extends StatelessWidget {
   }
 
   Widget _buildVideoSection(BuildContext context) {
-    final videoUrl = exercise['videoUrl'] as String;
+    final videoUrl = widget.exercise['videoUrl'] as String;
 
     return Container(
       width: double.infinity,
@@ -477,39 +594,151 @@ class ExerciseDetailScreen extends StatelessWidget {
               color: context.theme.colorScheme.surfaceContainer,
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.video_library_rounded,
-                    size: 48,
-                    color: context.theme.colorScheme.primary,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Video Available',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: context.theme.colorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    videoUrl,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: context.theme.colorScheme.onSurface.withValues(
-                          alpha: 0.6),
-                    ),
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+            clipBehavior: Clip.antiAlias,
+            child: _buildVideoPlayer(context),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVideoPlayer(BuildContext context) {
+    if (_videoError) {
+      final videoUrl = widget.exercise['videoUrl'] as String? ?? '';
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline_rounded,
+              size: 40,
+              color: context.theme.colorScheme.error,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Failed to load video',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: context.theme.colorScheme.onSurface,
               ),
             ),
+            const SizedBox(height: 8),
+            if (videoUrl.isNotEmpty) Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                videoUrl,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: context.theme.colorScheme.onSurface.withOpacity(0.6),
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(height: 4),
+            // Support info text
+            if (videoUrl.contains('youtube.com') ||
+                videoUrl.contains('youtu.be'))
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  'YouTube links require special handling',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontStyle: FontStyle.italic,
+                    color: context.theme.colorScheme.error.withOpacity(0.8),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            const SizedBox(height: 12),
+            ElevatedButton.icon(
+              onPressed: () {
+                setState(() {
+                  _videoError = false;
+                  _videoInitialized = false;
+                });
+                _initializeVideoPlayer();
+              },
+              icon: const Icon(Icons.refresh),
+              label: const Text('Retry'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: context.theme.colorScheme.primary,
+                foregroundColor: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (!_videoInitialized) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 40,
+              height: 40,
+              child: CircularProgressIndicator(
+                color: context.theme.colorScheme.primary,
+                strokeWidth: 3,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Loading video...',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: context.theme.colorScheme.onSurface,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_chewieController != null) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Chewie(
+          controller: _chewieController!,
+        ),
+      );
+    }
+
+    // Fallback to display URL only if video player failed to initialize
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.video_library_rounded,
+            size: 40,
+            color: context.theme.colorScheme.primary,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Video Available',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: context.theme.colorScheme.onSurface,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            widget.exercise['videoUrl'] as String,
+            style: TextStyle(
+              fontSize: 12,
+              color: context.theme.colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
