@@ -4,10 +4,13 @@
 *.log
 *.pyc
 *.swp
+*.xml
 .DS_Store
 .buildlog/
 .history
 .idea/
+.xml
+
 
 
 
